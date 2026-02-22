@@ -58,6 +58,11 @@ class BackupSettingsNotifier extends StateNotifier<BackupSettings> {
     state = state.copyWith(cloudBackupEnabled: value);
   }
 
+  Future<void> setBackupLocation(String? path) async {
+    await _prefs.setBackupLocation(path);
+    state = state.copyWith(backupLocation: path);
+  }
+
   /// Refresh state from SharedPreferences (e.g. after a backup updates lastBackupTime)
   void refresh() {
     state = _prefs.getSettings();
@@ -186,6 +191,96 @@ class BackupOperationNotifier extends StateNotifier<BackupOperationState> {
     }
   }
 
+  /// Export backup to a user-chosen file path
+  Future<void> exportToPath(String destinationPath) async {
+    if (state.status == BackupOperationStatus.inProgress) return;
+
+    state = const BackupOperationState(
+      status: BackupOperationStatus.inProgress,
+      message: 'Exporting backup...',
+    );
+
+    try {
+      final record = await _service.exportBackupToPath(destinationPath);
+      state = BackupOperationState(
+        status: BackupOperationStatus.success,
+        message: 'Backup exported: ${record.formattedSize}',
+        lastRecord: record,
+      );
+      _ref.read(backupSettingsProvider.notifier).refresh();
+      _ref.invalidate(backupHistoryProvider);
+    } catch (e) {
+      state = BackupOperationState(
+        status: BackupOperationStatus.error,
+        message: 'Export failed: $e',
+      );
+    }
+  }
+
+  /// Export backup to temp file for sharing
+  Future<File?> exportForSharing() async {
+    if (state.status == BackupOperationStatus.inProgress) return null;
+
+    state = const BackupOperationState(
+      status: BackupOperationStatus.inProgress,
+      message: 'Preparing backup for sharing...',
+    );
+
+    try {
+      final file = await _service.exportBackupToTemp();
+      state = const BackupOperationState(
+        status: BackupOperationStatus.success,
+        message: 'Backup ready for sharing',
+      );
+      return file;
+    } catch (e) {
+      state = BackupOperationState(
+        status: BackupOperationStatus.error,
+        message: 'Export failed: $e',
+      );
+      return null;
+    }
+  }
+
+  /// Restore from an arbitrary file path
+  Future<void> restoreFromFilePath(String filePath) async {
+    if (state.status == BackupOperationStatus.inProgress) return;
+
+    state = const BackupOperationState(
+      status: BackupOperationStatus.inProgress,
+      message: 'Validating backup file...',
+    );
+
+    try {
+      // Validate first
+      final validation = await _service.validateBackupFile(filePath);
+      if (!validation.isValid) {
+        state = BackupOperationState(
+          status: BackupOperationStatus.error,
+          message: validation.error ?? 'Invalid backup file',
+        );
+        return;
+      }
+
+      state = const BackupOperationState(
+        status: BackupOperationStatus.inProgress,
+        message: 'Restoring backup...',
+      );
+
+      await _service.restoreFromFile(filePath);
+      state = const BackupOperationState(
+        status: BackupOperationStatus.success,
+        message: 'Restore completed. Please restart the app.',
+      );
+      _ref.invalidate(backupHistoryProvider);
+    } catch (e) {
+      state = BackupOperationState(
+        status: BackupOperationStatus.error,
+        message: 'Restore failed: $e',
+      );
+    }
+  }
+
   /// Reset status back to idle
   void resetStatus() {
     state = const BackupOperationState();
@@ -234,7 +329,7 @@ final backupOperationProvider =
 /// Backup history sorted newest-first
 final backupHistoryProvider = FutureProvider<List<BackupRecord>>((ref) async {
   final service = ref.watch(backupServiceProvider);
-  return service.getBackupHistory();
+  return service.getValidatedBackupHistory();
 });
 
 // =============================================================================
