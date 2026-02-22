@@ -133,6 +133,39 @@ class BackupService {
     return record;
   }
 
+  /// Export a backup to a user-specified file path.
+  ///
+  /// Records the export in backup history with the actual destination path.
+  Future<BackupRecord> exportBackupToPath(String destinationPath) async {
+    _log.info('Exporting backup to: $destinationPath');
+
+    await _dbAdapter.backup(destinationPath);
+
+    final filename = p.basename(destinationPath);
+    final counts = await _getDiveSiteCounts();
+
+    // Get size of the backup file
+    final backupFile = File(destinationPath);
+    final sizeBytes = await backupFile.exists() ? await backupFile.length() : 0;
+
+    final record = BackupRecord(
+      id: _uuid.v4(),
+      filename: filename,
+      timestamp: DateTime.now(),
+      sizeBytes: sizeBytes,
+      location: BackupLocation.local,
+      diveCount: counts.diveCount,
+      siteCount: counts.siteCount,
+      localPath: destinationPath,
+    );
+
+    await _preferences.addRecord(record);
+    await _preferences.setLastBackupTime(record.timestamp);
+
+    _log.info('Export completed: $filename');
+    return record;
+  }
+
   /// Validate whether a file is a valid Submersion backup.
   ///
   /// Checks: file exists, has correct extension, is a valid SQLite database,

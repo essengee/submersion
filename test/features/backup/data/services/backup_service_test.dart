@@ -468,6 +468,49 @@ void main() {
       });
     });
 
+    group('exportBackupToPath', () {
+      test('copies database to specified path', () async {
+        final tempDir = await Directory.systemTemp.createTemp('backup_test_');
+        final destPath = '${tempDir.path}/my_backup.sqlite';
+
+        final service = BackupService(
+          dbAdapter: fakeDb,
+          preferences: preferences,
+        );
+
+        try {
+          final record = await service.exportBackupToPath(destPath);
+
+          expect(fakeDb.lastBackupPath, destPath);
+          expect(fakeDb.backupCallCount, 1);
+          expect(record.localPath, destPath);
+          expect(record.filename, 'my_backup.sqlite');
+        } finally {
+          await tempDir.delete(recursive: true);
+        }
+      });
+
+      test('records export in history', () async {
+        final tempDir = await Directory.systemTemp.createTemp('backup_test_');
+        final destPath = '${tempDir.path}/my_backup.sqlite';
+
+        final service = BackupService(
+          dbAdapter: fakeDb,
+          preferences: preferences,
+        );
+
+        try {
+          await service.exportBackupToPath(destPath);
+
+          final history = preferences.getHistory();
+          expect(history, hasLength(1));
+          expect(history.first.localPath, destPath);
+        } finally {
+          await tempDir.delete(recursive: true);
+        }
+      });
+    });
+
     group('BackupSettings integration', () {
       test('isBackupDue returns true when never backed up', () {
         const settings = BackupSettings(enabled: true);
