@@ -16,6 +16,7 @@ class BackupPreferences {
   static const String _retentionCountKey = 'backup_retention_count';
   static const String _lastBackupTimeKey = 'backup_last_time';
   static const String _cloudBackupEnabledKey = 'backup_cloud_enabled';
+  static const String _backupLocationKey = 'backup_location';
   static const String _historyKey = 'backup_history';
 
   final SharedPreferences _prefs;
@@ -36,6 +37,7 @@ class BackupPreferences {
           ? DateTime.fromMillisecondsSinceEpoch(lastBackupMs)
           : null,
       cloudBackupEnabled: _prefs.getBool(_cloudBackupEnabledKey) ?? true,
+      backupLocation: _prefs.getString(_backupLocationKey),
     );
   }
 
@@ -57,6 +59,14 @@ class BackupPreferences {
 
   Future<void> setCloudBackupEnabled(bool value) async {
     await _prefs.setBool(_cloudBackupEnabledKey, value);
+  }
+
+  Future<void> setBackupLocation(String? path) async {
+    if (path == null) {
+      await _prefs.remove(_backupLocationKey);
+    } else {
+      await _prefs.setString(_backupLocationKey, path);
+    }
   }
 
   // ===========================================================================

@@ -71,6 +71,26 @@ void main() {
       expect(settings.cloudBackupEnabled, false);
     });
 
+    test('getSettings returns null backupLocation by default', () {
+      final settings = backupPreferences.getSettings();
+      expect(settings.backupLocation, isNull);
+    });
+
+    test('setBackupLocation persists value', () async {
+      await backupPreferences.setBackupLocation('/custom/backup/dir');
+
+      final settings = backupPreferences.getSettings();
+      expect(settings.backupLocation, '/custom/backup/dir');
+    });
+
+    test('setBackupLocation with null clears value', () async {
+      await backupPreferences.setBackupLocation('/custom/backup/dir');
+      await backupPreferences.setBackupLocation(null);
+
+      final settings = backupPreferences.getSettings();
+      expect(settings.backupLocation, isNull);
+    });
+
     test('invalid frequency string falls back to weekly', () async {
       // Directly set an invalid value in SharedPreferences
       SharedPreferences.setMockInitialValues({'backup_frequency': 'invalid'});
