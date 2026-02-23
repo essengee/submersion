@@ -1284,6 +1284,16 @@ class _DiveEditPageState extends ConsumerState<DiveEditPage> {
                     decoration: InputDecoration(
                       labelText: context.l10n.diveLog_edit_label_maxDepth,
                       suffixText: units.depthSymbol,
+                      suffixIcon: _existingDive?.profile.isNotEmpty == true
+                          ? IconButton(
+                              icon: const Icon(Icons.calculate_outlined),
+                              tooltip: context
+                                  .l10n
+                                  .diveLog_edit_tooltip_calculateFromProfile,
+                              onPressed: () =>
+                                  _calculateMaxDepthFromProfile(units),
+                            )
+                          : null,
                     ),
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
@@ -1297,6 +1307,16 @@ class _DiveEditPageState extends ConsumerState<DiveEditPage> {
                     decoration: InputDecoration(
                       labelText: context.l10n.diveLog_edit_label_avgDepth,
                       suffixText: units.depthSymbol,
+                      suffixIcon: _existingDive?.profile.isNotEmpty == true
+                          ? IconButton(
+                              icon: const Icon(Icons.calculate_outlined),
+                              tooltip: context
+                                  .l10n
+                                  .diveLog_edit_tooltip_calculateFromProfile,
+                              onPressed: () =>
+                                  _calculateAvgDepthFromProfile(units),
+                            )
+                          : null,
                     ),
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
@@ -1334,6 +1354,15 @@ class _DiveEditPageState extends ConsumerState<DiveEditPage> {
                     decoration: InputDecoration(
                       labelText: context.l10n.diveLog_edit_label_runtime,
                       suffixText: 'min',
+                      suffixIcon: _existingDive?.profile.isNotEmpty == true
+                          ? IconButton(
+                              icon: const Icon(Icons.calculate_outlined),
+                              tooltip: context
+                                  .l10n
+                                  .diveLog_edit_tooltip_calculateFromProfile,
+                              onPressed: _calculateRuntimeFromProfile,
+                            )
+                          : null,
                     ),
                     keyboardType: TextInputType.number,
                   ),
@@ -1619,6 +1648,127 @@ class _DiveEditPageState extends ConsumerState<DiveEditPage> {
         content: Text(
           context.l10n.diveLog_edit_snackbar_bottomTimeCalculated(
             calculatedDuration.inMinutes,
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Calculate max depth from dive profile data and update the field
+  void _calculateMaxDepthFromProfile(UnitFormatter units) {
+    if (_existingDive == null || _existingDive!.profile.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(context.l10n.diveLog_edit_snackbar_noProfileData),
+        ),
+      );
+      return;
+    }
+
+    final calculatedDepth = _existingDive!.calculateMaxDepthFromProfile();
+
+    if (calculatedDepth == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            context.l10n.diveLog_edit_snackbar_unableToCalculateMaxDepth,
+          ),
+        ),
+      );
+      return;
+    }
+
+    final displayDepth = units.convertDepth(calculatedDepth);
+
+    setState(() {
+      _maxDepthController.text = displayDepth.toStringAsFixed(1);
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          context.l10n.diveLog_edit_snackbar_maxDepthCalculated(
+            '${displayDepth.toStringAsFixed(1)} ${units.depthSymbol}',
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Calculate average depth from dive profile data and update the field
+  void _calculateAvgDepthFromProfile(UnitFormatter units) {
+    if (_existingDive == null || _existingDive!.profile.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(context.l10n.diveLog_edit_snackbar_noProfileData),
+        ),
+      );
+      return;
+    }
+
+    final calculatedDepth = _existingDive!.calculateAvgDepthFromProfile();
+
+    if (calculatedDepth == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            context.l10n.diveLog_edit_snackbar_unableToCalculateAvgDepth,
+          ),
+        ),
+      );
+      return;
+    }
+
+    final displayDepth = units.convertDepth(calculatedDepth);
+
+    setState(() {
+      _avgDepthController.text = displayDepth.toStringAsFixed(1);
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          context.l10n.diveLog_edit_snackbar_avgDepthCalculated(
+            '${displayDepth.toStringAsFixed(1)} ${units.depthSymbol}',
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Calculate runtime from dive profile data and update the field
+  void _calculateRuntimeFromProfile() {
+    if (_existingDive == null || _existingDive!.profile.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(context.l10n.diveLog_edit_snackbar_noProfileData),
+        ),
+      );
+      return;
+    }
+
+    final calculatedRuntime = _existingDive!.calculateRuntimeFromProfile();
+
+    if (calculatedRuntime == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            context.l10n.diveLog_edit_snackbar_unableToCalculateRuntime,
+          ),
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _runtimeController.text = calculatedRuntime.inMinutes.toString();
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          context.l10n.diveLog_edit_snackbar_runtimeCalculated(
+            calculatedRuntime.inMinutes,
           ),
         ),
       ),

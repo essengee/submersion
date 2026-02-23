@@ -1739,10 +1739,16 @@
   "diveLog_edit_selectDiveCenter": "Select Dive Center",
   "diveLog_edit_selectDiveSite": "Select Dive Site",
   "diveLog_edit_selectTrip": "Select Trip",
+  "diveLog_edit_snackbar_avgDepthCalculated": "Avg depth calculated: {depth}",
   "diveLog_edit_snackbar_bottomTimeCalculated": "Bottom time calculated: {minutes} min",
   "diveLog_edit_snackbar_errorSaving": "Error saving dive: {error}",
+  "diveLog_edit_snackbar_maxDepthCalculated": "Max depth calculated: {depth}",
   "diveLog_edit_snackbar_noProfileData": "No dive profile data available",
+  "diveLog_edit_snackbar_runtimeCalculated": "Runtime calculated: {minutes} min",
+  "diveLog_edit_snackbar_unableToCalculateAvgDepth": "Unable to calculate average depth from profile",
   "diveLog_edit_snackbar_unableToCalculate": "Unable to calculate bottom time from profile",
+  "diveLog_edit_snackbar_unableToCalculateMaxDepth": "Unable to calculate max depth from profile",
+  "diveLog_edit_snackbar_unableToCalculateRuntime": "Unable to calculate runtime from profile",
   "diveLog_edit_surfaceInterval": "Surface Interval: {interval}",
   "diveLog_edit_surfacePressureDefault": "1013",
   "diveLog_edit_surfacePressureHint": "Standard: 1013 mbar at sea level",
@@ -2320,7 +2326,28 @@
       }
     }
   },
+  "@diveLog_edit_snackbar_avgDepthCalculated": {
+    "placeholders": {
+      "depth": {
+        "type": "Object"
+      }
+    }
+  },
   "@diveLog_edit_snackbar_bottomTimeCalculated": {
+    "placeholders": {
+      "minutes": {
+        "type": "Object"
+      }
+    }
+  },
+  "@diveLog_edit_snackbar_maxDepthCalculated": {
+    "placeholders": {
+      "depth": {
+        "type": "Object"
+      }
+    }
+  },
+  "@diveLog_edit_snackbar_runtimeCalculated": {
     "placeholders": {
       "minutes": {
         "type": "Object"

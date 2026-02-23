@@ -363,6 +363,55 @@ class Dive extends Equatable {
     return Duration(seconds: bottomTimeSeconds);
   }
 
+  /// Calculate max depth from dive profile data.
+  ///
+  /// Returns the deepest point recorded in the profile, or null if profile
+  /// data is insufficient.
+  double? calculateMaxDepthFromProfile() {
+    if (profile.isEmpty) return null;
+
+    double maxProfileDepth = 0;
+    for (final point in profile) {
+      if (point.depth > maxProfileDepth) {
+        maxProfileDepth = point.depth;
+      }
+    }
+
+    return maxProfileDepth > 0 ? maxProfileDepth : null;
+  }
+
+  /// Calculate average depth from dive profile data.
+  ///
+  /// Uses a simple arithmetic mean of all profile depth points.
+  /// Returns null if profile data is insufficient.
+  double? calculateAvgDepthFromProfile() {
+    if (profile.isEmpty) return null;
+
+    double depthSum = 0;
+    for (final point in profile) {
+      depthSum += point.depth;
+    }
+
+    final avg = depthSum / profile.length;
+    return avg > 0 ? avg : null;
+  }
+
+  /// Calculate runtime (total dive time) from dive profile data.
+  ///
+  /// Runtime is the total elapsed time from first to last profile point.
+  /// Returns null if profile data is insufficient.
+  Duration? calculateRuntimeFromProfile() {
+    if (profile.isEmpty || profile.length < 2) return null;
+
+    final sortedProfile = List<DiveProfilePoint>.from(profile)
+      ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
+
+    final totalSeconds =
+        sortedProfile.last.timestamp - sortedProfile.first.timestamp;
+
+    return totalSeconds > 0 ? Duration(seconds: totalSeconds) : null;
+  }
+
   Dive copyWith({
     String? id,
     String? diverId,

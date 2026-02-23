@@ -23,14 +23,16 @@ class ImportedDiveConverter {
     final profile = _convertProfile(importedDive);
     final sourceName = _sourceToString(importedDive.source);
 
-    return Dive(
+    // importedDive.duration is endTime - startTime (total runtime),
+    // not bottom time. Store it as runtime and auto-calculate bottom time.
+    final dive = Dive(
       id: _uuid.v4(),
       diverId: diverId,
       diveNumber: diveNumber,
       dateTime: importedDive.startTime,
       entryTime: importedDive.startTime,
       exitTime: importedDive.endTime,
-      duration: importedDive.duration,
+      runtime: importedDive.duration,
       maxDepth: importedDive.maxDepth,
       avgDepth: importedDive.avgDepth,
       waterTemp: importedDive.minTemperature,
@@ -38,6 +40,16 @@ class ImportedDiveConverter {
       wearableSource: sourceName,
       wearableId: importedDive.sourceId,
     );
+
+    // Calculate bottom time from profile if available
+    if (profile.isNotEmpty) {
+      final bottomTime = dive.calculateBottomTimeFromProfile();
+      if (bottomTime != null) {
+        return dive.copyWith(duration: bottomTime);
+      }
+    }
+
+    return dive;
   }
 
   List<DiveProfilePoint> _convertProfile(ImportedDive importedDive) {

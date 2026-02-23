@@ -729,6 +729,10 @@ class DiveComputerRepository {
                       points.length
                 : null);
 
+        // durationSeconds from the dive computer is total runtime,
+        // not bottom time. Calculate bottom time from the profile.
+        final bottomTimeSeconds = _calculateBottomTimeFromPoints(points);
+
         await _db
             .into(_db.dives)
             .insert(
@@ -738,7 +742,8 @@ class DiveComputerRepository {
                 diveDateTime: Value(entryTimeMs),
                 entryTime: Value(entryTimeMs),
                 exitTime: Value(exitTimeMs),
-                duration: Value(durationSeconds),
+                duration: Value(bottomTimeSeconds),
+                runtime: Value(durationSeconds),
                 maxDepth: Value(maxDepth),
                 avgDepth: Value(effectiveAvgDepth),
                 diveComputerModel: Value(computer?.fullName),
@@ -1095,6 +1100,59 @@ class DiveComputerRepository {
       createdAt: DateTime.fromMillisecondsSinceEpoch(row.createdAt),
       updatedAt: DateTime.fromMillisecondsSinceEpoch(row.updatedAt),
     );
+  }
+
+  /// Calculate bottom time (seconds) from profile points.
+  ///
+  /// Bottom time excludes descent and ascent phases. Uses the same algorithm
+  /// as [Dive.calculateBottomTimeFromProfile]: finds the first and last points
+  /// at or above 85% of max depth.
+  ///
+  /// Returns null if profile data is insufficient for calculation.
+  int? _calculateBottomTimeFromPoints(
+    List<ProfilePointData> points, {
+    double depthThresholdPercent = 0.85,
+  }) {
+    if (points.length < 3) return null;
+
+    final sorted = List<ProfilePointData>.from(points)
+      ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
+
+    double maxDepth = 0;
+    for (final point in sorted) {
+      if (point.depth > maxDepth) {
+        maxDepth = point.depth;
+      }
+    }
+
+    if (maxDepth <= 0) return null;
+
+    final bottomThreshold = maxDepth * depthThresholdPercent;
+
+    // First point at or above threshold = descent end
+    int? descentEndTimestamp;
+    for (final point in sorted) {
+      if (point.depth >= bottomThreshold) {
+        descentEndTimestamp = point.timestamp;
+        break;
+      }
+    }
+
+    // Last point at or above threshold = ascent start
+    int? ascentStartTimestamp;
+    for (int i = sorted.length - 1; i >= 0; i--) {
+      if (sorted[i].depth >= bottomThreshold) {
+        ascentStartTimestamp = sorted[i].timestamp;
+        break;
+      }
+    }
+
+    if (descentEndTimestamp == null || ascentStartTimestamp == null) {
+      return null;
+    }
+    if (ascentStartTimestamp <= descentEndTimestamp) return null;
+
+    return ascentStartTimestamp - descentEndTimestamp;
   }
 }
 

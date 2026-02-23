@@ -31,12 +31,47 @@ void main() {
         expect(dive.dateTime, equals(DateTime(2024, 6, 15, 10, 0)));
         expect(dive.entryTime, equals(DateTime(2024, 6, 15, 10, 0)));
         expect(dive.exitTime, equals(DateTime(2024, 6, 15, 10, 45)));
-        expect(dive.duration, equals(const Duration(minutes: 45)));
+        // Runtime is total time (entry to exit), duration (bottom time)
+        // is null when no profile is available to calculate from
+        expect(dive.runtime, equals(const Duration(minutes: 45)));
+        expect(dive.duration, isNull);
         expect(dive.maxDepth, equals(25.3));
         expect(dive.avgDepth, equals(14.2));
         expect(dive.waterTemp, equals(18.5));
         expect(dive.wearableSource, equals('appleWatch'));
         expect(dive.wearableId, equals('hk-uuid-123'));
+      });
+
+      test('calculates bottom time from profile when available', () {
+        // Profile: descent 0-60s, bottom at ~20m from 60-1500s, ascent 1500-1800s
+        final importedDive = ImportedDive(
+          sourceId: 'hk-uuid-bt',
+          source: ImportSource.appleWatch,
+          startTime: DateTime(2024, 6, 15, 10, 0),
+          endTime: DateTime(2024, 6, 15, 10, 30),
+          maxDepth: 20.0,
+          profile: const [
+            ImportedProfileSample(timeSeconds: 0, depth: 0.0),
+            ImportedProfileSample(timeSeconds: 60, depth: 18.0),
+            ImportedProfileSample(timeSeconds: 300, depth: 20.0),
+            ImportedProfileSample(timeSeconds: 900, depth: 19.0),
+            ImportedProfileSample(timeSeconds: 1500, depth: 17.5),
+            ImportedProfileSample(timeSeconds: 1650, depth: 5.0),
+            ImportedProfileSample(timeSeconds: 1800, depth: 0.0),
+          ],
+        );
+
+        final dive = converter.convert(
+          importedDive,
+          diverId: 'diver-1',
+        );
+
+        // Runtime = 30 min (endTime - startTime)
+        expect(dive.runtime, equals(const Duration(minutes: 30)));
+        // Bottom time should be calculated from profile (< runtime)
+        expect(dive.duration, isNotNull);
+        expect(dive.duration!.inSeconds, lessThan(1800));
+        expect(dive.duration!.inSeconds, greaterThan(0));
       });
 
       test('generates unique UUIDs for each conversion', () {

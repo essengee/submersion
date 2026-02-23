@@ -5728,6 +5728,12 @@ abstract class AppLocalizations {
   /// **'Select Trip'**
   String get diveLog_edit_selectTrip;
 
+  /// No description provided for @diveLog_edit_snackbar_avgDepthCalculated.
+  ///
+  /// In en, this message translates to:
+  /// **'Avg depth calculated: {depth}'**
+  String diveLog_edit_snackbar_avgDepthCalculated(Object depth);
+
   /// No description provided for @diveLog_edit_snackbar_bottomTimeCalculated.
   ///
   /// In en, this message translates to:
@@ -5740,17 +5746,47 @@ abstract class AppLocalizations {
   /// **'Error saving dive: {error}'**
   String diveLog_edit_snackbar_errorSaving(Object error);
 
+  /// No description provided for @diveLog_edit_snackbar_maxDepthCalculated.
+  ///
+  /// In en, this message translates to:
+  /// **'Max depth calculated: {depth}'**
+  String diveLog_edit_snackbar_maxDepthCalculated(Object depth);
+
   /// No description provided for @diveLog_edit_snackbar_noProfileData.
   ///
   /// In en, this message translates to:
   /// **'No dive profile data available'**
   String get diveLog_edit_snackbar_noProfileData;
 
+  /// No description provided for @diveLog_edit_snackbar_runtimeCalculated.
+  ///
+  /// In en, this message translates to:
+  /// **'Runtime calculated: {minutes} min'**
+  String diveLog_edit_snackbar_runtimeCalculated(Object minutes);
+
+  /// No description provided for @diveLog_edit_snackbar_unableToCalculateAvgDepth.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to calculate average depth from profile'**
+  String get diveLog_edit_snackbar_unableToCalculateAvgDepth;
+
   /// No description provided for @diveLog_edit_snackbar_unableToCalculate.
   ///
   /// In en, this message translates to:
   /// **'Unable to calculate bottom time from profile'**
   String get diveLog_edit_snackbar_unableToCalculate;
+
+  /// No description provided for @diveLog_edit_snackbar_unableToCalculateMaxDepth.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to calculate max depth from profile'**
+  String get diveLog_edit_snackbar_unableToCalculateMaxDepth;
+
+  /// No description provided for @diveLog_edit_snackbar_unableToCalculateRuntime.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to calculate runtime from profile'**
+  String get diveLog_edit_snackbar_unableToCalculateRuntime;
 
   /// No description provided for @diveLog_edit_surfaceInterval.
   ///

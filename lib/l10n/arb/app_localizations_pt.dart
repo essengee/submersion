@@ -3363,6 +3363,11 @@ class AppLocalizationsPt extends AppLocalizations {
   String get diveLog_edit_selectTrip => 'Selecionar Viagem';
 
   @override
+  String diveLog_edit_snackbar_avgDepthCalculated(Object depth) {
+    return 'Avg depth calculated: $depth';
+  }
+
+  @override
   String diveLog_edit_snackbar_bottomTimeCalculated(Object minutes) {
     return 'Tempo de fundo calculado: $minutes min';
   }
@@ -3373,12 +3378,34 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
+  String diveLog_edit_snackbar_maxDepthCalculated(Object depth) {
+    return 'Max depth calculated: $depth';
+  }
+
+  @override
   String get diveLog_edit_snackbar_noProfileData =>
       'Nenhum dado de perfil de mergulho disponivel';
 
   @override
+  String diveLog_edit_snackbar_runtimeCalculated(Object minutes) {
+    return 'Runtime calculated: $minutes min';
+  }
+
+  @override
+  String get diveLog_edit_snackbar_unableToCalculateAvgDepth =>
+      'Unable to calculate average depth from profile';
+
+  @override
   String get diveLog_edit_snackbar_unableToCalculate =>
       'Nao foi possivel calcular o tempo de fundo a partir do perfil';
+
+  @override
+  String get diveLog_edit_snackbar_unableToCalculateMaxDepth =>
+      'Unable to calculate max depth from profile';
+
+  @override
+  String get diveLog_edit_snackbar_unableToCalculateRuntime =>
+      'Unable to calculate runtime from profile';
 
   @override
   String diveLog_edit_surfaceInterval(Object interval) {
