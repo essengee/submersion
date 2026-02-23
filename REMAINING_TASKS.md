@@ -169,6 +169,7 @@ This document contains only the features and tasks that are **not yet completed*
 - [ ] Smart Log management (name, description, icon)
 - [ ] Quick access to Smart Logs from home page
 - [ ] Filter dives based on Dive Computer
+- [ ] Tag management support in Settings->Manage
 
 ### 10.2 Statistics
 **Tasks:**

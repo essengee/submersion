@@ -19,14 +19,19 @@ class TideRecordRepository {
   final _uuid = const Uuid();
 
   /// Get the tide record for a specific dive.
+  ///
+  /// Returns the most recently created record if multiple exist.
   Future<domain.TideRecord?> getTideRecordForDive(String diveId) async {
-    final row = await (_db.select(
-      _db.tideRecords,
-    )..where((t) => t.diveId.equals(diveId))).getSingleOrNull();
+    final rows =
+        await (_db.select(_db.tideRecords)
+              ..where((t) => t.diveId.equals(diveId))
+              ..orderBy([(t) => OrderingTerm.desc(t.createdAt)])
+              ..limit(1))
+            .get();
 
-    if (row == null) return null;
+    if (rows.isEmpty) return null;
 
-    return _rowToEntity(row);
+    return _rowToEntity(rows.first);
   }
 
   /// Get tide records for multiple dives.
@@ -84,10 +89,28 @@ class TideRecordRepository {
   /// Create a new tide record from a TideStatus.
   ///
   /// This is the primary method for recording tide data with a dive.
+  /// Any existing tide records for this dive are removed first so that
+  /// each dive has at most one record.
   Future<domain.TideRecord> createFromStatus({
     required String diveId,
     required TideStatus status,
   }) async {
+    // Remove existing records for this dive to prevent duplicates.
+    final existing = await (_db.select(
+      _db.tideRecords,
+    )..where((t) => t.diveId.equals(diveId))).get();
+    if (existing.isNotEmpty) {
+      await (_db.delete(
+        _db.tideRecords,
+      )..where((t) => t.diveId.equals(diveId))).go();
+      for (final old in existing) {
+        await _syncRepository.logDeletion(
+          entityType: 'tideRecords',
+          recordId: old.id,
+        );
+      }
+    }
+
     final record = domain.TideRecord.fromStatus(
       id: _uuid.v4(),
       diveId: diveId,

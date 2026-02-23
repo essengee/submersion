@@ -215,7 +215,6 @@ class _DiveDetailPageState extends ConsumerState<DiveDetailPage> {
               const SizedBox(height: 24),
               _buildAltitudeSection(context, ref, dive),
             ],
-            const SizedBox(height: 24),
             _buildTideSection(context, ref, dive),
             if (_hasWeights(dive)) ...[
               const SizedBox(height: 24),
@@ -2354,24 +2353,40 @@ class _DiveDetailPageState extends ConsumerState<DiveDetailPage> {
   /// Shows tide data from:
   /// 1. Stored TideRecord (if saved when dive was logged)
   /// 2. Calculated from tide model (if dive site has coordinates and tide data)
+  ///
+  /// Returns [SizedBox.shrink] when no tide data is available so the section
+  /// takes up zero space.  The 24-px top spacer is included only when the
+  /// section actually renders content.
   Widget _buildTideSection(BuildContext context, WidgetRef ref, Dive dive) {
+    Widget withSpacing(Widget card) {
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [const SizedBox(height: 24), card],
+      );
+    }
+
     // First try to get stored tide record
     final tideRecordAsync = ref.watch(tideRecordForDiveProvider(dive.id));
 
     return tideRecordAsync.when(
       data: (tideRecord) {
         if (tideRecord != null) {
-          // We have a stored tide record - show it
-          return _buildTideCard(context, tideRecord, entryTime: dive.entryTime);
+          return withSpacing(
+            _buildTideCard(
+              context,
+              tideRecord,
+              entryTime: dive.effectiveEntryTime,
+            ),
+          );
         }
 
         // No stored record - try to calculate from tide model if we have coordinates
-        if (dive.site?.hasCoordinates != true || dive.entryTime == null) {
+        if (dive.site?.hasCoordinates != true) {
           return const SizedBox.shrink();
         }
 
         final location = dive.site!.location!;
-        final entryTime = dive.entryTime!;
+        final entryTime = dive.effectiveEntryTime;
         final calculatorAsync = ref.watch(tideCalculatorProvider(location));
 
         return calculatorAsync.when(
@@ -2380,7 +2395,6 @@ class _DiveDetailPageState extends ConsumerState<DiveDetailPage> {
               return const SizedBox.shrink(); // No tide data for this location
             }
 
-            // Calculate tide at dive entry time
             final status = calculator.getStatus(entryTime);
             final record = TideRecord.fromStatus(
               id: 'calculated',
@@ -2388,11 +2402,13 @@ class _DiveDetailPageState extends ConsumerState<DiveDetailPage> {
               status: status,
             );
 
-            return _buildTideCard(
-              context,
-              record,
-              isCalculated: true,
-              entryTime: entryTime,
+            return withSpacing(
+              _buildTideCard(
+                context,
+                record,
+                isCalculated: true,
+                entryTime: entryTime,
+              ),
             );
           },
           loading: () => const SizedBox.shrink(),
