@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:equatable/equatable.dart';
 
 /// Represents oxygen toxicity exposure during a dive.
@@ -145,7 +147,7 @@ class CnsTable {
     if (currentCns <= 0) return 0.0;
     // Exponential decay with 90-minute half-time
     final halfTimes = surfaceIntervalMinutes / cnsHalfTimeMinutes;
-    return currentCns * (0.5 * halfTimes);
+    return currentCns * math.pow(0.5, halfTimes);
   }
 }
 

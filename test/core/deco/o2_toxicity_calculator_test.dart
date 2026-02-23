@@ -386,26 +386,39 @@ void main() {
         expect(calculator.calculateCnsRecovery(0, 180), equals(0.0));
       });
 
-      test('should calculate CNS after surface interval', () {
-        // The implementation uses a linear formula: CNS * (0.5 * halfTimes)
-        // where halfTimes = surfaceInterval / 90
-        // At 90 min: 100 * (0.5 * 1) = 50
+      test('should halve CNS after one half-life (90 min)', () {
+        // Exponential decay: CNS * pow(0.5, halfTimes)
+        // At 90 min (1 half-life): 100 * pow(0.5, 1) = 50
         final after90 = calculator.calculateCnsRecovery(100, 90);
-        expect(after90, closeTo(50.0, 1.0));
+        expect(after90, closeTo(50.0, 0.1));
       });
 
       test('should return higher CNS for shorter intervals', () {
-        // At 45 min (0.5 half-times): 100 * (0.5 * 0.5) = 25
+        // At 45 min (0.5 half-lives): 100 * pow(0.5, 0.5) = 70.71
         final short = calculator.calculateCnsRecovery(100, 45);
-        expect(short, closeTo(25.0, 1.0));
+        expect(short, closeTo(70.71, 0.5));
+
+        // Short interval should retain MORE CNS than long interval
+        final long = calculator.calculateCnsRecovery(100, 90);
+        expect(short, greaterThan(long));
       });
 
-      test('should handle half-time calculation', () {
-        // The implementation formula: CNS * (0.5 * (interval / 90))
-        // This is a linear approximation, not true exponential decay
+      test('should decay to 25% after two half-lives', () {
+        // At 180 min (2 half-lives): 100 * pow(0.5, 2) = 25
+        final result = calculator.calculateCnsRecovery(100, 180);
+        expect(result, closeTo(25.0, 0.1));
+      });
+
+      test('should scale with starting CNS', () {
+        // 80% CNS after 1 half-life: 80 * pow(0.5, 1) = 40
         final result = calculator.calculateCnsRecovery(80, 90);
-        // 80 * (0.5 * 1) = 40
-        expect(result, closeTo(40.0, 1.0));
+        expect(result, closeTo(40.0, 0.1));
+      });
+
+      test('should approach zero after many half-lives', () {
+        // After 10 half-lives (900 min): 100 * pow(0.5, 10) = ~0.1
+        final result = calculator.calculateCnsRecovery(100, 900);
+        expect(result, lessThan(0.2));
       });
     });
 

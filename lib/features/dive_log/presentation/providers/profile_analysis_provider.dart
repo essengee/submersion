@@ -1,3 +1,4 @@
+import 'package:submersion/core/deco/entities/o2_exposure.dart';
 import 'package:submersion/core/providers/provider.dart';
 
 import 'package:submersion/core/services/logger_service.dart';
@@ -116,7 +117,12 @@ final profileAnalysisServiceProvider = Provider<ProfileAnalysisService>((ref) {
   );
 });
 
-/// Provider for profile analysis of a specific dive
+/// Provider for profile analysis of a specific dive.
+///
+/// Recursively computes residual CNS from previous dives: looks up the
+/// previous dive via [profileAnalysisProvider] (different dive ID), applies
+/// surface-interval decay, and uses the result as startCns. The chain
+/// terminates when there is no previous dive or the surface interval >= 24h.
 final profileAnalysisProvider = FutureProvider.family<ProfileAnalysis?, String>(
   (ref, diveId) async {
     try {
@@ -185,10 +191,14 @@ final profileAnalysisProvider = FutureProvider.family<ProfileAnalysis?, String>(
         heFraction = primaryTank.gasMix.he / 100.0;
       }
 
+      // Compute residual CNS from the previous dive (recursive multi-level)
+      final startCns = await _computeResidualCns(ref, diveId);
+
       // Analyze the profile
       _log.debug(
         'Analyzing profile for dive $diveId with ${depths.length} points, '
-        'pressures: ${pressures?.length ?? 0}, mode: ${dive.diveMode}',
+        'pressures: ${pressures?.length ?? 0}, mode: ${dive.diveMode}, '
+        'startCns: ${startCns.toStringAsFixed(1)}',
       );
       return service.analyze(
         diveId: diveId,
@@ -196,7 +206,7 @@ final profileAnalysisProvider = FutureProvider.family<ProfileAnalysis?, String>(
         timestamps: timestamps,
         o2Fraction: o2Fraction,
         heFraction: heFraction,
-        startCns: 0.0, // TODO: Calculate from previous dive
+        startCns: startCns,
         pressures: pressures,
         // CCR/SCR parameters
         diveMode: dive.diveMode,
@@ -213,6 +223,51 @@ final profileAnalysisProvider = FutureProvider.family<ProfileAnalysis?, String>(
     }
   },
 );
+
+/// Computes residual CNS% from the previous dive using recursive lookback.
+///
+/// Fetches the previous dive, gets its full profile analysis (which itself
+/// recursively accounts for even earlier dives), then applies exponential
+/// decay based on the surface interval.
+Future<double> _computeResidualCns(Ref ref, String diveId) async {
+  try {
+    final repository = ref.watch(diveRepositoryProvider);
+
+    final surfaceInterval = await repository.getSurfaceInterval(diveId);
+    if (surfaceInterval == null || surfaceInterval.inHours >= 24) return 0.0;
+
+    final previousDive = await repository.getPreviousDive(diveId);
+    if (previousDive == null) return 0.0;
+
+    // Recursively get the previous dive's full analysis (including its own
+    // residual CNS from even earlier dives).
+    final previousAnalysis = await ref.watch(
+      profileAnalysisProvider(previousDive.id).future,
+    );
+    if (previousAnalysis == null) return 0.0;
+
+    return CnsTable.cnsAfterSurfaceInterval(
+      previousAnalysis.o2Exposure.cnsEnd,
+      surfaceInterval.inMinutes,
+    );
+  } catch (e, stackTrace) {
+    _log.error('Failed to calculate residual CNS for: $diveId', e, stackTrace);
+    return 0.0;
+  }
+}
+
+/// Provider that exposes the residual CNS% for a dive.
+///
+/// This is a convenience provider for synchronous consumers (like
+/// [diveProfileAnalysisProvider]) that need the residual CNS value.
+/// It derives the value from [profileAnalysisProvider]'s computed cnsStart.
+final residualCnsProvider = FutureProvider.family<double, String>((
+  ref,
+  diveId,
+) async {
+  final analysis = await ref.watch(profileAnalysisProvider(diveId).future);
+  return analysis?.o2Exposure.cnsStart ?? 0.0;
+});
 
 /// Provider for profile analysis using a Dive object directly
 final diveProfileAnalysisProvider = Provider.family<ProfileAnalysis?, Dive>((
@@ -243,13 +298,16 @@ final diveProfileAnalysisProvider = Provider.family<ProfileAnalysis?, Dive>((
       heFraction = primaryTank.gasMix.he / 100.0;
     }
 
+    // Get residual CNS from previous dive (0.0 while loading or if unavailable)
+    final startCns = ref.watch(residualCnsProvider(dive.id)).valueOrNull ?? 0.0;
+
     return service.analyze(
       diveId: dive.id,
       depths: depths,
       timestamps: timestamps,
       o2Fraction: o2Fraction,
       heFraction: heFraction,
-      startCns: 0.0,
+      startCns: startCns,
       pressures: pressures.length == depths.length ? pressures : null,
       // CCR/SCR parameters
       diveMode: dive.diveMode,
