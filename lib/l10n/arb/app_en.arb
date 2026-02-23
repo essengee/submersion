@@ -4479,14 +4479,21 @@
   },
   "media_diveMediaSection_addTooltip": "Add photo or video",
   "media_diveMediaSection_cancelButton": "Cancel",
+  "media_diveMediaSection_cancelSelectionButton": "Cancel",
   "media_diveMediaSection_emptyState": "No photos yet",
   "media_diveMediaSection_errorLoading": "Error loading media",
-  "media_diveMediaSection_thumbnailLabel": "View photo. Long press to unlink",
+  "media_diveMediaSection_selectAllButton": "Select All",
+  "media_diveMediaSection_selectedCount": "{count} selected",
+  "media_diveMediaSection_thumbnailLabel": "View photo. Long press to select",
   "media_diveMediaSection_title": "Photos & Video",
   "media_diveMediaSection_unlinkButton": "Unlink",
   "media_diveMediaSection_unlinkDialogContent": "Remove this photo from the dive? The photo will remain in your gallery.",
   "media_diveMediaSection_unlinkDialogTitle": "Unlink Photo",
   "media_diveMediaSection_unlinkError": "Failed to unlink: {error}",
+  "media_diveMediaSection_unlinkSelectedButton": "Unlink {count}",
+  "media_diveMediaSection_unlinkSelectedContent": "This will remove {count} media items from this dive. The original files won't be deleted.",
+  "media_diveMediaSection_unlinkSelectedSuccess": "Unlinked {count} items",
+  "media_diveMediaSection_unlinkSelectedTitle": "Unlink {count} items?",
   "media_diveMediaSection_unlinkSuccess": "Photo unlinked",
   "media_gpsBanner_addToSiteButton": "Add to Site",
   "media_gpsBanner_coordinates": "Coordinates: {latitude}, {longitude}",
@@ -4501,6 +4508,7 @@
   "media_miniProfile_headerLabel": "Dive Profile",
   "media_miniProfile_semanticLabel": "Mini dive profile chart",
   "media_photoPicker_appBarTitle": "Select Photos",
+  "media_photoPicker_clearSelectionButton": "Clear",
   "media_photoPicker_closeTooltip": "Close photo picker",
   "media_photoPicker_doneButton": "Done",
   "media_photoPicker_doneCountButton": "Done ({count})",
@@ -4512,6 +4520,8 @@
   "media_photoPicker_permissionDeniedMessage": "Photo library access was denied. Please enable it in Settings to add dive photos.",
   "media_photoPicker_permissionRequestMessage": "Submersion needs access to your photo library to add dive photos.",
   "media_photoPicker_permissionTitle": "Photo Access Required",
+  "media_photoPicker_selectAllButton": "Select All",
+  "media_photoPicker_selectedCount": "{count} selected",
   "media_photoPicker_showingPhotosFromRange": "Showing photos from {rangeText}",
   "media_photoPicker_thumbnailToggleLabel": "Toggle selection for photo",
   "media_photoPicker_thumbnailToggleSelectedLabel": "Toggle selection for photo, selected",
@@ -4569,10 +4579,45 @@
   "media_writeMetadata_warningPhotoText": "This will modify the original photo.",
   "media_writeMetadata_warningVideoText": "A new video will be created with the metadata. Video metadata cannot be modified in-place.",
   "media_writeMetadata_writeButton": "Write",
+  "@media_diveMediaSection_selectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "@media_diveMediaSection_unlinkError": {
     "placeholders": {
       "error": {
         "type": "Object"
+      }
+    }
+  },
+  "@media_diveMediaSection_unlinkSelectedButton": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@media_diveMediaSection_unlinkSelectedContent": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@media_diveMediaSection_unlinkSelectedSuccess": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@media_diveMediaSection_unlinkSelectedTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
       }
     }
   },
@@ -4644,6 +4689,13 @@
       },
       "endTime": {
         "type": "Object"
+      }
+    }
+  },
+  "@media_photoPicker_selectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
       }
     }
   },
