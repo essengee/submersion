@@ -8369,10 +8369,21 @@ class AppLocalizationsNl extends AppLocalizations {
   String get media_diveMediaSection_cancelButton => 'Annuleren';
 
   @override
+  String get media_diveMediaSection_cancelSelectionButton => 'Cancel';
+
+  @override
   String get media_diveMediaSection_emptyState => 'Nog geen foto\'s';
 
   @override
   String get media_diveMediaSection_errorLoading => 'Fout bij laden van media';
+
+  @override
+  String get media_diveMediaSection_selectAllButton => 'Select All';
+
+  @override
+  String media_diveMediaSection_selectedCount(int count) {
+    return '$count selected';
+  }
 
   @override
   String get media_diveMediaSection_thumbnailLabel =>
@@ -8394,6 +8405,26 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String media_diveMediaSection_unlinkError(Object error) {
     return 'Ontkoppelen mislukt: $error';
+  }
+
+  @override
+  String media_diveMediaSection_unlinkSelectedButton(int count) {
+    return 'Unlink $count';
+  }
+
+  @override
+  String media_diveMediaSection_unlinkSelectedContent(int count) {
+    return 'This will remove $count media items from this dive. The original files won\'t be deleted.';
+  }
+
+  @override
+  String media_diveMediaSection_unlinkSelectedSuccess(int count) {
+    return 'Unlinked $count items';
+  }
+
+  @override
+  String media_diveMediaSection_unlinkSelectedTitle(int count) {
+    return 'Unlink $count items?';
   }
 
   @override
@@ -8469,6 +8500,9 @@ class AppLocalizationsNl extends AppLocalizations {
   String get media_photoPicker_appBarTitle => 'Foto\'s selecteren';
 
   @override
+  String get media_photoPicker_clearSelectionButton => 'Clear';
+
+  @override
   String get media_photoPicker_closeTooltip => 'Fotokiezer sluiten';
 
   @override
@@ -8512,6 +8546,14 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get media_photoPicker_permissionTitle => 'Fototoegang vereist';
+
+  @override
+  String get media_photoPicker_selectAllButton => 'Select All';
+
+  @override
+  String media_photoPicker_selectedCount(int count) {
+    return '$count selected';
+  }
 
   @override
   String media_photoPicker_showingPhotosFromRange(Object rangeText) {

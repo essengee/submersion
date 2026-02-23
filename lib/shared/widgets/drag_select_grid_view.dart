@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:flutter/foundation.dart' show setEquals;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -102,7 +103,7 @@ class _DragSelectGridViewState<T> extends State<DragSelectGridView<T>> {
   @override
   void didUpdateWidget(covariant DragSelectGridView<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.initialSelection != oldWidget.initialSelection) {
+    if (!setEquals(widget.initialSelection, oldWidget.initialSelection)) {
       _selectedIndices = Set<int>.from(widget.initialSelection);
     }
     if (widget.startInSelectionMode != oldWidget.startInSelectionMode) {
@@ -147,21 +148,6 @@ class _DragSelectGridViewState<T> extends State<DragSelectGridView<T>> {
     widget.onSelectionChanged(_selectedIndices);
   }
 
-  /// Replaces the current selection with the given set.
-  void setSelection(Set<int> indices) {
-    setState(() {
-      _selectedIndices = Set<int>.from(indices);
-      if (_selectedIndices.isEmpty && _isSelectionMode) {
-        _isSelectionMode = false;
-        widget.onSelectionModeChanged(false);
-      } else if (_selectedIndices.isNotEmpty && !_isSelectionMode) {
-        _isSelectionMode = true;
-        widget.onSelectionModeChanged(true);
-      }
-    });
-    widget.onSelectionChanged(_selectedIndices);
-  }
-
   /// Finds the item index at a global position by hit-testing item keys.
   int? _indexAtPosition(Offset globalPosition) {
     for (final entry in _itemKeys.entries) {
@@ -192,7 +178,7 @@ class _DragSelectGridViewState<T> extends State<DragSelectGridView<T>> {
     final newSelection = Set<int>.from(_preDragSelection)
       ..addAll(dragRangeIndices);
 
-    if (newSelection != _selectedIndices) {
+    if (!setEquals(newSelection, _selectedIndices)) {
       if (newSelection.length != _selectedIndices.length) {
         HapticFeedback.selectionClick();
       }
@@ -255,43 +241,40 @@ class _DragSelectGridViewState<T> extends State<DragSelectGridView<T>> {
     // Clean up keys for indices that no longer exist.
     _itemKeys.removeWhere((key, _) => key >= widget.items.length);
 
-    return Listener(
-      behavior: HitTestBehavior.translucent,
-      child: GridView.builder(
-        controller: widget.shrinkWrap ? null : _scrollController,
-        shrinkWrap: widget.shrinkWrap,
-        physics: widget.physics,
-        padding: widget.padding,
-        gridDelegate: widget.gridDelegate,
-        itemCount: widget.items.length,
-        itemBuilder: (context, index) {
-          final isSelected = _selectedIndices.contains(index);
+    return GridView.builder(
+      controller: widget.shrinkWrap ? null : _scrollController,
+      shrinkWrap: widget.shrinkWrap,
+      physics: widget.physics,
+      padding: widget.padding,
+      gridDelegate: widget.gridDelegate,
+      itemCount: widget.items.length,
+      itemBuilder: (context, index) {
+        final isSelected = _selectedIndices.contains(index);
 
-          return GestureDetector(
-            key: _keyForIndex(index),
-            behavior: HitTestBehavior.opaque,
-            onTap: () {
-              if (_isSelectionMode) {
-                _toggleSelection(index);
-              } else {
-                widget.onItemTap?.call(index);
-              }
-            },
-            onLongPressStart: _isSelectionMode
-                ? null
-                : (details) {
-                    _enterSelectionMode(index);
-                  },
-            onLongPressMoveUpdate: (details) {
-              _onDragUpdate(details.globalPosition);
-            },
-            onLongPressEnd: (_) {
-              _onDragEnd();
-            },
-            child: widget.itemBuilder(context, widget.items[index], isSelected),
-          );
-        },
-      ),
+        return GestureDetector(
+          key: _keyForIndex(index),
+          behavior: HitTestBehavior.opaque,
+          onTap: () {
+            if (_isSelectionMode) {
+              _toggleSelection(index);
+            } else {
+              widget.onItemTap?.call(index);
+            }
+          },
+          onLongPressStart: _isSelectionMode
+              ? null
+              : (details) {
+                  _enterSelectionMode(index);
+                },
+          onLongPressMoveUpdate: (details) {
+            _onDragUpdate(details.globalPosition);
+          },
+          onLongPressEnd: (_) {
+            _onDragEnd();
+          },
+          child: widget.itemBuilder(context, widget.items[index], isSelected),
+        );
+      },
     );
   }
 }

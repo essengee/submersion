@@ -201,6 +201,8 @@ class _PhotoPickerPageState extends ConsumerState<PhotoPickerPage> {
             onSelectionChanged: (indices) {
               _syncSelectionToNotifier(indices);
             },
+            // Selection visibility is derived from state.selectionCount,
+            // so no additional local tracking is needed here.
             onSelectionModeChanged: (_) {},
             onItemTap: (index) {
               ref
@@ -214,11 +216,7 @@ class _PhotoPickerPageState extends ConsumerState<PhotoPickerPage> {
               mainAxisSpacing: 4,
             ),
             itemBuilder: (context, asset, isSelected) {
-              return _PhotoThumbnail(
-                asset: asset,
-                isSelected: isSelected,
-                onTap: () {}, // Handled by DragSelectGridView
-              );
+              return _PhotoThumbnail(asset: asset, isSelected: isSelected);
             },
           ),
         ),
@@ -330,13 +328,7 @@ class _SelectionToolbar extends StatelessWidget {
 class _PhotoThumbnail extends ConsumerWidget {
   final AssetInfo asset;
   final bool isSelected;
-  final VoidCallback onTap;
-
-  const _PhotoThumbnail({
-    required this.asset,
-    required this.isSelected,
-    required this.onTap,
-  });
+  const _PhotoThumbnail({required this.asset, required this.isSelected});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -344,103 +336,99 @@ class _PhotoThumbnail extends ConsumerWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Semantics(
-      button: true,
       label: isSelected
           ? context.l10n.media_photoPicker_thumbnailToggleSelectedLabel
           : context.l10n.media_photoPicker_thumbnailToggleLabel,
-      child: GestureDetector(
-        onTap: onTap,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            // Thumbnail
-            ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: thumbnailAsync.when(
-                data: (bytes) {
-                  if (bytes == null) {
-                    return _buildPlaceholder(colorScheme);
-                  }
-                  return Image.memory(
-                    bytes,
-                    fit: BoxFit.cover,
-                    cacheWidth: 200,
-                    cacheHeight: 200,
-                    errorBuilder: (context, error, stack) =>
-                        _buildPlaceholder(colorScheme),
-                  );
-                },
-                loading: () => Container(
-                  color: colorScheme.surfaceContainerHighest,
-                  child: const Center(
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ),
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          // Thumbnail
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: thumbnailAsync.when(
+              data: (bytes) {
+                if (bytes == null) {
+                  return _buildPlaceholder(colorScheme);
+                }
+                return Image.memory(
+                  bytes,
+                  fit: BoxFit.cover,
+                  cacheWidth: 200,
+                  cacheHeight: 200,
+                  errorBuilder: (context, error, stack) =>
+                      _buildPlaceholder(colorScheme),
+                );
+              },
+              loading: () => Container(
+                color: colorScheme.surfaceContainerHighest,
+                child: const Center(
+                  child: CircularProgressIndicator(strokeWidth: 2),
                 ),
-                error: (error, stack) => _buildPlaceholder(colorScheme),
+              ),
+              error: (error, stack) => _buildPlaceholder(colorScheme),
+            ),
+          ),
+
+          // Selection overlay
+          if (isSelected)
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(4),
+                border: Border.all(color: colorScheme.primary, width: 3),
+                color: colorScheme.primary.withValues(alpha: 0.2),
               ),
             ),
 
-            // Selection overlay
-            if (isSelected)
-              Container(
+          // Checkmark
+          if (isSelected)
+            Positioned(
+              top: 4,
+              right: 4,
+              child: Container(
+                width: 24,
+                height: 24,
                 decoration: BoxDecoration(
+                  color: colorScheme.primary,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.check,
+                  size: 16,
+                  color: colorScheme.onPrimary,
+                ),
+              ),
+            ),
+
+          // Video icon
+          if (asset.isVideo)
+            Positioned(
+              bottom: 4,
+              left: 4,
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: Colors.black54,
                   borderRadius: BorderRadius.circular(4),
-                  border: Border.all(color: colorScheme.primary, width: 3),
-                  color: colorScheme.primary.withValues(alpha: 0.2),
                 ),
-              ),
-
-            // Checkmark
-            if (isSelected)
-              Positioned(
-                top: 4,
-                right: 4,
-                child: Container(
-                  width: 24,
-                  height: 24,
-                  decoration: BoxDecoration(
-                    color: colorScheme.primary,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    Icons.check,
-                    size: 16,
-                    color: colorScheme.onPrimary,
-                  ),
-                ),
-              ),
-
-            // Video icon
-            if (asset.isVideo)
-              Positioned(
-                bottom: 4,
-                left: 4,
-                child: Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    color: Colors.black54,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.videocam, size: 14, color: Colors.white),
-                      if (asset.durationSeconds != null) ...[
-                        const SizedBox(width: 2),
-                        Text(
-                          _formatDuration(asset.durationSeconds!),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                          ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.videocam, size: 14, color: Colors.white),
+                    if (asset.durationSeconds != null) ...[
+                      const SizedBox(width: 2),
+                      Text(
+                        _formatDuration(asset.durationSeconds!),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
                         ),
-                      ],
+                      ),
                     ],
-                  ),
+                  ],
                 ),
               ),
-          ],
-        ),
+            ),
+        ],
       ),
     );
   }

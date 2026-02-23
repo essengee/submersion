@@ -53,25 +53,25 @@ class _DiveMediaSectionState extends ConsumerState<DiveMediaSection> {
 
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (ctx) => AlertDialog(
         title: Text(
-          context.l10n.media_diveMediaSection_unlinkSelectedTitle(
+          ctx.l10n.media_diveMediaSection_unlinkSelectedTitle(
             selectedIds.length,
           ),
         ),
         content: Text(
-          context.l10n.media_diveMediaSection_unlinkSelectedContent(
+          ctx.l10n.media_diveMediaSection_unlinkSelectedContent(
             selectedIds.length,
           ),
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text(context.l10n.media_diveMediaSection_cancelButton),
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(ctx.l10n.media_diveMediaSection_cancelButton),
           ),
           TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: Text(context.l10n.media_diveMediaSection_unlinkButton),
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(ctx.l10n.media_diveMediaSection_unlinkButton),
           ),
         ],
       ),
@@ -83,6 +83,8 @@ class _DiveMediaSectionState extends ConsumerState<DiveMediaSection> {
             .read(mediaListNotifierProvider(widget.diveId).notifier)
             .deleteMultipleMedia(selectedIds);
 
+        _exitSelectionMode();
+
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -93,7 +95,6 @@ class _DiveMediaSectionState extends ConsumerState<DiveMediaSection> {
               ),
             ),
           );
-          _exitSelectionMode();
         }
       } catch (e) {
         if (context.mounted) {
