@@ -81,8 +81,10 @@ SOURCES=(
     usb.c usbhid.c ble.c bluetooth.c custom.c
 )
 
-# Determine target architecture from Xcode build settings
-ARCH="${ARCHS:-arm64}"
+# Determine target architectures from Xcode build settings
+if [ -z "${ARCHS:-}" ]; then
+    ARCHS="arm64"
+fi
 PLATFORM_NAME="${PLATFORM_NAME:-iphoneos}"
 
 if [ "${PLATFORM_NAME}" = "iphonesimulator" ]; then
@@ -96,7 +98,6 @@ fi
 CFLAGS=(
     -O2
     -std=c11
-    -arch "${ARCH}"
     -isysroot "${SDKROOT}"
     ${MIN_VERSION}
     -I"${LIBDC_DIR}/include"
@@ -107,17 +108,33 @@ CFLAGS=(
     -fembed-bitcode
 )
 
-echo "Building libdivecomputer for iOS (${ARCH}, ${PLATFORM_NAME})..."
+echo "Building libdivecomputer for iOS (architectures: ${ARCHS}, ${PLATFORM_NAME})..."
 
-OBJECTS=()
-for src in "${SOURCES[@]}"; do
-    obj="${BUILD_DIR}/$(basename "${src}" .c).o"
-    echo "  CC ${src}"
-    xcrun clang "${CFLAGS[@]}" -c "${LIBDC_DIR}/src/${src}" -o "${obj}"
-    OBJECTS+=("${obj}")
+ARCH_LIBS=()
+for arch in ${ARCHS}; do
+    ARCH_BUILD_DIR="${BUILD_DIR}/${arch}"
+    mkdir -p "${ARCH_BUILD_DIR}"
+
+    ARCH_CFLAGS=("${CFLAGS[@]}" -arch "${arch}")
+
+    OBJECTS=()
+    for src in "${SOURCES[@]}"; do
+        obj="${ARCH_BUILD_DIR}/$(basename "${src}" .c).o"
+        xcrun clang "${ARCH_CFLAGS[@]}" -c "${LIBDC_DIR}/src/${src}" -o "${obj}"
+        OBJECTS+=("${obj}")
+    done
+
+    ARCH_LIB="${ARCH_BUILD_DIR}/libdivecomputer.a"
+    xcrun ar rcs "${ARCH_LIB}" "${OBJECTS[@]}"
+    ARCH_LIBS+=("${ARCH_LIB}")
+    echo "  Built for ${arch}"
 done
 
-echo "  AR libdivecomputer.a"
-xcrun ar rcs "${OUTPUT_LIB}" "${OBJECTS[@]}"
+# Combine architectures into a universal binary if multiple
+if [ ${#ARCH_LIBS[@]} -eq 1 ]; then
+    cp "${ARCH_LIBS[0]}" "${OUTPUT_LIB}"
+else
+    xcrun lipo -create "${ARCH_LIBS[@]}" -output "${OUTPUT_LIB}"
+fi
 
 echo "libdivecomputer built successfully: ${OUTPUT_LIB}"

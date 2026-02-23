@@ -107,14 +107,24 @@ platform :mac do
     # macOS screenshots are in their own directory to avoid "Display Type Not Allowed!"
     # errors from mixing iOS and macOS resolutions in the same Fastlane screenshots path
     screenshots_path = File.absolute_path("../../screenshots/macos")
+    source_dir = File.absolute_path("../../screenshots/macOS")
 
-    unless File.directory?(screenshots_path)
-      UI.user_error!("macOS screenshots directory not found at #{screenshots_path}. Run 'fastlane screenshots' first.")
+    unless File.directory?(source_dir)
+      UI.user_error!("macOS screenshots directory not found at #{source_dir}. Run 'fastlane screenshots' first.")
     end
+
+    # Fastlane deliver expects screenshots in language subdirectories (e.g. en-US/).
+    # The capture lane saves directly to screenshots/macOS/, so organize them here.
+    en_us_dir = File.join(screenshots_path, "en-US")
+    FileUtils.mkdir_p(en_us_dir)
+    Dir.glob(File.join(source_dir, "*.png")).each do |png|
+      FileUtils.cp(png, en_us_dir)
+    end
+    UI.message("Organized #{Dir.glob(File.join(en_us_dir, '*.png')).count} screenshots into en-US/")
 
     # Resize screenshots to 2560x1600 (accepted macOS App Store size).
     # Captured screenshots are often 5120x3200 (native Retina 2x resolution).
-    Dir.glob(File.join(screenshots_path, "**", "*.png")).each do |png|
+    Dir.glob(File.join(en_us_dir, "*.png")).each do |png|
       dimensions = `sips -g pixelWidth -g pixelHeight "#{png}" 2>/dev/null`
       width = dimensions[/pixelWidth:\s*(\d+)/, 1].to_i
       height = dimensions[/pixelHeight:\s*(\d+)/, 1].to_i
@@ -136,7 +146,6 @@ platform :mac do
       skip_app_version_update: true,
       screenshots_path: screenshots_path,
       overwrite_screenshots: true,
-      ignore_language_directory_validation: true,
       precheck_include_in_app_purchases: false,
       force: true,
     )
