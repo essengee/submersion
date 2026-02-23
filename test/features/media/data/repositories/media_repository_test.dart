@@ -502,5 +502,37 @@ void main() {
         expect(result.signerName, equals('John Instructor'));
       });
     });
+
+    group('deleteMultipleMedia', () {
+      test('deletes multiple media items in a single transaction', () async {
+        final dive = await createTestDiveInDb();
+
+        final item1 = await repository.createMedia(
+          createTestMediaItem(diveId: dive.id, filePath: '/photo1.jpg'),
+        );
+        final item2 = await repository.createMedia(
+          createTestMediaItem(diveId: dive.id, filePath: '/photo2.jpg'),
+        );
+        final item3 = await repository.createMedia(
+          createTestMediaItem(diveId: dive.id, filePath: '/photo3.jpg'),
+        );
+
+        await repository.deleteMultipleMedia([item1.id, item2.id]);
+
+        final remaining = await repository.getMediaForDive(dive.id);
+        expect(remaining, hasLength(1));
+        expect(remaining.first.id, item3.id);
+      });
+
+      test('handles empty list without error', () async {
+        await repository.deleteMultipleMedia([]);
+        // Should not throw
+      });
+
+      test('handles non-existent IDs without error', () async {
+        await repository.deleteMultipleMedia(['non-existent-id']);
+        // Should not throw
+      });
+    });
   });
 }

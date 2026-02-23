@@ -180,6 +180,26 @@ class MediaRepository {
     }
   }
 
+  /// Delete multiple media items in a single transaction.
+  /// Logs each deletion for sync tracking.
+  Future<void> deleteMultipleMedia(List<String> ids) async {
+    if (ids.isEmpty) return;
+    try {
+      _log.info('Deleting ${ids.length} media items');
+      await _db.transaction(() async {
+        for (final id in ids) {
+          await (_db.delete(_db.media)..where((t) => t.id.equals(id))).go();
+          await _syncRepository.logDeletion(entityType: 'media', recordId: id);
+        }
+      });
+      SyncEventBus.notifyLocalChange();
+      _log.info('Deleted ${ids.length} media items');
+    } catch (e, stackTrace) {
+      _log.error('Failed to delete multiple media', e, stackTrace);
+      rethrow;
+    }
+  }
+
   /// Mark media as orphaned (photo deleted from gallery)
   Future<void> markAsOrphaned(String id) async {
     try {
