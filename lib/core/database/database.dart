@@ -1086,7 +1086,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
 
   @override
-  int get schemaVersion => 37;
+  int get schemaVersion => 38;
 
   @override
   MigrationStrategy get migration {
@@ -1871,6 +1871,33 @@ class AppDatabase extends _$AppDatabase {
           await customStatement(
             'ALTER TABLE dives ADD COLUMN dive_computer_firmware TEXT',
           );
+        }
+
+        if (from < 38) {
+          // Remove any existing duplicate media (same gallery photo linked
+          // to same dive). Keep the oldest record (lowest created_at).
+          await customStatement('''
+            DELETE FROM media WHERE id IN (
+              SELECT m.id FROM media m
+              INNER JOIN (
+                SELECT platform_asset_id, dive_id, MIN(created_at) as min_created
+                FROM media
+                WHERE platform_asset_id IS NOT NULL AND dive_id IS NOT NULL
+                GROUP BY platform_asset_id, dive_id
+                HAVING COUNT(*) > 1
+              ) dupes ON m.platform_asset_id = dupes.platform_asset_id
+                AND m.dive_id = dupes.dive_id
+                AND m.created_at > dupes.min_created
+            )
+          ''');
+          // Partial unique index: same gallery photo cannot be linked to
+          // same dive twice. Only constrains rows where both columns are
+          // non-null (signatures/orphans unaffected).
+          await customStatement('''
+            CREATE UNIQUE INDEX IF NOT EXISTS idx_media_asset_dive_unique
+            ON media(platform_asset_id, dive_id)
+            WHERE platform_asset_id IS NOT NULL AND dive_id IS NOT NULL
+          ''');
         }
       },
       beforeOpen: (details) async {
