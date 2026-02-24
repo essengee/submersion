@@ -775,6 +775,24 @@ class _DecompressionSectionContent extends ConsumerWidget {
             context.l10n.settings_decompression_aboutTitle,
             context.l10n.settings_decompression_aboutContent,
           ),
+          const SizedBox(height: 24),
+          _buildSectionHeader(context, 'Dive Computer Data'),
+          const SizedBox(height: 8),
+          Card(
+            child: SwitchListTile(
+              title: const Text('Use Dive Computer CNS Data'),
+              subtitle: const Text(
+                'Prefer CNS values reported by the dive computer over app-calculated values',
+              ),
+              secondary: const Icon(Icons.memory),
+              value: settings.useDiveComputerCnsData,
+              onChanged: (value) {
+                ref
+                    .read(settingsProvider.notifier)
+                    .setUseDiveComputerCnsData(value);
+              },
+            ),
+          ),
         ],
       ),
     );
@@ -1183,6 +1201,28 @@ class _AppearanceSectionContentState
                     ref
                         .read(settingsProvider.notifier)
                         .setDefaultShowTts(value);
+                  },
+                ),
+                const Divider(height: 1),
+                SwitchListTile(
+                  title: Text(context.l10n.settings_appearance_metric_cns),
+                  dense: true,
+                  value: settings.defaultShowCns,
+                  onChanged: (value) {
+                    ref
+                        .read(settingsProvider.notifier)
+                        .setDefaultShowCns(value);
+                  },
+                ),
+                const Divider(height: 1),
+                SwitchListTile(
+                  title: Text(context.l10n.settings_appearance_metric_otu),
+                  dense: true,
+                  value: settings.defaultShowOtu,
+                  onChanged: (value) {
+                    ref
+                        .read(settingsProvider.notifier)
+                        .setDefaultShowOtu(value);
                   },
                 ),
               ],

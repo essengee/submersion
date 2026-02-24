@@ -563,6 +563,8 @@ class DiverSettings extends Table {
       boolean().withDefault(const Constant(true))();
   RealColumn get lastStopDepth => real().withDefault(const Constant(3.0))();
   RealColumn get decoStopIncrement => real().withDefault(const Constant(3.0))();
+  BoolColumn get useDiveComputerCnsData =>
+      boolean().withDefault(const Constant(false))();
   // Appearance settings
   BoolColumn get showDepthColoredDiveCards =>
       boolean().withDefault(const Constant(false))();
@@ -1103,7 +1105,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
 
   @override
-  int get schemaVersion => 40;
+  int get schemaVersion => 41;
 
   @override
   MigrationStrategy get migration {
@@ -1972,6 +1974,11 @@ class AppDatabase extends _$AppDatabase {
           );
           await customStatement(
             'ALTER TABLE dives ADD COLUMN deco_conservatism INTEGER',
+          );
+        }
+        if (from < 41) {
+          await customStatement(
+            'ALTER TABLE diver_settings ADD COLUMN use_dive_computer_cns_data INTEGER NOT NULL DEFAULT 0',
           );
         }
       },

@@ -104,6 +104,9 @@ class AppSettings {
   /// Deco stop increment in meters (typically 3)
   final double decoStopIncrement;
 
+  /// Whether to use dive-computer-reported CNS data when available
+  final bool useDiveComputerCnsData;
+
   // Appearance settings
   /// Which attribute to use for card background coloring
   final CardColorAttribute cardColorAttribute;
@@ -219,6 +222,7 @@ class AppSettings {
     this.showNdlOnProfile = true,
     this.lastStopDepth = 3.0,
     this.decoStopIncrement = 3.0,
+    this.useDiveComputerCnsData = false,
     // Appearance defaults
     this.cardColorAttribute = CardColorAttribute.none,
     this.cardColorGradientPreset = 'ocean',
@@ -313,6 +317,7 @@ class AppSettings {
     bool? showNdlOnProfile,
     double? lastStopDepth,
     double? decoStopIncrement,
+    bool? useDiveComputerCnsData,
     CardColorAttribute? cardColorAttribute,
     String? cardColorGradientPreset,
     int? cardColorGradientStart,
@@ -371,6 +376,8 @@ class AppSettings {
       showNdlOnProfile: showNdlOnProfile ?? this.showNdlOnProfile,
       lastStopDepth: lastStopDepth ?? this.lastStopDepth,
       decoStopIncrement: decoStopIncrement ?? this.decoStopIncrement,
+      useDiveComputerCnsData:
+          useDiveComputerCnsData ?? this.useDiveComputerCnsData,
       cardColorAttribute: cardColorAttribute ?? this.cardColorAttribute,
       cardColorGradientPreset:
           cardColorGradientPreset ?? this.cardColorGradientPreset,
@@ -679,6 +686,11 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
     await _saveSettings();
   }
 
+  Future<void> setUseDiveComputerCnsData(bool value) async {
+    state = state.copyWith(useDiveComputerCnsData: value);
+    await _saveSettings();
+  }
+
   // Appearance setters
 
   Future<void> setCardColorAttribute(CardColorAttribute attribute) async {
@@ -954,6 +966,10 @@ final showAscentRateColorsProvider = Provider<bool>((ref) {
 
 final showNdlOnProfileProvider = Provider<bool>((ref) {
   return ref.watch(settingsProvider.select((s) => s.showNdlOnProfile));
+});
+
+final useDiveComputerCnsDataProvider = Provider<bool>((ref) {
+  return ref.watch(settingsProvider.select((s) => s.useDiveComputerCnsData));
 });
 
 final lastStopDepthProvider = Provider<double>((ref) {

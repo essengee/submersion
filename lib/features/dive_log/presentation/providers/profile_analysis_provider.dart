@@ -6,6 +6,7 @@ import 'package:submersion/features/settings/presentation/providers/settings_pro
 import 'package:submersion/features/dive_log/data/services/profile_analysis_service.dart';
 import 'package:submersion/features/dive_log/domain/entities/dive.dart';
 import 'package:submersion/features/dive_log/domain/entities/profile_event.dart';
+import 'package:submersion/features/dive_log/domain/services/computer_cns_extractor.dart';
 import 'package:submersion/features/dive_log/domain/services/profile_event_mapper.dart';
 import 'package:submersion/features/dive_log/presentation/providers/dive_computer_providers.dart';
 import 'package:submersion/features/dive_log/presentation/providers/dive_providers.dart';
@@ -137,12 +138,14 @@ ProfileAnalysisService _resolveAnalysisService(
 /// Returns the original [analysis] unchanged if no computer data is present.
 ProfileAnalysis overlayComputerDecoData(
   ProfileAnalysis analysis,
-  List<DiveProfilePoint> profile,
-) {
+  List<DiveProfilePoint> profile, {
+  bool includeComputerCns = true,
+}) {
   final hasComputerNdl = profile.any((p) => p.ndl != null);
   final hasComputerCeiling = profile.any((p) => p.ceiling != null);
   final hasComputerTts = profile.any((p) => p.tts != null);
-  final hasComputerCns = profile.any((p) => p.cns != null);
+  final hasComputerCns =
+      includeComputerCns && profile.any((p) => p.cns != null);
 
   if (!hasComputerNdl &&
       !hasComputerCeiling &&
@@ -303,8 +306,16 @@ final profileAnalysisProvider = FutureProvider.family<ProfileAnalysis?, String>(
         heFraction = primaryTank.gasMix.he / 100.0;
       }
 
-      // Compute residual CNS from the previous dive (recursive multi-level)
-      final startCns = await _computeResidualCns(ref, diveId);
+      // Check if dive computer CNS data should be used
+      final useComputerCns = ref.watch(useDiveComputerCnsDataProvider);
+      final computerCns = useComputerCns
+          ? extractComputerCns(dive.profile)
+          : null;
+
+      // Compute residual CNS (skip if this dive has computer CNS data)
+      final startCns = computerCns != null
+          ? computerCns.cnsStart
+          : await _computeResidualCns(ref, diveId);
 
       // Analyze the profile
       _log.debug(
@@ -331,17 +342,31 @@ final profileAnalysisProvider = FutureProvider.family<ProfileAnalysis?, String>(
       );
 
       // Overlay computer-reported deco data where available
-      final overlaid = overlayComputerDecoData(analysis, dive.profile);
+      final overlaid = overlayComputerDecoData(
+        analysis,
+        dive.profile,
+        includeComputerCns: useComputerCns,
+      );
+
+      // Override o2Exposure with computer-reported CNS start/end
+      final withCns = computerCns != null
+          ? overlaid.copyWith(
+              o2Exposure: overlaid.o2Exposure.copyWith(
+                cnsStart: computerCns.cnsStart,
+                cnsEnd: computerCns.cnsEnd,
+              ),
+            )
+          : overlaid;
 
       // Merge DB events (dive computer events) with auto-detected events
       final dbEvents = await ref.watch(
         diveComputerEventsProvider(diveId).future,
       );
       if (dbEvents.isEmpty) {
-        return overlaid;
+        return withCns;
       }
-      final merged = mergeEvents(overlaid.events, dbEvents);
-      return overlaid.copyWith(events: merged);
+      final merged = mergeEvents(withCns.events, dbEvents);
+      return withCns.copyWith(events: merged);
     } catch (e, stackTrace) {
       _log.error('Failed to analyze profile for dive: $diveId', e, stackTrace);
       return null;
@@ -363,6 +388,19 @@ Future<double> _computeResidualCns(Ref ref, String diveId) async {
 
     final previousDive = await repository.getPreviousDive(diveId);
     if (previousDive == null) return 0.0;
+
+    // Short-circuit: if the setting is on and the previous dive has computer
+    // CNS, use its last CNS sample directly instead of full analysis.
+    final useComputerCns = ref.watch(useDiveComputerCnsDataProvider);
+    if (useComputerCns) {
+      final prevComputerCns = extractComputerCns(previousDive.profile);
+      if (prevComputerCns != null) {
+        return CnsTable.cnsAfterSurfaceInterval(
+          prevComputerCns.cnsEnd,
+          surfaceInterval.inMinutes,
+        );
+      }
+    }
 
     // Recursively get the previous dive's full analysis (including its own
     // residual CNS from even earlier dives).
@@ -399,6 +437,10 @@ final residualCnsProvider = FutureProvider.family<double, String>((
 /// Note: This synchronous provider does NOT merge DB events (dive computer
 /// imported events). Use [profileAnalysisProvider] (by diveId) for the full
 /// event set including dive-computer-imported events.
+///
+/// Note: This synchronous provider does NOT respect the [useDiveComputerCnsDataProvider]
+/// setting for CNS overlay or o2Exposure. Use [profileAnalysisProvider] (by diveId)
+/// for setting-aware CNS handling.
 final diveProfileAnalysisProvider = Provider.family<ProfileAnalysis?, Dive>((
   ref,
   dive,

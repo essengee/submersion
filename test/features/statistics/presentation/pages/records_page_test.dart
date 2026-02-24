@@ -102,6 +102,9 @@ class _MockSettingsNotifier extends StateNotifier<AppSettings>
   Future<void> setDecoStopIncrement(double value) async =>
       state = state.copyWith(decoStopIncrement: value);
   @override
+  Future<void> setUseDiveComputerCnsData(bool value) async =>
+      state = state.copyWith(useDiveComputerCnsData: value);
+  @override
   Future<void> setCardColorAttribute(CardColorAttribute attribute) async =>
       state = state.copyWith(cardColorAttribute: attribute);
   @override
