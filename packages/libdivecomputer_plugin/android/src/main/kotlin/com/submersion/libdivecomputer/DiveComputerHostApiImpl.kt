@@ -16,6 +16,7 @@ private const val LIBDC_TRANSPORT_IRDA = 1 shl 3
 private const val LIBDC_TRANSPORT_BLE = 1 shl 5
 
 private const val LIBDC_STATUS_CANCELLED = -10
+private const val UINT32_SENTINEL: Long = 4294967295L  // UINT32_MAX = unavailable
 
 class DiveComputerHostApiImpl(
     private val context: Context,
@@ -225,16 +226,16 @@ class DiveComputerHostApiImpl(
                 depthMeters = s[1],
                 temperatureCelsius = if (s[2].isNaN()) null else s[2],
                 pressureBar = if (s[3].isNaN()) null else s[3],
-                tankIndex = if (s[4].toLong() == 0xFFFFFFFFL) null else s[4].toLong(),
-                heartRate = if (s[5].toLong() == 0xFFFFFFFFL) null else s[5].toLong(),
+                tankIndex = if (s[4].toLong() == UINT32_SENTINEL) null else s[4].toLong(),
+                heartRate = if (s[5].toLong() == UINT32_SENTINEL) null else s[5].toLong(),
                 setpoint = if (s[6].isNaN()) null else s[6],
                 ppo2 = if (s[7].isNaN()) null else s[7],
                 cns = if (s[8].isNaN()) null else s[8],
-                rbt = if (s[9].toLong() == 0xFFFFFFFFL) null else s[9].toLong(),
-                decoType = if (s[10].toLong() == 0xFFFFFFFFL) null else s[10].toLong(),
-                decoTime = if (s[11].toLong() == 0xFFFFFFFFL) null else s[11].toLong(),
+                rbt = if (s[9].toLong() == UINT32_SENTINEL) null else s[9].toLong(),
+                decoType = if (s[10].toLong() == UINT32_SENTINEL) null else s[10].toLong(),
+                decoTime = if (s[11].toLong() == UINT32_SENTINEL) null else s[11].toLong(),
                 decoDepth = if (s[12].isNaN()) null else s[12],
-                tts = if (s[13].toLong() == 0xFFFFFFFFL || s[13].toLong() == 0L) null else s[13].toLong()
+                tts = if (s[13].toLong() == UINT32_SENTINEL || s[13].toLong() == 0L) null else s[13].toLong()
             )
         }
 

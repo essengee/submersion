@@ -530,6 +530,7 @@ extern "C" JNIEXPORT jint JNICALL
 Java_com_submersion_libdivecomputer_LibdcWrapper_nativeGetDiveEventCount(
     JNIEnv *, jclass, jlong divePtr) {
     auto *dive = reinterpret_cast<const libdc_parsed_dive_t *>(divePtr);
+    if (!dive->events) return 0;
     return static_cast<jint>(dive->event_count);
 }
 
