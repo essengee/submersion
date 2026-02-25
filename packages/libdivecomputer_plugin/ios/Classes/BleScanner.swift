@@ -1,1 +1,1 @@
-../../macos/Classes/BleScanner.swift
+../../darwin/Sources/LibDCDarwin/BleScanner.swift
