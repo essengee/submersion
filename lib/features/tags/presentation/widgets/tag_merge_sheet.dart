@@ -140,28 +140,34 @@ class _TagMergeSheetState extends ConsumerState<TagMergeSheet> {
               context.l10n.tags_manage_mergeKeepFrom,
               style: theme.textTheme.titleSmall,
             ),
-            ...sorted.map(
-              (stat) => RadioListTile<String>(
-                value: stat.tag.id,
-                groupValue: _selectedNameFromTag,
-                title: Text(stat.tag.name),
-                subtitle: Text(
-                  context.l10n.tags_manage_diveCount(stat.diveCount),
-                ),
-                secondary: CircleAvatar(
-                  radius: 12,
-                  backgroundColor: stat.tag.color,
-                ),
-                onChanged: (value) {
-                  if (value != null) {
-                    setState(() {
-                      _selectedNameFromTag = value;
-                      _nameController.text = stat.tag.name;
-                      _selectedColor =
-                          stat.tag.colorHex ?? TagColors.predefined.first;
-                    });
-                  }
-                },
+            RadioGroup<String>(
+              groupValue: _selectedNameFromTag,
+              onChanged: (value) {
+                if (value == null) return;
+                final stat = sorted.firstWhere((s) => s.tag.id == value);
+                setState(() {
+                  _selectedNameFromTag = value;
+                  _nameController.text = stat.tag.name;
+                  _selectedColor =
+                      stat.tag.colorHex ?? TagColors.predefined.first;
+                });
+              },
+              child: Column(
+                children: sorted
+                    .map(
+                      (stat) => RadioListTile<String>(
+                        value: stat.tag.id,
+                        title: Text(stat.tag.name),
+                        subtitle: Text(
+                          context.l10n.tags_manage_diveCount(stat.diveCount),
+                        ),
+                        secondary: CircleAvatar(
+                          radius: 12,
+                          backgroundColor: stat.tag.color,
+                        ),
+                      ),
+                    )
+                    .toList(),
               ),
             ),
             const SizedBox(height: 16),
