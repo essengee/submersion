@@ -2717,7 +2717,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String diveLog_detail_collapsed_atTime(Object timestamp) {
-    return '@$timestamp';
+    return '$timestamp';
   }
 
   @override
@@ -2725,7 +2725,7 @@ class AppLocalizationsEn extends AppLocalizations {
     Object timestamp,
     Object baseInfo,
   ) {
-    return '@$timestamp • $baseInfo';
+    return '$timestamp • $baseInfo';
   }
 
   @override

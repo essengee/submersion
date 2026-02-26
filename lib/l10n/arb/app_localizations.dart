@@ -4730,13 +4730,13 @@ abstract class AppLocalizations {
   /// No description provided for @diveLog_detail_collapsed_atTime.
   ///
   /// In en, this message translates to:
-  /// **'@{timestamp}'**
+  /// **'{timestamp}'**
   String diveLog_detail_collapsed_atTime(Object timestamp);
 
   /// No description provided for @diveLog_detail_collapsed_atTimeInfo.
   ///
   /// In en, this message translates to:
-  /// **'@{timestamp} • {baseInfo}'**
+  /// **'{timestamp} • {baseInfo}'**
   String diveLog_detail_collapsed_atTimeInfo(Object timestamp, Object baseInfo);
 
   /// No description provided for @diveLog_detail_collapsed_ceiling.
