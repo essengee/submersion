@@ -2633,6 +2633,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get diveLog_deco_label_ndl => 'NDL';
 
   @override
+  String get diveLog_deco_label_time => 'Time';
+
+  @override
   String get diveLog_deco_label_tts => 'TTS';
 
   @override
@@ -2714,7 +2717,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String diveLog_detail_collapsed_atTime(Object timestamp) {
-    return 'At $timestamp';
+    return '@$timestamp';
   }
 
   @override
@@ -2722,7 +2725,7 @@ class AppLocalizationsEn extends AppLocalizations {
     Object timestamp,
     Object baseInfo,
   ) {
-    return 'At $timestamp • $baseInfo';
+    return '@$timestamp • $baseInfo';
   }
 
   @override
@@ -6595,12 +6598,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get enum_profileEvent_decoViolation => 'Deco Violation';
-
-  @override
-  String get enum_profileEvent_descentEnd => 'Descent End';
-
-  @override
-  String get enum_profileEvent_descentStart => 'Descent Start';
 
   @override
   String get enum_profileEvent_gasSwitch => 'Gas Switch';

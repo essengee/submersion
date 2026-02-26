@@ -4583,6 +4583,12 @@ abstract class AppLocalizations {
   /// **'NDL'**
   String get diveLog_deco_label_ndl;
 
+  /// No description provided for @diveLog_deco_label_time.
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get diveLog_deco_label_time;
+
   /// No description provided for @diveLog_deco_label_tts.
   ///
   /// In en, this message translates to:
@@ -4724,13 +4730,13 @@ abstract class AppLocalizations {
   /// No description provided for @diveLog_detail_collapsed_atTime.
   ///
   /// In en, this message translates to:
-  /// **'At {timestamp}'**
+  /// **'@{timestamp}'**
   String diveLog_detail_collapsed_atTime(Object timestamp);
 
   /// No description provided for @diveLog_detail_collapsed_atTimeInfo.
   ///
   /// In en, this message translates to:
-  /// **'At {timestamp} • {baseInfo}'**
+  /// **'@{timestamp} • {baseInfo}'**
   String diveLog_detail_collapsed_atTimeInfo(Object timestamp, Object baseInfo);
 
   /// No description provided for @diveLog_detail_collapsed_ceiling.
@@ -11593,18 +11599,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Deco Violation'**
   String get enum_profileEvent_decoViolation;
-
-  /// No description provided for @enum_profileEvent_descentEnd.
-  ///
-  /// In en, this message translates to:
-  /// **'Descent End'**
-  String get enum_profileEvent_descentEnd;
-
-  /// No description provided for @enum_profileEvent_descentStart.
-  ///
-  /// In en, this message translates to:
-  /// **'Descent Start'**
-  String get enum_profileEvent_descentStart;
 
   /// No description provided for @enum_profileEvent_gasSwitch.
   ///

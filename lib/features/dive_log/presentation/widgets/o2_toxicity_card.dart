@@ -363,10 +363,22 @@ class CompactO2ToxicityPanel extends StatelessWidget {
   /// Currently selected ppO2 value from the dive profile cursor
   final double? selectedPpO2;
 
+  /// Currently selected CNS% value from the dive profile cursor
+  final double? selectedCns;
+
+  /// Currently selected OTU value from the dive profile cursor
+  final double? selectedOtu;
+
+  /// Optional subtitle text (e.g. "@3:42")
+  final String? subtitle;
+
   const CompactO2ToxicityPanel({
     super.key,
     required this.exposure,
     this.selectedPpO2,
+    this.selectedCns,
+    this.selectedOtu,
+    this.subtitle,
   });
 
   @override
@@ -388,20 +400,14 @@ class CompactO2ToxicityPanel extends StatelessWidget {
             _buildCnsProgress(context, colorScheme, textTheme),
             const SizedBox(height: 6),
 
-            // OTU + details row
-            _buildOtuRow(context, colorScheme, textTheme),
+            // Metrics row (Time, OTU, Max ppO2, ppO2 at point)
+            _buildMetricsRow(context, colorScheme, textTheme),
 
             // Time above thresholds (only if > 0)
             if (exposure.timeAboveWarning > 0 ||
                 exposure.timeAboveCritical > 0) ...[
               const SizedBox(height: 4),
               _buildTimeAboveThresholds(context, colorScheme, textTheme),
-            ],
-
-            // Selected ppO2 row (only when present)
-            if (selectedPpO2 != null) ...[
-              const SizedBox(height: 6),
-              _buildSelectedPpO2(context, colorScheme, textTheme),
             ],
           ],
         ),
@@ -461,17 +467,32 @@ class CompactO2ToxicityPanel extends StatelessWidget {
     ColorScheme colorScheme,
     TextTheme textTheme,
   ) {
-    Color getCnsColor() {
-      if (exposure.cnsEnd >= 100) return colorScheme.error;
-      if (exposure.cnsEnd >= 80) return Colors.orange;
-      if (exposure.cnsEnd >= 50) return Colors.amber;
+    Color getCnsColor(double cns) {
+      if (cns >= 100) return colorScheme.error;
+      if (cns >= 80) return Colors.orange;
+      if (cns >= 50) return Colors.amber;
       return Colors.green;
     }
+
+    final endColor = getCnsColor(exposure.cnsEnd);
+
+    // CNS added from start to the selected cursor point
+    final selectedDelta = selectedCns != null
+        ? selectedCns! - exposure.cnsStart
+        : null;
+
+    // Display: "12% / 18%" when hovering (current / max), just "18%" otherwise
+    final cnsDisplay = selectedCns != null
+        ? '${selectedCns!.toStringAsFixed(0)}% / ${exposure.cnsEnd.toStringAsFixed(0)}%'
+        : exposure.cnsFormatted;
+    final cnsDisplayColor = getCnsColor(
+      selectedCns != null ? selectedCns! : exposure.cnsEnd,
+    );
 
     return Semantics(
       label: statLabel(
         name: context.l10n.diveLog_o2tox_cnsOxygenClock,
-        value: exposure.cnsFormatted,
+        value: cnsDisplay,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -481,26 +502,22 @@ class CompactO2ToxicityPanel extends StatelessWidget {
             children: [
               Text(
                 context.l10n.diveLog_o2tox_cnsOxygenClock,
-                style: textTheme.bodySmall,
+                style: textTheme.bodyMedium,
               ),
               Text(
-                exposure.cnsFormatted,
-                style: textTheme.bodySmall?.copyWith(
+                cnsDisplay,
+                style: textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: getCnsColor(),
+                  color: cnsDisplayColor,
                 ),
               ),
             ],
           ),
           const SizedBox(height: 4),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(3),
-            child: LinearProgressIndicator(
-              value: (exposure.cnsEnd / 100).clamp(0.0, 1.0),
-              minHeight: 6,
-              backgroundColor: colorScheme.surfaceContainerHighest,
-              valueColor: AlwaysStoppedAnimation<Color>(getCnsColor()),
-            ),
+          _buildStackedCnsBar(
+            colorScheme: colorScheme,
+            endColor: endColor,
+            selectedDelta: selectedDelta,
           ),
           const SizedBox(height: 2),
           Row(
@@ -511,7 +528,7 @@ class CompactO2ToxicityPanel extends StatelessWidget {
                   exposure.cnsStart.toStringAsFixed(0),
                 ),
                 style: textTheme.labelSmall?.copyWith(
-                  fontSize: 10,
+                  fontSize: 11,
                   color: colorScheme.onSurfaceVariant,
                 ),
               ),
@@ -520,7 +537,7 @@ class CompactO2ToxicityPanel extends StatelessWidget {
                   exposure.cnsDelta.toStringAsFixed(1),
                 ),
                 style: textTheme.labelSmall?.copyWith(
-                  fontSize: 10,
+                  fontSize: 11,
                   color: colorScheme.onSurfaceVariant,
                 ),
               ),
@@ -531,45 +548,171 @@ class CompactO2ToxicityPanel extends StatelessWidget {
     );
   }
 
-  Widget _buildOtuRow(
+  /// Builds the stacked CNS bar with up to four layers:
+  ///   1. Background track (full width)
+  ///   2. Green bar: total CNS at end of dive
+  ///   3. Primary overlay: CNS added during dive up to cursor point
+  ///   4. Start segment: residual CNS from prior dives (always visible)
+  Widget _buildStackedCnsBar({
+    required ColorScheme colorScheme,
+    required Color endColor,
+    required double? selectedDelta,
+  }) {
+    const barHeight = 10.0;
+    const barRadius = BorderRadius.all(Radius.circular(5));
+
+    final endFraction = (exposure.cnsEnd / 100).clamp(0.0, 1.0);
+    final startFraction = (exposure.cnsStart / 100).clamp(0.0, 1.0);
+
+    return ClipRRect(
+      borderRadius: barRadius,
+      child: SizedBox(
+        height: barHeight,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final totalWidth = constraints.maxWidth;
+
+            return Stack(
+              children: [
+                // Background track
+                Container(
+                  width: totalWidth,
+                  height: barHeight,
+                  color: colorScheme.surfaceContainerHighest,
+                ),
+                // Green bar: total CNS at end of dive
+                Container(
+                  width: totalWidth * endFraction,
+                  height: barHeight,
+                  color: endColor,
+                ),
+                // Primary overlay: CNS added during dive up to cursor point
+                if (selectedDelta != null && selectedDelta > 0)
+                  Positioned(
+                    left: totalWidth * startFraction,
+                    child: Container(
+                      width:
+                          totalWidth *
+                          (selectedDelta / 100).clamp(0.0, 1.0 - startFraction),
+                      height: barHeight,
+                      color: Colors.lightBlue,
+                    ),
+                  ),
+                // Start segment: residual CNS from prior dives (always on top)
+                if (startFraction > 0)
+                  Container(
+                    width: totalWidth * startFraction,
+                    height: barHeight,
+                    color: Colors.blueGrey,
+                  ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMetricsRow(
     BuildContext context,
     ColorScheme colorScheme,
     TextTheme textTheme,
   ) {
+    // OTU: show selected value with total, or just total
+    final otuValue = selectedOtu != null
+        ? '${selectedOtu!.toStringAsFixed(0)} / ${exposure.otu.toStringAsFixed(0)}'
+        : exposure.otuFormatted;
+
+    // Abbreviate OTU label in live mode (more columns to fit)
+    final isLiveMode = subtitle != null;
+    final otuLabel = isLiveMode
+        ? context.l10n.diveLog_legend_label_otu
+        : context.l10n.diveLog_o2tox_oxygenToleranceUnits;
+
+    return Row(
+      children: [
+        // Time (only when a point is selected)
+        if (isLiveMode)
+          Expanded(
+            child: _buildCompactMetric(
+              context,
+              value: subtitle!,
+              label: context.l10n.diveLog_deco_label_time,
+              textTheme: textTheme,
+              colorScheme: colorScheme,
+            ),
+          ),
+
+        // OTU (dynamic / total)
+        Expanded(
+          child: _buildCompactMetric(
+            context,
+            value: otuValue,
+            label: otuLabel,
+            textTheme: textTheme,
+            colorScheme: colorScheme,
+          ),
+        ),
+
+        // ppO2 at selected point
+        if (selectedPpO2 != null)
+          Expanded(
+            child: _buildCompactMetric(
+              context,
+              value: '${selectedPpO2!.toStringAsFixed(2)} bar',
+              label: context.l10n.diveLog_legend_label_ppO2,
+              textTheme: textTheme,
+              colorScheme: colorScheme,
+            ),
+          ),
+
+        // Max ppO2
+        Expanded(
+          child: _buildCompactMetric(
+            context,
+            value: exposure.maxPpO2Formatted,
+            label: context.l10n.diveLog_o2tox_label_maxPpO2,
+            textTheme: textTheme,
+            colorScheme: colorScheme,
+            valueColor: _getPpO2Color(colorScheme),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCompactMetric(
+    BuildContext context, {
+    required String value,
+    required String label,
+    required TextTheme textTheme,
+    required ColorScheme colorScheme,
+    Color? valueColor,
+  }) {
     return Semantics(
-      label: context.l10n.diveLog_o2tox_semantics_otu(
-        exposure.otuFormatted,
-        exposure.otuPercentOfDaily.toStringAsFixed(0),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text.rich(
-            TextSpan(
-              children: [
-                TextSpan(
-                  text: exposure.otuFormatted,
-                  style: textTheme.bodySmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                TextSpan(
-                  text: ' (${exposure.otuPercentOfDaily.toStringAsFixed(0)}%)',
-                  style: textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
+      label: '$label: $value',
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
+        child: Column(
+          children: [
+            Text(
+              value,
+              style: textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: valueColor,
+              ),
+              overflow: TextOverflow.ellipsis,
             ),
-          ),
-          Text(
-            '${context.l10n.diveLog_o2tox_label_maxPpO2}: '
-            '${exposure.maxPpO2Formatted}',
-            style: textTheme.labelSmall?.copyWith(
-              color: _getPpO2Color(colorScheme),
+            Text(
+              label,
+              style: textTheme.labelSmall?.copyWith(
+                fontSize: 10,
+                color: colorScheme.onSurfaceVariant,
+              ),
+              overflow: TextOverflow.ellipsis,
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -607,39 +750,6 @@ class CompactO2ToxicityPanel extends StatelessWidget {
     }
 
     return Text.rich(TextSpan(children: parts));
-  }
-
-  Widget _buildSelectedPpO2(
-    BuildContext context,
-    ColorScheme colorScheme,
-    TextTheme textTheme,
-  ) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: colorScheme.primaryContainer,
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            context.l10n.diveLog_detail_label_ppO2AtPoint,
-            style: textTheme.labelSmall?.copyWith(
-              color: colorScheme.onPrimaryContainer,
-            ),
-          ),
-          const SizedBox(width: 4),
-          Text(
-            '${selectedPpO2!.toStringAsFixed(2)} bar',
-            style: textTheme.labelSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: colorScheme.onPrimaryContainer,
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   Color _getPpO2Color(ColorScheme colorScheme) {

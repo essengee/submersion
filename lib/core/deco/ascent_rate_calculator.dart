@@ -250,7 +250,8 @@ class AscentRateCalculator {
 
     for (int i = 0; i < ratePoints.length; i++) {
       final point = ratePoints[i];
-      final isViolation = point.category != AscentRateCategory.safe;
+      final isViolation =
+          point.category != AscentRateCategory.safe && point.isAscending;
 
       if (isViolation) {
         if (violationStart == null) {

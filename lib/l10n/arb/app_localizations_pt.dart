@@ -2678,6 +2678,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get diveLog_deco_label_ndl => 'NDL';
 
   @override
+  String get diveLog_deco_label_time => 'Time';
+
+  @override
   String get diveLog_deco_label_tts => 'TTS';
 
   @override
@@ -6690,12 +6693,6 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get enum_profileEvent_decoViolation => 'Violacao de Deco';
-
-  @override
-  String get enum_profileEvent_descentEnd => 'Fim da Descida';
-
-  @override
-  String get enum_profileEvent_descentStart => 'Inicio da Descida';
 
   @override
   String get enum_profileEvent_gasSwitch => 'Troca de Gas';

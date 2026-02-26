@@ -93,24 +93,6 @@ class ProfileEvent extends Equatable {
     }
   }
 
-  /// Create a descent start event
-  factory ProfileEvent.descentStart({
-    required String id,
-    required String diveId,
-    required int timestamp,
-    double? depth,
-    required DateTime createdAt,
-  }) {
-    return ProfileEvent(
-      id: id,
-      diveId: diveId,
-      timestamp: timestamp,
-      eventType: ProfileEventType.descentStart,
-      depth: depth,
-      createdAt: createdAt,
-    );
-  }
-
   /// Create an ascent start event
   factory ProfileEvent.ascentStart({
     required String id,

@@ -207,8 +207,6 @@ void main() {
     test('maps all known ProfileEventType enum values', () {
       // Verify that all enum values that exist in the DB can be mapped
       final knownTypes = [
-        'descentStart',
-        'descentEnd',
         'ascentStart',
         'safetyStopStart',
         'safetyStopEnd',

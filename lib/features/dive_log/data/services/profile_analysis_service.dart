@@ -740,43 +740,6 @@ class ProfileAnalysisService {
     final events = <ProfileEvent>[];
     final now = DateTime.now();
 
-    // Find descent start (first significant depth increase)
-    int? descentStartIndex;
-    for (int i = 1; i < depths.length; i++) {
-      if (depths[i] > 1.0 && depths[i] > depths[i - 1]) {
-        descentStartIndex = i;
-        events.add(
-          ProfileEvent.descentStart(
-            id: _uuid.v4(),
-            diveId: diveId,
-            timestamp: timestamps[i],
-            depth: depths[i],
-            createdAt: now,
-          ),
-        );
-        break;
-      }
-    }
-
-    // Find descent end (first point where descent stops)
-    if (descentStartIndex != null) {
-      for (int i = descentStartIndex + 1; i < depths.length; i++) {
-        if (depths[i] <= depths[i - 1]) {
-          events.add(
-            ProfileEvent(
-              id: _uuid.v4(),
-              diveId: diveId,
-              timestamp: timestamps[i],
-              eventType: ProfileEventType.descentEnd,
-              depth: depths[i],
-              createdAt: now,
-            ),
-          );
-          break;
-        }
-      }
-    }
-
     // Find max depth
     events.add(
       ProfileEvent.maxDepth(

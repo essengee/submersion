@@ -341,7 +341,7 @@ This document contains only the features and tasks that are **not yet completed*
 - [ ] PADI app integration (OAuth, fetch eCards)
 
 - [ ] Option to create and use a new database
-
+- [ ] Ruler on dive profile graph
 
 
 ## Slogans

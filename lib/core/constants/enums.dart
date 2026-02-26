@@ -332,8 +332,6 @@ enum ScrType {
 
 /// Profile event types (markers on dive profile)
 enum ProfileEventType {
-  descentStart('Descent Start', 'info'),
-  descentEnd('Descent End', 'info'),
   ascentStart('Ascent Start', 'info'),
   safetyStopStart('Safety Stop Start', 'info'),
   safetyStopEnd('Safety Stop End', 'info'),
@@ -363,9 +361,6 @@ enum ProfileEventType {
   /// Get icon for this event type
   String get iconName {
     switch (this) {
-      case ProfileEventType.descentStart:
-      case ProfileEventType.descentEnd:
-        return 'arrow_downward';
       case ProfileEventType.ascentStart:
         return 'arrow_upward';
       case ProfileEventType.safetyStopStart:

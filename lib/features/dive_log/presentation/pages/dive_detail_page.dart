@@ -1063,6 +1063,22 @@ class _DiveDetailPageState extends ConsumerState<DiveDetailPage> {
         ? analysis.ppO2Curve[_selectedPointIndex!]
         : null;
 
+    // Show CNS% at selected point if available
+    final selectedCns =
+        _selectedPointIndex != null &&
+            analysis.cnsCurve != null &&
+            _selectedPointIndex! < analysis.cnsCurve!.length
+        ? analysis.cnsCurve![_selectedPointIndex!]
+        : null;
+
+    // Show OTU at selected point if available
+    final selectedOtu =
+        _selectedPointIndex != null &&
+            analysis.otuCurve != null &&
+            _selectedPointIndex! < analysis.otuCurve!.length
+        ? analysis.otuCurve![_selectedPointIndex!]
+        : null;
+
     // Build "at time" subtitle when a point is selected
     final String? timeSubtitle = _selectedPointIndex != null
         ? context.l10n.diveLog_detail_collapsed_atTime(
@@ -1078,6 +1094,9 @@ class _DiveDetailPageState extends ConsumerState<DiveDetailPage> {
     final Widget o2Widget = CompactO2ToxicityPanel(
       exposure: exposure,
       selectedPpO2: selectedPpO2,
+      selectedCns: selectedCns,
+      selectedOtu: selectedOtu,
+      subtitle: timeSubtitle,
     );
 
     // Side-by-side on desktop, stacked on phone
