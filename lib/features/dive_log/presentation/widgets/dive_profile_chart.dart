@@ -91,6 +91,10 @@ class DiveProfileChart extends ConsumerStatefulWidget {
   /// When provided, renders a vertical line at this position for step-through playback.
   final int? playbackTimestamp;
 
+  /// Optional highlighted timestamp in seconds (e.g. from heat map hover).
+  /// Renders a subtle vertical line at this position.
+  final int? highlightedTimestamp;
+
   // Advanced decompression/gas curves
   /// ppO2 curve in bar
   final List<double>? ppO2Curve;
@@ -162,6 +166,7 @@ class DiveProfileChart extends ConsumerStatefulWidget {
     this.tankPressures,
     this.exportKey,
     this.playbackTimestamp,
+    this.highlightedTimestamp,
     this.ppO2Curve,
     this.ppN2Curve,
     this.ppHeCurve,
@@ -479,50 +484,59 @@ class _DiveProfileChartState extends ConsumerState<DiveProfileChart> {
       hasOtuData: hasOtuData,
     );
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Chart header with legend and zoom controls (decluttered)
-        DiveProfileLegend(
-          config: legendConfig,
-          zoomLevel: _zoomLevel,
-          minZoom: _minZoom,
-          maxZoom: _maxZoom,
-          onZoomIn: _zoomIn,
-          onZoomOut: _zoomOut,
-          onResetZoom: _resetZoom,
-        ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Left axis offset = axisNameSize (16, default) + sideTitles reservedSize
+        final legendLeftPadding =
+            16.0 + DiveProfileChart.leftAxisSize(constraints.maxWidth);
 
-        // The chart with gesture handling
-        // Wrapped in RepaintBoundary for PNG export when exportKey is provided
-        RepaintBoundary(
-          key: widget.exportKey,
-          child: SizedBox(
-            height: 200,
-            child: _buildInteractiveChart(
-              context,
-              units,
-              hasTemperatureData: hasTemperatureData,
-              hasPressureData: hasPressureData,
-              hasHeartRateData: hasHeartRateData,
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Chart header with legend and zoom controls (decluttered)
+            DiveProfileLegend(
+              config: legendConfig,
+              zoomLevel: _zoomLevel,
+              minZoom: _minZoom,
+              maxZoom: _maxZoom,
+              onZoomIn: _zoomIn,
+              onZoomOut: _zoomOut,
+              onResetZoom: _resetZoom,
+              leftPadding: legendLeftPadding,
             ),
-          ),
-        ),
 
-        // Zoom hint
-        if (_zoomLevel > 1.0)
-          Padding(
-            padding: const EdgeInsets.only(top: 4),
-            child: Text(
-              context.l10n.diveLog_profile_zoomHint(
-                _zoomLevel.toStringAsFixed(1),
-              ),
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: colorScheme.onSurfaceVariant,
+            // The chart with gesture handling
+            // Wrapped in RepaintBoundary for PNG export when exportKey is provided
+            RepaintBoundary(
+              key: widget.exportKey,
+              child: SizedBox(
+                height: 200,
+                child: _buildInteractiveChart(
+                  context,
+                  units,
+                  hasTemperatureData: hasTemperatureData,
+                  hasPressureData: hasPressureData,
+                  hasHeartRateData: hasHeartRateData,
+                ),
               ),
             ),
-          ),
-      ],
+
+            // Zoom hint
+            if (_zoomLevel > 1.0)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text(
+                  context.l10n.diveLog_profile_zoomHint(
+                    _zoomLevel.toStringAsFixed(1),
+                  ),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
     );
   }
 
@@ -807,9 +821,10 @@ class _DiveProfileChartState extends ConsumerState<DiveProfileChart> {
                   context.l10n.diveLog_profile_axisTime,
                   style: Theme.of(context).textTheme.labelSmall,
                 ),
+                axisNameSize: 14,
                 sideTitles: SideTitles(
                   showTitles: true,
-                  reservedSize: 30,
+                  reservedSize: 22,
                   interval: _calculateTimeInterval(visibleRangeX),
                   getTitlesWidget: (value, meta) {
                     final minutes = (value / 60).round();
@@ -989,6 +1004,7 @@ class _DiveProfileChartState extends ConsumerState<DiveProfileChart> {
             extraLinesData: ExtraLinesData(
               verticalLines: [
                 ..._buildPlaybackCursor(colorScheme),
+                ..._buildHighlightCursor(colorScheme),
                 if (_showEvents && widget.events != null)
                   ..._buildEventVerticalLines(colorScheme),
               ],
@@ -2471,6 +2487,23 @@ class _DiveProfileChartState extends ConsumerState<DiveProfileChart> {
             return ' ${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')} ';
           },
         ),
+      ),
+    ];
+  }
+
+  /// Build vertical line for external highlight (e.g. heat map hover)
+  List<VerticalLine> _buildHighlightCursor(ColorScheme colorScheme) {
+    final timestamp = widget.highlightedTimestamp;
+    if (timestamp == null) {
+      return [];
+    }
+
+    return [
+      VerticalLine(
+        x: timestamp.toDouble(),
+        color: colorScheme.onSurface.withValues(alpha: 0.5),
+        strokeWidth: 1,
+        dashArray: [3, 3],
       ),
     ];
   }

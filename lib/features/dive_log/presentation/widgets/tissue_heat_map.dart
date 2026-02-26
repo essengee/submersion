@@ -89,7 +89,9 @@ class TissueHeatMap extends StatelessWidget {
 /// Just the painted heat map strip without any card or labels.
 ///
 /// Use this to embed the heat map inside another widget's layout.
-class TissueHeatMapStrip extends StatelessWidget {
+/// Supports hover (desktop) and tap (mobile) tooltips showing compartment
+/// details for each cell.
+class TissueHeatMapStrip extends StatefulWidget {
   /// Full time-series of decompression statuses across the dive
   final List<DecoStatus> decoStatuses;
 
@@ -99,29 +101,175 @@ class TissueHeatMapStrip extends StatelessWidget {
   /// Strip height in logical pixels
   final double height;
 
+  /// Called when the user hovers over a time index, or null when hover ends.
+  final ValueChanged<int?>? onHoverIndexChanged;
+
   const TissueHeatMapStrip({
     super.key,
     required this.decoStatuses,
     this.selectedIndex,
     this.height = 32,
+    this.onHoverIndexChanged,
   });
 
   @override
+  State<TissueHeatMapStrip> createState() => _TissueHeatMapStripState();
+}
+
+class _TissueHeatMapStripState extends State<TissueHeatMapStrip> {
+  OverlayEntry? _tooltipOverlay;
+  int? _hoveredTimeIdx;
+  int? _hoveredCompIdx;
+  final LayerLink _layerLink = LayerLink();
+
+  @override
+  void dispose() {
+    _removeTooltip();
+    super.dispose();
+  }
+
+  void _removeTooltip() {
+    _tooltipOverlay?.remove();
+    _tooltipOverlay?.dispose();
+    _tooltipOverlay = null;
+    final hadHover = _hoveredTimeIdx != null;
+    _hoveredTimeIdx = null;
+    _hoveredCompIdx = null;
+    if (hadHover) {
+      widget.onHoverIndexChanged?.call(null);
+    }
+  }
+
+  /// Returns (timeIndex, compartmentIndex) for the given local position.
+  (int, int)? _cellAt(Offset localPosition, Size size) {
+    if (widget.decoStatuses.isEmpty) return null;
+    final numTimePoints = widget.decoStatuses.length;
+    final numComps = widget.decoStatuses.first.compartments.length;
+    if (numComps == 0) return null;
+
+    final timeIdx = (localPosition.dx / size.width * numTimePoints)
+        .floor()
+        .clamp(0, numTimePoints - 1);
+    final compIdx = (localPosition.dy / size.height * numComps).floor().clamp(
+      0,
+      numComps - 1,
+    );
+    return (timeIdx, compIdx);
+  }
+
+  void _showTooltipForPosition(Offset localPosition) {
+    final box = context.findRenderObject() as RenderBox?;
+    if (box == null) return;
+    final cell = _cellAt(localPosition, box.size);
+    if (cell == null) {
+      _removeTooltip();
+      return;
+    }
+
+    final (timeIdx, compIdx) = cell;
+    if (timeIdx == _hoveredTimeIdx && compIdx == _hoveredCompIdx) return;
+
+    // Clear old tooltip without firing exit callback
+    _tooltipOverlay?.remove();
+    _tooltipOverlay?.dispose();
+    _tooltipOverlay = null;
+    _hoveredTimeIdx = timeIdx;
+    _hoveredCompIdx = compIdx;
+
+    widget.onHoverIndexChanged?.call(timeIdx);
+
+    final status = widget.decoStatuses[timeIdx];
+    final comp = status.compartments[compIdx];
+    final ambientPressure = status.ambientPressureBar;
+    final isOffgassing = comp.totalInertGas > ambientPressure;
+
+    final lines = <String>[
+      'Compartment ${comp.compartmentNumber}',
+      '${comp.percentLoading.toStringAsFixed(1)}% loaded',
+      'N\u2082: ${comp.currentPN2.toStringAsFixed(2)} bar',
+      if (comp.currentPHe > 0.001)
+        'He: ${comp.currentPHe.toStringAsFixed(2)} bar',
+      'Half-time: ${comp.halfTimeN2.toStringAsFixed(0)} min',
+      isOffgassing ? 'Offgassing' : 'Ongassing',
+    ];
+    final message = lines.join('\n');
+
+    // Position tooltip horizontally at the cell center, above the heat map
+    final numTimePoints = widget.decoStatuses.length;
+    final cellCenterX = (timeIdx + 0.5) / numTimePoints * box.size.width;
+
+    final overlay = OverlayEntry(
+      builder: (context) {
+        final theme = Theme.of(context);
+        return UnconstrainedBox(
+          child: CompositedTransformFollower(
+            link: _layerLink,
+            targetAnchor: Alignment.topLeft,
+            followerAnchor: Alignment.bottomCenter,
+            offset: Offset(cellCenterX, -4),
+            child: Material(
+              elevation: 4,
+              borderRadius: BorderRadius.circular(6),
+              color: theme.colorScheme.inverseSurface,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                child: Text(
+                  message,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onInverseSurface,
+                    fontSize: 11,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    _tooltipOverlay = overlay;
+    Overlay.of(context).insert(overlay);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    if (decoStatuses.isEmpty) return const SizedBox.shrink();
+    if (widget.decoStatuses.isEmpty) return const SizedBox.shrink();
 
     final colorScheme = Theme.of(context).colorScheme;
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(4),
-      child: SizedBox(
-        height: height,
-        width: double.infinity,
-        child: CustomPaint(
-          painter: _TissueHeatMapPainter(
-            decoStatuses: decoStatuses,
-            selectedIndex: selectedIndex,
-            cursorColor: colorScheme.onSurface,
+    return CompositedTransformTarget(
+      link: _layerLink,
+      child: MouseRegion(
+        onHover: (event) => _showTooltipForPosition(event.localPosition),
+        onExit: (_) => _removeTooltip(),
+        child: GestureDetector(
+          onTapDown: (details) {
+            final (timeIdx, compIdx) =
+                _cellAt(
+                  details.localPosition,
+                  (context.findRenderObject() as RenderBox).size,
+                ) ??
+                (-1, -1);
+            // Toggle: tap same cell hides tooltip
+            if (timeIdx == _hoveredTimeIdx && compIdx == _hoveredCompIdx) {
+              _removeTooltip();
+            } else {
+              _showTooltipForPosition(details.localPosition);
+            }
+          },
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: SizedBox(
+              height: widget.height,
+              width: double.infinity,
+              child: CustomPaint(
+                painter: _TissueHeatMapPainter(
+                  decoStatuses: widget.decoStatuses,
+                  selectedIndex: widget.selectedIndex,
+                  cursorColor: colorScheme.onSurface,
+                ),
+              ),
+            ),
           ),
         ),
       ),

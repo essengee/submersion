@@ -105,6 +105,7 @@ class DiveProfileLegend extends ConsumerWidget {
   final VoidCallback onZoomIn;
   final VoidCallback onZoomOut;
   final VoidCallback onResetZoom;
+  final double leftPadding;
 
   const DiveProfileLegend({
     super.key,
@@ -115,6 +116,7 @@ class DiveProfileLegend extends ConsumerWidget {
     required this.onZoomIn,
     required this.onZoomOut,
     required this.onResetZoom,
+    this.leftPadding = 0.0,
   });
 
   @override
@@ -134,10 +136,10 @@ class DiveProfileLegend extends ConsumerWidget {
     }
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: EdgeInsets.only(left: leftPadding, bottom: 8),
       child: Row(
         children: [
-          // Primary toggles
+          // Primary toggles + options button flowing together
           Expanded(
             child: Wrap(
               spacing: 12,
@@ -181,16 +183,16 @@ class DiveProfileLegend extends ConsumerWidget {
                     isEnabled: legendState.showCeiling,
                     onTap: legendNotifier.toggleCeiling,
                   ),
+                // "More" button flows right after the last toggle
+                if (config.hasSecondaryToggles)
+                  _MoreOptionsButton(
+                    config: config,
+                    legendState: legendState,
+                    legendNotifier: legendNotifier,
+                  ),
               ],
             ),
           ),
-          // "More" button for secondary toggles
-          if (config.hasSecondaryToggles)
-            _MoreOptionsButton(
-              config: config,
-              legendState: legendState,
-              legendNotifier: legendNotifier,
-            ),
           const SizedBox(width: 8),
           // Zoom controls
           _ZoomControls(

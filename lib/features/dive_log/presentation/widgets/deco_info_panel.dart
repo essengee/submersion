@@ -471,12 +471,16 @@ class CompactDecoPanel extends StatelessWidget {
   /// Currently selected profile point index (for heat map cursor)
   final int? selectedIndex;
 
+  /// Called when user hovers over a time index on the heat map.
+  final ValueChanged<int?>? onHeatMapHover;
+
   const CompactDecoPanel({
     super.key,
     required this.status,
     this.subtitle,
     this.decoStatuses,
     this.selectedIndex,
+    this.onHeatMapHover,
   });
 
   @override
@@ -504,6 +508,24 @@ class CompactDecoPanel extends StatelessWidget {
             // Tissue loading heat map over time
             if (decoStatuses != null && decoStatuses!.isNotEmpty) ...[
               const SizedBox(height: 6),
+              // Heat map title with color legend
+              Row(
+                children: [
+                  Text(
+                    'Heat Map',
+                    style: textTheme.labelSmall?.copyWith(
+                      fontSize: 9,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const Spacer(),
+                  TissueHeatMapLegend(
+                    colorScheme: colorScheme,
+                    textTheme: textTheme,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -534,6 +556,7 @@ class CompactDecoPanel extends StatelessWidget {
                       decoStatuses: decoStatuses!,
                       selectedIndex: selectedIndex,
                       height: 64,
+                      onHoverIndexChanged: onHeatMapHover,
                     ),
                   ),
                 ],
@@ -703,9 +726,32 @@ class CompactDecoPanel extends StatelessWidget {
     // M-value line sits at 100% of surface M-value
     const mValueBottom = chartHeight * (100.0 / maxLoadingPercent);
 
+    final labelStyle = textTheme.labelSmall?.copyWith(
+      fontSize: 9,
+      color: colorScheme.onSurfaceVariant,
+    );
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Title row with M-value legend
+        Row(
+          children: [
+            Text(
+              context.l10n.diveLog_deco_sectionTissueLoading,
+              style: labelStyle,
+            ),
+            const Spacer(),
+            Container(
+              width: 10,
+              height: 1.5,
+              color: colorScheme.error.withValues(alpha: 0.5),
+            ),
+            const SizedBox(width: 3),
+            Text('M-value', style: labelStyle),
+          ],
+        ),
+        const SizedBox(height: 4),
         Semantics(
           label: chartSummaryLabel(
             chartType: 'Tissue pressure diagram',
@@ -753,18 +799,8 @@ class CompactDecoPanel extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              context.l10n.diveLog_deco_tissueFast,
-              style: textTheme.labelSmall?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-              ),
-            ),
-            Text(
-              context.l10n.diveLog_deco_tissueSlow,
-              style: textTheme.labelSmall?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-              ),
-            ),
+            Text(context.l10n.diveLog_deco_tissueFast, style: labelStyle),
+            Text(context.l10n.diveLog_deco_tissueSlow, style: labelStyle),
           ],
         ),
       ],

@@ -14,6 +14,7 @@ import 'package:submersion/core/constants/tank_presets.dart';
 import 'package:submersion/core/constants/units.dart';
 import 'package:submersion/features/maps/data/services/tile_cache_service.dart';
 import 'package:submersion/core/deco/altitude_calculator.dart';
+import 'package:submersion/features/dive_log/presentation/widgets/o2_toxicity_card.dart';
 import 'package:submersion/core/services/export/export_service.dart';
 import 'package:submersion/core/utils/unit_formatter.dart';
 import 'package:submersion/features/buddies/domain/entities/buddy.dart';
@@ -39,7 +40,6 @@ import 'package:submersion/features/dive_log/presentation/providers/profile_rang
 import 'package:submersion/features/dive_log/presentation/widgets/collapsible_section.dart';
 import 'package:submersion/features/dive_log/presentation/widgets/deco_info_panel.dart';
 import 'package:submersion/features/dive_log/presentation/widgets/dive_profile_chart.dart';
-import 'package:submersion/features/dive_log/presentation/widgets/o2_toxicity_card.dart';
 import 'package:submersion/features/dive_log/presentation/widgets/playback_controls.dart';
 import 'package:submersion/features/dive_log/presentation/widgets/playback_stats_panel.dart';
 import 'package:submersion/features/dive_log/presentation/widgets/range_selection_overlay.dart';
@@ -110,6 +110,9 @@ class DiveDetailPage extends ConsumerStatefulWidget {
 class _DiveDetailPageState extends ConsumerState<DiveDetailPage> {
   /// Currently selected point index on the profile timeline
   int? _selectedPointIndex;
+
+  /// Non-null when the selection came from heat map hover (drives chart cursor)
+  int? _heatMapHoverIndex;
 
   /// Track if we've already initiated a redirect to prevent multiple calls
   bool _hasRedirected = false;
@@ -807,7 +810,7 @@ class _DiveDetailPageState extends ConsumerState<DiveDetailPage> {
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -821,6 +824,53 @@ class _DiveDetailPageState extends ConsumerState<DiveDetailPage> {
                 ),
                 Row(
                   children: [
+                    if (!playbackState.isActive)
+                      rangeState.isEnabled
+                          ? FilledButton.icon(
+                              onPressed: () {
+                                ref
+                                    .read(
+                                      rangeSelectionProvider(dive.id).notifier,
+                                    )
+                                    .disableRangeMode();
+                              },
+                              icon: const Icon(Icons.straighten, size: 16),
+                              label: Text(
+                                context
+                                    .l10n
+                                    .diveLog_detail_button_rangeAnalysis,
+                              ),
+                              style: FilledButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                                visualDensity: VisualDensity.compact,
+                              ),
+                            )
+                          : OutlinedButton.icon(
+                              onPressed: () {
+                                ref
+                                    .read(
+                                      rangeSelectionProvider(dive.id).notifier,
+                                    )
+                                    .enableRangeMode();
+                              },
+                              icon: const Icon(Icons.straighten, size: 16),
+                              label: Text(
+                                context
+                                    .l10n
+                                    .diveLog_detail_button_rangeAnalysis,
+                              ),
+                              style: OutlinedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                                visualDensity: VisualDensity.compact,
+                              ),
+                            ),
+                    const SizedBox(width: 8),
                     Text(
                       context.l10n.diveLog_detail_profilePoints(
                         dive.profile.length,
@@ -858,7 +908,7 @@ class _DiveDetailPageState extends ConsumerState<DiveDetailPage> {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
             // Chart with optional range selection overlay
             LayoutBuilder(
               builder: (context, constraints) {
@@ -903,6 +953,11 @@ class _DiveDetailPageState extends ConsumerState<DiveDetailPage> {
                       playbackTimestamp: playbackState.isActive
                           ? playbackState.currentTimestamp
                           : null,
+                      highlightedTimestamp:
+                          _heatMapHoverIndex != null &&
+                              _heatMapHoverIndex! < dive.profile.length
+                          ? dive.profile[_heatMapHoverIndex!].timestamp
+                          : null,
                       onPointSelected: (point) {
                         if (point == null) {
                           setState(() => _selectedPointIndex = null);
@@ -913,6 +968,7 @@ class _DiveDetailPageState extends ConsumerState<DiveDetailPage> {
                           (p) => p.timestamp == point.timestamp,
                         );
                         setState(() {
+                          _heatMapHoverIndex = null;
                           _selectedPointIndex = index >= 0 ? index : null;
                         });
                       },
@@ -935,33 +991,7 @@ class _DiveDetailPageState extends ConsumerState<DiveDetailPage> {
                 );
               },
             ),
-            // Mode toggle buttons (only show when neither mode is active)
-            if (!playbackState.isActive && !rangeState.isEnabled) ...[
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  OutlinedButton.icon(
-                    onPressed: () {
-                      ref
-                          .read(rangeSelectionProvider(dive.id).notifier)
-                          .enableRangeMode();
-                    },
-                    icon: const Icon(Icons.straighten, size: 18),
-                    label: Text(
-                      context.l10n.diveLog_detail_button_rangeAnalysis,
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
-                      ),
-                      visualDensity: VisualDensity.compact,
-                    ),
-                  ),
-                ],
-              ),
-            ],
+            // O2 toxicity section moved to _buildDecoO2Panel (side by side)
             // Playback controls and stats (when playback mode is active)
             if (playbackState.isActive) ...[
               const SizedBox(height: 16),
@@ -1037,31 +1067,6 @@ class _DiveDetailPageState extends ConsumerState<DiveDetailPage> {
         : analysis.decoStatuses.length - 1;
     final status = analysis.decoStatuses[index];
 
-    final exposure = analysis.o2Exposure;
-
-    // Show ppO2 at selected point if available
-    final selectedPpO2 =
-        _selectedPointIndex != null &&
-            _selectedPointIndex! < analysis.ppO2Curve.length
-        ? analysis.ppO2Curve[_selectedPointIndex!]
-        : null;
-
-    // Show CNS% at selected point if available
-    final selectedCns =
-        _selectedPointIndex != null &&
-            analysis.cnsCurve != null &&
-            _selectedPointIndex! < analysis.cnsCurve!.length
-        ? analysis.cnsCurve![_selectedPointIndex!]
-        : null;
-
-    // Show OTU at selected point if available
-    final selectedOtu =
-        _selectedPointIndex != null &&
-            analysis.otuCurve != null &&
-            _selectedPointIndex! < analysis.otuCurve!.length
-        ? analysis.otuCurve![_selectedPointIndex!]
-        : null;
-
     // Build "at time" subtitle when a point is selected
     final String? timeSubtitle = _selectedPointIndex != null
         ? context.l10n.diveLog_detail_collapsed_atTime(
@@ -1069,36 +1074,51 @@ class _DiveDetailPageState extends ConsumerState<DiveDetailPage> {
           )
         : null;
 
-    final Widget decoWidget = CompactDecoPanel(
-      status: status,
-      subtitle: timeSubtitle,
-      decoStatuses: analysis.decoStatuses,
-      selectedIndex: _selectedPointIndex,
-    );
-
-    final Widget o2Widget = CompactO2ToxicityPanel(
-      exposure: exposure,
-      selectedPpO2: selectedPpO2,
-      selectedCns: selectedCns,
-      selectedOtu: selectedOtu,
-      subtitle: timeSubtitle,
-    );
-
-    // Side-by-side on desktop, stacked on phone
-    if (ResponsiveBreakpoints.isDesktop(context)) {
-      return IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(child: decoWidget),
-            const SizedBox(width: 8),
-            Expanded(child: o2Widget),
-          ],
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // O2 toxicity panel
+        Expanded(
+          child: CompactO2ToxicityPanel(
+            exposure: analysis.o2Exposure,
+            selectedPpO2:
+                _selectedPointIndex != null &&
+                    _selectedPointIndex! < analysis.ppO2Curve.length
+                ? analysis.ppO2Curve[_selectedPointIndex!]
+                : null,
+            selectedCns:
+                _selectedPointIndex != null &&
+                    analysis.cnsCurve != null &&
+                    _selectedPointIndex! < analysis.cnsCurve!.length
+                ? analysis.cnsCurve![_selectedPointIndex!]
+                : null,
+            selectedOtu:
+                _selectedPointIndex != null &&
+                    analysis.otuCurve != null &&
+                    _selectedPointIndex! < analysis.otuCurve!.length
+                ? analysis.otuCurve![_selectedPointIndex!]
+                : null,
+            subtitle: timeSubtitle,
+          ),
         ),
-      );
-    }
-
-    return Column(children: [decoWidget, const SizedBox(height: 8), o2Widget]);
+        const SizedBox(width: 8),
+        // Deco status panel
+        Expanded(
+          child: CompactDecoPanel(
+            status: status,
+            subtitle: timeSubtitle,
+            decoStatuses: analysis.decoStatuses,
+            selectedIndex: _selectedPointIndex,
+            onHeatMapHover: (index) {
+              setState(() {
+                _heatMapHoverIndex = index;
+                _selectedPointIndex = index;
+              });
+            },
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _buildSacSegmentsSection(

@@ -372,6 +372,9 @@ class CompactO2ToxicityPanel extends StatelessWidget {
   /// Optional subtitle text (e.g. "@3:42")
   final String? subtitle;
 
+  /// Whether to wrap content in a Card
+  final bool useCard;
+
   const CompactO2ToxicityPanel({
     super.key,
     required this.exposure,
@@ -379,6 +382,7 @@ class CompactO2ToxicityPanel extends StatelessWidget {
     this.selectedCns,
     this.selectedOtu,
     this.subtitle,
+    this.useCard = true,
   });
 
   @override
@@ -386,32 +390,33 @@ class CompactO2ToxicityPanel extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
+    final content = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Header row
+        _buildHeader(context, colorScheme, textTheme),
+        const SizedBox(height: 8),
+
+        // CNS progress section
+        _buildCnsProgress(context, colorScheme, textTheme),
+        const SizedBox(height: 6),
+
+        // Metrics row (Time, OTU, Max ppO2, ppO2 at point)
+        _buildMetricsRow(context, colorScheme, textTheme),
+
+        // Time above thresholds (only if > 0)
+        if (exposure.timeAboveWarning > 0 ||
+            exposure.timeAboveCritical > 0) ...[
+          const SizedBox(height: 4),
+          _buildTimeAboveThresholds(context, colorScheme, textTheme),
+        ],
+      ],
+    );
+
+    if (!useCard) return content;
+
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header row
-            _buildHeader(context, colorScheme, textTheme),
-            const SizedBox(height: 8),
-
-            // CNS progress section
-            _buildCnsProgress(context, colorScheme, textTheme),
-            const SizedBox(height: 6),
-
-            // Metrics row (Time, OTU, Max ppO2, ppO2 at point)
-            _buildMetricsRow(context, colorScheme, textTheme),
-
-            // Time above thresholds (only if > 0)
-            if (exposure.timeAboveWarning > 0 ||
-                exposure.timeAboveCritical > 0) ...[
-              const SizedBox(height: 4),
-              _buildTimeAboveThresholds(context, colorScheme, textTheme),
-            ],
-          ],
-        ),
-      ),
+      child: Padding(padding: const EdgeInsets.all(12), child: content),
     );
   }
 
