@@ -2709,7 +2709,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get diveLog_deco_tissueSlow => 'Lento';
 
   @override
-  String get diveLog_deco_title => 'Status de Descompressao';
+  String get diveLog_deco_title => 'Status Deco';
 
   @override
   String diveLog_deco_totalDecoTime(Object time) {
@@ -2759,7 +2759,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get diveLog_detail_button_playback => 'Reproducao';
 
   @override
-  String get diveLog_detail_button_rangeAnalysis => 'Analise de Intervalo';
+  String get diveLog_detail_button_rangeAnalysis => 'Stats de Intervalo';
 
   @override
   String get diveLog_detail_button_showEnd => 'Mostrar final';
@@ -2966,7 +2966,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get diveLog_detail_section_customFields => 'Custom Fields';
 
   @override
-  String get diveLog_detail_section_decoStatus => 'Status de Descompressao';
+  String get diveLog_detail_section_decoStatus => 'Status Deco';
 
   @override
   String get diveLog_detail_section_details => 'Detalhes';
@@ -4229,7 +4229,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get diveLog_rangeStats_label_sacRate => 'SAC Rate';
 
   @override
-  String get diveLog_rangeStats_title => 'Analise de Intervalo';
+  String get diveLog_rangeStats_title => 'Stats de Intervalo';
 
   @override
   String get diveLog_rangeStats_tooltip_close => 'Fechar analise de intervalo';

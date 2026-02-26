@@ -4646,7 +4646,7 @@ abstract class AppLocalizations {
   /// No description provided for @diveLog_deco_title.
   ///
   /// In en, this message translates to:
-  /// **'Decompression Status'**
+  /// **'Deco Status'**
   String get diveLog_deco_title;
 
   /// No description provided for @diveLog_deco_totalDecoTime.
@@ -4724,7 +4724,7 @@ abstract class AppLocalizations {
   /// No description provided for @diveLog_detail_button_rangeAnalysis.
   ///
   /// In en, this message translates to:
-  /// **'Range Analysis'**
+  /// **'Range Stats'**
   String get diveLog_detail_button_rangeAnalysis;
 
   /// No description provided for @diveLog_detail_button_showEnd.
@@ -5059,7 +5059,7 @@ abstract class AppLocalizations {
   /// No description provided for @diveLog_detail_section_decoStatus.
   ///
   /// In en, this message translates to:
-  /// **'Decompression Status'**
+  /// **'Deco Status'**
   String get diveLog_detail_section_decoStatus;
 
   /// No description provided for @diveLog_detail_section_details.
@@ -7231,7 +7231,7 @@ abstract class AppLocalizations {
   /// No description provided for @diveLog_rangeStats_title.
   ///
   /// In en, this message translates to:
-  /// **'Range Analysis'**
+  /// **'Range Stats'**
   String get diveLog_rangeStats_title;
 
   /// No description provided for @diveLog_rangeStats_tooltip_close.

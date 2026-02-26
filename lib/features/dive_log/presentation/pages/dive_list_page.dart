@@ -484,201 +484,203 @@ class DiveListTile extends ConsumerWidget {
 
           return Padding(
             padding: const EdgeInsets.all(12),
-            child: Row(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Selection checkbox or dive number badge
-                if (isSelectionMode)
-                  Checkbox(
-                    value: isSelected,
-                    onChanged: (_) => onTap?.call(),
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    visualDensity: VisualDensity.compact,
-                  )
-                else
-                  CircleAvatar(
-                    backgroundColor: colorScheme.primaryContainer,
-                    child: Text(
-                      '#$diveNumber',
-                      style: TextStyle(
-                        color: colorScheme.onPrimaryContainer,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
+                // Top row: avatar/checkbox, text info, chart, chevron
+                Row(
+                  children: [
+                    // Selection checkbox or dive number badge
+                    if (isSelectionMode)
+                      Checkbox(
+                        value: isSelected,
+                        onChanged: (_) => onTap?.call(),
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        visualDensity: VisualDensity.compact,
+                      )
+                    else
+                      CircleAvatar(
+                        backgroundColor: colorScheme.primaryContainer,
+                        child: Text(
+                          '#$diveNumber',
+                          style: TextStyle(
+                            color: colorScheme.onPrimaryContainer,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    const SizedBox(width: 12),
+                    // Main text content (site, location, date)
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Site name with favorite and rating
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  siteName ??
+                                      context.l10n.diveLog_listPage_unknownSite,
+                                  style: Theme.of(context).textTheme.titleMedium
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                        color: primaryTextColor,
+                                      ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              if (isFavorite) ...[
+                                const SizedBox(width: 4),
+                                ExcludeSemantics(
+                                  child: Icon(
+                                    Icons.favorite,
+                                    size: 18,
+                                    color: Colors.red.shade400,
+                                  ),
+                                ),
+                              ],
+                              if (rating != null) ...[
+                                const SizedBox(width: 8),
+                                ExcludeSemantics(
+                                  child: Icon(
+                                    Icons.star,
+                                    size: 16,
+                                    color: Colors.amber.shade600,
+                                  ),
+                                ),
+                                const SizedBox(width: 2),
+                                Text(
+                                  '$rating',
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.w500,
+                                        color: primaryTextColor,
+                                      ),
+                                ),
+                              ],
+                            ],
+                          ),
+                          // Site location (country/region)
+                          if (siteLocation != null &&
+                              siteLocation!.isNotEmpty) ...[
+                            const SizedBox(height: 2),
+                            Text(
+                              siteLocation!,
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(color: secondaryTextColor),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                          const SizedBox(height: 4),
+                          // Date and time
+                          Text(
+                            units.formatDateTime(dateTime, l10n: context.l10n),
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(color: secondaryTextColor),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                const SizedBox(width: 12),
-                // Main content
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    // Dive profile mini chart (right side)
+                    if (profile.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsetsDirectional.only(start: 8),
+                        child: SizedBox(
+                          width: chartWidth,
+                          height: 50,
+                          child: DiveProfileMiniChart(
+                            profile: profile,
+                            height: 50,
+                            color: accentColor,
+                          ),
+                        ),
+                      ),
+                    // Chevron
+                    ExcludeSemantics(
+                      child: Icon(
+                        Icons.chevron_right,
+                        color: secondaryTextColor,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                // Stats row: full-width below the top row so labels aren't truncated
+                Padding(
+                  padding: const EdgeInsetsDirectional.only(start: 52),
+                  child: Row(
                     children: [
-                      // Site name with favorite and rating
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              siteName ??
-                                  context.l10n.diveLog_listPage_unknownSite,
-                              style: Theme.of(context).textTheme.titleMedium
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                    color: primaryTextColor,
-                                  ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          if (isFavorite) ...[
-                            const SizedBox(width: 4),
-                            ExcludeSemantics(
-                              child: Icon(
-                                Icons.favorite,
-                                size: 18,
-                                color: Colors.red.shade400,
-                              ),
-                            ),
-                          ],
-                          if (rating != null) ...[
-                            const SizedBox(width: 8),
-                            ExcludeSemantics(
-                              child: Icon(
-                                Icons.star,
-                                size: 16,
-                                color: Colors.amber.shade600,
-                              ),
-                            ),
-                            const SizedBox(width: 2),
-                            Text(
-                              '$rating',
-                              style: Theme.of(context).textTheme.bodySmall
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.w500,
-                                    color: primaryTextColor,
-                                  ),
-                            ),
-                          ],
-                        ],
-                      ),
-                      // Site location (country/region)
-                      if (siteLocation != null && siteLocation!.isNotEmpty) ...[
-                        const SizedBox(height: 2),
-                        Text(
-                          siteLocation!,
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(color: secondaryTextColor),
-                          overflow: TextOverflow.ellipsis,
+                      ExcludeSemantics(
+                        child: Icon(
+                          Icons.arrow_downward,
+                          size: 14,
+                          color: maxDepth != null
+                              ? accentColor
+                              : secondaryTextColor,
                         ),
-                      ],
-                      const SizedBox(height: 4),
-                      // Date and time
+                      ),
+                      const SizedBox(width: 4),
                       Text(
-                        units.formatDateTime(dateTime, l10n: context.l10n),
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: secondaryTextColor,
+                        units.formatDepth(maxDepth),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: maxDepth != null
+                              ? accentColor
+                              : secondaryTextColor,
                         ),
                       ),
-                      const SizedBox(height: 6),
-                      // Depth and duration stats (always shown)
-                      Row(
-                        children: [
-                          ExcludeSemantics(
-                            child: Icon(
-                              Icons.arrow_downward,
-                              size: 14,
-                              color: maxDepth != null
-                                  ? accentColor
-                                  : secondaryTextColor,
-                            ),
+                      const SizedBox(width: 16),
+                      ExcludeSemantics(
+                        child: Icon(
+                          Icons.timer_outlined,
+                          size: 14,
+                          color: duration != null
+                              ? accentColor
+                              : secondaryTextColor,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        duration != null ? _formatDuration(duration!) : '--',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: duration != null
+                              ? accentColor
+                              : secondaryTextColor,
+                        ),
+                      ),
+                      if (waterTemp != null) ...[
+                        const SizedBox(width: 16),
+                        ExcludeSemantics(
+                          child: Icon(
+                            Icons.thermostat_outlined,
+                            size: 14,
+                            color: accentColor,
                           ),
-                          const SizedBox(width: 4),
-                          Flexible(
-                            child: Text(
-                              units.formatDepth(maxDepth),
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.bodySmall
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                    color: maxDepth != null
-                                        ? accentColor
-                                        : secondaryTextColor,
-                                  ),
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          ExcludeSemantics(
-                            child: Icon(
-                              Icons.timer_outlined,
-                              size: 14,
-                              color: duration != null
-                                  ? accentColor
-                                  : secondaryTextColor,
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          Flexible(
-                            child: Text(
-                              duration != null
-                                  ? _formatDuration(duration!)
-                                  : '--',
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.bodySmall
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                    color: duration != null
-                                        ? accentColor
-                                        : secondaryTextColor,
-                                  ),
-                            ),
-                          ),
-                          if (waterTemp != null) ...[
-                            const SizedBox(width: 16),
-                            ExcludeSemantics(
-                              child: Icon(
-                                Icons.thermostat_outlined,
-                                size: 14,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          units.formatTemperature(waterTemp),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                fontWeight: FontWeight.w600,
                                 color: accentColor,
                               ),
-                            ),
-                            const SizedBox(width: 4),
-                            Flexible(
-                              child: Text(
-                                units.formatTemperature(waterTemp),
-                                overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context).textTheme.bodySmall
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                      color: accentColor,
-                                    ),
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
-                      // Tags
-                      if (tags.isNotEmpty) ...[
-                        const SizedBox(height: 6),
-                        TagChips(tags: tags, maxTags: 3),
+                        ),
                       ],
                     ],
                   ),
                 ),
-                // Dive profile mini chart (right side)
-                if (profile.isNotEmpty)
+                // Tags
+                if (tags.isNotEmpty) ...[
+                  const SizedBox(height: 6),
                   Padding(
-                    padding: const EdgeInsetsDirectional.only(start: 8),
-                    child: SizedBox(
-                      width: chartWidth,
-                      height: 50,
-                      child: DiveProfileMiniChart(
-                        profile: profile,
-                        height: 50,
-                        color: accentColor,
-                      ),
-                    ),
+                    padding: const EdgeInsetsDirectional.only(start: 52),
+                    child: TagChips(tags: tags, maxTags: 3),
                   ),
-                // Chevron
-                ExcludeSemantics(
-                  child: Icon(Icons.chevron_right, color: secondaryTextColor),
-                ),
+                ],
               ],
             ),
           );

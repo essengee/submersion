@@ -2696,7 +2696,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get diveLog_deco_tissueSlow => 'Lassu';
 
   @override
-  String get diveLog_deco_title => 'Dekompresszios allapot';
+  String get diveLog_deco_title => 'Deko allapot';
 
   @override
   String diveLog_deco_totalDecoTime(Object time) {
@@ -2746,7 +2746,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get diveLog_detail_button_playback => 'Lejatszas';
 
   @override
-  String get diveLog_detail_button_rangeAnalysis => 'Tartomany elemzes';
+  String get diveLog_detail_button_rangeAnalysis => 'Tartomany stat.';
 
   @override
   String get diveLog_detail_button_showEnd => 'Veg mutatasa';
@@ -2953,7 +2953,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get diveLog_detail_section_customFields => 'Custom Fields';
 
   @override
-  String get diveLog_detail_section_decoStatus => 'Dekompresszios allapot';
+  String get diveLog_detail_section_decoStatus => 'Deko allapot';
 
   @override
   String get diveLog_detail_section_details => 'Reszletek';
@@ -4211,7 +4211,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get diveLog_rangeStats_label_sacRate => 'SAC Rate';
 
   @override
-  String get diveLog_rangeStats_title => 'Tartomany elemzes';
+  String get diveLog_rangeStats_title => 'Tartomany stat.';
 
   @override
   String get diveLog_rangeStats_tooltip_close => 'Tartomany elemzes bezarasa';

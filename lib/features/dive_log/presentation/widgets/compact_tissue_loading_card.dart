@@ -62,12 +62,17 @@ class _CompactTissueLoadingCardState extends State<CompactTissueLoadingCard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header with M-value legend
+            // Header with M-value legend (hidden on narrow/phone screens)
+            // Uses MediaQuery instead of LayoutBuilder to avoid conflict
+            // with IntrinsicHeight ancestor in dive_detail_page.dart
             Row(
               children: [
-                Text(
-                  context.l10n.diveLog_deco_sectionTissueLoading,
-                  style: textTheme.titleSmall,
+                Flexible(
+                  child: Text(
+                    context.l10n.diveLog_deco_sectionTissueLoading,
+                    style: textTheme.titleSmall,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
                 if (widget.subtitle != null) ...[
                   const SizedBox(width: 8),
@@ -79,19 +84,23 @@ class _CompactTissueLoadingCardState extends State<CompactTissueLoadingCard> {
                   ),
                 ],
                 const Spacer(),
-                Container(
-                  width: 10,
-                  height: 1.5,
-                  color: colorScheme.error.withValues(alpha: 0.5),
-                ),
-                const SizedBox(width: 3),
-                Text(
-                  'M-value',
-                  style: textTheme.labelSmall?.copyWith(
-                    fontSize: 11,
-                    color: colorScheme.onSurfaceVariant,
+                // Hide M-value legend on phone screens (< 500px) where
+                // the two-column layout leaves insufficient card width
+                if (MediaQuery.sizeOf(context).width >= 500) ...[
+                  Container(
+                    width: 10,
+                    height: 1.5,
+                    color: colorScheme.error.withValues(alpha: 0.5),
                   ),
-                ),
+                  const SizedBox(width: 3),
+                  Text(
+                    'M-value',
+                    style: textTheme.labelSmall?.copyWith(
+                      fontSize: 11,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
               ],
             ),
             const SizedBox(height: 14),

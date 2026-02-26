@@ -2663,7 +2663,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get diveLog_deco_tissueSlow => 'Slow';
 
   @override
-  String get diveLog_deco_title => 'Decompression Status';
+  String get diveLog_deco_title => 'Deco Status';
 
   @override
   String diveLog_deco_totalDecoTime(Object time) {
@@ -2713,7 +2713,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get diveLog_detail_button_playback => 'Playback';
 
   @override
-  String get diveLog_detail_button_rangeAnalysis => 'Range Analysis';
+  String get diveLog_detail_button_rangeAnalysis => 'Range Stats';
 
   @override
   String get diveLog_detail_button_showEnd => 'Show end';
@@ -2919,7 +2919,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get diveLog_detail_section_customFields => 'Custom Fields';
 
   @override
-  String get diveLog_detail_section_decoStatus => 'Decompression Status';
+  String get diveLog_detail_section_decoStatus => 'Deco Status';
 
   @override
   String get diveLog_detail_section_details => 'Details';
@@ -4152,7 +4152,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get diveLog_rangeStats_label_sacRate => 'SAC Rate';
 
   @override
-  String get diveLog_rangeStats_title => 'Range Analysis';
+  String get diveLog_rangeStats_title => 'Range Stats';
 
   @override
   String get diveLog_rangeStats_tooltip_close => 'Close range analysis';

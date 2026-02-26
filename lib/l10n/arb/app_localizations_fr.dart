@@ -2723,7 +2723,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get diveLog_deco_tissueSlow => 'Lent';
 
   @override
-  String get diveLog_deco_title => 'Statut de decompression';
+  String get diveLog_deco_title => 'Statut deco';
 
   @override
   String diveLog_deco_totalDecoTime(Object time) {
@@ -2773,7 +2773,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get diveLog_detail_button_playback => 'Lecture';
 
   @override
-  String get diveLog_detail_button_rangeAnalysis => 'Analyse de plage';
+  String get diveLog_detail_button_rangeAnalysis => 'Stats plage';
 
   @override
   String get diveLog_detail_button_showEnd => 'Voir la fin';
@@ -2981,7 +2981,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get diveLog_detail_section_customFields => 'Custom Fields';
 
   @override
-  String get diveLog_detail_section_decoStatus => 'Statut de decompression';
+  String get diveLog_detail_section_decoStatus => 'Statut deco';
 
   @override
   String get diveLog_detail_section_details => 'Details';
@@ -4248,7 +4248,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get diveLog_rangeStats_label_sacRate => 'SAC Rate';
 
   @override
-  String get diveLog_rangeStats_title => 'Analyse de plage';
+  String get diveLog_rangeStats_title => 'Stats plage';
 
   @override
   String get diveLog_rangeStats_tooltip_close => 'Fermer l\'analyse de plage';

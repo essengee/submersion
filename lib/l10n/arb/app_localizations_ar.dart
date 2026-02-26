@@ -2644,7 +2644,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get diveLog_deco_tissueSlow => 'بطيئة';
 
   @override
-  String get diveLog_deco_title => 'حالة تخفيف الضغط';
+  String get diveLog_deco_title => 'حالة الديكو';
 
   @override
   String diveLog_deco_totalDecoTime(Object time) {
@@ -2694,7 +2694,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get diveLog_detail_button_playback => 'تشغيل';
 
   @override
-  String get diveLog_detail_button_rangeAnalysis => 'تحليل النطاق';
+  String get diveLog_detail_button_rangeAnalysis => 'إحصائيات النطاق';
 
   @override
   String get diveLog_detail_button_showEnd => 'عرض النهاية';
@@ -2900,7 +2900,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get diveLog_detail_section_customFields => 'Custom Fields';
 
   @override
-  String get diveLog_detail_section_decoStatus => 'حالة تخفيف الضغط';
+  String get diveLog_detail_section_decoStatus => 'حالة الديكو';
 
   @override
   String get diveLog_detail_section_details => 'التفاصيل';
@@ -4125,7 +4125,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get diveLog_rangeStats_label_sacRate => 'SAC Rate';
 
   @override
-  String get diveLog_rangeStats_title => 'تحليل النطاق';
+  String get diveLog_rangeStats_title => 'إحصائيات النطاق';
 
   @override
   String get diveLog_rangeStats_tooltip_close => 'إغلاق تحليل النطاق';

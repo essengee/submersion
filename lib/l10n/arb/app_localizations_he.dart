@@ -2631,7 +2631,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get diveLog_deco_tissueSlow => 'איטית';
 
   @override
-  String get diveLog_deco_title => 'מצב דקומפרסיה';
+  String get diveLog_deco_title => 'מצב דקו';
 
   @override
   String diveLog_deco_totalDecoTime(Object time) {
@@ -2681,7 +2681,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get diveLog_detail_button_playback => 'הפעלה';
 
   @override
-  String get diveLog_detail_button_rangeAnalysis => 'ניתוח טווח';
+  String get diveLog_detail_button_rangeAnalysis => 'סטטיסטיקת טווח';
 
   @override
   String get diveLog_detail_button_showEnd => 'הצגת סיום';
@@ -2887,7 +2887,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get diveLog_detail_section_customFields => 'Custom Fields';
 
   @override
-  String get diveLog_detail_section_decoStatus => 'מצב דקומפרסיה';
+  String get diveLog_detail_section_decoStatus => 'מצב דקו';
 
   @override
   String get diveLog_detail_section_details => 'פרטים';
@@ -4107,7 +4107,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get diveLog_rangeStats_label_sacRate => 'SAC Rate';
 
   @override
-  String get diveLog_rangeStats_title => 'ניתוח טווח';
+  String get diveLog_rangeStats_title => 'סטטיסטיקת טווח';
 
   @override
   String get diveLog_rangeStats_tooltip_close => 'סגירת ניתוח טווח';

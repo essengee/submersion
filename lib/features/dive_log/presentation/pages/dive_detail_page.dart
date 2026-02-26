@@ -872,15 +872,6 @@ class _DiveDetailPageState extends ConsumerState<DiveDetailPage> {
                               ),
                             ),
                     const SizedBox(width: 8),
-                    Text(
-                      context.l10n.diveLog_detail_profilePoints(
-                        dive.profile.length,
-                      ),
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
                     IconButton(
                       icon: _isExportingProfile
                           ? const SizedBox(
@@ -999,6 +990,17 @@ class _DiveDetailPageState extends ConsumerState<DiveDetailPage> {
                   ],
                 );
               },
+            ),
+            // Profile point count (bottom-right, inline with x-axis)
+            Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+                context.l10n.diveLog_detail_profilePoints(dive.profile.length),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  fontSize: 11,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              ),
             ),
             // O2 toxicity section moved to _buildDecoO2Panel (side by side)
             // Playback controls and stats (when playback mode is active)

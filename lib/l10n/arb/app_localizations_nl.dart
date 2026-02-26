@@ -2688,7 +2688,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get diveLog_deco_tissueSlow => 'Langzaam';
 
   @override
-  String get diveLog_deco_title => 'Decompressiestatus';
+  String get diveLog_deco_title => 'Decostatus';
 
   @override
   String diveLog_deco_totalDecoTime(Object time) {
@@ -2738,7 +2738,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get diveLog_detail_button_playback => 'Afspelen';
 
   @override
-  String get diveLog_detail_button_rangeAnalysis => 'Bereikanalyse';
+  String get diveLog_detail_button_rangeAnalysis => 'Bereikstatistieken';
 
   @override
   String get diveLog_detail_button_showEnd => 'Toon einde';
@@ -2945,7 +2945,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get diveLog_detail_section_customFields => 'Custom Fields';
 
   @override
-  String get diveLog_detail_section_decoStatus => 'Decompressiestatus';
+  String get diveLog_detail_section_decoStatus => 'Decostatus';
 
   @override
   String get diveLog_detail_section_details => 'Details';
@@ -4195,7 +4195,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get diveLog_rangeStats_label_sacRate => 'SAC Rate';
 
   @override
-  String get diveLog_rangeStats_title => 'Bereikanalyse';
+  String get diveLog_rangeStats_title => 'Bereikstatistieken';
 
   @override
   String get diveLog_rangeStats_tooltip_close => 'Bereikanalyse sluiten';
