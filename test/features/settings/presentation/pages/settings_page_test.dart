@@ -51,6 +51,9 @@ class _MockSettingsNotifier extends StateNotifier<AppSettings>
   Future<void> setThemeMode(ThemeMode mode) async =>
       state = state.copyWith(themeMode: mode);
   @override
+  Future<void> setThemePresetId(String presetId) async =>
+      state = state.copyWith(themePresetId: presetId);
+  @override
   Future<void> setLocale(String locale) async =>
       state = state.copyWith(locale: locale);
   @override

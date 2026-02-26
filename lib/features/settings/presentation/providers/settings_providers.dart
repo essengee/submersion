@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:submersion/core/constants/card_color.dart';
 import 'package:submersion/core/providers/provider.dart';
+import 'package:submersion/core/theme/app_theme_preset.dart';
+import 'package:submersion/core/theme/app_theme_registry.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:submersion/core/constants/profile_metrics.dart';
@@ -62,6 +64,7 @@ class AppSettings {
   final TimeFormat timeFormat;
   final DateFormatPreference dateFormat;
   final ThemeMode themeMode;
+  final String themePresetId;
   final String locale;
   final String defaultDiveType;
   final double defaultTankVolume;
@@ -214,6 +217,7 @@ class AppSettings {
     this.timeFormat = TimeFormat.twelveHour,
     this.dateFormat = DateFormatPreference.mmmDYYYY,
     this.themeMode = ThemeMode.system,
+    this.themePresetId = 'submersion',
     this.locale = 'system',
     this.defaultDiveType = 'recreational',
     this.defaultTankVolume = 12.0,
@@ -313,6 +317,7 @@ class AppSettings {
     TimeFormat? timeFormat,
     DateFormatPreference? dateFormat,
     ThemeMode? themeMode,
+    String? themePresetId,
     String? locale,
     String? defaultDiveType,
     double? defaultTankVolume,
@@ -375,6 +380,7 @@ class AppSettings {
       timeFormat: timeFormat ?? this.timeFormat,
       dateFormat: dateFormat ?? this.dateFormat,
       themeMode: themeMode ?? this.themeMode,
+      themePresetId: themePresetId ?? this.themePresetId,
       locale: locale ?? this.locale,
       defaultDiveType: defaultDiveType ?? this.defaultDiveType,
       defaultTankVolume: defaultTankVolume ?? this.defaultTankVolume,
@@ -601,6 +607,11 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
 
   Future<void> setThemeMode(ThemeMode mode) async {
     state = state.copyWith(themeMode: mode);
+    await _saveSettings();
+  }
+
+  Future<void> setThemePresetId(String presetId) async {
+    state = state.copyWith(themePresetId: presetId);
     await _saveSettings();
   }
 
@@ -945,6 +956,11 @@ final altitudeUnitProvider = Provider<AltitudeUnit>((ref) {
 
 final themeModeProvider = Provider<ThemeMode>((ref) {
   return ref.watch(settingsProvider.select((s) => s.themeMode));
+});
+
+final themePresetProvider = Provider<AppThemePreset>((ref) {
+  final presetId = ref.watch(settingsProvider.select((s) => s.themePresetId));
+  return AppThemeRegistry.findById(presetId);
 });
 
 final localeProvider = Provider<String>((ref) {

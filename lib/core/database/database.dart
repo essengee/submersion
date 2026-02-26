@@ -536,6 +536,8 @@ class DiverSettings extends Table {
   TextColumn get dateFormat => text().withDefault(const Constant('mmmDYYYY'))();
   // Theme
   TextColumn get themeMode => text().withDefault(const Constant('system'))();
+  TextColumn get themePreset =>
+      text().withDefault(const Constant('submersion'))();
   // Locale (language preference: 'system', 'en', 'es', 'fr', etc.)
   TextColumn get locale => text().withDefault(const Constant('system'))();
   // Defaults
@@ -1110,7 +1112,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
 
   @override
-  int get schemaVersion => 42;
+  int get schemaVersion => 43;
 
   @override
   MigrationStrategy get migration {
@@ -2003,6 +2005,11 @@ class AppDatabase extends _$AppDatabase {
           // Migrate existing CNS toggle: if user had it enabled, set CNS source to computer (0)
           await customStatement(
             'UPDATE diver_settings SET default_cns_source = 0 WHERE use_dive_computer_cns_data = 1',
+          );
+        }
+        if (from < 43) {
+          await customStatement(
+            "ALTER TABLE diver_settings ADD COLUMN theme_preset TEXT NOT NULL DEFAULT 'submersion'",
           );
         }
       },

@@ -15741,7 +15741,7 @@ abstract class AppLocalizations {
   /// No description provided for @settings_about_description.
   ///
   /// In en, this message translates to:
-  /// **'Your dives. Your data.'**
+  /// **'Dive deeper.'**
   String get settings_about_description;
 
   /// No description provided for @settings_about_header.
@@ -15923,6 +15923,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Theme'**
   String get settings_appearance_header_theme;
+
+  /// No description provided for @settings_themes_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose Theme'**
+  String get settings_themes_title;
+
+  /// No description provided for @settings_themes_current.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme'**
+  String get settings_themes_current;
+
+  /// No description provided for @theme_submersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Submersion'**
+  String get theme_submersion;
+
+  /// No description provided for @theme_console.
+  ///
+  /// In en, this message translates to:
+  /// **'Console'**
+  String get theme_console;
+
+  /// No description provided for @theme_tropical.
+  ///
+  /// In en, this message translates to:
+  /// **'Tropical'**
+  String get theme_tropical;
+
+  /// No description provided for @theme_minimalist.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimalist'**
+  String get theme_minimalist;
+
+  /// No description provided for @theme_deep.
+  ///
+  /// In en, this message translates to:
+  /// **'Deep'**
+  String get theme_deep;
 
   /// No description provided for @settings_appearance_mapBackgroundDiveCards.
   ///

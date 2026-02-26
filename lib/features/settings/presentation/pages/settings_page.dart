@@ -18,6 +18,7 @@ import 'package:submersion/features/settings/presentation/providers/storage_prov
 import 'package:submersion/features/settings/presentation/providers/sync_providers.dart';
 import 'package:submersion/features/settings/presentation/pages/diver_profile_hub_page.dart';
 import 'package:submersion/features/settings/presentation/pages/language_settings_page.dart';
+import 'package:submersion/core/theme/app_theme_registry.dart';
 import 'package:submersion/features/settings/presentation/widgets/settings_list_content.dart';
 import 'package:submersion/features/settings/presentation/widgets/gradient_preset_picker.dart';
 import 'package:submersion/features/settings/presentation/widgets/settings_summary_widget.dart';
@@ -914,6 +915,14 @@ class _AppearanceSectionContentState
             context.l10n.settings_appearance_header_theme,
           ),
           const SizedBox(height: 8),
+          ListTile(
+            leading: const Icon(Icons.palette_outlined),
+            title: Text(context.l10n.settings_themes_current),
+            subtitle: Text(_resolveCurrentThemeName(context)),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.push('/settings/themes'),
+          ),
+          const SizedBox(height: 8),
           Card(
             child: Column(
               children: ThemeMode.values.map((mode) {
@@ -1421,6 +1430,26 @@ class _AppearanceSectionContentState
       CardColorAttribute.temperature =>
         context.l10n.settings_appearance_cardColorAttribute_temperature,
     };
+  }
+
+  String _resolveCurrentThemeName(BuildContext context) {
+    final presetId = ref.watch(settingsProvider.select((s) => s.themePresetId));
+    final preset = AppThemeRegistry.findById(presetId);
+    final l10n = context.l10n;
+    switch (preset.nameKey) {
+      case 'theme_submersion':
+        return l10n.theme_submersion;
+      case 'theme_console':
+        return l10n.theme_console;
+      case 'theme_tropical':
+        return l10n.theme_tropical;
+      case 'theme_minimalist':
+        return l10n.theme_minimalist;
+      case 'theme_deep':
+        return l10n.theme_deep;
+      default:
+        return preset.nameKey;
+    }
   }
 
   Widget _buildLanguageSubPage(BuildContext context, AppSettings settings) {

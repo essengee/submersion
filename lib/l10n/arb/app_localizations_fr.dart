@@ -9268,6 +9268,27 @@ class AppLocalizationsFr extends AppLocalizations {
   String get settings_appearance_header_theme => 'Theme';
 
   @override
+  String get settings_themes_title => 'Choose Theme';
+
+  @override
+  String get settings_themes_current => 'Theme';
+
+  @override
+  String get theme_submersion => 'Submersion';
+
+  @override
+  String get theme_console => 'Console';
+
+  @override
+  String get theme_tropical => 'Tropical';
+
+  @override
+  String get theme_minimalist => 'Minimalist';
+
+  @override
+  String get theme_deep => 'Deep';
+
+  @override
   String get settings_appearance_mapBackgroundDiveCards =>
       'Fond cartographique sur les cartes de plongee';
 

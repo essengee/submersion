@@ -63,6 +63,7 @@ import 'package:submersion/features/backup/presentation/pages/backup_settings_pa
 import 'package:submersion/features/settings/presentation/pages/settings_page.dart';
 import 'package:submersion/features/settings/presentation/pages/appearance_page.dart';
 import 'package:submersion/features/settings/presentation/pages/language_settings_page.dart';
+import 'package:submersion/features/settings/presentation/pages/theme_gallery_page.dart';
 import 'package:submersion/features/settings/presentation/pages/cloud_sync_page.dart';
 import 'package:submersion/features/settings/presentation/pages/storage_settings_page.dart';
 import 'package:submersion/features/settings/presentation/pages/diver_profile_hub_page.dart';
@@ -715,6 +716,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 path: 'appearance',
                 name: 'appearance',
                 builder: (context, state) => const AppearancePage(),
+              ),
+              GoRoute(
+                path: 'themes',
+                name: 'themes',
+                builder: (context, state) => const ThemeGalleryPage(),
               ),
               GoRoute(
                 path: 'language',

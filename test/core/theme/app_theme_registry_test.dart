@@ -1,0 +1,90 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:submersion/core/theme/app_theme_registry.dart';
+
+void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  GoogleFonts.config.allowRuntimeFetching = false;
+
+  // Force-initialize all theme finals inside a guarded zone so that the
+  // expected google_fonts font-loading errors (fonts are not bundled in
+  // test assets) do not escape as unhandled async exceptions.
+  setUpAll(() async {
+    await runZonedGuarded(
+      () async {
+        // Touching .presets triggers lazy init of consoleLight, tropicalLight,
+        // etc., which call GoogleFonts.*TextTheme() and fire off font loads
+        // that will fail in the test environment.
+        // ignore: unnecessary_statements
+        AppThemeRegistry.presets;
+        try {
+          await GoogleFonts.pendingFonts();
+        } catch (_) {
+          // Expected: fonts are not bundled in test assets.
+        }
+      },
+      (error, stack) {
+        // Silently absorb google_fonts errors in test environment.
+      },
+    );
+  });
+
+  group('AppThemeRegistry', () {
+    test('contains all 5 presets', () {
+      expect(AppThemeRegistry.presets.length, 5);
+    });
+
+    test('first preset is submersion', () {
+      expect(AppThemeRegistry.presets.first.id, 'submersion');
+    });
+
+    test('preset ids are submersion, console, tropical, minimalist, deep', () {
+      final ids = AppThemeRegistry.presets.map((p) => p.id).toList();
+      expect(ids, ['submersion', 'console', 'tropical', 'minimalist', 'deep']);
+    });
+
+    test('findById returns correct preset', () {
+      final preset = AppThemeRegistry.findById('console');
+      expect(preset.id, 'console');
+      expect(preset.nameKey, 'theme_console');
+    });
+
+    test('findById returns submersion for unknown id', () {
+      final preset = AppThemeRegistry.findById('nonexistent');
+      expect(preset.id, 'submersion');
+    });
+
+    test('all presets have non-null lightTheme and darkTheme', () {
+      for (final preset in AppThemeRegistry.presets) {
+        expect(preset.lightTheme, isNotNull, reason: '${preset.id} lightTheme');
+        expect(preset.darkTheme, isNotNull, reason: '${preset.id} darkTheme');
+      }
+    });
+  });
+
+  group('resolveTheme', () {
+    test('returns light ThemeData for light brightness', () {
+      final preset = AppThemeRegistry.findById('submersion');
+      final theme = AppThemeRegistry.resolveTheme(preset, Brightness.light);
+      expect(theme.brightness, Brightness.light);
+      expect(theme.useMaterial3, true);
+    });
+
+    test('returns dark ThemeData for dark brightness', () {
+      final preset = AppThemeRegistry.findById('submersion');
+      final theme = AppThemeRegistry.resolveTheme(preset, Brightness.dark);
+      expect(theme.brightness, Brightness.dark);
+      expect(theme.useMaterial3, true);
+    });
+
+    test('returns correct theme for full preset', () {
+      final preset = AppThemeRegistry.findById('console');
+      final theme = AppThemeRegistry.resolveTheme(preset, Brightness.dark);
+      expect(theme, isNotNull);
+      expect(theme.brightness, Brightness.dark);
+    });
+  });
+}

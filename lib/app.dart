@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:submersion/l10n/arb/app_localizations.dart';
 import 'package:submersion/core/providers/provider.dart';
 
-import 'package:submersion/core/theme/app_theme.dart';
+import 'package:submersion/core/theme/app_theme_registry.dart';
 import 'package:submersion/core/router/app_router.dart';
 import 'package:submersion/features/settings/presentation/providers/settings_providers.dart';
 import 'package:submersion/features/settings/presentation/providers/sync_providers.dart';
@@ -60,6 +60,7 @@ class _SubmersionAppState extends ConsumerState<SubmersionApp>
   Widget build(BuildContext context) {
     final router = ref.watch(appRouterProvider);
     final themeMode = ref.watch(themeModeProvider);
+    final themePreset = ref.watch(themePresetProvider);
     final localeSetting = ref.watch(localeProvider);
 
     // Restore the last used cloud sync provider on app startup
@@ -68,8 +69,8 @@ class _SubmersionAppState extends ConsumerState<SubmersionApp>
     return MaterialApp.router(
       title: 'Submersion',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
+      theme: AppThemeRegistry.resolveTheme(themePreset, Brightness.light),
+      darkTheme: AppThemeRegistry.resolveTheme(themePreset, Brightness.dark),
       themeMode: themeMode,
       locale: _resolveLocale(localeSetting),
       localizationsDelegates: AppLocalizations.localizationsDelegates,

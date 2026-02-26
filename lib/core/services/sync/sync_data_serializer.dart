@@ -1280,6 +1280,7 @@ class SyncDataSerializer {
       'dateFormat': 'mmmDYYYY',
       // Theme
       'themeMode': 'system',
+      'themePreset': 'submersion',
       // Defaults
       'defaultDiveType': 'recreational',
       'defaultTankVolume': 12.0,
@@ -1360,6 +1361,7 @@ class SyncDataSerializer {
     'timeFormat': r.timeFormat,
     'dateFormat': r.dateFormat,
     'themeMode': r.themeMode,
+    'themePreset': r.themePreset,
     'defaultDiveType': r.defaultDiveType,
     'defaultTankVolume': r.defaultTankVolume,
     'defaultStartPressure': r.defaultStartPressure,
