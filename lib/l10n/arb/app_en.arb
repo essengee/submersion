@@ -2089,7 +2089,9 @@
   "diveLog_tank_label_tankPreset": "Tank Preset",
   "diveLog_tank_label_volume": "Volume",
   "diveLog_tank_label_workingPressure": "Working P",
+  "diveLog_tank_mndHelper": "Set to auto-calculate He%",
   "diveLog_tank_modInfo": "MOD: {depth} (ppO2 1.4)",
+  "diveLog_tank_modMndInfo": "MOD: {mod} (ppO\u2082 1.4) | MND: {mnd}",
   "diveLog_tank_section_gasMix": "Gas Mix",
   "diveLog_tank_selectPreset": "Select Preset...",
   "diveLog_tank_title": "Tank {number}",
@@ -2604,6 +2606,16 @@
   "@diveLog_tank_modInfo": {
     "placeholders": {
       "depth": {
+        "type": "Object"
+      }
+    }
+  },
+  "@diveLog_tank_modMndInfo": {
+    "placeholders": {
+      "mod": {
+        "type": "Object"
+      },
+      "mnd": {
         "type": "Object"
       }
     }

@@ -1456,6 +1456,7 @@
   "diveLog_tank_label_volume": "Volume",
   "diveLog_tank_label_workingPressure": "Pression de service",
   "diveLog_tank_modInfo": "PMU : {depth} (ppO₂ 1.4)",
+  "diveLog_tank_modMndInfo": "PMU : {mod} (ppO\u2082 1.4) | PNM : {mnd}",
   "diveLog_tank_section_gasMix": "Melange gazeux",
   "diveLog_tank_selectPreset": "Selectionner un preset...",
   "diveLog_tank_title": "Bloc {number}",

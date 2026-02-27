@@ -1456,6 +1456,7 @@
   "diveLog_tank_label_volume": "Volumen",
   "diveLog_tank_label_workingPressure": "Betriebsdruck",
   "diveLog_tank_modInfo": "MOD: {depth} (ppO₂ 1,4)",
+  "diveLog_tank_modMndInfo": "MOD: {mod} (ppO\u2082 1,4) | MND: {mnd}",
   "diveLog_tank_section_gasMix": "Gasgemisch",
   "diveLog_tank_selectPreset": "Vorlage auswaehlen...",
   "diveLog_tank_title": "Flasche {number}",

@@ -4576,8 +4576,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get diveLog_tank_label_workingPressure => 'Pression de service';
 
   @override
+  String get diveLog_tank_mndHelper => 'Set to auto-calculate He%';
+
+  @override
   String diveLog_tank_modInfo(Object depth) {
     return 'PMU : $depth (ppO₂ 1.4)';
+  }
+
+  @override
+  String diveLog_tank_modMndInfo(Object mod, Object mnd) {
+    return 'PMU : $mod (ppO₂ 1.4) | PNM : $mnd';
   }
 
   @override

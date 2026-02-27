@@ -4445,8 +4445,16 @@ class AppLocalizationsAr extends AppLocalizations {
   String get diveLog_tank_label_workingPressure => 'ضغط العمل';
 
   @override
+  String get diveLog_tank_mndHelper => 'Set to auto-calculate He%';
+
+  @override
   String diveLog_tank_modInfo(Object depth) {
     return 'MOD: $depth (ppO₂ 1.4)';
+  }
+
+  @override
+  String diveLog_tank_modMndInfo(Object mod, Object mnd) {
+    return 'MOD: $mod (ppO₂ 1.4) | MND: $mnd';
   }
 
   @override

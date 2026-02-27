@@ -43,6 +43,8 @@ class _TankEditorState extends ConsumerState<TankEditor> {
   late TextEditingController _endPressureController;
   late TextEditingController _o2Controller;
   late TextEditingController _heController;
+  late TextEditingController _mndController;
+  bool _mndDriven = false;
   late TankRole _role;
   late TankMaterial? _material;
   TankPresetEntity? _selectedPreset;
@@ -99,6 +101,7 @@ class _TankEditorState extends ConsumerState<TankEditor> {
     _heController = TextEditingController(
       text: widget.tank.gasMix.he.toString(),
     );
+    _mndController = TextEditingController();
     _role = widget.tank.role;
     _material = widget.tank.material;
     // Initialize selected preset from tank's presetName
@@ -127,6 +130,7 @@ class _TankEditorState extends ConsumerState<TankEditor> {
     _endPressureController.dispose();
     _o2Controller.dispose();
     _heController.dispose();
+    _mndController.dispose();
     super.dispose();
   }
 
@@ -215,13 +219,20 @@ class _TankEditorState extends ConsumerState<TankEditor> {
 
             // Gas mix with templates
             _buildGasMixSection(),
+
+            // MND input for trimix planning
+            if (gasMix.he > 0) ...[
+              const SizedBox(height: 8),
+              _buildMndInput(gasMix, units, settings),
+            ],
+
             const SizedBox(height: 16),
 
             // Start/end pressure
             _buildPressureRow(units),
 
             // MOD display if not air
-            if (!gasMix.isAir) _buildModInfo(gasMix, units),
+            if (!gasMix.isAir) _buildModInfo(gasMix, units, settings),
           ],
         ),
       ),
@@ -472,6 +483,7 @@ class _TankEditorState extends ConsumerState<TankEditor> {
                   decimal: true,
                 ),
                 onChanged: (_) {
+                  _mndDriven = false;
                   setState(() {});
                   _notifyChange();
                 },
@@ -490,6 +502,7 @@ class _TankEditorState extends ConsumerState<TankEditor> {
                   decimal: true,
                 ),
                 onChanged: (_) {
+                  _mndDriven = false;
                   setState(() {});
                   _notifyChange();
                 },
@@ -562,8 +575,73 @@ class _TankEditorState extends ConsumerState<TankEditor> {
     );
   }
 
-  Widget _buildModInfo(GasMix gasMix, UnitFormatter units) {
-    final settings = ref.watch(settingsProvider);
+  Widget _buildMndInput(
+    GasMix gasMix,
+    UnitFormatter units,
+    AppSettings settings,
+  ) {
+    final currentMnd = gasMix.mnd(
+      endLimit: settings.endLimit,
+      o2Narcotic: settings.o2Narcotic,
+    );
+
+    // Sync controller if not actively editing MND
+    if (!_mndDriven) {
+      final displayValue = currentMnd.isFinite
+          ? units.convertDepth(currentMnd).round().toString()
+          : '';
+      if (_mndController.text != displayValue) {
+        _mndController.text = displayValue;
+      }
+    }
+
+    return Row(
+      children: [
+        Expanded(
+          child: TextFormField(
+            controller: _mndController,
+            decoration: InputDecoration(
+              labelText: 'MND',
+              suffixText: units.depthSymbol,
+              isDense: true,
+              helperText: context.l10n.diveLog_tank_mndHelper,
+            ),
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            onChanged: (value) {
+              final parsed = double.tryParse(value);
+              if (parsed != null && parsed > 0) {
+                _mndDriven = true;
+                final mndMeters = settings.depthUnit == DepthUnit.meters
+                    ? parsed
+                    : parsed / 3.28084;
+                final newHe = GasMix.heForMnd(
+                  mndMeters,
+                  gasMix.o2,
+                  endLimit: settings.endLimit,
+                  o2Narcotic: settings.o2Narcotic,
+                );
+                _heController.text = newHe.round().toString();
+                setState(() {});
+                _notifyChange();
+              } else {
+                _mndDriven = false;
+              }
+            },
+            onEditingComplete: () {
+              _mndDriven = false;
+            },
+          ),
+        ),
+        const Spacer(flex: 2),
+      ],
+    );
+  }
+
+  Widget _buildModInfo(
+    GasMix gasMix,
+    UnitFormatter units,
+    AppSettings settings,
+  ) {
     final modDepth = units.formatDepth(gasMix.mod(), decimals: 0);
     final mndValue = gasMix.mnd(
       endLimit: settings.endLimit,
@@ -591,7 +669,7 @@ class _TankEditorState extends ConsumerState<TankEditor> {
                   'Maximum operating depth: $modDepth. '
                   'Maximum narcotic depth: $mndDepth',
               child: Text(
-                'MOD: $modDepth (ppO\u2082 1.4) | MND: $mndDepth',
+                context.l10n.diveLog_tank_modMndInfo(modDepth, mndDepth),
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: Theme.of(context).colorScheme.tertiary,
                 ),
@@ -636,6 +714,7 @@ class _TankEditorState extends ConsumerState<TankEditor> {
   }
 
   void _applyGasTemplate(GasTemplate template) {
+    _mndDriven = false;
     setState(() {
       _o2Controller.text = template.o2.toString();
       _heController.text = template.he.toString();

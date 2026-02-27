@@ -7828,11 +7828,23 @@ abstract class AppLocalizations {
   /// **'Working P'**
   String get diveLog_tank_label_workingPressure;
 
+  /// No description provided for @diveLog_tank_mndHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Set to auto-calculate He%'**
+  String get diveLog_tank_mndHelper;
+
   /// No description provided for @diveLog_tank_modInfo.
   ///
   /// In en, this message translates to:
   /// **'MOD: {depth} (ppO2 1.4)'**
   String diveLog_tank_modInfo(Object depth);
+
+  /// No description provided for @diveLog_tank_modMndInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'MOD: {mod} (ppO₂ 1.4) | MND: {mnd}'**
+  String diveLog_tank_modMndInfo(Object mod, Object mnd);
 
   /// No description provided for @diveLog_tank_section_gasMix.
   ///
