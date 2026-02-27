@@ -5,6 +5,7 @@ import 'package:submersion/core/providers/provider.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:submersion/core/constants/card_color.dart';
+import 'package:submersion/core/utils/unit_formatter.dart';
 import 'package:submersion/core/constants/profile_metrics.dart';
 import 'package:submersion/core/constants/units.dart';
 import 'package:submersion/core/services/notification_service.dart';
@@ -832,6 +833,44 @@ class _DecompressionSectionContent extends ConsumerWidget {
               ],
             ),
           ),
+          const SizedBox(height: 24),
+          _buildSectionHeader(
+            context,
+            context.l10n.settings_decompression_header_narcosis,
+          ),
+          const SizedBox(height: 8),
+          Card(
+            child: Column(
+              children: [
+                SwitchListTile(
+                  secondary: const Icon(Icons.air),
+                  title: Text(context.l10n.settings_decompression_o2Narcotic),
+                  subtitle: Text(
+                    context.l10n.settings_decompression_o2Narcotic_subtitle,
+                  ),
+                  value: settings.o2Narcotic,
+                  onChanged: (value) {
+                    ref.read(settingsProvider.notifier).setO2Narcotic(value);
+                  },
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.vertical_align_bottom),
+                  title: Text(context.l10n.settings_decompression_endLimit),
+                  subtitle: Text(
+                    context.l10n.settings_decompression_endLimit_subtitle,
+                  ),
+                  trailing: Text(
+                    UnitFormatter(
+                      settings,
+                    ).formatDepth(settings.endLimit, decimals: 0),
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  onTap: () => _showEndLimitDialog(context, ref, settings),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -879,6 +918,59 @@ class _DecompressionSectionContent extends ConsumerWidget {
         onSave: (low, high) {
           ref.read(settingsProvider.notifier).setGradientFactors(low, high);
         },
+      ),
+    );
+  }
+
+  void _showEndLimitDialog(
+    BuildContext context,
+    WidgetRef ref,
+    AppSettings settings,
+  ) {
+    final units = UnitFormatter(settings);
+    var currentValue = settings.endLimit;
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: Text(
+            context.l10n.settings_decompression_endLimit_dialog_title,
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                units.formatDepth(currentValue, decimals: 0),
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+              const SizedBox(height: 16),
+              Slider(
+                value: currentValue,
+                min: 20.0,
+                max: 50.0,
+                divisions: 30,
+                label: units.formatDepth(currentValue, decimals: 0),
+                onChanged: (value) {
+                  setDialogState(() => currentValue = value);
+                },
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
+            ),
+            FilledButton(
+              onPressed: () {
+                ref.read(settingsProvider.notifier).setEndLimit(currentValue);
+                Navigator.pop(dialogContext);
+              },
+              child: Text(MaterialLocalizations.of(context).okButtonLabel),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -16953,6 +16953,42 @@ abstract class AppLocalizations {
   /// **'Select {presetName} conservatism preset'**
   String settings_decompression_preset_selectLabel(Object presetName);
 
+  /// No description provided for @settings_decompression_header_narcosis.
+  ///
+  /// In en, this message translates to:
+  /// **'Narcosis'**
+  String get settings_decompression_header_narcosis;
+
+  /// No description provided for @settings_decompression_o2Narcotic.
+  ///
+  /// In en, this message translates to:
+  /// **'O2 is narcotic'**
+  String get settings_decompression_o2Narcotic;
+
+  /// No description provided for @settings_decompression_o2Narcotic_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'When enabled, both O2 and N2 are considered narcotic (more conservative). When disabled, only N2 contributes to narcosis.'**
+  String get settings_decompression_o2Narcotic_subtitle;
+
+  /// No description provided for @settings_decompression_endLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'END Limit'**
+  String get settings_decompression_endLimit;
+
+  /// No description provided for @settings_decompression_endLimit_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum equivalent narcotic depth used for MND calculations'**
+  String get settings_decompression_endLimit_subtitle;
+
+  /// No description provided for @settings_decompression_endLimit_dialog_title.
+  ///
+  /// In en, this message translates to:
+  /// **'END Limit'**
+  String get settings_decompression_endLimit_dialog_title;
+
   /// No description provided for @settings_existingDb_cancel.
   ///
   /// In en, this message translates to:

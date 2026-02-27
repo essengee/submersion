@@ -1114,7 +1114,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
 
   @override
-  int get schemaVersion => 43;
+  int get schemaVersion => 44;
 
   @override
   MigrationStrategy get migration {
@@ -2012,6 +2012,14 @@ class AppDatabase extends _$AppDatabase {
         if (from < 43) {
           await customStatement(
             "ALTER TABLE diver_settings ADD COLUMN theme_preset TEXT NOT NULL DEFAULT 'submersion'",
+          );
+        }
+        if (from < 44) {
+          await customStatement(
+            'ALTER TABLE diver_settings ADD COLUMN o2_narcotic INTEGER NOT NULL DEFAULT 1',
+          );
+          await customStatement(
+            'ALTER TABLE diver_settings ADD COLUMN end_limit REAL NOT NULL DEFAULT 30.0',
           );
         }
       },

@@ -9859,6 +9859,26 @@ class AppLocalizationsHu extends AppLocalizations {
   }
 
   @override
+  String get settings_decompression_header_narcosis => 'Narcosis';
+
+  @override
+  String get settings_decompression_o2Narcotic => 'O2 is narcotic';
+
+  @override
+  String get settings_decompression_o2Narcotic_subtitle =>
+      'When enabled, both O2 and N2 are considered narcotic (more conservative). When disabled, only N2 contributes to narcosis.';
+
+  @override
+  String get settings_decompression_endLimit => 'END Limit';
+
+  @override
+  String get settings_decompression_endLimit_subtitle =>
+      'Maximum equivalent narcotic depth used for MND calculations';
+
+  @override
+  String get settings_decompression_endLimit_dialog_title => 'END Limit';
+
+  @override
   String get settings_existingDb_cancel => 'Megse';
 
   @override
