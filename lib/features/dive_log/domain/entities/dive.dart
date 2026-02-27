@@ -870,11 +870,65 @@ class GasMix extends Equatable {
     return ((ppO2 / (o2 / 100)) - 1) * 10;
   }
 
-  /// Equivalent Narcotic Depth at given depth
-  double end(double depth) {
+  /// Equivalent Narcotic Depth at given depth.
+  ///
+  /// When [o2Narcotic] is true, all gases except He are narcotic.
+  /// When false, only N2 is narcotic (compared against air baseline 0.79).
+  double end(double depth, {bool o2Narcotic = true}) {
     final ambientPressure = (depth / 10) + 1;
-    final narcoticGas = (n2 + o2) / 100;
-    return ((ambientPressure * narcoticGas) - 1) * 10;
+    if (o2Narcotic) {
+      final narcoticFraction = (100.0 - he) / 100.0;
+      return ((ambientPressure * narcoticFraction) - 1) * 10;
+    } else {
+      final n2Fraction = n2 / 100.0;
+      return ((ambientPressure * n2Fraction / 0.79) - 1) * 10;
+    }
+  }
+
+  /// Maximum Narcotic Depth for this gas at a given END limit.
+  ///
+  /// Returns the deepest depth where the narcotic effect stays
+  /// at or below [endLimit] meters equivalent.
+  double mnd({double endLimit = 30.0, bool o2Narcotic = true}) {
+    final targetPressure = (endLimit / 10) + 1;
+    if (o2Narcotic) {
+      final narcoticFraction = (100.0 - he) / 100.0;
+      if (narcoticFraction <= 0) return double.infinity;
+      final maxPressure = targetPressure / narcoticFraction;
+      return (maxPressure - 1) * 10;
+    } else {
+      final n2Fraction = n2 / 100.0;
+      if (n2Fraction <= 0) return double.infinity;
+      final maxPressure = targetPressure * 0.79 / n2Fraction;
+      return (maxPressure - 1) * 10;
+    }
+  }
+
+  /// Calculate He% needed to achieve a target MND at a given O2%.
+  ///
+  /// Returns He percentage (0-100), clamped to valid range.
+  static double heForMnd(
+    double targetMnd,
+    double o2, {
+    double endLimit = 30.0,
+    bool o2Narcotic = true,
+  }) {
+    final targetPressure = (endLimit / 10) + 1;
+    final maxPressure = (targetMnd / 10) + 1;
+
+    double he;
+    if (o2Narcotic) {
+      final narcoticFraction = targetPressure / maxPressure;
+      he = (1 - narcoticFraction) * 100;
+    } else {
+      final n2Fraction = targetPressure * 0.79 / maxPressure;
+      he = 100 - o2 - (n2Fraction * 100);
+    }
+
+    final maxHe = 100 - o2;
+    if (he < 0) return 0.0;
+    if (he > maxHe) return maxHe;
+    return he;
   }
 
   @override
