@@ -1,4 +1,5 @@
 import 'package:submersion/core/providers/provider.dart';
+import 'package:submersion/features/gas_calculators/presentation/providers/mnd_calculator_providers.dart';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // MOD Calculator State
@@ -183,4 +184,6 @@ void resetGasCalculators(WidgetRef ref) {
   ref.read(rockBottomBuddySacProvider.notifier).state = 25.0;
   ref.read(rockBottomTankSizeProvider.notifier).state = 12.0;
   ref.read(rockBottomSafetyStopProvider.notifier).state = true;
+  // MND/END
+  resetMndCalculator(ref);
 }
