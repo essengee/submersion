@@ -91,34 +91,30 @@ class _EquipmentListPageState extends ConsumerState<EquipmentListPage>
   Widget _buildMasterDetailLayout(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Column(
-      children: [
-        AppBar(
-          title: Text(context.l10n.equipment_appBar_title),
-          bottom: TabBar(
-            controller: _tabController,
-            tabs: [
-              Tab(
-                icon: const Icon(Icons.backpack),
-                text: context.l10n.equipment_tab_equipment,
-              ),
-              Tab(
-                icon: const Icon(Icons.folder_special),
-                text: context.l10n.equipment_tab_sets,
-              ),
-            ],
-            indicatorColor: colorScheme.primary,
-            labelColor: colorScheme.primary,
-            unselectedLabelColor: colorScheme.onSurfaceVariant,
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(context.l10n.equipment_appBar_title),
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: [
+            Tab(
+              icon: const Icon(Icons.backpack),
+              text: context.l10n.equipment_tab_equipment,
+            ),
+            Tab(
+              icon: const Icon(Icons.folder_special),
+              text: context.l10n.equipment_tab_sets,
+            ),
+          ],
+          indicatorColor: colorScheme.primary,
+          labelColor: colorScheme.primary,
+          unselectedLabelColor: colorScheme.onSurfaceVariant,
         ),
-        Expanded(
-          child: TabBarView(
-            controller: _tabController,
-            children: [_buildEquipmentMasterDetail(), _buildSetsMasterDetail()],
-          ),
-        ),
-      ],
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [_buildEquipmentMasterDetail(), _buildSetsMasterDetail()],
+      ),
     );
   }
 
