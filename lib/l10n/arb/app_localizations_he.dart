@@ -181,30 +181,30 @@ class AppLocalizationsHe extends AppLocalizations {
   String get backup_delete_dialog_title => 'מחיקת גיבוי';
 
   @override
-  String get backup_export_bottomSheet_title => 'Export Backup';
+  String get backup_export_bottomSheet_title => 'ייצוא גיבוי';
 
   @override
-  String get backup_export_saveToFile => 'Save to File';
+  String get backup_export_saveToFile => 'שמירה לקובץ';
 
   @override
   String get backup_export_saveToFile_subtitle =>
-      'Choose where to save the backup file';
+      'בחר היכן לשמור את קובץ הגיבוי';
 
   @override
-  String get backup_export_share => 'Share';
+  String get backup_export_share => 'שיתוף';
 
   @override
   String get backup_export_share_subtitle =>
-      'Send via AirDrop, email, or other apps';
+      'שליחה דרך AirDrop, דוא\"ל או אפליקציות אחרות';
 
   @override
-  String get backup_export_subtitle => 'Save your dive data to a file';
+  String get backup_export_subtitle => 'שמור את נתוני הצלילה שלך לקובץ';
 
   @override
-  String get backup_export_success => 'Backup exported successfully';
+  String get backup_export_success => 'הגיבוי יוצא בהצלחה';
 
   @override
-  String get backup_export_title => 'Export Backup';
+  String get backup_export_title => 'ייצוא גיבוי';
 
   @override
   String get backup_frequency_daily => 'יומי';
@@ -231,25 +231,25 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get backup_import_invalidFile =>
-      'This file does not appear to be a valid Submersion backup';
+      'נראה שקובץ זה אינו גיבוי תקין של Submersion';
 
   @override
-  String get backup_import_subtitle => 'Import a backup from any location';
+  String get backup_import_subtitle => 'ייבא גיבוי מכל מיקום';
 
   @override
-  String get backup_import_title => 'Restore from File';
+  String get backup_import_title => 'שחזור מקובץ';
 
   @override
-  String get backup_import_validating => 'Validating backup file...';
+  String get backup_import_validating => 'מאמת קובץ גיבוי...';
 
   @override
-  String get backup_location_change => 'Change';
+  String get backup_location_change => 'שינוי';
 
   @override
-  String get backup_location_default => 'Default location';
+  String get backup_location_default => 'מיקום ברירת מחדל';
 
   @override
-  String get backup_location_title => 'Backup Location';
+  String get backup_location_title => 'מיקום הגיבוי';
 
   @override
   String get backup_restore_dialog_cancel => 'ביטול';
@@ -295,7 +295,7 @@ class AppLocalizationsHe extends AppLocalizations {
       'גיבויים ישנים יותר מוסרים אוטומטית';
 
   @override
-  String get backup_section_auto => 'Automatic Backups';
+  String get backup_section_auto => 'גיבויים אוטומטיים';
 
   @override
   String get backup_section_cloud => 'ענן';
@@ -2607,7 +2607,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get diveLog_deco_label_ndl => 'NDL';
 
   @override
-  String get diveLog_deco_label_time => 'Time';
+  String get diveLog_deco_label_time => 'זמן';
 
   @override
   String get diveLog_deco_label_tts => 'TTS';
@@ -3281,7 +3281,7 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String diveLog_edit_snackbar_avgDepthCalculated(Object depth) {
-    return 'Avg depth calculated: $depth';
+    return 'עומק ממוצע חושב: $depth';
   }
 
   @override
@@ -3296,7 +3296,7 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String diveLog_edit_snackbar_maxDepthCalculated(Object depth) {
-    return 'Max depth calculated: $depth';
+    return 'עומק מרבי חושב: $depth';
   }
 
   @override
@@ -3305,12 +3305,12 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String diveLog_edit_snackbar_runtimeCalculated(Object minutes) {
-    return 'Runtime calculated: $minutes min';
+    return 'זמן ריצה חושב: $minutes min';
   }
 
   @override
   String get diveLog_edit_snackbar_unableToCalculateAvgDepth =>
-      'Unable to calculate average depth from profile';
+      'לא ניתן לחשב עומק ממוצע מהפרופיל';
 
   @override
   String get diveLog_edit_snackbar_unableToCalculate =>
@@ -3318,11 +3318,11 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get diveLog_edit_snackbar_unableToCalculateMaxDepth =>
-      'Unable to calculate max depth from profile';
+      'לא ניתן לחשב עומק מרבי מהפרופיל';
 
   @override
   String get diveLog_edit_snackbar_unableToCalculateRuntime =>
-      'Unable to calculate runtime from profile';
+      'לא ניתן לחשב זמן ריצה מהפרופיל';
 
   @override
   String diveLog_edit_surfaceInterval(Object interval) {
@@ -4427,7 +4427,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get diveLog_tank_label_workingPressure => 'לחץ עבודה';
 
   @override
-  String get diveLog_tank_mndHelper => 'Set to auto-calculate He%';
+  String get diveLog_tank_mndHelper => 'הגדר לחישוב אוטומטי של He%';
 
   @override
   String diveLog_tank_modInfo(Object depth) {
@@ -7347,7 +7347,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get equipment_fab_addEquipment => 'הוסף ציוד';
 
   @override
-  String get equipment_fab_addSet => 'Add Set';
+  String get equipment_fab_addSet => 'הוסף ערכה';
 
   @override
   String get equipment_list_emptyState_addFirstButton =>
@@ -7779,10 +7779,10 @@ class AppLocalizationsHe extends AppLocalizations {
   String get equipment_summary_totalValue => 'ערך כולל';
 
   @override
-  String get equipment_tab_equipment => 'Equipment';
+  String get equipment_tab_equipment => 'ציוד';
 
   @override
-  String get equipment_tab_sets => 'Sets';
+  String get equipment_tab_sets => 'ערכות';
 
   @override
   String get formatter_approximate_prefix => '~';
@@ -7993,39 +7993,38 @@ class AppLocalizationsHe extends AppLocalizations {
       'מגבלת עבודה סטנדרטית לצלילה פנאי';
 
   @override
-  String get gasCalculators_mnd_depthInput => 'Depth';
+  String get gasCalculators_mnd_depthInput => 'עומק';
 
   @override
-  String get gasCalculators_mnd_endAtDepthTitle => 'END at Depth';
+  String get gasCalculators_mnd_endAtDepthTitle => 'END בעומק';
 
   @override
-  String get gasCalculators_mnd_endLimit => 'END Limit';
+  String get gasCalculators_mnd_endLimit => 'מגבלת END';
 
   @override
   String get gasCalculators_mnd_hePercent => 'He %';
 
   @override
   String get gasCalculators_mnd_infoContent =>
-      'Maximum Narcotic Depth (MND) is the deepest you can go before narcosis exceeds your END limit. Equivalent Narcotic Depth (END) tells you the narcotic effect of your gas at a given depth.\n\nWhen \'O2 is narcotic\' is enabled, both oxygen and nitrogen contribute to narcosis (more conservative). When disabled, only nitrogen is considered narcotic.';
+      'עומק נרקוטי מרבי (MND) הוא העומק הגדול ביותר שאליו אפשר לצלול לפני שהנרקוזה חורגת ממגבלת ה-END שלך. עומק נרקוטי שווה ערך (END) מציין את ההשפעה הנרקוטית של הגז שלך בעומק נתון.\n\nכאשר \'O2 נרקוטי\' מופעל, גם חמצן וגם חנקן תורמים לנרקוזה (שמרני יותר). כאשר מושבת, רק חנקן נחשב נרקוטי.';
 
   @override
-  String get gasCalculators_mnd_infoTitle => 'About MND/END';
+  String get gasCalculators_mnd_infoTitle => 'אודות MND/END';
 
   @override
-  String get gasCalculators_mnd_unlimited => 'unlimited';
+  String get gasCalculators_mnd_unlimited => 'ללא הגבלה';
 
   @override
-  String get gasCalculators_mnd_inputParameters =>
-      'Gas Mix & Narcosis Settings';
+  String get gasCalculators_mnd_inputParameters => 'תערובת גז והגדרות נרקוזה';
 
   @override
-  String get gasCalculators_mnd_o2Narcotic => 'O2 is narcotic';
+  String get gasCalculators_mnd_o2Narcotic => 'O2 נרקוטי';
 
   @override
   String get gasCalculators_mnd_o2Percent => 'O2 %';
 
   @override
-  String get gasCalculators_mnd_resultTitle => 'Maximum Narcotic Depth';
+  String get gasCalculators_mnd_resultTitle => 'עומק נרקוטי מרבי';
 
   @override
   String get gasCalculators_ppO2Limit => 'מגבלת ppO₂';
@@ -8338,7 +8337,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get media_diveMediaSection_cancelButton => 'ביטול';
 
   @override
-  String get media_diveMediaSection_cancelSelectionButton => 'Cancel';
+  String get media_diveMediaSection_cancelSelectionButton => 'ביטול';
 
   @override
   String get media_diveMediaSection_emptyState => 'עדיין אין תמונות';
@@ -8347,11 +8346,11 @@ class AppLocalizationsHe extends AppLocalizations {
   String get media_diveMediaSection_errorLoading => 'שגיאה בטעינת מדיה';
 
   @override
-  String get media_diveMediaSection_selectAllButton => 'Select All';
+  String get media_diveMediaSection_selectAllButton => 'בחר הכל';
 
   @override
   String media_diveMediaSection_selectedCount(int count) {
-    return '$count selected';
+    return '$count נבחרו';
   }
 
   @override
@@ -8378,22 +8377,22 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String media_diveMediaSection_unlinkSelectedButton(int count) {
-    return 'Unlink $count';
+    return 'בטל קישור $count';
   }
 
   @override
   String media_diveMediaSection_unlinkSelectedContent(int count) {
-    return 'This will remove $count media items from this dive. The original files won\'t be deleted.';
+    return 'פעולה זו תסיר $count פריטי מדיה מצלילה זו. הקבצים המקוריים לא יימחקו.';
   }
 
   @override
   String media_diveMediaSection_unlinkSelectedSuccess(int count) {
-    return 'Unlinked $count items';
+    return 'בוטל קישור של $count פריטים';
   }
 
   @override
   String media_diveMediaSection_unlinkSelectedTitle(int count) {
-    return 'Unlink $count items?';
+    return 'לבטל קישור של $count פריטים?';
   }
 
   @override
@@ -8437,8 +8436,8 @@ class AppLocalizationsHe extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count photos already linked to this dive',
-      one: '1 photo already linked to this dive',
+      other: '$count תמונות כבר מקושרות לצלילה זו',
+      one: 'תמונה אחת כבר מקושרת לצלילה זו',
     );
     return '$_temp0';
   }
@@ -8453,10 +8452,10 @@ class AppLocalizationsHe extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       imported,
       locale: localeName,
-      other: 'Imported $imported photos',
-      one: 'Imported 1 photo',
+      other: 'יובאו $imported תמונות',
+      one: 'יובאה תמונה אחת',
     );
-    return '$_temp0 ($skipped already linked)';
+    return '$_temp0 ($skipped כבר מקושרות)';
   }
 
   @override
@@ -8491,7 +8490,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get media_photoPicker_appBarTitle => 'בחר תמונות';
 
   @override
-  String get media_photoPicker_clearSelectionButton => 'Clear';
+  String get media_photoPicker_clearSelectionButton => 'נקה';
 
   @override
   String get media_photoPicker_closeTooltip => 'סגור בורר תמונות';
@@ -8539,11 +8538,11 @@ class AppLocalizationsHe extends AppLocalizations {
   String get media_photoPicker_permissionTitle => 'נדרשת גישה לתמונות';
 
   @override
-  String get media_photoPicker_selectAllButton => 'Select All';
+  String get media_photoPicker_selectAllButton => 'בחר הכל';
 
   @override
   String media_photoPicker_selectedCount(int count) {
-    return '$count selected';
+    return '$count נבחרו';
   }
 
   @override
@@ -8560,7 +8559,7 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get media_photoPicker_thumbnailAlreadyLinkedLabel =>
-      'Photo already linked to this dive';
+      'תמונה כבר מקושרת לצלילה זו';
 
   @override
   String get media_photoViewer_cannotShare => 'לא ניתן לשתף תמונה זו';
@@ -9077,25 +9076,25 @@ class AppLocalizationsHe extends AppLocalizations {
   String get settings_appearance_header_theme => 'ערכת נושא';
 
   @override
-  String get settings_themes_title => 'Choose Theme';
+  String get settings_themes_title => 'בחר ערכת נושא';
 
   @override
-  String get settings_themes_current => 'Theme';
+  String get settings_themes_current => 'ערכת נושא';
 
   @override
-  String get theme_submersion => 'Submersion';
+  String get theme_submersion => 'טבילה';
 
   @override
-  String get theme_console => 'Console';
+  String get theme_console => 'קונסולה';
 
   @override
-  String get theme_tropical => 'Tropical';
+  String get theme_tropical => 'טרופי';
 
   @override
-  String get theme_minimalist => 'Minimalist';
+  String get theme_minimalist => 'מינימליסטי';
 
   @override
-  String get theme_deep => 'Deep';
+  String get theme_deep => 'מעמקים';
 
   @override
   String get settings_appearance_mapBackgroundDiveCards =>
@@ -9181,10 +9180,10 @@ class AppLocalizationsHe extends AppLocalizations {
   String get settings_appearance_metric_tts => 'TTS (זמן לשטח)';
 
   @override
-  String get settings_appearance_metric_cns => 'CNS% (O2 Toxicity)';
+  String get settings_appearance_metric_cns => 'CNS% (רעילות חמצן)';
 
   @override
-  String get settings_appearance_metric_otu => 'OTU (O2 Tolerance Units)';
+  String get settings_appearance_metric_otu => 'OTU (יחידות סבילות חמצן)';
 
   @override
   String get settings_appearance_pressureThresholdMarkers => 'סמני סף לחץ';
@@ -9682,24 +9681,24 @@ class AppLocalizationsHe extends AppLocalizations {
   }
 
   @override
-  String get settings_decompression_header_narcosis => 'Narcosis';
+  String get settings_decompression_header_narcosis => 'נרקוזה';
 
   @override
-  String get settings_decompression_o2Narcotic => 'O2 is narcotic';
+  String get settings_decompression_o2Narcotic => 'O2 נרקוטי';
 
   @override
   String get settings_decompression_o2Narcotic_subtitle =>
-      'When enabled, both O2 and N2 are considered narcotic (more conservative). When disabled, only N2 contributes to narcosis.';
+      'כאשר מופעל, גם O2 וגם N2 נחשבים נרקוטיים (שמרני יותר). כאשר מושבת, רק N2 תורם לנרקוזה.';
 
   @override
-  String get settings_decompression_endLimit => 'END Limit';
+  String get settings_decompression_endLimit => 'מגבלת END';
 
   @override
   String get settings_decompression_endLimit_subtitle =>
-      'Maximum equivalent narcotic depth used for MND calculations';
+      'עומק נרקוטי שווה ערך מרבי המשמש לחישובי MND';
 
   @override
-  String get settings_decompression_endLimit_dialog_title => 'END Limit';
+  String get settings_decompression_endLimit_dialog_title => 'מגבלת END';
 
   @override
   String get settings_existingDb_cancel => 'ביטול';
@@ -9872,10 +9871,10 @@ class AppLocalizationsHe extends AppLocalizations {
   String get settings_manage_species_subtitle => 'ניהול קטלוג מיני חי ימי';
 
   @override
-  String get settings_manage_tags => 'Tags';
+  String get settings_manage_tags => 'תגיות';
 
   @override
-  String get settings_manage_tags_subtitle => 'Manage, merge, and delete tags';
+  String get settings_manage_tags_subtitle => 'ניהול, מיזוג ומחיקת תגיות';
 
   @override
   String get settings_manage_tankPresets => 'הגדרות בלון מוכנות';
@@ -10000,76 +9999,76 @@ class AppLocalizationsHe extends AppLocalizations {
       'הוסף או ערוך פרופילי צוללים';
 
   @override
-  String get settings_profileHub_addNewDiver => 'Add New Diver';
+  String get settings_profileHub_addNewDiver => 'הוסף צולל חדש';
 
   @override
   String get settings_profileHub_cannotDeleteOnly =>
-      'Cannot delete the only diver profile';
+      'לא ניתן למחוק את פרופיל הצולל היחיד';
 
   @override
-  String get settings_profileHub_createDiverTitle => 'Create Diver';
+  String get settings_profileHub_createDiverTitle => 'צור צולל';
 
   @override
   String settings_profileHub_deleteConfirmContent(String name) {
-    return 'Are you sure you want to delete $name? All associated dive logs will be unassigned.';
+    return 'האם אתה בטוח שברצונך למחוק את $name? כל יומני הצלילה המשויכים יבוטלו.';
   }
 
   @override
-  String get settings_profileHub_deleteConfirmTitle => 'Delete Diver?';
+  String get settings_profileHub_deleteConfirmTitle => 'למחוק צולל?';
 
   @override
-  String get settings_profileHub_deleteDiver => 'Delete Diver';
+  String get settings_profileHub_deleteDiver => 'מחק צולל';
 
   @override
-  String get settings_profileHub_deleted => 'Diver deleted';
+  String get settings_profileHub_deleted => 'הצולל נמחק';
 
   @override
-  String get settings_profileHub_emergencyContacts => 'Emergency Contacts';
+  String get settings_profileHub_emergencyContacts => 'אנשי קשר לחירום';
 
   @override
   String settings_profileHub_emergencyContacts_count(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count contacts set',
-      one: '1 contact set',
-      zero: 'Not set',
+      other: '$count אנשי קשר',
+      one: 'איש קשר אחד',
+      zero: 'לא הוגדר',
     );
     return '$_temp0';
   }
 
   @override
-  String get settings_profileHub_insurance => 'Insurance';
+  String get settings_profileHub_insurance => 'ביטוח';
 
   @override
-  String get settings_profileHub_insurance_expired => 'Expired';
+  String get settings_profileHub_insurance_expired => 'פג תוקף';
 
   @override
-  String get settings_profileHub_insurance_notSet => 'Not set';
+  String get settings_profileHub_insurance_notSet => 'לא הוגדר';
 
   @override
-  String get settings_profileHub_medicalInfo => 'Medical Information';
+  String get settings_profileHub_medicalInfo => 'מידע רפואי';
 
   @override
-  String get settings_profileHub_medicalInfo_notSet => 'Not set';
+  String get settings_profileHub_medicalInfo_notSet => 'לא הוגדר';
 
   @override
-  String get settings_profileHub_notes => 'Notes';
+  String get settings_profileHub_notes => 'הערות';
 
   @override
-  String get settings_profileHub_notes_notSet => 'Not set';
+  String get settings_profileHub_notes_notSet => 'לא הוגדר';
 
   @override
-  String get settings_profileHub_personalInfo => 'Personal Info';
+  String get settings_profileHub_personalInfo => 'מידע אישי';
 
   @override
-  String get settings_profileHub_personalInfo_notSet => 'Not set';
+  String get settings_profileHub_personalInfo_notSet => 'לא הוגדר';
 
   @override
-  String get settings_profileHub_saved => 'Changes saved';
+  String get settings_profileHub_saved => 'השינויים נשמרו';
 
   @override
-  String get settings_profileHub_switchDiver => 'Switch Diver';
+  String get settings_profileHub_switchDiver => 'החלף צולל';
 
   @override
   String get settings_section_about_subtitle => 'מידע על האפליקציה ורישיונות';
@@ -10209,44 +10208,44 @@ class AppLocalizationsHe extends AppLocalizations {
   String get settings_storage_success_moved => 'מסד הנתונים הועבר בהצלחה';
 
   @override
-  String get settings_storage_dangerZone => 'Danger Zone';
+  String get settings_storage_dangerZone => 'אזור סכנה';
 
   @override
-  String get settings_storage_resetDatabase => 'Reset Database';
+  String get settings_storage_resetDatabase => 'איפוס מסד נתונים';
 
   @override
   String get settings_storage_resetDatabase_subtitle =>
-      'Delete all data and start fresh';
+      'מחק את כל הנתונים והתחל מחדש';
 
   @override
-  String get settings_storage_resetDialog_title => 'Reset Database?';
+  String get settings_storage_resetDialog_title => 'לאפס את מסד הנתונים?';
 
   @override
   String get settings_storage_resetDialog_body =>
-      'This will permanently delete all your data including dives, sites, gear, and settings. A backup will be created automatically before resetting.';
+      'פעולה זו תמחק לצמיתות את כל הנתונים שלך כולל צלילות, אתרים, ציוד והגדרות. גיבוי ייווצר אוטומטית לפני האיפוס.';
 
   @override
   String get settings_storage_resetDialog_confirmHint =>
-      'Type \"Delete\" to confirm';
+      'הקלד \"מחיקה\" לאישור';
 
   @override
-  String get settings_storage_resetDialog_confirmButton => 'Reset';
+  String get settings_storage_resetDialog_confirmButton => 'איפוס';
 
   @override
   String get settings_storage_resetDialog_backupFailed =>
-      'Backup failed. Reset aborted to protect your data.';
+      'הגיבוי נכשל. האיפוס בוטל כדי להגן על הנתונים שלך.';
 
   @override
   String settings_storage_resetDialog_resetFailed(Object error) {
-    return 'Reset failed: $error';
+    return 'האיפוס נכשל: $error';
   }
 
   @override
-  String get settings_storage_resetComplete_title => 'Database Reset';
+  String get settings_storage_resetComplete_title => 'איפוס מסד נתונים';
 
   @override
   String get settings_storage_resetComplete_description =>
-      'Your data has been cleared and a backup was saved. Tap continue to reload the app.';
+      'הנתונים שלך נמחקו וגיבוי נשמר. הקש על המשך כדי לטעון מחדש את האפליקציה.';
 
   @override
   String get settings_summary_activeDiver => 'צולל פעיל';
@@ -11655,65 +11654,64 @@ class AppLocalizationsHe extends AppLocalizations {
   String get tags_hint_addTags => 'הוסף תגיות...';
 
   @override
-  String get tags_manage_title => 'Tags';
+  String get tags_manage_title => 'תגיות';
 
   @override
-  String get tags_manage_searchHint => 'Search tags...';
+  String get tags_manage_searchHint => 'חיפוש תגיות...';
 
   @override
   String tags_manage_diveCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count dives',
-      one: '1 dive',
-      zero: '0 dives',
+      other: '$count צלילות',
+      one: 'צלילה אחת',
+      zero: '0 צלילות',
     );
     return '$_temp0';
   }
 
   @override
-  String get tags_manage_emptyState =>
-      'No tags yet. Create one to get started.';
+  String get tags_manage_emptyState => 'אין עדיין תגיות. צור אחת כדי להתחיל.';
 
   @override
   String tags_manage_selectedCount(int count) {
-    return '$count selected';
+    return '$count נבחרו';
   }
 
   @override
-  String get tags_manage_createTitle => 'Create Tag';
+  String get tags_manage_createTitle => 'צור תגית';
 
   @override
-  String get tags_manage_editTitle => 'Edit Tag';
+  String get tags_manage_editTitle => 'ערוך תגית';
 
   @override
-  String get tags_manage_nameLabel => 'Tag Name';
+  String get tags_manage_nameLabel => 'שם תגית';
 
   @override
-  String get tags_manage_colorLabel => 'Color';
+  String get tags_manage_colorLabel => 'צבע';
 
   @override
-  String get tags_manage_nameRequired => 'Tag name is required';
+  String get tags_manage_nameRequired => 'שם תגית נדרש';
 
   @override
-  String get tags_manage_deleteTitle => 'Delete Tag?';
+  String get tags_manage_deleteTitle => 'למחוק תגית?';
 
   @override
   String tags_manage_deleteMessage(String tagName, int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count dives',
-      one: '1 dive',
-      zero: '0 dives',
+      other: '$count צלילות',
+      one: 'צלילה אחת',
+      zero: '0 צלילות',
     );
-    return '\"$tagName\" will be removed from $_temp0. This cannot be undone.';
+    return '\"$tagName\" תוסר מ-$_temp0. לא ניתן לבטל פעולה זו.';
   }
 
   @override
   String tags_manage_bulkDeleteTitle(int count) {
-    return 'Delete $count Tags?';
+    return 'למחוק $count תגיות?';
   }
 
   @override
@@ -11721,38 +11719,38 @@ class AppLocalizationsHe extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       diveCount,
       locale: localeName,
-      other: '$diveCount dives',
-      one: '1 dive',
-      zero: '0 dives',
+      other: '$diveCount צלילות',
+      one: 'צלילה אחת',
+      zero: '0 צלילות',
     );
-    return 'These tags will be removed from $_temp0 total. This cannot be undone.';
+    return 'תגיות אלו יוסרו מ-$_temp0 בסך הכל. לא ניתן לבטל פעולה זו.';
   }
 
   @override
   String tags_manage_mergeTitle(int count) {
-    return 'Merge $count Tags';
+    return 'מזג $count תגיות';
   }
 
   @override
-  String get tags_manage_mergeResultName => 'Resulting tag name:';
+  String get tags_manage_mergeResultName => 'שם התגית שייווצר:';
 
   @override
-  String get tags_manage_mergeKeepFrom => 'Or keep name from:';
+  String get tags_manage_mergeKeepFrom => 'או שמור שם מ:';
 
   @override
   String tags_manage_mergeAffectedDives(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count dives',
-      one: '1 dive',
-      zero: '0 dives',
+      other: '$count צלילות',
+      one: 'צלילה אחת',
+      zero: '0 צלילות',
     );
-    return 'This will affect $_temp0 total.';
+    return 'פעולה זו תשפיע על $_temp0 בסך הכל.';
   }
 
   @override
-  String get tags_manage_mergeAction => 'Merge';
+  String get tags_manage_mergeAction => 'מיזוג';
 
   @override
   String get tags_title_manageTags => 'נהל תגיות';

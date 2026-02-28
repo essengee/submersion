@@ -184,30 +184,31 @@ class AppLocalizationsIt extends AppLocalizations {
   String get backup_delete_dialog_title => 'Elimina Backup';
 
   @override
-  String get backup_export_bottomSheet_title => 'Export Backup';
+  String get backup_export_bottomSheet_title => 'Esporta backup';
 
   @override
-  String get backup_export_saveToFile => 'Save to File';
+  String get backup_export_saveToFile => 'Salva su file';
 
   @override
   String get backup_export_saveToFile_subtitle =>
-      'Choose where to save the backup file';
+      'Scegli dove salvare il file di backup';
 
   @override
-  String get backup_export_share => 'Share';
+  String get backup_export_share => 'Condividi';
 
   @override
   String get backup_export_share_subtitle =>
-      'Send via AirDrop, email, or other apps';
+      'Invia tramite AirDrop, e-mail o altre app';
 
   @override
-  String get backup_export_subtitle => 'Save your dive data to a file';
+  String get backup_export_subtitle =>
+      'Salva i tuoi dati di immersione in un file';
 
   @override
-  String get backup_export_success => 'Backup exported successfully';
+  String get backup_export_success => 'Backup esportato con successo';
 
   @override
-  String get backup_export_title => 'Export Backup';
+  String get backup_export_title => 'Esporta backup';
 
   @override
   String get backup_frequency_daily => 'Giornaliero';
@@ -234,25 +235,26 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get backup_import_invalidFile =>
-      'This file does not appear to be a valid Submersion backup';
+      'Questo file non sembra essere un backup Submersion valido';
 
   @override
-  String get backup_import_subtitle => 'Import a backup from any location';
+  String get backup_import_subtitle =>
+      'Importa un backup da qualsiasi posizione';
 
   @override
-  String get backup_import_title => 'Restore from File';
+  String get backup_import_title => 'Ripristina da file';
 
   @override
-  String get backup_import_validating => 'Validating backup file...';
+  String get backup_import_validating => 'Validazione del file di backup...';
 
   @override
-  String get backup_location_change => 'Change';
+  String get backup_location_change => 'Cambia';
 
   @override
-  String get backup_location_default => 'Default location';
+  String get backup_location_default => 'Posizione predefinita';
 
   @override
-  String get backup_location_title => 'Backup Location';
+  String get backup_location_title => 'Posizione di backup';
 
   @override
   String get backup_restore_dialog_cancel => 'Annulla';
@@ -299,7 +301,7 @@ class AppLocalizationsIt extends AppLocalizations {
       'I backup più vecchi vengono rimossi automaticamente';
 
   @override
-  String get backup_section_auto => 'Automatic Backups';
+  String get backup_section_auto => 'Backup automatici';
 
   @override
   String get backup_section_cloud => 'Cloud';
@@ -2689,7 +2691,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get diveLog_deco_label_ndl => 'NDL';
 
   @override
-  String get diveLog_deco_label_time => 'Time';
+  String get diveLog_deco_label_time => 'Tempo';
 
   @override
   String get diveLog_deco_label_tts => 'TTS';
@@ -3378,7 +3380,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String diveLog_edit_snackbar_avgDepthCalculated(Object depth) {
-    return 'Avg depth calculated: $depth';
+    return 'Profondita media calcolata: $depth';
   }
 
   @override
@@ -3393,7 +3395,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String diveLog_edit_snackbar_maxDepthCalculated(Object depth) {
-    return 'Max depth calculated: $depth';
+    return 'Profondita max calcolata: $depth';
   }
 
   @override
@@ -3402,12 +3404,12 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String diveLog_edit_snackbar_runtimeCalculated(Object minutes) {
-    return 'Runtime calculated: $minutes min';
+    return 'Durata calcolata: $minutes min';
   }
 
   @override
   String get diveLog_edit_snackbar_unableToCalculateAvgDepth =>
-      'Unable to calculate average depth from profile';
+      'Impossibile calcolare la profondita media dal profilo';
 
   @override
   String get diveLog_edit_snackbar_unableToCalculate =>
@@ -3415,11 +3417,11 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get diveLog_edit_snackbar_unableToCalculateMaxDepth =>
-      'Unable to calculate max depth from profile';
+      'Impossibile calcolare la profondita max dal profilo';
 
   @override
   String get diveLog_edit_snackbar_unableToCalculateRuntime =>
-      'Unable to calculate runtime from profile';
+      'Impossibile calcolare la durata dal profilo';
 
   @override
   String diveLog_edit_surfaceInterval(Object interval) {
@@ -4560,7 +4562,8 @@ class AppLocalizationsIt extends AppLocalizations {
   String get diveLog_tank_label_workingPressure => 'P di esercizio';
 
   @override
-  String get diveLog_tank_mndHelper => 'Set to auto-calculate He%';
+  String get diveLog_tank_mndHelper =>
+      'Imposta per calcolare automaticamente He%';
 
   @override
   String diveLog_tank_modInfo(Object depth) {
@@ -7529,7 +7532,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get equipment_fab_addEquipment => 'Aggiungi attrezzatura';
 
   @override
-  String get equipment_fab_addSet => 'Add Set';
+  String get equipment_fab_addSet => 'Aggiungi set';
 
   @override
   String get equipment_list_emptyState_addFirstButton =>
@@ -7981,10 +7984,10 @@ class AppLocalizationsIt extends AppLocalizations {
   String get equipment_summary_totalValue => 'Valore totale';
 
   @override
-  String get equipment_tab_equipment => 'Equipment';
+  String get equipment_tab_equipment => 'Attrezzatura';
 
   @override
-  String get equipment_tab_sets => 'Sets';
+  String get equipment_tab_sets => 'Set';
 
   @override
   String get formatter_approximate_prefix => '~';
@@ -8204,39 +8207,39 @@ class AppLocalizationsIt extends AppLocalizations {
       'Limite di lavoro standard per immersioni ricreative';
 
   @override
-  String get gasCalculators_mnd_depthInput => 'Depth';
+  String get gasCalculators_mnd_depthInput => 'Profondita';
 
   @override
-  String get gasCalculators_mnd_endAtDepthTitle => 'END at Depth';
+  String get gasCalculators_mnd_endAtDepthTitle => 'END alla profondita';
 
   @override
-  String get gasCalculators_mnd_endLimit => 'END Limit';
+  String get gasCalculators_mnd_endLimit => 'Limite END';
 
   @override
   String get gasCalculators_mnd_hePercent => 'He %';
 
   @override
   String get gasCalculators_mnd_infoContent =>
-      'Maximum Narcotic Depth (MND) is the deepest you can go before narcosis exceeds your END limit. Equivalent Narcotic Depth (END) tells you the narcotic effect of your gas at a given depth.\n\nWhen \'O2 is narcotic\' is enabled, both oxygen and nitrogen contribute to narcosis (more conservative). When disabled, only nitrogen is considered narcotic.';
+      'La profondita narcotica massima (MND) e la profondita massima a cui puoi scendere prima che la narcosi superi il tuo limite END. La profondita narcotica equivalente (END) indica l\'effetto narcotico del tuo gas a una data profondita.\n\nQuando \"O2 e narcotico\" e attivato, sia l\'ossigeno che l\'azoto contribuiscono alla narcosi (piu conservativo). Quando disattivato, solo l\'azoto e considerato narcotico.';
 
   @override
-  String get gasCalculators_mnd_infoTitle => 'About MND/END';
+  String get gasCalculators_mnd_infoTitle => 'Informazioni su MND/END';
 
   @override
-  String get gasCalculators_mnd_unlimited => 'unlimited';
+  String get gasCalculators_mnd_unlimited => 'illimitata';
 
   @override
   String get gasCalculators_mnd_inputParameters =>
-      'Gas Mix & Narcosis Settings';
+      'Miscela gas e impostazioni narcosi';
 
   @override
-  String get gasCalculators_mnd_o2Narcotic => 'O2 is narcotic';
+  String get gasCalculators_mnd_o2Narcotic => 'O2 e narcotico';
 
   @override
   String get gasCalculators_mnd_o2Percent => 'O2 %';
 
   @override
-  String get gasCalculators_mnd_resultTitle => 'Maximum Narcotic Depth';
+  String get gasCalculators_mnd_resultTitle => 'Profondita narcotica massima';
 
   @override
   String get gasCalculators_ppO2Limit => 'Limite ppO₂';
@@ -8563,7 +8566,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get media_diveMediaSection_cancelButton => 'Annulla';
 
   @override
-  String get media_diveMediaSection_cancelSelectionButton => 'Cancel';
+  String get media_diveMediaSection_cancelSelectionButton => 'Annulla';
 
   @override
   String get media_diveMediaSection_emptyState => 'Nessuna foto ancora';
@@ -8573,11 +8576,11 @@ class AppLocalizationsIt extends AppLocalizations {
       'Errore nel caricamento dei media';
 
   @override
-  String get media_diveMediaSection_selectAllButton => 'Select All';
+  String get media_diveMediaSection_selectAllButton => 'Seleziona tutto';
 
   @override
   String media_diveMediaSection_selectedCount(int count) {
-    return '$count selected';
+    return '$count selezionati';
   }
 
   @override
@@ -8604,22 +8607,22 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String media_diveMediaSection_unlinkSelectedButton(int count) {
-    return 'Unlink $count';
+    return 'Scollega $count';
   }
 
   @override
   String media_diveMediaSection_unlinkSelectedContent(int count) {
-    return 'This will remove $count media items from this dive. The original files won\'t be deleted.';
+    return 'Questo rimuovera $count elementi multimediali da questa immersione. I file originali non verranno eliminati.';
   }
 
   @override
   String media_diveMediaSection_unlinkSelectedSuccess(int count) {
-    return 'Unlinked $count items';
+    return '$count elementi scollegati';
   }
 
   @override
   String media_diveMediaSection_unlinkSelectedTitle(int count) {
-    return 'Unlink $count items?';
+    return 'Scollegare $count elementi?';
   }
 
   @override
@@ -8663,8 +8666,8 @@ class AppLocalizationsIt extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count photos already linked to this dive',
-      one: '1 photo already linked to this dive',
+      other: '$count foto gia collegate a questa immersione',
+      one: '1 foto gia collegata a questa immersione',
     );
     return '$_temp0';
   }
@@ -8679,10 +8682,10 @@ class AppLocalizationsIt extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       imported,
       locale: localeName,
-      other: 'Imported $imported photos',
-      one: 'Imported 1 photo',
+      other: 'Importate $imported foto',
+      one: 'Importata 1 foto',
     );
-    return '$_temp0 ($skipped already linked)';
+    return '$_temp0 ($skipped gia collegate)';
   }
 
   @override
@@ -8718,7 +8721,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get media_photoPicker_appBarTitle => 'Seleziona foto';
 
   @override
-  String get media_photoPicker_clearSelectionButton => 'Clear';
+  String get media_photoPicker_clearSelectionButton => 'Cancella';
 
   @override
   String get media_photoPicker_closeTooltip => 'Chiudi selettore foto';
@@ -8766,11 +8769,11 @@ class AppLocalizationsIt extends AppLocalizations {
   String get media_photoPicker_permissionTitle => 'Accesso alle foto richiesto';
 
   @override
-  String get media_photoPicker_selectAllButton => 'Select All';
+  String get media_photoPicker_selectAllButton => 'Seleziona tutto';
 
   @override
   String media_photoPicker_selectedCount(int count) {
-    return '$count selected';
+    return '$count selezionati';
   }
 
   @override
@@ -8788,7 +8791,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get media_photoPicker_thumbnailAlreadyLinkedLabel =>
-      'Photo already linked to this dive';
+      'Foto gia collegata a questa immersione';
 
   @override
   String get media_photoViewer_cannotShare =>
@@ -9325,10 +9328,10 @@ class AppLocalizationsIt extends AppLocalizations {
   String get settings_appearance_header_theme => 'Tema';
 
   @override
-  String get settings_themes_title => 'Choose Theme';
+  String get settings_themes_title => 'Scegli tema';
 
   @override
-  String get settings_themes_current => 'Theme';
+  String get settings_themes_current => 'Tema';
 
   @override
   String get theme_submersion => 'Submersion';
@@ -9337,13 +9340,13 @@ class AppLocalizationsIt extends AppLocalizations {
   String get theme_console => 'Console';
 
   @override
-  String get theme_tropical => 'Tropical';
+  String get theme_tropical => 'Tropicale';
 
   @override
-  String get theme_minimalist => 'Minimalist';
+  String get theme_minimalist => 'Minimalista';
 
   @override
-  String get theme_deep => 'Deep';
+  String get theme_deep => 'Abissale';
 
   @override
   String get settings_appearance_mapBackgroundDiveCards =>
@@ -9431,10 +9434,10 @@ class AppLocalizationsIt extends AppLocalizations {
   String get settings_appearance_metric_tts => 'TTS (Tempo per la superficie)';
 
   @override
-  String get settings_appearance_metric_cns => 'CNS% (O2 Toxicity)';
+  String get settings_appearance_metric_cns => 'CNS% (Tossicita O2)';
 
   @override
-  String get settings_appearance_metric_otu => 'OTU (O2 Tolerance Units)';
+  String get settings_appearance_metric_otu => 'OTU (Unita di tolleranza O2)';
 
   @override
   String get settings_appearance_pressureThresholdMarkers =>
@@ -9950,24 +9953,24 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get settings_decompression_header_narcosis => 'Narcosis';
+  String get settings_decompression_header_narcosis => 'Narcosi';
 
   @override
-  String get settings_decompression_o2Narcotic => 'O2 is narcotic';
+  String get settings_decompression_o2Narcotic => 'O2 e narcotico';
 
   @override
   String get settings_decompression_o2Narcotic_subtitle =>
-      'When enabled, both O2 and N2 are considered narcotic (more conservative). When disabled, only N2 contributes to narcosis.';
+      'Quando attivato, sia O2 che N2 sono considerati narcotici (piu conservativo). Quando disattivato, solo N2 contribuisce alla narcosi.';
 
   @override
-  String get settings_decompression_endLimit => 'END Limit';
+  String get settings_decompression_endLimit => 'Limite END';
 
   @override
   String get settings_decompression_endLimit_subtitle =>
-      'Maximum equivalent narcotic depth used for MND calculations';
+      'Profondita narcotica equivalente massima utilizzata per i calcoli MND';
 
   @override
-  String get settings_decompression_endLimit_dialog_title => 'END Limit';
+  String get settings_decompression_endLimit_dialog_title => 'Limite END';
 
   @override
   String get settings_existingDb_cancel => 'Annulla';
@@ -10147,10 +10150,10 @@ class AppLocalizationsIt extends AppLocalizations {
       'Gestisci catalogo specie marine';
 
   @override
-  String get settings_manage_tags => 'Tags';
+  String get settings_manage_tags => 'Tag';
 
   @override
-  String get settings_manage_tags_subtitle => 'Manage, merge, and delete tags';
+  String get settings_manage_tags_subtitle => 'Gestisci, unisci ed elimina tag';
 
   @override
   String get settings_manage_tankPresets => 'Preset bombole';
@@ -10278,76 +10281,77 @@ class AppLocalizationsIt extends AppLocalizations {
       'Aggiungi o modifica profili subacquei';
 
   @override
-  String get settings_profileHub_addNewDiver => 'Add New Diver';
+  String get settings_profileHub_addNewDiver => 'Aggiungi nuovo subacqueo';
 
   @override
   String get settings_profileHub_cannotDeleteOnly =>
-      'Cannot delete the only diver profile';
+      'Impossibile eliminare l\'unico profilo subacqueo';
 
   @override
-  String get settings_profileHub_createDiverTitle => 'Create Diver';
+  String get settings_profileHub_createDiverTitle => 'Crea subacqueo';
 
   @override
   String settings_profileHub_deleteConfirmContent(String name) {
-    return 'Are you sure you want to delete $name? All associated dive logs will be unassigned.';
+    return 'Sei sicuro di voler eliminare $name? Tutti i registri di immersione associati verranno disassegnati.';
   }
 
   @override
-  String get settings_profileHub_deleteConfirmTitle => 'Delete Diver?';
+  String get settings_profileHub_deleteConfirmTitle =>
+      'Eliminare il subacqueo?';
 
   @override
-  String get settings_profileHub_deleteDiver => 'Delete Diver';
+  String get settings_profileHub_deleteDiver => 'Elimina subacqueo';
 
   @override
-  String get settings_profileHub_deleted => 'Diver deleted';
+  String get settings_profileHub_deleted => 'Subacqueo eliminato';
 
   @override
-  String get settings_profileHub_emergencyContacts => 'Emergency Contacts';
+  String get settings_profileHub_emergencyContacts => 'Contatti di emergenza';
 
   @override
   String settings_profileHub_emergencyContacts_count(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count contacts set',
-      one: '1 contact set',
-      zero: 'Not set',
+      other: '$count contatti impostati',
+      one: '1 contatto impostato',
+      zero: 'Non impostato',
     );
     return '$_temp0';
   }
 
   @override
-  String get settings_profileHub_insurance => 'Insurance';
+  String get settings_profileHub_insurance => 'Assicurazione';
 
   @override
-  String get settings_profileHub_insurance_expired => 'Expired';
+  String get settings_profileHub_insurance_expired => 'Scaduta';
 
   @override
-  String get settings_profileHub_insurance_notSet => 'Not set';
+  String get settings_profileHub_insurance_notSet => 'Non impostato';
 
   @override
-  String get settings_profileHub_medicalInfo => 'Medical Information';
+  String get settings_profileHub_medicalInfo => 'Informazioni mediche';
 
   @override
-  String get settings_profileHub_medicalInfo_notSet => 'Not set';
+  String get settings_profileHub_medicalInfo_notSet => 'Non impostato';
 
   @override
-  String get settings_profileHub_notes => 'Notes';
+  String get settings_profileHub_notes => 'Note';
 
   @override
-  String get settings_profileHub_notes_notSet => 'Not set';
+  String get settings_profileHub_notes_notSet => 'Non impostato';
 
   @override
-  String get settings_profileHub_personalInfo => 'Personal Info';
+  String get settings_profileHub_personalInfo => 'Informazioni personali';
 
   @override
-  String get settings_profileHub_personalInfo_notSet => 'Not set';
+  String get settings_profileHub_personalInfo_notSet => 'Non impostato';
 
   @override
-  String get settings_profileHub_saved => 'Changes saved';
+  String get settings_profileHub_saved => 'Modifiche salvate';
 
   @override
-  String get settings_profileHub_switchDiver => 'Switch Diver';
+  String get settings_profileHub_switchDiver => 'Cambia subacqueo';
 
   @override
   String get settings_section_about_subtitle => 'Informazioni app e licenze';
@@ -10493,44 +10497,44 @@ class AppLocalizationsIt extends AppLocalizations {
   String get settings_storage_success_moved => 'Database spostato con successo';
 
   @override
-  String get settings_storage_dangerZone => 'Danger Zone';
+  String get settings_storage_dangerZone => 'Zona pericolosa';
 
   @override
-  String get settings_storage_resetDatabase => 'Reset Database';
+  String get settings_storage_resetDatabase => 'Reimposta database';
 
   @override
   String get settings_storage_resetDatabase_subtitle =>
-      'Delete all data and start fresh';
+      'Elimina tutti i dati e ricomincia da zero';
 
   @override
-  String get settings_storage_resetDialog_title => 'Reset Database?';
+  String get settings_storage_resetDialog_title => 'Reimpostare il database?';
 
   @override
   String get settings_storage_resetDialog_body =>
-      'This will permanently delete all your data including dives, sites, gear, and settings. A backup will be created automatically before resetting.';
+      'Questo eliminera permanentemente tutti i tuoi dati, incluse immersioni, siti, attrezzatura e impostazioni. Un backup verra creato automaticamente prima del reset.';
 
   @override
   String get settings_storage_resetDialog_confirmHint =>
-      'Type \"Delete\" to confirm';
+      'Digita \"Elimina\" per confermare';
 
   @override
-  String get settings_storage_resetDialog_confirmButton => 'Reset';
+  String get settings_storage_resetDialog_confirmButton => 'Reimposta';
 
   @override
   String get settings_storage_resetDialog_backupFailed =>
-      'Backup failed. Reset aborted to protect your data.';
+      'Backup non riuscito. Il reset e stato annullato per proteggere i tuoi dati.';
 
   @override
   String settings_storage_resetDialog_resetFailed(Object error) {
-    return 'Reset failed: $error';
+    return 'Reset non riuscito: $error';
   }
 
   @override
-  String get settings_storage_resetComplete_title => 'Database Reset';
+  String get settings_storage_resetComplete_title => 'Reset del database';
 
   @override
   String get settings_storage_resetComplete_description =>
-      'Your data has been cleared and a backup was saved. Tap continue to reload the app.';
+      'I tuoi dati sono stati cancellati e un backup e stato salvato. Tocca continua per ricaricare l\'app.';
 
   @override
   String get settings_summary_activeDiver => 'Subacqueo attivo';
@@ -11993,65 +11997,65 @@ class AppLocalizationsIt extends AppLocalizations {
   String get tags_hint_addTags => 'Aggiungi tag...';
 
   @override
-  String get tags_manage_title => 'Tags';
+  String get tags_manage_title => 'Tag';
 
   @override
-  String get tags_manage_searchHint => 'Search tags...';
+  String get tags_manage_searchHint => 'Cerca tag...';
 
   @override
   String tags_manage_diveCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count dives',
-      one: '1 dive',
-      zero: '0 dives',
+      other: '$count immersioni',
+      one: '1 immersione',
+      zero: '0 immersioni',
     );
     return '$_temp0';
   }
 
   @override
   String get tags_manage_emptyState =>
-      'No tags yet. Create one to get started.';
+      'Nessun tag ancora. Creane uno per iniziare.';
 
   @override
   String tags_manage_selectedCount(int count) {
-    return '$count selected';
+    return '$count selezionati';
   }
 
   @override
-  String get tags_manage_createTitle => 'Create Tag';
+  String get tags_manage_createTitle => 'Crea tag';
 
   @override
-  String get tags_manage_editTitle => 'Edit Tag';
+  String get tags_manage_editTitle => 'Modifica tag';
 
   @override
-  String get tags_manage_nameLabel => 'Tag Name';
+  String get tags_manage_nameLabel => 'Nome tag';
 
   @override
-  String get tags_manage_colorLabel => 'Color';
+  String get tags_manage_colorLabel => 'Colore';
 
   @override
-  String get tags_manage_nameRequired => 'Tag name is required';
+  String get tags_manage_nameRequired => 'Il nome del tag e obbligatorio';
 
   @override
-  String get tags_manage_deleteTitle => 'Delete Tag?';
+  String get tags_manage_deleteTitle => 'Eliminare il tag?';
 
   @override
   String tags_manage_deleteMessage(String tagName, int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count dives',
-      one: '1 dive',
-      zero: '0 dives',
+      other: '$count immersioni',
+      one: '1 immersione',
+      zero: '0 immersioni',
     );
-    return '\"$tagName\" will be removed from $_temp0. This cannot be undone.';
+    return '\"$tagName\" verra rimosso da $_temp0. Questa azione non puo essere annullata.';
   }
 
   @override
   String tags_manage_bulkDeleteTitle(int count) {
-    return 'Delete $count Tags?';
+    return 'Eliminare $count tag?';
   }
 
   @override
@@ -12059,38 +12063,38 @@ class AppLocalizationsIt extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       diveCount,
       locale: localeName,
-      other: '$diveCount dives',
-      one: '1 dive',
-      zero: '0 dives',
+      other: '$diveCount immersioni',
+      one: '1 immersione',
+      zero: '0 immersioni',
     );
-    return 'These tags will be removed from $_temp0 total. This cannot be undone.';
+    return 'Questi tag verranno rimossi da $_temp0 in totale. Questa azione non puo essere annullata.';
   }
 
   @override
   String tags_manage_mergeTitle(int count) {
-    return 'Merge $count Tags';
+    return 'Unisci $count tag';
   }
 
   @override
-  String get tags_manage_mergeResultName => 'Resulting tag name:';
+  String get tags_manage_mergeResultName => 'Nome tag risultante:';
 
   @override
-  String get tags_manage_mergeKeepFrom => 'Or keep name from:';
+  String get tags_manage_mergeKeepFrom => 'Oppure mantieni il nome da:';
 
   @override
   String tags_manage_mergeAffectedDives(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count dives',
-      one: '1 dive',
-      zero: '0 dives',
+      other: '$count immersioni',
+      one: '1 immersione',
+      zero: '0 immersioni',
     );
-    return 'This will affect $_temp0 total.';
+    return 'Questo influenzera $_temp0 in totale.';
   }
 
   @override
-  String get tags_manage_mergeAction => 'Merge';
+  String get tags_manage_mergeAction => 'Unisci';
 
   @override
   String get tags_title_manageTags => 'Gestisci Tag';

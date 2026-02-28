@@ -184,30 +184,30 @@ class AppLocalizationsAr extends AppLocalizations {
   String get backup_delete_dialog_title => 'حذف النسخة الاحتياطية';
 
   @override
-  String get backup_export_bottomSheet_title => 'Export Backup';
+  String get backup_export_bottomSheet_title => 'تصدير النسخة الاحتياطية';
 
   @override
-  String get backup_export_saveToFile => 'Save to File';
+  String get backup_export_saveToFile => 'حفظ في ملف';
 
   @override
   String get backup_export_saveToFile_subtitle =>
-      'Choose where to save the backup file';
+      'اختر مكان حفظ ملف النسخة الاحتياطية';
 
   @override
-  String get backup_export_share => 'Share';
+  String get backup_export_share => 'مشاركة';
 
   @override
   String get backup_export_share_subtitle =>
-      'Send via AirDrop, email, or other apps';
+      'إرسال عبر AirDrop أو البريد الإلكتروني أو تطبيقات أخرى';
 
   @override
-  String get backup_export_subtitle => 'Save your dive data to a file';
+  String get backup_export_subtitle => 'حفظ بيانات الغوص في ملف';
 
   @override
-  String get backup_export_success => 'Backup exported successfully';
+  String get backup_export_success => 'تم تصدير النسخة الاحتياطية بنجاح';
 
   @override
-  String get backup_export_title => 'Export Backup';
+  String get backup_export_title => 'تصدير النسخة الاحتياطية';
 
   @override
   String get backup_frequency_daily => 'يومي';
@@ -234,25 +234,26 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get backup_import_invalidFile =>
-      'This file does not appear to be a valid Submersion backup';
+      'لا يبدو أن هذا الملف نسخة احتياطية صالحة من Submersion';
 
   @override
-  String get backup_import_subtitle => 'Import a backup from any location';
+  String get backup_import_subtitle => 'استيراد نسخة احتياطية من أي مكان';
 
   @override
-  String get backup_import_title => 'Restore from File';
+  String get backup_import_title => 'الاستعادة من ملف';
 
   @override
-  String get backup_import_validating => 'Validating backup file...';
+  String get backup_import_validating =>
+      'جارٍ التحقق من ملف النسخة الاحتياطية...';
 
   @override
-  String get backup_location_change => 'Change';
+  String get backup_location_change => 'تغيير';
 
   @override
-  String get backup_location_default => 'Default location';
+  String get backup_location_default => 'الموقع الافتراضي';
 
   @override
-  String get backup_location_title => 'Backup Location';
+  String get backup_location_title => 'موقع النسخة الاحتياطية';
 
   @override
   String get backup_restore_dialog_cancel => 'إلغاء';
@@ -299,7 +300,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'تتم إزالة النسخ الاحتياطية القديمة تلقائياً';
 
   @override
-  String get backup_section_auto => 'Automatic Backups';
+  String get backup_section_auto => 'النسخ الاحتياطي التلقائي';
 
   @override
   String get backup_section_cloud => 'السحابة';
@@ -2620,7 +2621,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get diveLog_deco_label_ndl => 'NDL';
 
   @override
-  String get diveLog_deco_label_time => 'Time';
+  String get diveLog_deco_label_time => 'الوقت';
 
   @override
   String get diveLog_deco_label_tts => 'TTS';
@@ -3294,7 +3295,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String diveLog_edit_snackbar_avgDepthCalculated(Object depth) {
-    return 'Avg depth calculated: $depth';
+    return 'تم حساب متوسط العمق: $depth';
   }
 
   @override
@@ -3309,7 +3310,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String diveLog_edit_snackbar_maxDepthCalculated(Object depth) {
-    return 'Max depth calculated: $depth';
+    return 'تم حساب أقصى عمق: $depth';
   }
 
   @override
@@ -3318,12 +3319,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String diveLog_edit_snackbar_runtimeCalculated(Object minutes) {
-    return 'Runtime calculated: $minutes min';
+    return 'تم حساب وقت التشغيل: $minutes min';
   }
 
   @override
   String get diveLog_edit_snackbar_unableToCalculateAvgDepth =>
-      'Unable to calculate average depth from profile';
+      'تعذر حساب متوسط العمق من الملف';
 
   @override
   String get diveLog_edit_snackbar_unableToCalculate =>
@@ -3331,11 +3332,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get diveLog_edit_snackbar_unableToCalculateMaxDepth =>
-      'Unable to calculate max depth from profile';
+      'تعذر حساب أقصى عمق من الملف';
 
   @override
   String get diveLog_edit_snackbar_unableToCalculateRuntime =>
-      'Unable to calculate runtime from profile';
+      'تعذر حساب وقت التشغيل من الملف';
 
   @override
   String diveLog_edit_surfaceInterval(Object interval) {
@@ -4445,7 +4446,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get diveLog_tank_label_workingPressure => 'ضغط العمل';
 
   @override
-  String get diveLog_tank_mndHelper => 'Set to auto-calculate He%';
+  String get diveLog_tank_mndHelper => 'تعيين لحساب He% تلقائياً';
 
   @override
   String diveLog_tank_modInfo(Object depth) {
@@ -7387,7 +7388,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get equipment_fab_addEquipment => 'إضافة معدات';
 
   @override
-  String get equipment_fab_addSet => 'Add Set';
+  String get equipment_fab_addSet => 'إضافة طقم';
 
   @override
   String get equipment_list_emptyState_addFirstButton => 'أضف معداتك الأولى';
@@ -7824,10 +7825,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get equipment_summary_totalValue => 'القيمة الإجمالية';
 
   @override
-  String get equipment_tab_equipment => 'Equipment';
+  String get equipment_tab_equipment => 'المعدات';
 
   @override
-  String get equipment_tab_sets => 'Sets';
+  String get equipment_tab_sets => 'الأطقم';
 
   @override
   String get formatter_approximate_prefix => '~';
@@ -8042,39 +8043,39 @@ class AppLocalizationsAr extends AppLocalizations {
       'حد التشغيل القياسي للغوص الترفيهي';
 
   @override
-  String get gasCalculators_mnd_depthInput => 'Depth';
+  String get gasCalculators_mnd_depthInput => 'العمق';
 
   @override
-  String get gasCalculators_mnd_endAtDepthTitle => 'END at Depth';
+  String get gasCalculators_mnd_endAtDepthTitle => 'END عند العمق';
 
   @override
-  String get gasCalculators_mnd_endLimit => 'END Limit';
+  String get gasCalculators_mnd_endLimit => 'حد END';
 
   @override
   String get gasCalculators_mnd_hePercent => 'He %';
 
   @override
   String get gasCalculators_mnd_infoContent =>
-      'Maximum Narcotic Depth (MND) is the deepest you can go before narcosis exceeds your END limit. Equivalent Narcotic Depth (END) tells you the narcotic effect of your gas at a given depth.\n\nWhen \'O2 is narcotic\' is enabled, both oxygen and nitrogen contribute to narcosis (more conservative). When disabled, only nitrogen is considered narcotic.';
+      'العمق المخدر الأقصى (MND) هو أعمق نقطة يمكنك الوصول إليها قبل أن يتجاوز التخدير حد END الخاص بك. العمق المخدر المكافئ (END) يخبرك بالتأثير المخدر لغازك عند عمق معين.\n\nعند تفعيل \'O2 مخدر\'، يساهم كل من الأكسجين والنيتروجين في التخدير (أكثر تحفظاً). عند التعطيل، يُعتبر النيتروجين فقط مخدراً.';
 
   @override
-  String get gasCalculators_mnd_infoTitle => 'About MND/END';
+  String get gasCalculators_mnd_infoTitle => 'حول MND/END';
 
   @override
-  String get gasCalculators_mnd_unlimited => 'unlimited';
+  String get gasCalculators_mnd_unlimited => 'غير محدود';
 
   @override
   String get gasCalculators_mnd_inputParameters =>
-      'Gas Mix & Narcosis Settings';
+      'خليط الغاز وإعدادات التخدير';
 
   @override
-  String get gasCalculators_mnd_o2Narcotic => 'O2 is narcotic';
+  String get gasCalculators_mnd_o2Narcotic => 'O2 مخدر';
 
   @override
   String get gasCalculators_mnd_o2Percent => 'O2 %';
 
   @override
-  String get gasCalculators_mnd_resultTitle => 'Maximum Narcotic Depth';
+  String get gasCalculators_mnd_resultTitle => 'العمق المخدر الأقصى';
 
   @override
   String get gasCalculators_ppO2Limit => 'حد ppO₂';
@@ -8393,7 +8394,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get media_diveMediaSection_cancelButton => 'إلغاء';
 
   @override
-  String get media_diveMediaSection_cancelSelectionButton => 'Cancel';
+  String get media_diveMediaSection_cancelSelectionButton => 'إلغاء';
 
   @override
   String get media_diveMediaSection_emptyState => 'لا توجد صور بعد';
@@ -8402,11 +8403,11 @@ class AppLocalizationsAr extends AppLocalizations {
   String get media_diveMediaSection_errorLoading => 'خطأ في تحميل الوسائط';
 
   @override
-  String get media_diveMediaSection_selectAllButton => 'Select All';
+  String get media_diveMediaSection_selectAllButton => 'تحديد الكل';
 
   @override
   String media_diveMediaSection_selectedCount(int count) {
-    return '$count selected';
+    return '$count محدد';
   }
 
   @override
@@ -8433,22 +8434,22 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String media_diveMediaSection_unlinkSelectedButton(int count) {
-    return 'Unlink $count';
+    return 'إلغاء ربط $count';
   }
 
   @override
   String media_diveMediaSection_unlinkSelectedContent(int count) {
-    return 'This will remove $count media items from this dive. The original files won\'t be deleted.';
+    return 'سيؤدي هذا إلى إزالة $count عنصر وسائط من هذه الغوصة. لن يتم حذف الملفات الأصلية.';
   }
 
   @override
   String media_diveMediaSection_unlinkSelectedSuccess(int count) {
-    return 'Unlinked $count items';
+    return 'تم إلغاء ربط $count عنصر';
   }
 
   @override
   String media_diveMediaSection_unlinkSelectedTitle(int count) {
-    return 'Unlink $count items?';
+    return 'إلغاء ربط $count عنصر؟';
   }
 
   @override
@@ -8492,8 +8493,8 @@ class AppLocalizationsAr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count photos already linked to this dive',
-      one: '1 photo already linked to this dive',
+      other: '$count صورة مرتبطة بالفعل بهذه الغوصة',
+      one: 'صورة واحدة مرتبطة بالفعل بهذه الغوصة',
     );
     return '$_temp0';
   }
@@ -8508,10 +8509,10 @@ class AppLocalizationsAr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       imported,
       locale: localeName,
-      other: 'Imported $imported photos',
-      one: 'Imported 1 photo',
+      other: 'تم استيراد $imported صورة',
+      one: 'تم استيراد صورة واحدة',
     );
-    return '$_temp0 ($skipped already linked)';
+    return '$_temp0 ($skipped مرتبطة بالفعل)';
   }
 
   @override
@@ -8546,7 +8547,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get media_photoPicker_appBarTitle => 'اختيار الصور';
 
   @override
-  String get media_photoPicker_clearSelectionButton => 'Clear';
+  String get media_photoPicker_clearSelectionButton => 'مسح';
 
   @override
   String get media_photoPicker_closeTooltip => 'إغلاق منتقي الصور';
@@ -8594,11 +8595,11 @@ class AppLocalizationsAr extends AppLocalizations {
   String get media_photoPicker_permissionTitle => 'مطلوب الوصول إلى الصور';
 
   @override
-  String get media_photoPicker_selectAllButton => 'Select All';
+  String get media_photoPicker_selectAllButton => 'تحديد الكل';
 
   @override
   String media_photoPicker_selectedCount(int count) {
-    return '$count selected';
+    return '$count محدد';
   }
 
   @override
@@ -8615,7 +8616,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get media_photoPicker_thumbnailAlreadyLinkedLabel =>
-      'Photo already linked to this dive';
+      'الصورة مرتبطة بالفعل بهذه الغوصة';
 
   @override
   String get media_photoViewer_cannotShare => 'لا يمكن مشاركة هذه الصورة';
@@ -9139,25 +9140,25 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settings_appearance_header_theme => 'المظهر';
 
   @override
-  String get settings_themes_title => 'Choose Theme';
+  String get settings_themes_title => 'اختيار المظهر';
 
   @override
-  String get settings_themes_current => 'Theme';
+  String get settings_themes_current => 'المظهر';
 
   @override
-  String get theme_submersion => 'Submersion';
+  String get theme_submersion => 'غمر';
 
   @override
-  String get theme_console => 'Console';
+  String get theme_console => 'وحدة التحكم';
 
   @override
-  String get theme_tropical => 'Tropical';
+  String get theme_tropical => 'استوائي';
 
   @override
-  String get theme_minimalist => 'Minimalist';
+  String get theme_minimalist => 'بسيط';
 
   @override
-  String get theme_deep => 'Deep';
+  String get theme_deep => 'الأعماق';
 
   @override
   String get settings_appearance_mapBackgroundDiveCards =>
@@ -9243,10 +9244,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settings_appearance_metric_tts => 'TTS (الوقت إلى السطح)';
 
   @override
-  String get settings_appearance_metric_cns => 'CNS% (O2 Toxicity)';
+  String get settings_appearance_metric_cns => 'CNS% (سمية الأكسجين)';
 
   @override
-  String get settings_appearance_metric_otu => 'OTU (O2 Tolerance Units)';
+  String get settings_appearance_metric_otu => 'OTU (وحدات تحمل الأكسجين)';
 
   @override
   String get settings_appearance_pressureThresholdMarkers =>
@@ -9749,24 +9750,24 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get settings_decompression_header_narcosis => 'Narcosis';
+  String get settings_decompression_header_narcosis => 'التخدير';
 
   @override
-  String get settings_decompression_o2Narcotic => 'O2 is narcotic';
+  String get settings_decompression_o2Narcotic => 'O2 مخدر';
 
   @override
   String get settings_decompression_o2Narcotic_subtitle =>
-      'When enabled, both O2 and N2 are considered narcotic (more conservative). When disabled, only N2 contributes to narcosis.';
+      'عند التفعيل، يُعتبر كل من O2 و N2 مخدرين (أكثر تحفظاً). عند التعطيل، يساهم N2 فقط في التخدير.';
 
   @override
-  String get settings_decompression_endLimit => 'END Limit';
+  String get settings_decompression_endLimit => 'حد END';
 
   @override
   String get settings_decompression_endLimit_subtitle =>
-      'Maximum equivalent narcotic depth used for MND calculations';
+      'أقصى عمق مخدر مكافئ مستخدم في حسابات MND';
 
   @override
-  String get settings_decompression_endLimit_dialog_title => 'END Limit';
+  String get settings_decompression_endLimit_dialog_title => 'حد END';
 
   @override
   String get settings_existingDb_cancel => 'إلغاء';
@@ -9942,10 +9943,10 @@ class AppLocalizationsAr extends AppLocalizations {
       'إدارة كتالوج أنواع الحياة البحرية';
 
   @override
-  String get settings_manage_tags => 'Tags';
+  String get settings_manage_tags => 'الوسوم';
 
   @override
-  String get settings_manage_tags_subtitle => 'Manage, merge, and delete tags';
+  String get settings_manage_tags_subtitle => 'إدارة ودمج وحذف الوسوم';
 
   @override
   String get settings_manage_tankPresets => 'إعدادات الأسطوانات المسبقة';
@@ -10070,76 +10071,77 @@ class AppLocalizationsAr extends AppLocalizations {
       'إضافة أو تعديل ملفات الغواصين';
 
   @override
-  String get settings_profileHub_addNewDiver => 'Add New Diver';
+  String get settings_profileHub_addNewDiver => 'إضافة غواص جديد';
 
   @override
   String get settings_profileHub_cannotDeleteOnly =>
-      'Cannot delete the only diver profile';
+      'لا يمكن حذف ملف الغواص الوحيد';
 
   @override
-  String get settings_profileHub_createDiverTitle => 'Create Diver';
+  String get settings_profileHub_createDiverTitle => 'إنشاء غواص';
 
   @override
   String settings_profileHub_deleteConfirmContent(String name) {
-    return 'Are you sure you want to delete $name? All associated dive logs will be unassigned.';
+    return 'هل أنت متأكد من حذف $name؟ سيتم إلغاء تعيين جميع سجلات الغوص المرتبطة.';
   }
 
   @override
-  String get settings_profileHub_deleteConfirmTitle => 'Delete Diver?';
+  String get settings_profileHub_deleteConfirmTitle => 'حذف الغواص؟';
 
   @override
-  String get settings_profileHub_deleteDiver => 'Delete Diver';
+  String get settings_profileHub_deleteDiver => 'حذف الغواص';
 
   @override
-  String get settings_profileHub_deleted => 'Diver deleted';
+  String get settings_profileHub_deleted => 'تم حذف الغواص';
 
   @override
-  String get settings_profileHub_emergencyContacts => 'Emergency Contacts';
+  String get settings_profileHub_emergencyContacts =>
+      'جهات الاتصال في حالات الطوارئ';
 
   @override
   String settings_profileHub_emergencyContacts_count(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count contacts set',
-      one: '1 contact set',
-      zero: 'Not set',
+      other: '$count جهات اتصال',
+      one: 'جهة اتصال واحدة',
+      zero: 'غير محدد',
     );
     return '$_temp0';
   }
 
   @override
-  String get settings_profileHub_insurance => 'Insurance';
+  String get settings_profileHub_insurance => 'التأمين';
 
   @override
-  String get settings_profileHub_insurance_expired => 'Expired';
+  String get settings_profileHub_insurance_expired => 'منتهي الصلاحية';
 
   @override
-  String get settings_profileHub_insurance_notSet => 'Not set';
+  String get settings_profileHub_insurance_notSet => 'غير محدد';
 
   @override
-  String get settings_profileHub_medicalInfo => 'Medical Information';
+  String get settings_profileHub_medicalInfo => 'المعلومات الطبية';
 
   @override
-  String get settings_profileHub_medicalInfo_notSet => 'Not set';
+  String get settings_profileHub_medicalInfo_notSet => 'غير محدد';
 
   @override
-  String get settings_profileHub_notes => 'Notes';
+  String get settings_profileHub_notes => 'ملاحظات';
 
   @override
-  String get settings_profileHub_notes_notSet => 'Not set';
+  String get settings_profileHub_notes_notSet => 'غير محدد';
 
   @override
-  String get settings_profileHub_personalInfo => 'Personal Info';
+  String get settings_profileHub_personalInfo => 'المعلومات الشخصية';
 
   @override
-  String get settings_profileHub_personalInfo_notSet => 'Not set';
+  String get settings_profileHub_personalInfo_notSet => 'غير محدد';
 
   @override
-  String get settings_profileHub_saved => 'Changes saved';
+  String get settings_profileHub_saved => 'تم حفظ التغييرات';
 
   @override
-  String get settings_profileHub_switchDiver => 'Switch Diver';
+  String get settings_profileHub_switchDiver => 'تبديل الغواص';
 
   @override
   String get settings_section_about_subtitle => 'معلومات التطبيق والتراخيص';
@@ -10281,44 +10283,45 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settings_storage_success_moved => 'تم نقل قاعدة البيانات بنجاح';
 
   @override
-  String get settings_storage_dangerZone => 'Danger Zone';
+  String get settings_storage_dangerZone => 'منطقة الخطر';
 
   @override
-  String get settings_storage_resetDatabase => 'Reset Database';
+  String get settings_storage_resetDatabase => 'إعادة تعيين قاعدة البيانات';
 
   @override
   String get settings_storage_resetDatabase_subtitle =>
-      'Delete all data and start fresh';
+      'حذف جميع البيانات والبدء من جديد';
 
   @override
-  String get settings_storage_resetDialog_title => 'Reset Database?';
+  String get settings_storage_resetDialog_title =>
+      'إعادة تعيين قاعدة البيانات؟';
 
   @override
   String get settings_storage_resetDialog_body =>
-      'This will permanently delete all your data including dives, sites, gear, and settings. A backup will be created automatically before resetting.';
+      'سيؤدي هذا إلى حذف جميع بياناتك نهائياً بما في ذلك الغوصات والمواقع والمعدات والإعدادات. سيتم إنشاء نسخة احتياطية تلقائياً قبل إعادة التعيين.';
 
   @override
-  String get settings_storage_resetDialog_confirmHint =>
-      'Type \"Delete\" to confirm';
+  String get settings_storage_resetDialog_confirmHint => 'اكتب \"حذف\" للتأكيد';
 
   @override
-  String get settings_storage_resetDialog_confirmButton => 'Reset';
+  String get settings_storage_resetDialog_confirmButton => 'إعادة تعيين';
 
   @override
   String get settings_storage_resetDialog_backupFailed =>
-      'Backup failed. Reset aborted to protect your data.';
+      'فشل النسخ الاحتياطي. تم إلغاء إعادة التعيين لحماية بياناتك.';
 
   @override
   String settings_storage_resetDialog_resetFailed(Object error) {
-    return 'Reset failed: $error';
+    return 'فشل إعادة التعيين: $error';
   }
 
   @override
-  String get settings_storage_resetComplete_title => 'Database Reset';
+  String get settings_storage_resetComplete_title =>
+      'إعادة تعيين قاعدة البيانات';
 
   @override
   String get settings_storage_resetComplete_description =>
-      'Your data has been cleared and a backup was saved. Tap continue to reload the app.';
+      'تم مسح بياناتك وحفظ نسخة احتياطية. اضغط على متابعة لإعادة تحميل التطبيق.';
 
   @override
   String get settings_summary_activeDiver => 'الغواص النشط';
@@ -11740,65 +11743,64 @@ class AppLocalizationsAr extends AppLocalizations {
   String get tags_hint_addTags => 'إضافة وسوم...';
 
   @override
-  String get tags_manage_title => 'Tags';
+  String get tags_manage_title => 'الوسوم';
 
   @override
-  String get tags_manage_searchHint => 'Search tags...';
+  String get tags_manage_searchHint => 'البحث في الوسوم...';
 
   @override
   String tags_manage_diveCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count dives',
-      one: '1 dive',
-      zero: '0 dives',
+      other: '$count غوصة',
+      one: 'غوصة واحدة',
+      zero: '0 غوصات',
     );
     return '$_temp0';
   }
 
   @override
-  String get tags_manage_emptyState =>
-      'No tags yet. Create one to get started.';
+  String get tags_manage_emptyState => 'لا توجد وسوم بعد. أنشئ واحداً للبدء.';
 
   @override
   String tags_manage_selectedCount(int count) {
-    return '$count selected';
+    return '$count محدد';
   }
 
   @override
-  String get tags_manage_createTitle => 'Create Tag';
+  String get tags_manage_createTitle => 'إنشاء وسم';
 
   @override
-  String get tags_manage_editTitle => 'Edit Tag';
+  String get tags_manage_editTitle => 'تعديل الوسم';
 
   @override
-  String get tags_manage_nameLabel => 'Tag Name';
+  String get tags_manage_nameLabel => 'اسم الوسم';
 
   @override
-  String get tags_manage_colorLabel => 'Color';
+  String get tags_manage_colorLabel => 'اللون';
 
   @override
-  String get tags_manage_nameRequired => 'Tag name is required';
+  String get tags_manage_nameRequired => 'اسم الوسم مطلوب';
 
   @override
-  String get tags_manage_deleteTitle => 'Delete Tag?';
+  String get tags_manage_deleteTitle => 'حذف الوسم؟';
 
   @override
   String tags_manage_deleteMessage(String tagName, int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count dives',
-      one: '1 dive',
-      zero: '0 dives',
+      other: '$count غوصة',
+      one: 'غوصة واحدة',
+      zero: '0 غوصات',
     );
-    return '\"$tagName\" will be removed from $_temp0. This cannot be undone.';
+    return 'سيتم إزالة \"$tagName\" من $_temp0. لا يمكن التراجع عن هذا الإجراء.';
   }
 
   @override
   String tags_manage_bulkDeleteTitle(int count) {
-    return 'Delete $count Tags?';
+    return 'حذف $count وسم؟';
   }
 
   @override
@@ -11806,38 +11808,38 @@ class AppLocalizationsAr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       diveCount,
       locale: localeName,
-      other: '$diveCount dives',
-      one: '1 dive',
-      zero: '0 dives',
+      other: '$diveCount غوصة',
+      one: 'غوصة واحدة',
+      zero: '0 غوصات',
     );
-    return 'These tags will be removed from $_temp0 total. This cannot be undone.';
+    return 'سيتم إزالة هذه الوسوم من $_temp0 إجمالاً. لا يمكن التراجع عن هذا الإجراء.';
   }
 
   @override
   String tags_manage_mergeTitle(int count) {
-    return 'Merge $count Tags';
+    return 'دمج $count وسم';
   }
 
   @override
-  String get tags_manage_mergeResultName => 'Resulting tag name:';
+  String get tags_manage_mergeResultName => 'اسم الوسم الناتج:';
 
   @override
-  String get tags_manage_mergeKeepFrom => 'Or keep name from:';
+  String get tags_manage_mergeKeepFrom => 'أو الاحتفاظ بالاسم من:';
 
   @override
   String tags_manage_mergeAffectedDives(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count dives',
-      one: '1 dive',
-      zero: '0 dives',
+      other: '$count غوصة',
+      one: 'غوصة واحدة',
+      zero: '0 غوصات',
     );
-    return 'This will affect $_temp0 total.';
+    return 'سيؤثر هذا على $_temp0 إجمالاً.';
   }
 
   @override
-  String get tags_manage_mergeAction => 'Merge';
+  String get tags_manage_mergeAction => 'دمج';
 
   @override
   String get tags_title_manageTags => 'إدارة الوسوم';
