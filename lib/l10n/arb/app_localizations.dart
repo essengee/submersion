@@ -13112,6 +13112,12 @@ abstract class AppLocalizations {
   /// **'Add Equipment'**
   String get equipment_fab_addEquipment;
 
+  /// No description provided for @equipment_fab_addSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Set'**
+  String get equipment_fab_addSet;
+
   /// No description provided for @equipment_list_emptyState_addFirstButton.
   ///
   /// In en, this message translates to:
@@ -13879,6 +13885,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Total Value'**
   String get equipment_summary_totalValue;
+
+  /// No description provided for @equipment_tab_equipment.
+  ///
+  /// In en, this message translates to:
+  /// **'Equipment'**
+  String get equipment_tab_equipment;
+
+  /// No description provided for @equipment_tab_sets.
+  ///
+  /// In en, this message translates to:
+  /// **'Sets'**
+  String get equipment_tab_sets;
 
   /// Prefix for approximate values, e.g. ~80 cuft
   ///

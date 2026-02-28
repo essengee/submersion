@@ -7419,6 +7419,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get equipment_fab_addEquipment => 'Add Equipment';
 
   @override
+  String get equipment_fab_addSet => 'Add Set';
+
+  @override
   String get equipment_list_emptyState_addFirstButton =>
       'Add Your First Equipment';
 
@@ -7851,6 +7854,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get equipment_summary_totalValue => 'Total Value';
+
+  @override
+  String get equipment_tab_equipment => 'Equipment';
+
+  @override
+  String get equipment_tab_sets => 'Sets';
 
   @override
   String get formatter_approximate_prefix => '~';
