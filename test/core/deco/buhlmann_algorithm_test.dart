@@ -588,5 +588,99 @@ void main() {
         },
       );
     });
+
+    group('cumulative tissue loading', () {
+      test('processProfile should use pre-loaded compartments', () {
+        final algorithm = BuhlmannAlgorithm(gfLow: 1.0, gfHigh: 1.0);
+
+        // Simulate dive 1: 30m for 20 minutes
+        algorithm.calculateSegment(
+          depthMeters: 30.0,
+          durationSeconds: 20 * 60,
+          fN2: airN2Fraction,
+        );
+
+        // Simulate 60 min surface interval
+        algorithm.calculateSegment(
+          depthMeters: 0.0,
+          durationSeconds: 60 * 60,
+          fN2: airN2Fraction,
+        );
+        final recoveredCompartments = algorithm.compartments;
+
+        // Now create fresh algorithm and pre-load recovered state
+        final dive2Algorithm = BuhlmannAlgorithm(gfLow: 1.0, gfHigh: 1.0);
+        dive2Algorithm.setCompartments(recoveredCompartments);
+
+        // processProfile for dive 2 at 18m for 30 min
+        final depths = <double>[];
+        final timestamps = <int>[];
+        for (int t = 0; t <= 30 * 60; t += 60) {
+          timestamps.add(t);
+          depths.add(18.0);
+        }
+
+        final statusesCumulative = dive2Algorithm.processProfile(
+          depths: depths,
+          timestamps: timestamps,
+          fN2: airN2Fraction,
+        );
+
+        // Compare with fresh algorithm (no residual loading)
+        final freshAlgorithm = BuhlmannAlgorithm(gfLow: 1.0, gfHigh: 1.0);
+        final statusesFresh = freshAlgorithm.processProfile(
+          depths: depths,
+          timestamps: timestamps,
+          fN2: airN2Fraction,
+        );
+
+        // Cumulative dive should have SHORTER NDL than fresh dive
+        final cumulativeNdl = statusesCumulative.last.ndlSeconds;
+        final freshNdl = statusesFresh.last.ndlSeconds;
+
+        expect(
+          cumulativeNdl,
+          lessThan(freshNdl),
+          reason:
+              'Repetitive dive should have shorter NDL due to residual loading',
+        );
+      });
+
+      test(
+        '48-hour surface interval should produce near-surface-saturated state',
+        () {
+          final algorithm = BuhlmannAlgorithm(gfLow: 1.0, gfHigh: 1.0);
+
+          // Deep dive: 40m for 20 minutes
+          algorithm.calculateSegment(
+            depthMeters: 40.0,
+            durationSeconds: 20 * 60,
+            fN2: airN2Fraction,
+          );
+
+          // 48 hours at surface
+          algorithm.calculateSegment(
+            depthMeters: 0.0,
+            durationSeconds: 48 * 60 * 60,
+            fN2: airN2Fraction,
+          );
+
+          final recovered = algorithm.compartments;
+
+          // Create fresh surface-saturated algorithm
+          final fresh = BuhlmannAlgorithm(gfLow: 1.0, gfHigh: 1.0);
+
+          // All compartments should be within 1% of surface values
+          for (int i = 0; i < 16; i++) {
+            expect(
+              recovered[i].currentPN2,
+              closeTo(fresh.compartments[i].currentPN2, 0.01),
+              reason:
+                  'Compartment ${i + 1} should be near surface-saturated after 48h',
+            );
+          }
+        },
+      );
+    });
   });
 }

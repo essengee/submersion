@@ -523,7 +523,6 @@ class BuhlmannAlgorithm {
       return [];
     }
 
-    reset();
     final results = <DecoStatus>[];
 
     // Track time spent in safety stop zone (3-6m / 10-20ft)
@@ -572,6 +571,7 @@ class BuhlmannAlgorithm {
     double fN2 = airN2Fraction,
     double fHe = 0.0,
   }) {
+    reset();
     final statuses = processProfile(
       depths: depths,
       timestamps: timestamps,
@@ -592,6 +592,7 @@ class BuhlmannAlgorithm {
     double fN2 = airN2Fraction,
     double fHe = 0.0,
   }) {
+    reset();
     final statuses = processProfile(
       depths: depths,
       timestamps: timestamps,
