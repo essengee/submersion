@@ -142,8 +142,8 @@ class DiveProfileLegend extends ConsumerWidget {
           // Primary toggles + options button flowing together
           Expanded(
             child: Wrap(
-              spacing: 12,
-              runSpacing: 8,
+              spacing: 4,
+              runSpacing: 4,
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 // Depth legend (always shown, not a toggle)
@@ -193,7 +193,7 @@ class DiveProfileLegend extends ConsumerWidget {
               ],
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 4),
           // Zoom controls
           _ZoomControls(
             zoomLevel: zoomLevel,
@@ -217,15 +217,15 @@ class DiveProfileLegend extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          width: 12,
+          width: 10,
           height: 3,
           decoration: BoxDecoration(
             color: color,
             borderRadius: BorderRadius.circular(2),
           ),
         ),
-        const SizedBox(width: 4),
-        Text(label, style: Theme.of(context).textTheme.bodySmall),
+        const SizedBox(width: 3),
+        Text(label, style: Theme.of(context).textTheme.labelSmall),
       ],
     );
   }
@@ -244,30 +244,30 @@ class DiveProfileLegend extends ConsumerWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(4),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+          padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
                 isEnabled ? Icons.check_box : Icons.check_box_outline_blank,
-                size: 16,
+                size: 14,
                 color: isEnabled
                     ? color
                     : Theme.of(context).colorScheme.onSurfaceVariant,
               ),
-              const SizedBox(width: 4),
+              const SizedBox(width: 2),
               Container(
-                width: 12,
+                width: 10,
                 height: 3,
                 decoration: BoxDecoration(
                   color: isEnabled ? color : color.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
-              const SizedBox(width: 4),
+              const SizedBox(width: 3),
               Text(
                 label,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
                   color: isEnabled
                       ? null
                       : Theme.of(context).colorScheme.onSurfaceVariant,
@@ -365,11 +365,11 @@ class _MoreOptionsButton extends ConsumerWidget {
           activeCount.toString(),
           style: const TextStyle(fontSize: 10),
         ),
-        child: const Icon(Icons.tune, size: 20),
+        child: const Icon(Icons.tune, size: 18),
       ),
       tooltip: context.l10n.diveLog_profile_tooltip_moreOptions,
       padding: EdgeInsets.zero,
-      constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+      constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
       style: IconButton.styleFrom(
         foregroundColor: activeCount > 0
             ? colorScheme.primary

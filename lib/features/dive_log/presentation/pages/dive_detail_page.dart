@@ -861,7 +861,7 @@ class _DiveDetailPageState extends ConsumerState<DiveDetailPage> {
                                     )
                                     .disableRangeMode();
                               },
-                              icon: const Icon(Icons.straighten, size: 16),
+                              icon: const Icon(Icons.straighten, size: 14),
                               label: Text(
                                 context
                                     .l10n
@@ -869,9 +869,12 @@ class _DiveDetailPageState extends ConsumerState<DiveDetailPage> {
                               ),
                               style: FilledButton.styleFrom(
                                 padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 4,
+                                  horizontal: 6,
+                                  vertical: 2,
                                 ),
+                                textStyle: Theme.of(
+                                  context,
+                                ).textTheme.labelSmall,
                                 visualDensity: VisualDensity.compact,
                               ),
                             )
@@ -883,7 +886,7 @@ class _DiveDetailPageState extends ConsumerState<DiveDetailPage> {
                                     )
                                     .enableRangeMode();
                               },
-                              icon: const Icon(Icons.straighten, size: 16),
+                              icon: const Icon(Icons.straighten, size: 14),
                               label: Text(
                                 context
                                     .l10n
@@ -891,9 +894,12 @@ class _DiveDetailPageState extends ConsumerState<DiveDetailPage> {
                               ),
                               style: OutlinedButton.styleFrom(
                                 padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 4,
+                                  horizontal: 6,
+                                  vertical: 2,
                                 ),
+                                textStyle: Theme.of(
+                                  context,
+                                ).textTheme.labelSmall,
                                 visualDensity: VisualDensity.compact,
                               ),
                             ),

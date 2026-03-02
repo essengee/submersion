@@ -160,6 +160,10 @@ class _CompactTissueLoadingCardState
     );
 
     final highlightedIdx = _barChartDisplayIndex();
+    final isDark = colorScheme.brightness == Brightness.dark;
+    final outlineColor = colorScheme.onSurface.withValues(
+      alpha: isDark ? 1.0 : 0.8,
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -178,37 +182,42 @@ class _CompactTissueLoadingCardState
             height: chartHeight,
             child: Stack(
               children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: widget.status.compartments.asMap().entries.map((
-                    entry,
-                  ) {
-                    final idx = entry.key;
-                    final comp = entry.value;
-                    return Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 0.5),
-                        child: MouseRegion(
-                          onEnter: (_) =>
-                              _setHoveredCompartment(idx, fromBarChart: true),
-                          onExit: (_) => _clearHoveredCompartment(),
-                          child: GestureDetector(
-                            onTapDown: (_) =>
+                MouseRegion(
+                  onExit: (_) => _clearHoveredCompartment(),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: widget.status.compartments.asMap().entries.map((
+                      entry,
+                    ) {
+                      final idx = entry.key;
+                      final comp = entry.value;
+                      return Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 0.5),
+                          child: MouseRegion(
+                            onEnter: (_) =>
                                 _setHoveredCompartment(idx, fromBarChart: true),
-                            child: Opacity(
-                              opacity: idx == highlightedIdx ? 1.0 : 0.4,
+                            child: GestureDetector(
+                              onTapDown: (_) => _setHoveredCompartment(
+                                idx,
+                                fromBarChart: true,
+                              ),
                               child: _buildSubsurfaceBar(
                                 comp,
                                 chartHeight,
                                 maxLoadingPercent,
+                                outlineColor: idx == highlightedIdx
+                                    ? outlineColor
+                                    : null,
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    );
-                  }).toList(),
+                      );
+                    }).toList(),
+                  ),
                 ),
+                // M-value reference line
                 Positioned(
                   bottom: mValueBottom,
                   left: 0,
@@ -237,8 +246,9 @@ class _CompactTissueLoadingCardState
   Widget _buildSubsurfaceBar(
     TissueCompartment comp,
     double chartHeight,
-    double maxLoading,
-  ) {
+    double maxLoading, {
+    Color? outlineColor,
+  }) {
     final totalLoading = comp.percentLoading.clamp(0.0, maxLoading);
     final barHeight = chartHeight * (totalLoading / maxLoading);
 
@@ -249,6 +259,41 @@ class _CompactTissueLoadingCardState
     final heHeight = barHeight * heRatio;
 
     final n2Color = _getN2Color(totalLoading);
+
+    final barSegments = <Widget>[
+      if (heHeight > 0.5)
+        Container(
+          height: heHeight,
+          decoration: BoxDecoration(
+            color: Colors.deepPurple.withValues(alpha: 0.8),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(1)),
+          ),
+        ),
+      Container(
+        height: n2Height.clamp(0.0, barHeight),
+        decoration: BoxDecoration(
+          color: n2Color,
+          borderRadius: BorderRadius.vertical(
+            top: heHeight > 0.5 ? Radius.zero : const Radius.circular(1),
+          ),
+        ),
+      ),
+    ];
+
+    // Wrap bar segments in an outline when highlighted.
+    // The outline container is only as tall as the bar itself.
+    final bar = outlineColor != null
+        ? Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: outlineColor, width: 2),
+              borderRadius: BorderRadius.circular(2),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: barSegments,
+            ),
+          )
+        : Column(mainAxisSize: MainAxisSize.min, children: barSegments);
 
     return Tooltip(
       message:
@@ -261,27 +306,7 @@ class _CompactTissueLoadingCardState
         height: chartHeight,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            if (heHeight > 0.5)
-              Container(
-                height: heHeight,
-                decoration: BoxDecoration(
-                  color: Colors.deepPurple.withValues(alpha: 0.8),
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(1),
-                  ),
-                ),
-              ),
-            Container(
-              height: n2Height.clamp(0.0, barHeight),
-              decoration: BoxDecoration(
-                color: n2Color,
-                borderRadius: BorderRadius.vertical(
-                  top: heHeight > 0.5 ? Radius.zero : const Radius.circular(1),
-                ),
-              ),
-            ),
-          ],
+          children: [bar],
         ),
       ),
     );

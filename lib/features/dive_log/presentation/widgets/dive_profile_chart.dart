@@ -135,9 +135,9 @@ class DiveProfileChart extends ConsumerStatefulWidget {
       availableWidth < 350 ? 28.0 : 32.0;
 
   /// Returns responsive right axis reserved size based on available chart width.
-  /// Tick labels are plain numbers (units moved to axis name label).
+  /// Needs extra room for 4-digit values like PSI pressure (e.g. "3000").
   static double rightAxisSize(double availableWidth) =>
-      availableWidth < 350 ? 28.0 : 32.0;
+      availableWidth < 350 ? 32.0 : 38.0;
 
   const DiveProfileChart({
     super.key,
@@ -832,16 +832,29 @@ class _DiveProfileChartState extends ConsumerState<DiveProfileChart> {
                 axisNameWidget: Text(
                   context.l10n.diveLog_profile_axisDepth(units.depthSymbol),
                   style: Theme.of(context).textTheme.labelSmall,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 sideTitles: SideTitles(
                   showTitles: true,
                   reservedSize: DiveProfileChart.leftAxisSize(availableWidth),
                   interval: _calculateDepthInterval(visibleRangeY),
                   getTitlesWidget: (value, meta) {
+                    // Suppress interval ticks too close to the min boundary
+                    // (min is the most-negative value = deepest depth).
+                    final interval = _calculateDepthInterval(visibleRangeY);
+                    final distToMin = (value - meta.min).abs();
+                    if (distToMin > 0 && distToMin < interval * 0.4) {
+                      return const SizedBox.shrink();
+                    }
                     // Show positive depth values (negate the negative axis values)
-                    return Text(
-                      '${(-value).toInt()}',
-                      style: Theme.of(context).textTheme.labelSmall,
+                    return SideTitleWidget(
+                      meta: meta,
+                      child: Text(
+                        '${(-value).toInt()}',
+                        style: Theme.of(context).textTheme.labelSmall,
+                        maxLines: 1,
+                      ),
                     );
                   },
                 ),
@@ -850,6 +863,8 @@ class _DiveProfileChartState extends ConsumerState<DiveProfileChart> {
                 axisNameWidget: Text(
                   context.l10n.diveLog_profile_axisTime,
                   style: Theme.of(context).textTheme.labelSmall,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 axisNameSize: 14,
                 sideTitles: SideTitles(
@@ -857,10 +872,21 @@ class _DiveProfileChartState extends ConsumerState<DiveProfileChart> {
                   reservedSize: 22,
                   interval: _calculateTimeInterval(visibleRangeX),
                   getTitlesWidget: (value, meta) {
+                    // Suppress interval ticks that are too close to the max
+                    // boundary to prevent overlapping labels.
+                    final interval = _calculateTimeInterval(visibleRangeX);
+                    final distToMax = (meta.max - value).abs();
+                    if (distToMax > 0 && distToMax < interval * 0.4) {
+                      return const SizedBox.shrink();
+                    }
                     final minutes = (value / 60).round();
-                    return Text(
-                      '$minutes',
-                      style: Theme.of(context).textTheme.labelSmall,
+                    return SideTitleWidget(
+                      meta: meta,
+                      child: Text(
+                        '$minutes',
+                        style: Theme.of(context).textTheme.labelSmall,
+                        maxLines: 1,
+                      ),
                     );
                   },
                 ),
@@ -873,6 +899,8 @@ class _DiveProfileChartState extends ConsumerState<DiveProfileChart> {
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
                           color: effectiveRightAxisMetric.getColor(colorScheme),
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       )
                     : null,
                 sideTitles: SideTitles(
@@ -884,6 +912,12 @@ class _DiveProfileChartState extends ConsumerState<DiveProfileChart> {
                     if (effectiveRightAxisMetric == null ||
                         rightAxisRange == null) {
                       return const SizedBox();
+                    }
+                    // Suppress interval ticks too close to the min boundary
+                    final interval = _calculateDepthInterval(visibleRangeY);
+                    final distToMin = (value - meta.min).abs();
+                    if (distToMin > 0 && distToMin < interval * 0.4) {
+                      return const SizedBox.shrink();
                     }
                     // Map from inverted depth axis to the metric value
                     final metricValue = _mapDepthToMetricValue(
@@ -899,15 +933,19 @@ class _DiveProfileChartState extends ConsumerState<DiveProfileChart> {
                     final metricColor = effectiveRightAxisMetric.getColor(
                       colorScheme,
                     );
-                    return Text(
-                      _formatRightAxisValue(
-                        effectiveRightAxisMetric,
-                        metricValue,
-                        units,
+                    return SideTitleWidget(
+                      meta: meta,
+                      child: Text(
+                        _formatRightAxisValue(
+                          effectiveRightAxisMetric,
+                          metricValue,
+                          units,
+                        ),
+                        style: Theme.of(
+                          context,
+                        ).textTheme.labelSmall?.copyWith(color: metricColor),
+                        maxLines: 1,
                       ),
-                      style: Theme.of(
-                        context,
-                      ).textTheme.labelSmall?.copyWith(color: metricColor),
                     );
                   },
                 ),
