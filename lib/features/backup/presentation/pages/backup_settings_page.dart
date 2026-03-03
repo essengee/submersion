@@ -202,7 +202,17 @@ class BackupSettingsPage extends ConsumerWidget {
   // ===========================================================================
 
   Future<void> _handleImport(BuildContext context, WidgetRef ref) async {
-    final result = await FilePicker.platform.pickFiles(type: FileType.any);
+    final FilePickerResult? result;
+    try {
+      result = await FilePicker.platform.pickFiles(type: FileType.any);
+    } on Exception catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not open file picker: $e')),
+        );
+      }
+      return;
+    }
 
     if (result == null || result.files.isEmpty) return;
 
