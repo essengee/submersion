@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # Generates appcast.xml for Sparkle/WinSparkle auto-updates.
 #
-# Usage: ./scripts/generate_appcast.sh <version> <build_number> <date> <macos_dmg_url> <windows_zip_url>
+# Usage: ./scripts/generate_appcast.sh <version> <build_number> <date> <macos_dmg_url> <windows_url>
 #
 # Arguments:
 #   version       - Marketing version string (e.g. "1.1.3")
 #   build_number  - Build number (e.g. "40"), used as sparkle:version for comparison
 #   date          - RFC 2822 date string for pubDate
 #   macos_dmg_url - Download URL for macOS DMG
-#   windows_zip_url - Download URL for Windows ZIP
+#   windows_url     - Download URL for Windows installer
 #
 # Requires: SPARKLE_EDDSA_SIGNATURE env var (EdDSA signature of macOS DMG)
 

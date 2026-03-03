@@ -283,17 +283,20 @@ jobs:
       - name: Build Windows release
         run: flutter build windows --release --dart-define=UPDATE_CHANNEL=github
 
-      - name: Create ZIP archive
+      - name: Build Windows installer
         env:
           TAG_NAME: ${{ github.ref_name }}
         run: |
-          Compress-Archive -Path "build\windows\x64\runner\Release\*" -DestinationPath "Submersion-${env:TAG_NAME}-Windows.zip"
+          $version = "$env:TAG_NAME" -replace '^v', ''
+          $buildNumber = (Select-String -Path pubspec.yaml -Pattern '^\s*version:.*\+(\d+)' | ForEach-Object { $_.Matches.Groups[1].Value })
+          iscc /DAPP_VERSION="$version" /DAPP_VERSION_CODE="$buildNumber" windows\installer\submersion.iss
+          Move-Item "build\windows\installer\Submersion-*-Windows-Setup.exe" .
 
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v7
         with:
-          name: windows-zip
-          path: Submersion-*.zip
+          name: windows-setup
+          path: Submersion-*-Setup.exe
           retention-days: 5
 
   # ============================================================================
@@ -601,7 +604,7 @@ jobs:
           BUILD_NUMBER=$(grep '^version:' pubspec.yaml | sed 's/.*+//')
           DATE=$(date -R)
           MACOS_URL="https://github.com/${{ github.repository }}/releases/download/${TAG_NAME}/Submersion-${TAG_NAME}-macOS.dmg"
-          WINDOWS_URL="https://github.com/${{ github.repository }}/releases/download/${TAG_NAME}/Submersion-${TAG_NAME}-Windows.zip"
+          WINDOWS_URL="https://github.com/${{ github.repository }}/releases/download/${TAG_NAME}/Submersion-${TAG_NAME}-Windows-Setup.exe"
           ./scripts/generate_appcast.sh "$VERSION" "$BUILD_NUMBER" "$DATE" "$MACOS_URL" "$WINDOWS_URL" > appcast.xml
 
       - name: Generate checksums
@@ -695,7 +698,7 @@ jobs:
           MISSING=()
           for expected in \
             "Submersion-${TAG_NAME}-macOS.dmg" \
-            "Submersion-${TAG_NAME}-Windows.zip" \
+            "Submersion-${TAG_NAME}-Windows-Setup.exe" \
             "Submersion-${TAG_NAME}-Linux.tar.gz" \
             "Submersion-${TAG_NAME}-Android.apk" \
             "appcast.xml" \
