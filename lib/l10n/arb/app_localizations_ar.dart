@@ -9250,6 +9250,11 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settings_appearance_metric_otu => 'OTU (وحدات تحمل الأكسجين)';
 
   @override
+  String settings_appearance_metricsEnabledCount(int count, int total) {
+    return '$count of $total enabled';
+  }
+
+  @override
   String get settings_appearance_pressureThresholdMarkers =>
       'علامات عتبة الضغط';
 
@@ -9275,6 +9280,10 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get settings_appearance_subsection_defaultVisibleMetrics =>
       'المقاييس المرئية الافتراضية';
+
+  @override
+  String get settings_appearance_subsection_standardMetrics =>
+      'Standard Metrics';
 
   @override
   String get settings_appearance_subsection_gasAnalysisMetrics =>

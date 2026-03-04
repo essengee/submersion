@@ -209,185 +209,19 @@ class AppearancePage extends ConsumerWidget {
                   .setDefaultShowGasSwitchMarkers(value);
             },
           ),
-          const SizedBox(height: 8),
-          _buildSubsectionHeader(
-            context,
-            context.l10n.settings_appearance_subsection_defaultVisibleMetrics,
-          ),
-          SwitchListTile(
-            title: Text(context.l10n.settings_appearance_metric_temperature),
-            dense: true,
-            value: settings.defaultShowTemperature,
-            onChanged: (value) {
-              ref
-                  .read(settingsProvider.notifier)
-                  .setDefaultShowTemperature(value);
-            },
-          ),
-          SwitchListTile(
-            title: Text(context.l10n.settings_appearance_metric_pressure),
-            dense: true,
-            value: settings.defaultShowPressure,
-            onChanged: (value) {
-              ref.read(settingsProvider.notifier).setDefaultShowPressure(value);
-            },
-          ),
-          SwitchListTile(
-            title: Text(context.l10n.settings_appearance_metric_heartRate),
-            dense: true,
-            value: settings.defaultShowHeartRate,
-            onChanged: (value) {
-              ref
-                  .read(settingsProvider.notifier)
-                  .setDefaultShowHeartRate(value);
-            },
-          ),
-          SwitchListTile(
-            title: Text(context.l10n.settings_appearance_metric_sacRate),
-            dense: true,
-            value: settings.defaultShowSac,
-            onChanged: (value) {
-              ref.read(settingsProvider.notifier).setDefaultShowSac(value);
-            },
-          ),
-          SwitchListTile(
-            title: Text(context.l10n.settings_appearance_metric_events),
-            dense: true,
-            value: settings.defaultShowEvents,
-            onChanged: (value) {
-              ref.read(settingsProvider.notifier).setDefaultShowEvents(value);
-            },
-          ),
-          const SizedBox(height: 8),
-          _buildSubsectionHeader(
-            context,
-            context.l10n.settings_appearance_subsection_decompressionMetrics,
-          ),
-          SwitchListTile(
-            title: Text(context.l10n.settings_appearance_metric_ceiling),
-            dense: true,
-            value: settings.showCeilingOnProfile,
-            onChanged: (value) {
-              ref
-                  .read(settingsProvider.notifier)
-                  .setShowCeilingOnProfile(value);
-            },
-          ),
-          SwitchListTile(
+          ListTile(
+            leading: const Icon(Icons.visibility),
             title: Text(
-              context.l10n.settings_appearance_metric_ascentRateColors,
+              context.l10n.settings_appearance_subsection_defaultVisibleMetrics,
             ),
-            dense: true,
-            value: settings.showAscentRateColors,
-            onChanged: (value) {
-              ref
-                  .read(settingsProvider.notifier)
-                  .setShowAscentRateColors(value);
-            },
-          ),
-          SwitchListTile(
-            title: Text(context.l10n.settings_appearance_metric_ndl),
-            dense: true,
-            value: settings.showNdlOnProfile,
-            onChanged: (value) {
-              ref.read(settingsProvider.notifier).setShowNdlOnProfile(value);
-            },
-          ),
-          SwitchListTile(
-            title: Text(context.l10n.settings_appearance_metric_tts),
-            dense: true,
-            value: settings.defaultShowTts,
-            onChanged: (value) {
-              ref.read(settingsProvider.notifier).setDefaultShowTts(value);
-            },
-          ),
-          SwitchListTile(
-            title: Text(context.l10n.settings_appearance_metric_cns),
-            dense: true,
-            value: settings.defaultShowCns,
-            onChanged: (value) {
-              ref.read(settingsProvider.notifier).setDefaultShowCns(value);
-            },
-          ),
-          SwitchListTile(
-            title: Text(context.l10n.settings_appearance_metric_otu),
-            dense: true,
-            value: settings.defaultShowOtu,
-            onChanged: (value) {
-              ref.read(settingsProvider.notifier).setDefaultShowOtu(value);
-            },
-          ),
-          const SizedBox(height: 8),
-          _buildSubsectionHeader(
-            context,
-            context.l10n.settings_appearance_subsection_gasAnalysisMetrics,
-          ),
-          SwitchListTile(
-            title: Text(context.l10n.settings_appearance_metric_ppO2),
-            dense: true,
-            value: settings.defaultShowPpO2,
-            onChanged: (value) {
-              ref.read(settingsProvider.notifier).setDefaultShowPpO2(value);
-            },
-          ),
-          SwitchListTile(
-            title: Text(context.l10n.settings_appearance_metric_ppN2),
-            dense: true,
-            value: settings.defaultShowPpN2,
-            onChanged: (value) {
-              ref.read(settingsProvider.notifier).setDefaultShowPpN2(value);
-            },
-          ),
-          SwitchListTile(
-            title: Text(context.l10n.settings_appearance_metric_ppHe),
-            dense: true,
-            value: settings.defaultShowPpHe,
-            onChanged: (value) {
-              ref.read(settingsProvider.notifier).setDefaultShowPpHe(value);
-            },
-          ),
-          SwitchListTile(
-            title: Text(context.l10n.settings_appearance_metric_gasDensity),
-            dense: true,
-            value: settings.defaultShowGasDensity,
-            onChanged: (value) {
-              ref
-                  .read(settingsProvider.notifier)
-                  .setDefaultShowGasDensity(value);
-            },
-          ),
-          const SizedBox(height: 8),
-          _buildSubsectionHeader(
-            context,
-            context.l10n.settings_appearance_subsection_gradientFactorMetrics,
-          ),
-          SwitchListTile(
-            title: Text(context.l10n.settings_appearance_metric_gfPercent),
-            dense: true,
-            value: settings.defaultShowGf,
-            onChanged: (value) {
-              ref.read(settingsProvider.notifier).setDefaultShowGf(value);
-            },
-          ),
-          SwitchListTile(
-            title: Text(context.l10n.settings_appearance_metric_surfaceGf),
-            dense: true,
-            value: settings.defaultShowSurfaceGf,
-            onChanged: (value) {
-              ref
-                  .read(settingsProvider.notifier)
-                  .setDefaultShowSurfaceGf(value);
-            },
-          ),
-          SwitchListTile(
-            title: Text(context.l10n.settings_appearance_metric_meanDepth),
-            dense: true,
-            value: settings.defaultShowMeanDepth,
-            onChanged: (value) {
-              ref
-                  .read(settingsProvider.notifier)
-                  .setDefaultShowMeanDepth(value);
-            },
+            subtitle: Text(
+              context.l10n.settings_appearance_metricsEnabledCount(
+                _countEnabledMetrics(settings),
+                18,
+              ),
+            ),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.push('/settings/default-metrics'),
           ),
           const SizedBox(height: 32),
         ],
@@ -408,17 +242,28 @@ class AppearancePage extends ConsumerWidget {
     );
   }
 
-  Widget _buildSubsectionHeader(BuildContext context, String title) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-      child: Text(
-        title,
-        style: Theme.of(context).textTheme.labelLarge?.copyWith(
-          color: Theme.of(context).colorScheme.onSurfaceVariant,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-    );
+  int _countEnabledMetrics(AppSettings settings) {
+    final values = [
+      settings.defaultShowTemperature,
+      settings.defaultShowPressure,
+      settings.defaultShowHeartRate,
+      settings.defaultShowSac,
+      settings.defaultShowEvents,
+      settings.showCeilingOnProfile,
+      settings.showAscentRateColors,
+      settings.showNdlOnProfile,
+      settings.defaultShowTts,
+      settings.defaultShowCns,
+      settings.defaultShowOtu,
+      settings.defaultShowPpO2,
+      settings.defaultShowPpN2,
+      settings.defaultShowPpHe,
+      settings.defaultShowGasDensity,
+      settings.defaultShowGf,
+      settings.defaultShowSurfaceGf,
+      settings.defaultShowMeanDepth,
+    ];
+    return values.where((v) => v).length;
   }
 
   Widget _buildThemeSelector(

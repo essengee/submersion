@@ -2990,6 +2990,7 @@
   "settings_appearance_rightYAxisMetric_subtitle": "المقياس الافتراضي المعروض على المحور الأيمن",
   "settings_appearance_subsection_decompressionMetrics": "مقاييس تخفيف الضغط",
   "settings_appearance_subsection_defaultVisibleMetrics": "المقاييس المرئية الافتراضية",
+  "settings_appearance_subsection_standardMetrics": "Standard Metrics",
   "settings_appearance_subsection_gasAnalysisMetrics": "مقاييس تحليل الغاز",
   "settings_appearance_subsection_gradientFactorMetrics": "مقاييس عامل التدرج",
   "settings_appearance_theme_dark": "داكن",

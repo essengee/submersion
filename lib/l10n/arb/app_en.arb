@@ -5074,6 +5074,13 @@
   "settings_appearance_metric_tts": "TTS (Time to Surface)",
   "settings_appearance_metric_cns": "CNS% (O2 Toxicity)",
   "settings_appearance_metric_otu": "OTU (O2 Tolerance Units)",
+  "settings_appearance_metricsEnabledCount": "{count} of {total} enabled",
+  "@settings_appearance_metricsEnabledCount": {
+    "placeholders": {
+      "count": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
   "settings_appearance_pressureThresholdMarkers": "Pressure threshold markers",
   "settings_appearance_pressureThresholdMarkers_subtitle": "Show markers when tank pressure crosses thresholds",
   "settings_appearance_pressureThresholdMarkers_subtitleFull": "Show markers when tank pressure crosses 2/3, 1/2, and 1/3 thresholds",
@@ -5081,6 +5088,7 @@
   "settings_appearance_rightYAxisMetric_subtitle": "Default metric shown on right axis",
   "settings_appearance_subsection_decompressionMetrics": "Decompression Metrics",
   "settings_appearance_subsection_defaultVisibleMetrics": "Default Visible Metrics",
+  "settings_appearance_subsection_standardMetrics": "Standard Metrics",
   "settings_appearance_subsection_gasAnalysisMetrics": "Gas Analysis Metrics",
   "settings_appearance_subsection_gradientFactorMetrics": "Gradient Factor Metrics",
   "settings_appearance_theme_dark": "Dark",

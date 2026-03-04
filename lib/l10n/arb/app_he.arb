@@ -2990,6 +2990,7 @@
   "settings_appearance_rightYAxisMetric_subtitle": "מדד ברירת מחדל המוצג בציר הימני",
   "settings_appearance_subsection_decompressionMetrics": "מדדי דקומפרסיה",
   "settings_appearance_subsection_defaultVisibleMetrics": "מדדים גלויים כברירת מחדל",
+  "settings_appearance_subsection_standardMetrics": "Standard Metrics",
   "settings_appearance_subsection_gasAnalysisMetrics": "מדדי ניתוח גז",
   "settings_appearance_subsection_gradientFactorMetrics": "מדדי גורם שיפוע",
   "settings_appearance_theme_dark": "כהה",

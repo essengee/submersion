@@ -2990,6 +2990,7 @@
   "settings_appearance_rightYAxisMetric_subtitle": "Alapertelmezett metrika a jobb tengelyen",
   "settings_appearance_subsection_decompressionMetrics": "Dekompresszios metrikak",
   "settings_appearance_subsection_defaultVisibleMetrics": "Alapertelmezett lathato metrikak",
+  "settings_appearance_subsection_standardMetrics": "Standard Metrics",
   "settings_appearance_subsection_gasAnalysisMetrics": "Gaz elemzesi metrikak",
   "settings_appearance_subsection_gradientFactorMetrics": "Gradiens faktor metrikak",
   "settings_appearance_theme_dark": "Sötet",

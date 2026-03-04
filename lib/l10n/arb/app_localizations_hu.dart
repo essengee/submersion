@@ -9403,6 +9403,11 @@ class AppLocalizationsHu extends AppLocalizations {
   String get settings_appearance_metric_otu => 'OTU (O2 tolerancia egységek)';
 
   @override
+  String settings_appearance_metricsEnabledCount(int count, int total) {
+    return '$count of $total enabled';
+  }
+
+  @override
   String get settings_appearance_pressureThresholdMarkers =>
       'Nyomas küszöbértek jelolok';
 
@@ -9428,6 +9433,10 @@ class AppLocalizationsHu extends AppLocalizations {
   @override
   String get settings_appearance_subsection_defaultVisibleMetrics =>
       'Alapertelmezett lathato metrikak';
+
+  @override
+  String get settings_appearance_subsection_standardMetrics =>
+      'Standard Metrics';
 
   @override
   String get settings_appearance_subsection_gasAnalysisMetrics =>

@@ -9186,6 +9186,11 @@ class AppLocalizationsHe extends AppLocalizations {
   String get settings_appearance_metric_otu => 'OTU (יחידות סבילות חמצן)';
 
   @override
+  String settings_appearance_metricsEnabledCount(int count, int total) {
+    return '$count of $total enabled';
+  }
+
+  @override
   String get settings_appearance_pressureThresholdMarkers => 'סמני סף לחץ';
 
   @override
@@ -9210,6 +9215,10 @@ class AppLocalizationsHe extends AppLocalizations {
   @override
   String get settings_appearance_subsection_defaultVisibleMetrics =>
       'מדדים גלויים כברירת מחדל';
+
+  @override
+  String get settings_appearance_subsection_standardMetrics =>
+      'Standard Metrics';
 
   @override
   String get settings_appearance_subsection_gasAnalysisMetrics =>

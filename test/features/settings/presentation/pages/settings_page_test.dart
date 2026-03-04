@@ -331,8 +331,12 @@ void main() {
 
     testWidgets('should display Units section with subtitle', (tester) async {
       await tester.pumpWidget(buildTestWidget(const SettingsPage()));
+      await tester.pumpAndSettle();
 
-      // Mobile layout shows Units section tile
+      // Scroll to find Units section which may be off screen after alphabetization
+      await tester.scrollUntilVisible(find.text('Units'), 50.0);
+      await tester.pumpAndSettle();
+
       expect(find.text('Units'), findsOneWidget);
       expect(find.text('Measurement preferences'), findsOneWidget);
     });

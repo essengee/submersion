@@ -2990,6 +2990,7 @@
   "settings_appearance_rightYAxisMetric_subtitle": "Standaardmetriek getoond op de rechter as",
   "settings_appearance_subsection_decompressionMetrics": "Decompressiemetrieken",
   "settings_appearance_subsection_defaultVisibleMetrics": "Standaard zichtbare metrieken",
+  "settings_appearance_subsection_standardMetrics": "Standard Metrics",
   "settings_appearance_subsection_gasAnalysisMetrics": "Gasanalysemetrieken",
   "settings_appearance_subsection_gradientFactorMetrics": "Gradientfactormetrieken",
   "settings_appearance_theme_dark": "Donker",

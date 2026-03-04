@@ -16278,6 +16278,12 @@ abstract class AppLocalizations {
   /// **'OTU (O2 Tolerance Units)'**
   String get settings_appearance_metric_otu;
 
+  /// No description provided for @settings_appearance_metricsEnabledCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} of {total} enabled'**
+  String settings_appearance_metricsEnabledCount(int count, int total);
+
   /// No description provided for @settings_appearance_pressureThresholdMarkers.
   ///
   /// In en, this message translates to:
@@ -16319,6 +16325,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Default Visible Metrics'**
   String get settings_appearance_subsection_defaultVisibleMetrics;
+
+  /// No description provided for @settings_appearance_subsection_standardMetrics.
+  ///
+  /// In en, this message translates to:
+  /// **'Standard Metrics'**
+  String get settings_appearance_subsection_standardMetrics;
 
   /// No description provided for @settings_appearance_subsection_gasAnalysisMetrics.
   ///

@@ -1241,264 +1241,22 @@ class _AppearanceSectionContentState
                         .setDefaultShowGasSwitchMarkers(value);
                   },
                 ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-          // Default Metrics Visibility
-          _buildSubsectionHeader(
-            context,
-            context.l10n.settings_appearance_subsection_defaultVisibleMetrics,
-          ),
-          const SizedBox(height: 8),
-          Card(
-            child: Column(
-              children: [
-                // Primary metrics
-                SwitchListTile(
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.visibility),
                   title: Text(
-                    context.l10n.settings_appearance_metric_temperature,
+                    context
+                        .l10n
+                        .settings_appearance_subsection_defaultVisibleMetrics,
                   ),
-                  dense: true,
-                  value: settings.defaultShowTemperature,
-                  onChanged: (value) {
-                    ref
-                        .read(settingsProvider.notifier)
-                        .setDefaultShowTemperature(value);
-                  },
-                ),
-                const Divider(height: 1),
-                SwitchListTile(
-                  title: Text(context.l10n.settings_appearance_metric_pressure),
-                  dense: true,
-                  value: settings.defaultShowPressure,
-                  onChanged: (value) {
-                    ref
-                        .read(settingsProvider.notifier)
-                        .setDefaultShowPressure(value);
-                  },
-                ),
-                const Divider(height: 1),
-                SwitchListTile(
-                  title: Text(
-                    context.l10n.settings_appearance_metric_heartRate,
+                  subtitle: Text(
+                    context.l10n.settings_appearance_metricsEnabledCount(
+                      _countEnabledMetrics(settings),
+                      18,
+                    ),
                   ),
-                  dense: true,
-                  value: settings.defaultShowHeartRate,
-                  onChanged: (value) {
-                    ref
-                        .read(settingsProvider.notifier)
-                        .setDefaultShowHeartRate(value);
-                  },
-                ),
-                const Divider(height: 1),
-                SwitchListTile(
-                  title: Text(context.l10n.settings_appearance_metric_sacRate),
-                  dense: true,
-                  value: settings.defaultShowSac,
-                  onChanged: (value) {
-                    ref
-                        .read(settingsProvider.notifier)
-                        .setDefaultShowSac(value);
-                  },
-                ),
-                const Divider(height: 1),
-                SwitchListTile(
-                  title: Text(context.l10n.settings_appearance_metric_events),
-                  dense: true,
-                  value: settings.defaultShowEvents,
-                  onChanged: (value) {
-                    ref
-                        .read(settingsProvider.notifier)
-                        .setDefaultShowEvents(value);
-                  },
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-          // Decompression metrics
-          _buildSubsectionHeader(
-            context,
-            context.l10n.settings_appearance_subsection_decompressionMetrics,
-          ),
-          const SizedBox(height: 8),
-          Card(
-            child: Column(
-              children: [
-                SwitchListTile(
-                  title: Text(context.l10n.settings_appearance_metric_ceiling),
-                  dense: true,
-                  value: settings.showCeilingOnProfile,
-                  onChanged: (value) {
-                    ref
-                        .read(settingsProvider.notifier)
-                        .setShowCeilingOnProfile(value);
-                  },
-                ),
-                const Divider(height: 1),
-                SwitchListTile(
-                  title: Text(
-                    context.l10n.settings_appearance_metric_ascentRateColors,
-                  ),
-                  dense: true,
-                  value: settings.showAscentRateColors,
-                  onChanged: (value) {
-                    ref
-                        .read(settingsProvider.notifier)
-                        .setShowAscentRateColors(value);
-                  },
-                ),
-                const Divider(height: 1),
-                SwitchListTile(
-                  title: Text(context.l10n.settings_appearance_metric_ndl),
-                  dense: true,
-                  value: settings.showNdlOnProfile,
-                  onChanged: (value) {
-                    ref
-                        .read(settingsProvider.notifier)
-                        .setShowNdlOnProfile(value);
-                  },
-                ),
-                const Divider(height: 1),
-                SwitchListTile(
-                  title: Text(context.l10n.settings_appearance_metric_tts),
-                  dense: true,
-                  value: settings.defaultShowTts,
-                  onChanged: (value) {
-                    ref
-                        .read(settingsProvider.notifier)
-                        .setDefaultShowTts(value);
-                  },
-                ),
-                const Divider(height: 1),
-                SwitchListTile(
-                  title: Text(context.l10n.settings_appearance_metric_cns),
-                  dense: true,
-                  value: settings.defaultShowCns,
-                  onChanged: (value) {
-                    ref
-                        .read(settingsProvider.notifier)
-                        .setDefaultShowCns(value);
-                  },
-                ),
-                const Divider(height: 1),
-                SwitchListTile(
-                  title: Text(context.l10n.settings_appearance_metric_otu),
-                  dense: true,
-                  value: settings.defaultShowOtu,
-                  onChanged: (value) {
-                    ref
-                        .read(settingsProvider.notifier)
-                        .setDefaultShowOtu(value);
-                  },
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-          // Gas analysis metrics
-          _buildSubsectionHeader(
-            context,
-            context.l10n.settings_appearance_subsection_gasAnalysisMetrics,
-          ),
-          const SizedBox(height: 8),
-          Card(
-            child: Column(
-              children: [
-                SwitchListTile(
-                  title: Text(context.l10n.settings_appearance_metric_ppO2),
-                  dense: true,
-                  value: settings.defaultShowPpO2,
-                  onChanged: (value) {
-                    ref
-                        .read(settingsProvider.notifier)
-                        .setDefaultShowPpO2(value);
-                  },
-                ),
-                const Divider(height: 1),
-                SwitchListTile(
-                  title: Text(context.l10n.settings_appearance_metric_ppN2),
-                  dense: true,
-                  value: settings.defaultShowPpN2,
-                  onChanged: (value) {
-                    ref
-                        .read(settingsProvider.notifier)
-                        .setDefaultShowPpN2(value);
-                  },
-                ),
-                const Divider(height: 1),
-                SwitchListTile(
-                  title: Text(context.l10n.settings_appearance_metric_ppHe),
-                  dense: true,
-                  value: settings.defaultShowPpHe,
-                  onChanged: (value) {
-                    ref
-                        .read(settingsProvider.notifier)
-                        .setDefaultShowPpHe(value);
-                  },
-                ),
-                const Divider(height: 1),
-                SwitchListTile(
-                  title: Text(
-                    context.l10n.settings_appearance_metric_gasDensity,
-                  ),
-                  dense: true,
-                  value: settings.defaultShowGasDensity,
-                  onChanged: (value) {
-                    ref
-                        .read(settingsProvider.notifier)
-                        .setDefaultShowGasDensity(value);
-                  },
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-          // Gradient factor metrics
-          _buildSubsectionHeader(
-            context,
-            context.l10n.settings_appearance_subsection_gradientFactorMetrics,
-          ),
-          const SizedBox(height: 8),
-          Card(
-            child: Column(
-              children: [
-                SwitchListTile(
-                  title: Text(
-                    context.l10n.settings_appearance_metric_gfPercent,
-                  ),
-                  dense: true,
-                  value: settings.defaultShowGf,
-                  onChanged: (value) {
-                    ref.read(settingsProvider.notifier).setDefaultShowGf(value);
-                  },
-                ),
-                const Divider(height: 1),
-                SwitchListTile(
-                  title: Text(
-                    context.l10n.settings_appearance_metric_surfaceGf,
-                  ),
-                  dense: true,
-                  value: settings.defaultShowSurfaceGf,
-                  onChanged: (value) {
-                    ref
-                        .read(settingsProvider.notifier)
-                        .setDefaultShowSurfaceGf(value);
-                  },
-                ),
-                const Divider(height: 1),
-                SwitchListTile(
-                  title: Text(
-                    context.l10n.settings_appearance_metric_meanDepth,
-                  ),
-                  dense: true,
-                  value: settings.defaultShowMeanDepth,
-                  onChanged: (value) {
-                    ref
-                        .read(settingsProvider.notifier)
-                        .setDefaultShowMeanDepth(value);
-                  },
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => context.push('/settings/default-metrics'),
                 ),
               ],
             ),
@@ -1522,6 +1280,30 @@ class _AppearanceSectionContentState
       CardColorAttribute.temperature =>
         context.l10n.settings_appearance_cardColorAttribute_temperature,
     };
+  }
+
+  int _countEnabledMetrics(AppSettings settings) {
+    final values = [
+      settings.defaultShowTemperature,
+      settings.defaultShowPressure,
+      settings.defaultShowHeartRate,
+      settings.defaultShowSac,
+      settings.defaultShowEvents,
+      settings.showCeilingOnProfile,
+      settings.showAscentRateColors,
+      settings.showNdlOnProfile,
+      settings.defaultShowTts,
+      settings.defaultShowCns,
+      settings.defaultShowOtu,
+      settings.defaultShowPpO2,
+      settings.defaultShowPpN2,
+      settings.defaultShowPpHe,
+      settings.defaultShowGasDensity,
+      settings.defaultShowGf,
+      settings.defaultShowSurfaceGf,
+      settings.defaultShowMeanDepth,
+    ];
+    return values.where((v) => v).length;
   }
 
   String _resolveCurrentThemeName(BuildContext context) {
@@ -2172,16 +1954,6 @@ Widget _buildSectionHeader(BuildContext context, String title) {
     style: Theme.of(context).textTheme.titleSmall?.copyWith(
       color: Theme.of(context).colorScheme.primary,
       fontWeight: FontWeight.bold,
-    ),
-  );
-}
-
-Widget _buildSubsectionHeader(BuildContext context, String title) {
-  return Text(
-    title,
-    style: Theme.of(context).textTheme.labelLarge?.copyWith(
-      color: Theme.of(context).colorScheme.onSurfaceVariant,
-      fontWeight: FontWeight.w500,
     ),
   );
 }

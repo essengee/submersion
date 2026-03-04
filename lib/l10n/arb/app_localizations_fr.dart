@@ -9463,6 +9463,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get settings_appearance_metric_otu => 'OTU (Unites de tolerance O2)';
 
   @override
+  String settings_appearance_metricsEnabledCount(int count, int total) {
+    return '$count of $total enabled';
+  }
+
+  @override
   String get settings_appearance_pressureThresholdMarkers =>
       'Marqueurs de seuil de pression';
 
@@ -9489,6 +9494,10 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get settings_appearance_subsection_defaultVisibleMetrics =>
       'Metriques visibles par defaut';
+
+  @override
+  String get settings_appearance_subsection_standardMetrics =>
+      'Standard Metrics';
 
   @override
   String get settings_appearance_subsection_gasAnalysisMetrics =>

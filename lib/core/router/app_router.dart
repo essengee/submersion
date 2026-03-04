@@ -62,6 +62,7 @@ import 'package:submersion/features/statistics/presentation/pages/statistics_pro
 import 'package:submersion/features/backup/presentation/pages/backup_settings_page.dart';
 import 'package:submersion/features/settings/presentation/pages/settings_page.dart';
 import 'package:submersion/features/settings/presentation/pages/appearance_page.dart';
+import 'package:submersion/features/settings/presentation/pages/default_visible_metrics_page.dart';
 import 'package:submersion/features/settings/presentation/pages/language_settings_page.dart';
 import 'package:submersion/features/settings/presentation/pages/theme_gallery_page.dart';
 import 'package:submersion/features/settings/presentation/pages/cloud_sync_page.dart';
@@ -716,6 +717,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 path: 'appearance',
                 name: 'appearance',
                 builder: (context, state) => const AppearancePage(),
+              ),
+              GoRoute(
+                path: 'default-metrics',
+                name: 'defaultMetrics',
+                builder: (context, state) => const DefaultVisibleMetricsPage(),
               ),
               GoRoute(
                 path: 'themes',

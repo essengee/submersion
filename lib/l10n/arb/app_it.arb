@@ -2990,6 +2990,7 @@
   "settings_appearance_rightYAxisMetric_subtitle": "Metrica predefinita mostrata sull'asse destro",
   "settings_appearance_subsection_decompressionMetrics": "Metriche di decompressione",
   "settings_appearance_subsection_defaultVisibleMetrics": "Metriche visibili predefinite",
+  "settings_appearance_subsection_standardMetrics": "Standard Metrics",
   "settings_appearance_subsection_gasAnalysisMetrics": "Metriche di analisi gas",
   "settings_appearance_subsection_gradientFactorMetrics": "Metriche fattori di gradiente",
   "settings_appearance_theme_dark": "Scuro",

@@ -9439,6 +9439,11 @@ class AppLocalizationsPt extends AppLocalizations {
       'OTU (Unidades de Tolerancia ao O2)';
 
   @override
+  String settings_appearance_metricsEnabledCount(int count, int total) {
+    return '$count of $total enabled';
+  }
+
+  @override
   String get settings_appearance_pressureThresholdMarkers =>
       'Marcadores de limite de pressao';
 
@@ -9465,6 +9470,10 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get settings_appearance_subsection_defaultVisibleMetrics =>
       'Metricas Visiveis Padrao';
+
+  @override
+  String get settings_appearance_subsection_standardMetrics =>
+      'Standard Metrics';
 
   @override
   String get settings_appearance_subsection_gasAnalysisMetrics =>
