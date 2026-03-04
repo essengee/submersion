@@ -9633,7 +9633,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_data_appDefaultLocation => 'App default location';
 
   @override
-  String get settings_data_backup => 'Backup and Restore';
+  String get settings_data_backup => 'Backup & Restore';
 
   @override
   String get settings_data_backup_subtitle => 'Create a backup of your data';
@@ -10194,7 +10194,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings_section_data_title => 'Data';
 
   @override
-  String get settings_section_decompression_subtitle => 'Gradient factors';
+  String get settings_section_decompression_subtitle =>
+      'GF, data sources & narcosis';
 
   @override
   String get settings_section_decompression_title => 'Decompression';

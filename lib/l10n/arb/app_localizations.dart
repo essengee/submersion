@@ -16806,7 +16806,7 @@ abstract class AppLocalizations {
   /// No description provided for @settings_data_backup.
   ///
   /// In en, this message translates to:
-  /// **'Backup and Restore'**
+  /// **'Backup & Restore'**
   String get settings_data_backup;
 
   /// No description provided for @settings_data_backup_subtitle.
@@ -17782,7 +17782,7 @@ abstract class AppLocalizations {
   /// No description provided for @settings_section_decompression_subtitle.
   ///
   /// In en, this message translates to:
-  /// **'Gradient factors'**
+  /// **'GF, data sources & narcosis'**
   String get settings_section_decompression_subtitle;
 
   /// No description provided for @settings_section_decompression_title.
