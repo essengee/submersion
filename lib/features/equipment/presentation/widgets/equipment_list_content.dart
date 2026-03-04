@@ -437,23 +437,37 @@ class EquipmentListTile extends StatelessWidget {
           ),
         ),
         title: Text(item.name),
-        subtitle: item.fullName != item.name
-            ? Text(item.fullName)
-            : Text(item.type.displayName),
+        subtitle: item.fullName != item.name ? Text(item.fullName) : null,
         trailing: _buildTrailing(context),
       ),
     );
   }
 
-  Widget? _buildTrailing(BuildContext context) {
+  Widget _buildTrailing(BuildContext context) {
+    final theme = Theme.of(context);
+
+    final typeLabel = Text(
+      item.type.displayName,
+      style: theme.textTheme.bodySmall?.copyWith(
+        color: theme.colorScheme.onSurfaceVariant,
+      ),
+    );
+
     if (item.isServiceDue) {
-      return Chip(
-        label: const Text('Service Due'),
-        backgroundColor: Theme.of(context).colorScheme.errorContainer,
-        labelStyle: TextStyle(
-          color: Theme.of(context).colorScheme.onErrorContainer,
-          fontSize: 12,
-        ),
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          typeLabel,
+          const SizedBox(height: 2),
+          Text(
+            'Service Due',
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: theme.colorScheme.error,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
       );
     }
 
@@ -463,34 +477,37 @@ class EquipmentListTile extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
+          typeLabel,
+          const SizedBox(height: 2),
           Text(
-            'Service in',
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            'Service in $days days',
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
             ),
-          ),
-          Text(
-            '$days days',
-            style: Theme.of(
-              context,
-            ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w500),
           ),
         ],
       );
     }
 
     if (item.status != EquipmentStatus.active) {
-      return Chip(
-        label: Text(item.status.displayName),
-        backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-        labelStyle: TextStyle(
-          color: Theme.of(context).colorScheme.onSecondaryContainer,
-          fontSize: 12,
-        ),
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          typeLabel,
+          const SizedBox(height: 2),
+          Text(
+            item.status.displayName,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: theme.colorScheme.onSecondaryContainer,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
       );
     }
 
-    return null;
+    return typeLabel;
   }
 
   IconData _getIconForType(EquipmentType type) {
