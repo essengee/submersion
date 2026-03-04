@@ -12,21 +12,25 @@ This document describes the UI design, layout, and user flows for the Submersion
 ## Color Palette
 
 ### Primary (Ocean Theme)
+
 - Primary: `#0077B6` - Deep ocean blue
 - Primary Light: `#00B4D8` - Clear water
 - Primary Dark: `#03045E` - Deep sea
 
 ### Secondary
+
 - Secondary: `#00C896` - Coral green
 - Secondary Light: `#48CAE4` - Shallow water
 
 ### Semantic
+
 - Success: `#22C55E` - Confirmation
 - Warning: `#F59E0B` - Attention needed
 - Error: `#EF4444` - Errors and service due
 - Info: `#3B82F6` - Information
 
 ### Dive-Specific
+
 - Depth: `#0077B6` - Depth indicator
 - Temperature Cold: `#60A5FA` - Cold water
 - Temperature Warm: `#FBBF24` - Warm water
@@ -38,7 +42,8 @@ This document describes the UI design, layout, and user flows for the Submersion
 ## Navigation Structure
 
 ### Mobile (Bottom Navigation)
-```
+
+```text
 ┌─────────────────────────────────────────┐
 │                                         │
 │            [Main Content]               │
@@ -50,7 +55,8 @@ This document describes the UI design, layout, and user flows for the Submersion
 ```
 
 ### Desktop (Side Navigation Rail)
-```
+
+```text
 ┌──────┬──────────────────────────────────┐
 │  🤿  │                                  │
 │      │                                  │
@@ -72,7 +78,8 @@ This document describes the UI design, layout, and user flows for the Submersion
 ```
 
 ### Desktop Extended (Wide Screen)
-```
+
+```text
 ┌────────────┬────────────────────────────┐
 │    🤿      │                            │
 │ Submersion │                            │
@@ -93,7 +100,8 @@ This document describes the UI design, layout, and user flows for the Submersion
 ### 1. Dive List (Home)
 
 #### Mobile View
-```
+
+```text
 ┌─────────────────────────────────────────┐
 │ ◄  Dive Log                    🔍  ≡   │
 ├─────────────────────────────────────────┤
@@ -127,7 +135,8 @@ This document describes the UI design, layout, and user flows for the Submersion
 ```
 
 #### Empty State
-```
+
+```text
 ┌─────────────────────────────────────────┐
 │ ◄  Dive Log                    🔍  ≡   │
 ├─────────────────────────────────────────┤
@@ -150,7 +159,8 @@ This document describes the UI design, layout, and user flows for the Submersion
 ```
 
 #### Desktop - Master/Detail View
-```
+
+```text
 ┌──────┬──────────────────┬───────────────────────────────────┐
 │ 🤿   │ Dive Log    🔍 ≡ │ Dive #42                    ✏️ ⋮ │
 │      ├──────────────────┼───────────────────────────────────┤
@@ -185,7 +195,8 @@ This document describes the UI design, layout, and user flows for the Submersion
 ### 2. Dive Detail
 
 #### Mobile View
-```
+
+```text
 ┌─────────────────────────────────────────┐
 │ ◄  Dive Details                   ✏️ ⋮ │
 ├─────────────────────────────────────────┤
@@ -245,7 +256,8 @@ This document describes the UI design, layout, and user flows for the Submersion
 ### 3. Log/Edit Dive
 
 #### Mobile View (Scrollable Form)
-```
+
+```sql
 ┌─────────────────────────────────────────┐
 │ ◄  Log Dive                       Save │
 ├─────────────────────────────────────────┤
@@ -350,7 +362,8 @@ This document describes the UI design, layout, and user flows for the Submersion
 ### 4. Dive Sites List
 
 #### Mobile View
-```
+
+```text
 ┌─────────────────────────────────────────┐
 │ ◄  Dive Sites                  🔍  🗺️   │
 ├─────────────────────────────────────────┤
@@ -381,7 +394,8 @@ This document describes the UI design, layout, and user flows for the Submersion
 ```
 
 #### Map View (Toggle)
-```
+
+```text
 ┌─────────────────────────────────────────┐
 │ ◄  Dive Sites                  🔍  📋   │
 ├─────────────────────────────────────────┤
@@ -415,7 +429,8 @@ This document describes the UI design, layout, and user flows for the Submersion
 ### 5. Gear Management
 
 #### Mobile View with Tabs
-```
+
+```text
 ┌─────────────────────────────────────────┐
 │ ◄  Gear                           🔍    │
 ├─────────────────────────────────────────┤
@@ -455,7 +470,8 @@ This document describes the UI design, layout, and user flows for the Submersion
 ```
 
 #### Gear with Service Warning
-```
+
+```text
 ┌─────────────────────────────────────────┐
 │ 💨 Primary Regulator             ⚠️     │
 │                                         │
@@ -485,7 +501,8 @@ This document describes the UI design, layout, and user flows for the Submersion
 ### 6. Statistics Dashboard
 
 #### Mobile View
-```
+
+```text
 ┌─────────────────────────────────────────┐
 │ ◄  Statistics                           │
 ├─────────────────────────────────────────┤
@@ -549,7 +566,8 @@ This document describes the UI design, layout, and user flows for the Submersion
 ### 7. Settings
 
 #### Mobile View
-```
+
+```text
 ┌─────────────────────────────────────────┐
 │ ◄  Settings                             │
 ├─────────────────────────────────────────┤
@@ -603,6 +621,7 @@ This document describes the UI design, layout, and user flows for the Submersion
 ## Component Specifications
 
 ### Dive List Card
+
 - Height: Auto (content-based)
 - Padding: 12px
 - Border radius: 12px
@@ -615,6 +634,7 @@ This document describes the UI design, layout, and user flows for the Submersion
   - Duration (trailing bottom)
 
 ### Stats Card
+
 - Square aspect ratio on mobile (1.5:1)
 - Contains:
   - Icon (top center)
@@ -622,12 +642,14 @@ This document describes the UI design, layout, and user flows for the Submersion
   - Label (small, muted)
 
 ### Form Fields
+
 - Height: 56px
 - Border radius: 8px
 - Filled style
 - Floating label
 
 ### Buttons
+
 - FAB: Extended with icon + label
 - Primary: Filled with primary color
 - Secondary: Outlined
@@ -639,26 +661,26 @@ This document describes the UI design, layout, and user flows for the Submersion
 
 ### Flow 1: Log a New Dive
 
-```
+```text
 Home → Tap FAB "Log Dive" → Dive Edit Form → Fill Details → Save → Dive Detail
 ```
 
 ### Flow 2: Import from Dive Computer
 
-```
+```sql
 Settings → Connect Dive Computer → Select Device → Pair via Bluetooth →
 Import Progress → Review Imported Dives → Confirm → Dive List
 ```
 
 ### Flow 3: View Statistics
 
-```
+```text
 Home → Tap "Stats" tab → Statistics Dashboard → Tap chart → Detailed view
 ```
 
 ### Flow 4: Export Data
 
-```
+```text
 Settings → Export → Choose Format (UDDF/CSV/PDF) → Choose Location → Export Complete
 ```
 

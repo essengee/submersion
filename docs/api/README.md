@@ -19,6 +19,7 @@ Submersion follows a layered architecture with clear separation:
 Located in `lib/features/*/domain/entities/`
 
 Domain entities are:
+
 - Pure Dart classes with no external dependencies
 - Immutable with `copyWith` methods
 - Extend `Equatable` for value equality
@@ -29,6 +30,7 @@ Domain entities are:
 Located in `lib/features/*/data/repositories/`
 
 Repositories:
+
 - Abstract data access
 - Map between database and domain models
 - Handle CRUD operations
@@ -39,6 +41,7 @@ Repositories:
 Located in `lib/features/*/presentation/providers/`
 
 Riverpod providers:
+
 - Manage state and reactivity
 - Handle async data loading
 - Provide dependency injection
@@ -65,8 +68,7 @@ domain.Dive createDive() { ... }
 
 // Use Dive (database) for data access
 Future<Dive> queryDive() { ... }
-```
-
+```dart
 ### Provider Access
 
 ```dart
@@ -80,8 +82,7 @@ class MyWidget extends ConsumerWidget {
     // ...
   }
 }
-```
-
+```text
 ## Entity Categories
 
 | Category | Entities |
@@ -111,8 +112,7 @@ class Dive extends Equatable {
   // Copy with modifications
   Dive copyWith({...}) { ... }
 }
-```
-
+```text
 ### Repository Pattern
 
 ```dart
@@ -125,8 +125,7 @@ class DiveRepository {
   Future<void> updateDive(Dive dive) async { ... }
   Future<void> deleteDive(String id) async { ... }
 }
-```
-
+```dart
 ### Provider Hierarchy
 
 ```dart
@@ -155,6 +154,7 @@ final diveListNotifierProvider =
 ## Database Schema
 
 For database details, see:
+
 - [Database Documentation](developer/database.md)
 - Source: `lib/core/database/database.dart`
 
@@ -163,4 +163,3 @@ For database details, see:
 - [Architecture](developer/architecture.md)
 - [State Management](developer/state-management.md)
 - [Code Style](contributing/code-style.md)
-

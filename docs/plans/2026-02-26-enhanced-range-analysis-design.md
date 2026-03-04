@@ -7,6 +7,7 @@ Improve the Range Analysis panel on the dive detail page from a simple min/max/a
 ## Current State
 
 The `RangeStatsPanel` widget displays a 4-column table (Label | Min | Max | Avg) for:
+
 - Depth (always shown)
 - Temperature (when profile has temp data)
 - Pressure (when profile has pressure data) - currently shows min/max/avg
@@ -62,7 +63,7 @@ Expanded `_RangeStats` class:
 
 Unified grid using `Wrap` widget with stat chips:
 
-```
+```text
 +---- Range Analysis --------+
 | 05:30 - 18:45    13:15     |
 |                             |
@@ -91,7 +92,7 @@ Unified grid using `Wrap` widget with stat chips:
 
 ## Calculation Logic
 
-```
+```text
 elapsedSeconds = endTimestamp - startTimestamp
 depthDelta = lastPoint.depth - firstPoint.depth  (signed)
 avgVerticalSpeed = depthDelta / (elapsedSeconds / 60)  (m/min, signed)
@@ -130,6 +131,7 @@ This mirrors `CylinderSacCard._formatSacValue()`.
 ## Localization Keys
 
 New strings needed:
+
 - `diveLog_rangeStats_label_elapsed` - "Elapsed"
 - `diveLog_rangeStats_label_depthDelta` - "Depth Delta"
 - `diveLog_rangeStats_label_maxDescent` - "Max Descent"

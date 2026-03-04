@@ -52,7 +52,7 @@ Your Apple ID email address (e.g., `ericgriffin@gmail.com`).
 
 Generate an app-specific password:
 
-1. Go to https://appleid.apple.com
+1. Go to <https://appleid.apple.com>
 2. Sign in > App-Specific Passwords > Generate
 3. Use the generated password as the secret value
 
@@ -68,8 +68,7 @@ Base64 encode your release keystore:
 
 ```bash
 base64 -i your-release.keystore | pbcopy
-```
-
+```text
 Paste as the secret value.
 
 **ANDROID_KEYSTORE_PASSWORD**
@@ -91,8 +90,7 @@ After configuring all secrets, trigger a test release:
 ```bash
 git tag v0.0.1-test.1
 git push origin v0.0.1-test.1
-```
-
+```text
 Monitor the workflow in GitHub Actions. If successful, delete the test release:
 
 ```bash

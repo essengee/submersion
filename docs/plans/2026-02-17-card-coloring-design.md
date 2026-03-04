@@ -25,8 +25,7 @@ enum CardColorAttribute {
   otu,         // Oxygen Toxicity Units
   maxPpO2,     // Maximum ppO2 from profile data
 }
-```
-
+```text
 ### New class: CardColorGradient
 
 ```dart
@@ -35,8 +34,7 @@ class CardColorGradient {
   final Color startColor; // Low value color
   final Color endColor;   // High value color
 }
-```
-
+```text
 ### Gradient presets
 
 | Preset | Start (low) | End (high) | Description |
@@ -60,8 +58,7 @@ Add computed getter for backward compat:
 
 ```dart
 bool get showDepthColoredDiveCards => cardColorAttribute != CardColorAttribute.none;
-```
-
+```sql
 ### DiveSummary additions
 
 - `otu: double?` -- from `dives.otu` column (already in database)
@@ -103,8 +100,7 @@ double? getCardColorValue(DiveSummary dive, CardColorAttribute attribute) {
     CardColorAttribute.maxPpO2 => dive.maxPpO2,
   };
 }
-```
-
+```text
 ### Range computation (in list builders)
 
 ```dart
@@ -114,34 +110,34 @@ final values = dives
     .whereType<double>();
 final minValue = values.isEmpty ? null : values.reduce(min);
 final maxValue = values.isEmpty ? null : values.reduce(max);
-```
-
+```text
 ### Color calculation (in DiveListTile)
 
 ```dart
 Color? _getAttributeBackgroundColor() {
   // get value, normalize to 0.0-1.0, Color.lerp(start, end, normalized)
 }
-```
-
+```text
 ### Data flow
 
 ```
+
 Settings (attribute + gradient)
         |
         v
 DiveListContent / RecentDivesCard
-  - reads cardColorAttribute from settingsProvider
-  - computes min/max VALUE range across visible dives
-  - passes (minValue, maxValue, gradientStart, gradientEnd) to each tile
+
+- reads cardColorAttribute from settingsProvider
+- computes min/max VALUE range across visible dives
+- passes (minValue, maxValue, gradientStart, gradientEnd) to each tile
         |
         v
 DiveListTile._getAttributeBackgroundColor()
-  - extracts this dive's value for the active attribute
-  - normalizes to 0.0-1.0
-  - Color.lerp(gradientStart, gradientEnd, normalized)
-```
+- extracts this dive's value for the active attribute
+- normalizes to 0.0-1.0
+- Color.lerp(gradientStart, gradientEnd, normalized)
 
+```text
 ## Database Migration
 
 ### New columns on diver_settings
@@ -151,8 +147,7 @@ ALTER TABLE diver_settings ADD COLUMN card_color_attribute TEXT NOT NULL DEFAULT
 ALTER TABLE diver_settings ADD COLUMN card_color_gradient_preset TEXT NOT NULL DEFAULT 'ocean';
 ALTER TABLE diver_settings ADD COLUMN card_color_gradient_start INTEGER NULL;
 ALTER TABLE diver_settings ADD COLUMN card_color_gradient_end INTEGER NULL;
-```
-
+```text
 ### Data migration
 
 ```sql

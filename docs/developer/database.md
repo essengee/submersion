@@ -34,17 +34,16 @@ class Dives extends Table {
   @override
   Set<Column> get primaryKey => {id};
 }
-```
-
+```text
 ### Generated Code
 
 Run code generation after schema changes:
 
 ```bash
 dart run build_runner build --delete-conflicting-outputs
-```
-
+```text
 Generates `database.g.dart` with:
+
 - Companion classes
 - Query builders
 - Type converters
@@ -76,8 +75,7 @@ MigrationStrategy get migration {
     },
   );
 }
-```
-
+```text
 ## Core Tables
 
 ### Divers
@@ -109,8 +107,7 @@ CREATE TABLE divers (
   created_at INTEGER NOT NULL,
   updated_at INTEGER NOT NULL
 );
-```
-
+```text
 ### Dives
 
 Primary dive log:
@@ -168,8 +165,7 @@ CREATE TABLE dives (
   created_at INTEGER NOT NULL,
   updated_at INTEGER NOT NULL
 );
-```
-
+```text
 ### DiveProfiles
 
 Time-series profile data:
@@ -191,8 +187,7 @@ CREATE TABLE dive_profiles (
 );
 
 CREATE INDEX idx_profile_dive ON dive_profiles(dive_id, timestamp);
-```
-
+```text
 ### DiveTanks
 
 Gas configuration:
@@ -214,8 +209,7 @@ CREATE TABLE dive_tanks (
   tank_name TEXT,
   preset_name TEXT
 );
-```
-
+```text
 ## Relationship Patterns
 
 ### One-to-Many
@@ -223,8 +217,7 @@ CREATE TABLE dive_tanks (
 ```dart
 // Diver has many Dives
 TextColumn get diverId => text().nullable().references(Divers, #id)();
-```
-
+```text
 ### Many-to-Many
 
 Junction tables with composite keys:
@@ -240,8 +233,7 @@ class DiveEquipment extends Table {
   @override
   Set<Column> get primaryKey => {diveId, equipmentId};
 }
-```
-
+```text
 ### Junction with Attributes
 
 ```dart
@@ -258,8 +250,7 @@ class DiveBuddies extends Table {
   @override
   Set<Column> get primaryKey => {id};
 }
-```
-
+```text
 ## Cascade Deletes
 
 Child records auto-delete:
@@ -267,9 +258,9 @@ Child records auto-delete:
 ```dart
 TextColumn get diveId =>
   text().references(Dives, #id, onDelete: KeyAction.cascade)();
-```
-
+```text
 Used for:
+
 - DiveProfiles (dive deleted → profiles deleted)
 - DiveTanks
 - DiveWeights
@@ -313,8 +304,7 @@ class DiveRepository {
       .go();
   }
 }
-```
-
+```text
 ### Domain Mapping
 
 ```dart
@@ -337,8 +327,7 @@ DivesCompanion _toCompanion(domain.Dive dive) {
     // ... map all fields
   );
 }
-```
-
+```sql
 ## Queries
 
 ### Select with Joins
@@ -358,8 +347,7 @@ Future<domain.Dive?> getDiveWithDetails(String id) async {
 
   return _mapWithRelations(row);
 }
-```
-
+```text
 ### Aggregations
 
 ```dart
@@ -379,8 +367,7 @@ Future<DiveStats> getStats(String diverId) async {
     maxDepth: result.read<double>('max_depth'),
   );
 }
-```
-
+```text
 ## Seeded Data
 
 Built-in dive types seeded on create:
@@ -400,13 +387,13 @@ for (final type in builtInTypes) {
     VALUES (?, ?, 1, ?, ?, ?)
   ''');
 }
-```
-
+```text
 ## Performance Tips
 
 ### Indexes
 
 Add indexes for common queries:
+
 - Already indexed: `dive_profiles(dive_id, timestamp)`
 - Consider: `dives(diver_id, dive_date_time)`
 
@@ -419,11 +406,11 @@ Future<void> bulkInsertProfiles(List<DiveProfile> profiles) async {
       profiles.map(_toCompanion).toList());
   });
 }
-```
-
+```text
 ### Lazy Loading
 
 Don't load profiles until needed:
+
 ```dart
 // In dive list: just dive data
 // In dive detail: load profile on demand

@@ -32,40 +32,46 @@ enum ProfileRightAxisMetric {
   final String displayName;
   const ProfileRightAxisMetric(this.displayName);
 }
-```
-
+```text
 ### Settings Fields
 
 #### Right Y-Axis Default
+
 - `defaultRightAxisMetric: ProfileRightAxisMetric` (default: `temperature`)
 
 #### Primary Metrics Defaults
+
 - `defaultShowTemperature: bool` (default: `true`)
 - `defaultShowPressure: bool` (default: `false`)
 - `defaultShowHeartRate: bool` (default: `false`)
 - `defaultShowSac: bool` (default: `false`)
 
 #### Decompression Defaults
+
 - `defaultShowCeiling: bool` (default: `true`)
 - `defaultShowAscentRateColors: bool` (default: `true`)
 - `defaultShowNdl: bool` (default: `false`)
 - `defaultShowEvents: bool` (default: `true`)
 
 #### Gas Analysis Defaults
+
 - `defaultShowPpO2: bool` (default: `false`)
 - `defaultShowPpN2: bool` (default: `false`)
 - `defaultShowPpHe: bool` (default: `false`)
 - `defaultShowGasDensity: bool` (default: `false`)
 
 #### Gradient Factor Defaults
+
 - `defaultShowGf: bool` (default: `false`)
 - `defaultShowSurfaceGf: bool` (default: `false`)
 
 #### Other Metrics Defaults
+
 - `defaultShowMeanDepth: bool` (default: `false`)
 - `defaultShowTts: bool` (default: `false`)
 
 #### Marker Defaults
+
 - `defaultShowMaxDepthMarker: bool` (default: `true`) - already exists as `showMaxDepthMarker`
 - `defaultShowPressureMarkers: bool` (default: `false`) - already exists as `showPressureThresholdMarkers`
 - `defaultShowGasSwitchMarkers: bool` (default: `true`)
@@ -75,9 +81,10 @@ enum ProfileRightAxisMetric {
 When the selected metric has no data, fall back in this order:
 
 ```
-User's selection -> Temperature -> Pressure -> Heart Rate -> SAC -> NDL -> ppO2 -> Hide
-```
 
+User's selection -> Temperature -> Pressure -> Heart Rate -> SAC -> NDL -> ppO2 -> Hide
+
+```text
 ## Chart Interaction
 
 ### Tap Axis Label Behavior
@@ -98,7 +105,8 @@ The right axis label area plus padding becomes tappable. Subtle visual hint (dro
 
 Located in: **Appearance > Dive Profile**
 
-```
+```text
+
 Dive Profile Defaults
 +-- Right Y-Axis Metric: [Temperature v]
 +-- Primary Metrics
@@ -126,16 +134,19 @@ Dive Profile Defaults
     +-- Max Depth [x]
     +-- Pressure Thresholds [ ]
     +-- Gas Switches [x]
+
 ```
 
 ## Files to Modify
 
 ### New Files
+
 | File | Purpose |
 |------|---------|
 | `lib/core/constants/profile_metrics.dart` | `ProfileRightAxisMetric` enum |
 
 ### Modified Files
+
 | File | Changes |
 |------|---------|
 | `lib/features/settings/presentation/providers/settings_providers.dart` | Add default metric fields, setters, providers |

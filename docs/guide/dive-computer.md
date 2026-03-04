@@ -87,6 +87,7 @@ By default, Submersion only downloads **new dives** (since last download).
 ### Force Full Download
 
 To re-download all dives:
+
 1. Go to computer settings
 2. Tap **Download All Dives**
 3. Confirm
@@ -108,6 +109,7 @@ Submersion automatically detects duplicates:
 ### Duplicate Actions
 
 When duplicates are found:
+
 - **Skip** - Don't import (default)
 - **Update** - Merge new data into existing
 - **Import Anyway** - Create duplicate entry
@@ -128,6 +130,7 @@ Downloaded dives include full profile data:
 ### Profile Analysis
 
 After download, access full analysis:
+
 - [Profile visualization](features/profile-analysis.md)
 - [Decompression data](features/decompression.md)
 - [O2 toxicity tracking](features/oxygen-tracking.md)
@@ -137,6 +140,7 @@ After download, access full analysis:
 ### Multiple Devices
 
 You can pair multiple dive computers:
+
 - Different computers for different diving
 - Backup computers on same dive
 - Shared device (rental)
@@ -144,6 +148,7 @@ You can pair multiple dive computers:
 ### Multi-Profile Dives
 
 If you dive with multiple computers simultaneously:
+
 1. Download from each computer
 2. Dives are matched by time
 3. Each profile is stored separately
@@ -190,6 +195,7 @@ Each computer page shows:
 ### Missing Profile Data
 
 Some older computers don't store profiles:
+
 - Dive summary only (no samples)
 - Limited to depth/time data
 - No temperature or pressure
@@ -197,6 +203,7 @@ Some older computers don't store profiles:
 ### Wrong Time Zone
 
 If dive times are offset:
+
 1. Check computer's clock setting
 2. Adjust in Submersion if needed
 3. Computer time should match local time when diving

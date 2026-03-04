@@ -54,6 +54,7 @@ Each dive can have multiple tanks:
 ### What Is Nitrox?
 
 Enriched Air Nitrox (EAN) contains more oxygen than air:
+
 - EAN32 = 32% O2 (most common)
 - EAN36 = 36% O2
 - Range: 22-40% O2 typical
@@ -80,7 +81,8 @@ Enriched Air Nitrox (EAN) contains more oxygen than air:
 ### MOD Calculator
 
 For any nitrox mix:
-```
+
+```text
 MOD = ((1.4 / O2%) - 1) × 10 meters
 ```
 
@@ -95,6 +97,7 @@ MOD = ((1.4 / O2%) - 1) × 10 meters
 ### What Is Trimix?
 
 Trimix contains oxygen, helium, and nitrogen:
+
 - Reduces narcosis at depth
 - Enables deeper diving
 - Requires technical training
@@ -102,9 +105,11 @@ Trimix contains oxygen, helium, and nitrogen:
 ### Notation
 
 Trimix is described as:
-```
+
+```text
 TX O2/He (e.g., TX 21/35)
 ```
+
 - 21% Oxygen
 - 35% Helium
 - 44% Nitrogen (balance)
@@ -119,12 +124,14 @@ TX O2/He (e.g., TX 21/35)
 ### END (Equivalent Narcotic Depth)
 
 END represents the equivalent air depth for narcosis:
-```
+
+```text
 END = (1 - He%) × Depth
 ```
 
 Example at 60m on TX 21/35:
-```
+
+```text
 END = 0.65 × 60m = 39m
 ```
 
@@ -141,6 +148,7 @@ When you switch gases during a dive:
 ### Switch Display
 
 On the profile:
+
 - Yellow marker at switch point
 - Gas mix label changes
 - ppO2 curve adjusts
@@ -148,6 +156,7 @@ On the profile:
 ### Deco Optimization
 
 Submersion accounts for gas switches in deco calculations:
+
 - Higher O2 at deco depths
 - Accelerated off-gassing
 - Optimal switch depths
@@ -160,7 +169,7 @@ Find the optimal mix for your dive:
 
 Target: Maximum O2 while staying under ppO2 limit
 
-```
+```text
 Best O2% = (ppO2 limit / max depth ATM) × 100
 ```
 
@@ -177,13 +186,14 @@ Target: Acceptable END and ppO2
 ### Per-Tank SAC
 
 For dives with multiple tanks:
+
 - SAC calculated per tank
 - Based on pressure drop
 - Depth and time normalized
 
 ### SAC Formula
 
-```
+```text
 SAC = (start - end) × volume / (avg depth ATM × time)
 ```
 
@@ -197,6 +207,7 @@ SAC = (start - end) × volume / (avg depth ATM × time)
 ### Tank Cards
 
 Each tank shows:
+
 - Gas mix (e.g., "EAN32" or "TX 21/35")
 - Pressure (start → end)
 - Volume and material
@@ -207,6 +218,7 @@ Each tank shows:
 ### Rebreather Dives
 
 For CCR dives, track:
+
 - **Setpoint** changes
 - **Diluent** gas mix
 - **O2 and diluent** consumption
@@ -215,6 +227,7 @@ For CCR dives, track:
 ### Dive Mode
 
 Set dive mode in dive entry:
+
 - **OC** - Open Circuit
 - **CCR** - Closed Circuit Rebreather
 - **SCR** - Semi-Closed Rebreather
@@ -230,6 +243,7 @@ Set dive mode in dive entry:
 ### Switch Depths
 
 Optimal gas switch depths:
+
 - Switch to richer mix on ascent
 - Consider ppO2 at switch depth
 - Plan for contingencies
@@ -237,6 +251,7 @@ Optimal gas switch depths:
 ### Minimum Gas
 
 Calculate minimum gas:
+
 - Required for safe ascent
 - Including deco if applicable
 - Add margin for emergencies

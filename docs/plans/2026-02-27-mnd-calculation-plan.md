@@ -13,6 +13,7 @@
 ## Task 1: Add `mnd()` and update `end()` on GasMix
 
 **Files:**
+
 - Modify: `lib/features/dive_log/domain/entities/dive.dart:848-882`
 - Test: `test/features/dive_log/domain/entities/gas_mix_test.dart` (create)
 
@@ -143,8 +144,7 @@ void main() {
     });
   });
 }
-```
-
+```text
 **Step 2: Run tests to verify they fail**
 
 Run: `flutter test test/features/dive_log/domain/entities/gas_mix_test.dart`
@@ -219,8 +219,7 @@ static double heForMnd(
   if (he > maxHe) return maxHe;
   return he;
 }
-```
-
+```text
 **Step 4: Run tests to verify they pass**
 
 Run: `flutter test test/features/dive_log/domain/entities/gas_mix_test.dart`
@@ -236,13 +235,13 @@ Expected: No issues
 ```bash
 git add test/features/dive_log/domain/entities/gas_mix_test.dart lib/features/dive_log/domain/entities/dive.dart
 git commit -m "feat: add MND calculation and o2Narcotic flag to GasMix"
-```
-
+```text
 ---
 
 ## Task 2: Add `o2Narcotic` and `endLimit` settings (database + AppSettings + repository)
 
 **Files:**
+
 - Modify: `lib/core/database/database.dart` (DiverSettings table, ~line 566)
 - Modify: `lib/features/settings/presentation/providers/settings_providers.dart` (AppSettings class, SettingsNotifier)
 - Modify: `lib/features/settings/data/repositories/diver_settings_repository.dart`
@@ -254,8 +253,7 @@ In `lib/core/database/database.dart`, in the `DiverSettings` table class, after 
 ```dart
 BoolColumn get o2Narcotic => boolean().withDefault(const Constant(true))();
 RealColumn get endLimit => real().withDefault(const Constant(30.0))();
-```
-
+```text
 **Step 2: Add fields to AppSettings**
 
 In `lib/features/settings/presentation/providers/settings_providers.dart`:
@@ -268,29 +266,27 @@ final bool o2Narcotic;
 
 /// END limit in meters for MND calculations (typically 30)
 final double endLimit;
-```
-
+```text
 b) Add defaults in constructor (after `this.decoStopIncrement = 3.0,` around line 237):
 
 ```dart
 this.o2Narcotic = true,
 this.endLimit = 30.0,
-```
-
+```text
 c) Add to `copyWith()` method (after `decoStopIncrement` entries):
 
 Parameters:
+
 ```dart
 bool? o2Narcotic,
 double? endLimit,
-```
-
+```text
 Body:
+
 ```dart
 o2Narcotic: o2Narcotic ?? this.o2Narcotic,
 endLimit: endLimit ?? this.endLimit,
-```
-
+```text
 d) Add setter methods to `SettingsNotifier` (after `setDecoStopIncrement`, around line 715):
 
 ```dart
@@ -304,8 +300,7 @@ Future<void> setEndLimit(double value) async {
   state = state.copyWith(endLimit: clamped);
   await _saveSettings();
 }
-```
-
+```text
 **Step 3: Map fields in repository**
 
 In `lib/features/settings/data/repositories/diver_settings_repository.dart`:
@@ -315,22 +310,19 @@ a) In `createSettingsForDiver` (the `DiverSettingsCompanion` construction, after
 ```dart
 o2Narcotic: Value(s.o2Narcotic),
 endLimit: Value(s.endLimit),
-```
-
+```text
 b) In `updateSettingsForDiver` (the companion update, after `decoStopIncrement`):
 
 ```dart
 o2Narcotic: Value(settings.o2Narcotic),
 endLimit: Value(settings.endLimit),
-```
-
+```text
 c) In `_mapRowToAppSettings` (after `decoStopIncrement`):
 
 ```dart
 o2Narcotic: row.o2Narcotic,
 endLimit: row.endLimit,
-```
-
+```text
 **Step 4: Run code generation**
 
 Run: `dart run build_runner build --delete-conflicting-outputs`
@@ -346,13 +338,13 @@ Expected: No analysis issues, all existing tests still pass.
 ```bash
 git add lib/core/database/database.dart lib/core/database/database.g.dart lib/features/settings/presentation/providers/settings_providers.dart lib/features/settings/data/repositories/diver_settings_repository.dart
 git commit -m "feat: add o2Narcotic and endLimit settings for MND calculation"
-```
-
+```text
 ---
 
 ## Task 3: Add Narcosis section to Decompression settings UI
 
 **Files:**
+
 - Modify: `lib/features/settings/presentation/pages/settings_page.dart` (~line 835, `_DecompressionSectionContent`)
 - Modify: `lib/l10n/arb/app_en.arb` (add l10n keys)
 
@@ -367,8 +359,7 @@ After the existing decompression keys, add:
 "settings_decompression_endLimit": "END Limit",
 "settings_decompression_endLimit_subtitle": "Maximum equivalent narcotic depth used for MND calculations",
 "settings_decompression_endLimit_dialog_title": "END Limit",
-```
-
+```text
 **Step 2: Add Narcosis card to `_DecompressionSectionContent.build()`**
 
 In `lib/features/settings/presentation/pages/settings_page.dart`, inside the `_DecompressionSectionContent` build method, after the Data Source Preferences card (before the closing `],` of the Column around line 835), add:
@@ -403,8 +394,7 @@ Card(
     ],
   ),
 ),
-```
-
+```dart
 Note: The `_DecompressionSectionContent` will need a `UnitFormatter` -- add `final units = UnitFormatter(settings);` at the top of the `build` method.
 
 **Step 3: Add `_showEndLimitDialog` method to `_DecompressionSectionContent`**
@@ -460,8 +450,7 @@ void _showEndLimitDialog(
     ),
   );
 }
-```
-
+```text
 **Step 4: Regenerate l10n**
 
 Run: `flutter gen-l10n` (or `dart run build_runner build --delete-conflicting-outputs` if l10n is generated via build_runner)
@@ -476,13 +465,13 @@ Expected: No issues
 ```bash
 git add lib/features/settings/presentation/pages/settings_page.dart lib/l10n/
 git commit -m "feat: add narcosis settings (O2 narcotic, END limit) to decompression UI"
-```
-
+```text
 ---
 
 ## Task 4: Add MND display to tank editor
 
 **Files:**
+
 - Modify: `lib/features/dive_log/presentation/widgets/tank_editor.dart` (~line 224, 565-591)
 - Modify: `lib/l10n/arb/app_en.arb` (add l10n key)
 
@@ -493,8 +482,7 @@ In `lib/l10n/arb/app_en.arb`:
 ```json
 "diveLog_tank_modMndInfo": "MOD: {mod} (ppO2 1.4) | MND: {mnd}",
 "diveLog_tank_mndInfo": "MND: {depth}",
-```
-
+```text
 **Step 2: Update `_buildModInfo` to include MND**
 
 The tank editor is a `ConsumerStatefulWidget` with access to `ref`. Read the settings to get `o2Narcotic` and `endLimit`.
@@ -541,8 +529,7 @@ Widget _buildModInfo(GasMix gasMix, UnitFormatter units) {
     ),
   );
 }
-```
-
+```text
 **Step 3: Run analyzer and format**
 
 Run: `dart format lib/features/dive_log/presentation/widgets/tank_editor.dart && flutter analyze lib/features/dive_log/presentation/widgets/tank_editor.dart`
@@ -553,13 +540,13 @@ Expected: No issues
 ```bash
 git add lib/features/dive_log/presentation/widgets/tank_editor.dart lib/l10n/
 git commit -m "feat: display MND alongside MOD in tank editor"
-```
-
+```text
 ---
 
 ## Task 5: Add bidirectional MND input to tank editor
 
 **Files:**
+
 - Modify: `lib/features/dive_log/presentation/widgets/tank_editor.dart`
 
 **Step 1: Add MND text field controller and state**
@@ -569,8 +556,7 @@ In the `_TankEditorCardState` class, add a controller and a flag:
 ```dart
 late TextEditingController _mndController;
 bool _mndDriven = false; // true when user is editing MND to derive He%
-```
-
+```text
 Initialize in `initState()` and dispose in `dispose()`.
 
 **Step 2: Add MND input field below the gas mix section**
@@ -583,8 +569,7 @@ if (gasMix.isTrimix || gasMix.he > 0) ...[
   const SizedBox(height: 8),
   _buildMndInput(gasMix, units),
 ],
-```
-
+```text
 **Step 3: Implement `_buildMndInput`**
 
 ```dart
@@ -642,8 +627,7 @@ Widget _buildMndInput(GasMix gasMix, UnitFormatter units) {
     ],
   );
 }
-```
-
+```text
 Note: The exact controller names (`_heController`) and the `_notifyChange()` pattern should match the existing code in tank_editor.dart. Read the file to confirm exact names before implementing.
 
 **Step 4: Run analyzer and format**
@@ -655,13 +639,13 @@ Run: `dart format lib/features/dive_log/presentation/widgets/tank_editor.dart &&
 ```bash
 git add lib/features/dive_log/presentation/widgets/tank_editor.dart
 git commit -m "feat: add bidirectional MND input to tank editor"
-```
-
+```text
 ---
 
 ## Task 6: Create MND/END calculator providers
 
 **Files:**
+
 - Create: `lib/features/gas_calculators/presentation/providers/mnd_calculator_providers.dart`
 - Modify: `lib/features/gas_calculators/presentation/providers/gas_calculators_providers.dart` (add reset)
 
@@ -731,8 +715,7 @@ void resetMndCalculator(WidgetRef ref) {
   ref.invalidate(mndEndLimitProvider);
   ref.invalidate(mndO2NarcoticProvider);
 }
-```
-
+```typescript
 **Step 2: Add MND reset to `resetGasCalculators`**
 
 In `lib/features/gas_calculators/presentation/providers/gas_calculators_providers.dart`, import the new file and call `resetMndCalculator(ref)` at the end of `resetGasCalculators()`.
@@ -747,13 +730,13 @@ Expected: No issues
 ```bash
 git add lib/features/gas_calculators/presentation/providers/mnd_calculator_providers.dart lib/features/gas_calculators/presentation/providers/gas_calculators_providers.dart
 git commit -m "feat: add MND/END calculator Riverpod providers"
-```
-
+```text
 ---
 
 ## Task 7: Create MND/END calculator widget
 
 **Files:**
+
 - Create: `lib/features/gas_calculators/presentation/widgets/mnd_calculator.dart`
 - Modify: `lib/l10n/arb/app_en.arb` (add l10n keys)
 
@@ -773,8 +756,7 @@ In `lib/l10n/arb/app_en.arb`:
 "gasCalculators_mnd_depthInput": "Depth",
 "gasCalculators_mnd_infoTitle": "About MND/END",
 "gasCalculators_mnd_infoContent": "Maximum Narcotic Depth (MND) is the deepest you can go before narcosis exceeds your END limit. Equivalent Narcotic Depth (END) tells you the narcotic effect of your gas at a given depth.\n\nWhen 'O2 is narcotic' is enabled, both oxygen and nitrogen contribute to narcosis (more conservative). When disabled, only nitrogen is considered narcotic."
-```
-
+```dart
 **Step 2: Create widget file**
 
 Create `lib/features/gas_calculators/presentation/widgets/mnd_calculator.dart` following the exact pattern of `mod_calculator.dart`:
@@ -795,13 +777,13 @@ Run: `dart format lib/features/gas_calculators/presentation/widgets/mnd_calculat
 ```bash
 git add lib/features/gas_calculators/presentation/widgets/mnd_calculator.dart lib/l10n/
 git commit -m "feat: create MND/END calculator widget"
-```
-
+```text
 ---
 
 ## Task 8: Add MND/END tab to gas calculators page
 
 **Files:**
+
 - Modify: `lib/features/gas_calculators/presentation/pages/gas_calculators_page.dart`
 
 **Step 1: Update tab count and add tab**
@@ -817,20 +799,17 @@ Tab(
   icon: const Icon(Icons.psychology),
   text: context.l10n.gasCalculators_tab_mnd,
 ),
-```
-
+```text
 c) Add `MndCalculator()` to `TabBarView.children` (after line 90):
 
 ```dart
 const MndCalculator(),
-```
-
+```typescript
 d) Add import at top:
 
 ```dart
 import 'package:submersion/features/gas_calculators/presentation/widgets/mnd_calculator.dart';
-```
-
+```text
 **Step 2: Run analyzer and format**
 
 Run: `dart format lib/features/gas_calculators/presentation/pages/gas_calculators_page.dart && flutter analyze lib/features/gas_calculators/`
@@ -840,13 +819,13 @@ Run: `dart format lib/features/gas_calculators/presentation/pages/gas_calculator
 ```bash
 git add lib/features/gas_calculators/presentation/pages/gas_calculators_page.dart
 git commit -m "feat: add MND/END tab to gas calculators page"
-```
-
+```text
 ---
 
 ## Task 9: Update existing END calculations for consistency
 
 **Files:**
+
 - Modify: `lib/features/deco_calculator/presentation/providers/deco_calculator_providers.dart` (~line 54)
 - Modify: `lib/core/deco/o2_toxicity_calculator.dart` (~line 52)
 
@@ -862,8 +841,7 @@ final calcENDProvider = Provider<double>((ref) {
   final settings = ref.watch(settingsProvider);
   return gasMix.end(depth, o2Narcotic: settings.o2Narcotic);
 });
-```
-
+```typescript
 Add import for `settingsProvider` if not already imported.
 
 **Step 2: Update `O2ToxicityCalculator.calculateEnd()`**
@@ -886,8 +864,7 @@ static double calculateEnd(
     return (n2Pressure / 0.79 - 1.0) * 10.0;
   }
 }
-```
-
+```text
 Note: Keep default `o2Narcotic: false` here to maintain backward compatibility with existing callers.
 
 **Step 3: Check for other callers of `calculateEnd`**
@@ -906,8 +883,7 @@ Expected: All pass
 ```bash
 git add lib/features/deco_calculator/presentation/providers/deco_calculator_providers.dart lib/core/deco/o2_toxicity_calculator.dart
 git commit -m "feat: update existing END calculations to respect o2Narcotic setting"
-```
-
+```diff
 ---
 
 ## Task 10: Final integration test and cleanup

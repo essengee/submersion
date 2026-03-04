@@ -2,7 +2,6 @@
 
 All notable changes to Submersion are documented in this file.
 
-
 ## 1.1.2 (2026-02-16)
 
 ### Chores
@@ -13,7 +12,6 @@ All notable changes to Submersion are documented in this file.
 
 - Fix: appcast feed URL pointed to incorrect repo
 - generate favicon without rounded corners or alpha
-
 
 ## 1.1.1 (2026-02-16)
 

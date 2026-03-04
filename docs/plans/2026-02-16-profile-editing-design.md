@@ -33,7 +33,7 @@ Separate Profile Editor Page with shared pure-Dart service layer.
 
 ### File Structure
 
-```
+```text
 lib/features/dive_log/
   data/
     services/
@@ -137,13 +137,13 @@ class ProfileEditingService {
     int intervalSeconds = 4,
   });
 }
-```
-
+```text
 ## UI Design
 
 ### Page Layout
 
 ```
+
 AppBar: "Edit Profile"                    [Undo] [Save]
 +--------------------------------------------------+
 |                                                  |
@@ -165,8 +165,8 @@ AppBar: "Edit Profile"                    [Undo] [Save]
 |  Outlier: Count badge + Remove buttons           |
 |  Draw:    Clear / Generate Profile               |
 +--------------------------------------------------+
-```
 
+```text
 ### ProfileEditorChart
 
 New purpose-built chart widget. Shows depth vs time only.
@@ -192,8 +192,7 @@ class ProfileEditorState {
 }
 
 enum EditorMode { select, smooth, outlier, draw }
-```
-
+```text
 ## Data Persistence
 
 ### Storage
@@ -229,6 +228,7 @@ Future<void> restoreOriginalProfile(String diveId);
 ### Dive Stats Recalculation
 
 After saving edited profile, recalculate from new points:
+
 - `maxDepth` -> max of edited depths
 - `avgDepth` -> mean of edited depths
 - `duration` -> last timestamp - first timestamp

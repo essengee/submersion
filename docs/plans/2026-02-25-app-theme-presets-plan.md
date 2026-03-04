@@ -13,6 +13,7 @@
 ### Task 1: Create AppThemePreset data model
 
 **Files:**
+
 - Create: `lib/core/theme/app_theme_preset.dart`
 - Test: `test/core/theme/app_theme_preset_test.dart`
 
@@ -70,8 +71,7 @@ void main() {
     });
   });
 }
-```
-
+```text
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/core/theme/app_theme_preset_test.dart`
@@ -122,8 +122,7 @@ class AppThemePreset extends Equatable {
   @override
   List<Object?> get props => [id];
 }
-```
-
+```text
 **Step 4: Run test to verify it passes**
 
 Run: `flutter test test/core/theme/app_theme_preset_test.dart`
@@ -132,14 +131,16 @@ Expected: PASS
 **Step 5: Commit**
 
 ```
-feat: add AppThemePreset data model
-```
 
+feat: add AppThemePreset data model
+
+```text
 ---
 
 ### Task 2: Extract buildPaletteTheme from AppTheme and create theme registry
 
 **Files:**
+
 - Modify: `lib/core/theme/app_theme.dart`
 - Create: `lib/core/theme/app_theme_registry.dart`
 - Test: `test/core/theme/app_theme_registry_test.dart`
@@ -235,8 +236,7 @@ void main() {
     });
   });
 }
-```
-
+```text
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/core/theme/app_theme_registry_test.dart`
@@ -291,8 +291,7 @@ class AppTheme {
     brightness: Brightness.dark,
   );
 }
-```
-
+```text
 **Step 4: Create full theme files (stubs first, refined later)**
 
 Create each of these files. The full theme details for each theme are described below the registry.
@@ -394,8 +393,7 @@ class AppThemeRegistry {
     );
   }
 }
-```
-
+```text
 **Step 6: Run test to verify it passes**
 
 Run: `flutter test test/core/theme/app_theme_registry_test.dart`
@@ -409,14 +407,16 @@ Expected: All existing tests still pass (AppTheme.light/dark still work)
 **Step 8: Commit**
 
 ```
-feat: add theme registry with palette and full theme support
-```
 
+feat: add theme registry with palette and full theme support
+
+```dart
 ---
 
 ### Task 3: Create full theme definitions
 
 **Files:**
+
 - Create: `lib/core/theme/full_themes/console_theme.dart`
 - Create: `lib/core/theme/full_themes/tropical_theme.dart`
 - Create: `lib/core/theme/full_themes/minimalist_theme.dart`
@@ -425,6 +425,7 @@ feat: add theme registry with palette and full theme support
 Each file defines `final ThemeData <name>Light` and `final ThemeData <name>Dark`. Use the exact colors, typography, and component overrides from the HTML mockups (docs/plans/2026-02-25-app-theme-presets-design.md).
 
 **Console theme key properties:**
+
 - Font: JetBrains Mono (via `google_fonts` package) for headers; Inter for body
 - Card: 4px radius, 1px border `#2a3a4a`, no elevation
 - FAB: 4px radius, background `#4ae0c0`
@@ -432,6 +433,7 @@ Each file defines `final ThemeData <name>Light` and `final ThemeData <name>Dark`
 - AppBar: flat, `#1a2230` background
 
 **Tropical theme key properties:**
+
 - Font: Nunito (via `google_fonts`) for all text
 - Card: 20px radius, elevation 4 with soft shadows
 - FAB: 22px radius, coral `#E07A5F`
@@ -439,6 +441,7 @@ Each file defines `final ThemeData <name>Light` and `final ThemeData <name>Dark`
 - AppBar: teal `#00B4A0`
 
 **Minimalist theme key properties:**
+
 - Font: Inter with lighter weights (300 body, 500 headers)
 - Card: 8px radius, 1px border `#e8e8e8`, no elevation
 - FAB: 8px radius, dark `#333`
@@ -446,6 +449,7 @@ Each file defines `final ThemeData <name>Light` and `final ThemeData <name>Dark`
 - AppBar: transparent, no elevation
 
 **Deep theme key properties:**
+
 - Font: Inter with bold headers (700)
 - Card: 16px radius, semi-transparent backgrounds, subtle border
 - FAB: 16px radius, gradient-like blue `#2070c0` → `#40a0e8`
@@ -468,14 +472,16 @@ Expected: PASS (registry tests already validate full themes exist)
 **Step 4: Commit**
 
 ```
-feat: add Console, Tropical, Minimalist, and Deep full theme definitions
-```
 
+feat: add Console, Tropical, Minimalist, and Deep full theme definitions
+
+```text
 ---
 
 ### Task 4: Add database column and migration
 
 **Files:**
+
 - Modify: `lib/core/database/database.dart` (DiverSettings table + migration)
 
 **Step 1: Add column to DiverSettings table**
@@ -485,8 +491,7 @@ In `lib/core/database/database.dart`, inside the `DiverSettings` class (after li
 ```dart
   // Theme preset
   TextColumn get themePreset => text().withDefault(const Constant('submersion'))();
-```
-
+```text
 **Step 2: Bump schema version**
 
 Change `schemaVersion` from `42` to `43` (line 1113).
@@ -501,8 +506,7 @@ After the `if (from < 42)` block (line 2007), add:
             "ALTER TABLE diver_settings ADD COLUMN theme_preset TEXT NOT NULL DEFAULT 'submersion'",
           );
         }
-```
-
+```text
 **Step 4: Run code generation**
 
 Run: `dart run build_runner build --delete-conflicting-outputs`
@@ -515,14 +519,16 @@ Expected: All tests pass
 **Step 6: Commit**
 
 ```
-feat: add themePreset column to DiverSettings (schema v43)
-```
 
+feat: add themePreset column to DiverSettings (schema v43)
+
+```dart
 ---
 
 ### Task 5: Wire themePreset through repository and settings providers
 
 **Files:**
+
 - Modify: `lib/features/settings/data/repositories/diver_settings_repository.dart`
 - Modify: `lib/features/settings/presentation/providers/settings_providers.dart`
 
@@ -541,8 +547,7 @@ Add `themePresetId` field (store as String, resolve to preset in provider):
     state = state.copyWith(themePresetId: presetId);
     await _saveSettings();
   }
-```
-
+```text
 **Step 3: Add convenience provider** (after `themeModeProvider`, around line 948)
 
 ```dart
@@ -550,27 +555,26 @@ final themePresetProvider = Provider<AppThemePreset>((ref) {
   final presetId = ref.watch(settingsProvider.select((s) => s.themePresetId));
   return AppThemeRegistry.findById(presetId);
 });
-```
-
+```text
 Add the necessary imports for `AppThemePreset` and `AppThemeRegistry`.
 
 **Step 4: Update repository** (`diver_settings_repository.dart`)
 
 In `_mapRowToAppSettings` (line 291), add:
+
 ```dart
       themePresetId: row.themePreset,
-```
-
+```text
 In `createSettingsForDiver` (line 46), add to the `DiverSettingsCompanion`:
+
 ```dart
               themePreset: Value(s.themePresetId),
-```
-
+```text
 In `updateSettingsForDiver` (line 150), add to the `DiverSettingsCompanion`:
+
 ```dart
           themePreset: Value(settings.themePresetId),
-```
-
+```text
 **Step 5: Run tests**
 
 Run: `flutter test`
@@ -579,14 +583,16 @@ Expected: All tests pass
 **Step 6: Commit**
 
 ```
-feat: wire themePreset through settings providers and repository
-```
 
+feat: wire themePreset through settings providers and repository
+
+```text
 ---
 
 ### Task 6: Wire theme into MaterialApp.router
 
 **Files:**
+
 - Modify: `lib/app.dart`
 
 **Step 1: Update app.dart build method**
@@ -620,14 +626,13 @@ In `lib/app.dart`, modify the `build` method (line 60):
       },
     );
   }
-```
-
+```text
 Add imports:
+
 ```dart
 import 'package:submersion/core/theme/app_theme_preset.dart';
 import 'package:submersion/core/theme/app_theme_registry.dart';
-```
-
+```dart
 Remove the now-unused `import 'package:submersion/core/theme/app_theme.dart';` if no longer referenced.
 
 **Step 2: Run the app to verify**
@@ -643,28 +648,28 @@ Expected: All tests pass
 **Step 4: Commit**
 
 ```
-feat: wire theme preset into MaterialApp.router
-```
 
+feat: wire theme preset into MaterialApp.router
+
+```text
 ---
 
 ### Task 7: Update sync serializer
 
 **Files:**
+
 - Modify: `lib/core/services/sync/sync_data_serializer.dart`
 
 **Step 1: Add themePreset to defaults map** (around line 1282, after `'themeMode': 'system',`)
 
 ```dart
       'themePreset': 'submersion',
-```
-
+```text
 **Step 2: Add themePreset to `_diverSettingToJson`** (around line 1362, after `'themeMode': r.themeMode,`)
 
 ```dart
     'themePreset': r.themePreset,
-```
-
+```text
 **Step 3: Run tests**
 
 Run: `flutter test`
@@ -673,14 +678,16 @@ Expected: All tests pass
 **Step 4: Commit**
 
 ```
-feat: add themePreset to sync serializer
-```
 
+feat: add themePreset to sync serializer
+
+```diff
 ---
 
 ### Task 8: Add localization keys
 
 **Files:**
+
 - Modify: `lib/l10n/arb/app_en.arb`
 
 **Step 1: Add theme name keys and gallery keys**
@@ -701,8 +708,7 @@ Add these entries to `app_en.arb` (near the existing `settings_appearance_*` key
   "theme_tropical": "Tropical",
   "theme_minimalist": "Minimalist",
   "theme_deep": "Deep",
-```
-
+```text
 **Step 2: Run code generation for l10n**
 
 Run: `flutter gen-l10n` (or `flutter pub get` if gen-l10n runs automatically)
@@ -710,14 +716,16 @@ Run: `flutter gen-l10n` (or `flutter pub get` if gen-l10n runs automatically)
 **Step 3: Commit**
 
 ```
-feat: add theme gallery and theme name localization keys
-```
 
+feat: add theme gallery and theme name localization keys
+
+```text
 ---
 
 ### Task 9: Create ThemePreviewCard widget
 
 **Files:**
+
 - Create: `lib/features/settings/presentation/widgets/theme_preview_card.dart`
 - Test: `test/features/settings/presentation/widgets/theme_preview_card_test.dart`
 
@@ -793,8 +801,7 @@ void main() {
     });
   });
 }
-```
-
+```text
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/features/settings/presentation/widgets/theme_preview_card_test.dart`
@@ -989,8 +996,7 @@ class ThemePreviewCard extends StatelessWidget {
     );
   }
 }
-```
-
+```text
 **Step 4: Run test to verify it passes**
 
 Run: `flutter test test/features/settings/presentation/widgets/theme_preview_card_test.dart`
@@ -999,14 +1005,16 @@ Expected: PASS
 **Step 5: Commit**
 
 ```
-feat: add ThemePreviewCard widget with mini-mockup preview
-```
 
+feat: add ThemePreviewCard widget with mini-mockup preview
+
+```text
 ---
 
 ### Task 10: Create ThemeGalleryPage
 
 **Files:**
+
 - Create: `lib/features/settings/presentation/pages/theme_gallery_page.dart`
 - Test: `test/features/settings/presentation/pages/theme_gallery_page_test.dart`
 
@@ -1043,8 +1051,7 @@ void main() {
     });
   });
 }
-```
-
+```dart
 Note: Exact test assertions may need to be adjusted based on how the l10n resolves in test context. Use a `ProviderScope` with overrides if needed for `settingsProvider`.
 
 **Step 2: Implement ThemeGalleryPage**
@@ -1154,8 +1161,7 @@ class ThemeGalleryPage extends ConsumerWidget {
     }
   }
 }
-```
-
+```text
 **Step 3: Run test**
 
 Run: `flutter test test/features/settings/presentation/pages/theme_gallery_page_test.dart`
@@ -1164,14 +1170,16 @@ Expected: PASS (or adjust test assertions as needed)
 **Step 4: Commit**
 
 ```
-feat: add ThemeGalleryPage with grid layout and instant switching
-```
 
+feat: add ThemeGalleryPage with grid layout and instant switching
+
+```text
 ---
 
 ### Task 11: Add route and settings page entry point
 
 **Files:**
+
 - Modify: `lib/core/router/app_router.dart`
 - Modify: `lib/features/settings/presentation/pages/settings_page.dart`
 
@@ -1185,13 +1193,12 @@ In `lib/core/router/app_router.dart`, inside the `/settings` routes (after the `
                 name: 'themes',
                 builder: (context, state) => const ThemeGalleryPage(),
               ),
-```
-
+```text
 Add the import:
+
 ```dart
 import 'package:submersion/features/settings/presentation/pages/theme_gallery_page.dart';
-```
-
+```text
 **Step 2: Add theme entry point to settings page**
 
 In `lib/features/settings/presentation/pages/settings_page.dart`, in the Appearance section (around line 914 where the theme header is), replace or augment the theme mode radio buttons with a "Theme" row that navigates to the gallery:
@@ -1206,9 +1213,9 @@ Before the `ThemeMode.values.map` radio section, add a ListTile:
               trailing: const Icon(Icons.chevron_right),
               onTap: () => context.push('/settings/themes'),
             ),
-```
-
+```text
 Add a helper to resolve the current theme name:
+
 ```dart
   String _resolveCurrentThemeName(BuildContext context, WidgetRef ref) {
     final presetId = ref.watch(settingsProvider.select((s) => s.themePresetId));
@@ -1228,8 +1235,7 @@ Add a helper to resolve the current theme name:
       default: return preset.nameKey;
     }
   }
-```
-
+```text
 **Step 3: Run the app to verify navigation works**
 
 Run: `flutter run -d macos`
@@ -1252,14 +1258,16 @@ Expected: No issues
 **Step 7: Commit**
 
 ```
-feat: add /settings/themes route and theme entry point in settings page
-```
 
+feat: add /settings/themes route and theme entry point in settings page
+
+```diff
 ---
 
 ### Task 12: Visual QA and polish
 
 **Files:**
+
 - Possibly modify theme files for color/spacing adjustments
 
 **Step 1: Test each theme in light and dark mode**
@@ -1267,6 +1275,7 @@ feat: add /settings/themes route and theme entry point in settings page
 Launch the app: `flutter run -d macos`
 
 For each of the 9 themes, switch to it and verify:
+
 - [ ] Light mode renders correctly
 - [ ] Dark mode renders correctly
 - [ ] Cards, FAB, app bar, bottom nav all use theme colors
@@ -1294,8 +1303,10 @@ Run: `dart format lib/ test/ && flutter analyze`
 
 **Step 6: Commit**
 
-```
+```text
+
 fix: theme visual polish and QA adjustments
+
 ```
 
 ---
@@ -1303,6 +1314,7 @@ fix: theme visual polish and QA adjustments
 ## Appendix: Full Theme Color Specifications
 
 ### Console Theme
+
 | Property | Light | Dark |
 |----------|-------|------|
 | Surface | `#F0F2F5` | `#141a22` |
@@ -1318,6 +1330,7 @@ fix: theme visual polish and QA adjustments
 | Text theme | JetBrains Mono headers, Inter body | Same |
 
 ### Tropical Theme
+
 | Property | Light | Dark |
 |----------|-------|------|
 | Surface | `#f0faf8` | `#101a18` |
@@ -1332,6 +1345,7 @@ fix: theme visual polish and QA adjustments
 | Text theme | Nunito all text | Same |
 
 ### Minimalist Theme
+
 | Property | Light | Dark |
 |----------|-------|------|
 | Surface | `#fafafa` | `#121212` |
@@ -1346,6 +1360,7 @@ fix: theme visual polish and QA adjustments
 | Text theme | Inter, 300 body / 500 headers | Same |
 
 ### Deep Theme
+
 | Property | Light | Dark |
 |----------|-------|------|
 | Surface | `#e8f0f8` | `#080e18` |

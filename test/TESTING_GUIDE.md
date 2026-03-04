@@ -6,7 +6,7 @@ This document describes the testing strategy and implementation for the Submersi
 
 ## Test Structure
 
-```
+```dart
 test/
 ├── unit/                          # Unit tests for individual components
 ├── widget/                        # Widget tests for UI components
@@ -32,6 +32,7 @@ test/
 ### Unit Tests (165+ tests, 80%+ coverage)
 
 #### Repository Tests
+
 - **Dive Repository** (`dive_repository_test.dart`)
   - CRUD operations for dives
   - Query filtering and sorting
@@ -68,6 +69,7 @@ test/
 ### Widget Tests (48+ tests)
 
 #### UI Component Tests
+
 - **Settings Page** (`settings_page_test.dart`)
   - Unit selection and conversion
   - Theme switching
@@ -90,7 +92,9 @@ test/
 Integration tests verify complete user workflows across multiple components:
 
 #### 1. Dive Logging Workflow
+
 Tests the complete process of logging a dive:
+
 - Create prerequisite data (sites, centers, buddies, equipment)
 - Log a dive with all associated data
 - Verify data relationships
@@ -98,6 +102,7 @@ Tests the complete process of logging a dive:
 - Verify cascading effects
 
 **Key Scenarios:**
+
 - Complete dive logging with all metadata
 - Multiple dives at the same site
 - Complex gas mixes and multiple tanks
@@ -105,7 +110,9 @@ Tests the complete process of logging a dive:
 - Delete dive and verify cleanup
 
 #### 2. Trip Management Workflow
+
 Tests trip creation and dive associations:
+
 - Create trips with date ranges
 - Log multiple dives for a trip
 - Verify dive-trip relationships
@@ -113,6 +120,7 @@ Tests trip creation and dive associations:
 - Handle trip updates and deletions
 
 **Key Scenarios:**
+
 - Trip with 10+ dives across multiple sites
 - Trip statistics aggregation
 - Update trip while maintaining dive associations
@@ -124,42 +132,50 @@ Tests trip creation and dive associations:
 Performance tests ensure the app scales well with large datasets:
 
 #### 1. Large Dataset Creation (1000+ dives)
+
 - Create 50 sites
 - Create 1000 dives with varying attributes
 - Measure creation time (target: <30s for 1000 dives)
 - Measure retrieval time (target: <2s for 1000 dives)
 
 **Performance Targets:**
+
 - Average dive creation: <30ms per dive
 - Bulk retrieval: <2s for 1000 dives
 - No memory leaks with large datasets
 
 #### 2. Query Performance
+
 Tests query speed with 1000+ dives:
+
 - Search by dive number (target: <100ms)
 - Site dive count aggregation (target: <500ms)
 - Recent dives retrieval (target: <200ms for 50 dives)
 - Statistics calculation (target: <1000ms)
 
 #### 3. Pagination Performance
+
 - Create 2000 dives
 - Test paginated retrieval (50 items per page)
 - Verify consistent performance across pages
 - Target: <200ms per page
 
 #### 4. Equipment Usage Tracking
+
 - Create 20 equipment items
 - Log 500 dives with equipment associations
 - Measure equipment query performance
 - Target: <500ms for equipment with usage data
 
 #### 5. Complex Statistics
+
 - Create 1500 dives with diverse attributes
 - Calculate comprehensive statistics
 - Test multiple aggregations simultaneously
 - Target: <2s for full statistics
 
 #### 6. Concurrent Operations Stress Test
+
 - Perform multiple operations simultaneously:
   - 100 dives created
   - 50 sites created
@@ -170,11 +186,12 @@ Tests query speed with 1000+ dives:
 ## Running Tests
 
 ### Run All Tests
+
 ```bash
 flutter test
-```
-
+```text
 ### Run Specific Test Suite
+
 ```bash
 # Unit tests only
 flutter test test/features/
@@ -187,24 +204,24 @@ flutter test test/integration/
 
 # Performance tests
 flutter test test/performance/
-```
-
+```text
 ### Run Tests with Coverage
+
 ```bash
 flutter test --coverage
 genhtml coverage/lcov.info -o coverage/html
 open coverage/html/index.html
-```
-
+```text
 ### Run Performance Tests
+
 ```bash
 # Performance tests have extended timeouts
 flutter test test/performance/ --reporter expanded
-```
-
+```text
 ## Test Data Setup
 
 All tests use the `TestDatabase` helper which:
+
 - Creates an in-memory Drift database
 - Automatically tears down after tests
 - Provides isolated test environments
@@ -243,6 +260,7 @@ Current performance metrics (measured on test hardware):
 ## Continuous Integration
 
 Tests are designed to run in CI/CD pipelines:
+
 - No external dependencies
 - In-memory database
 - Deterministic test data
@@ -251,6 +269,7 @@ Tests are designed to run in CI/CD pipelines:
 ## Future Testing Enhancements (v1.5+)
 
 Planned testing additions:
+
 - [ ] E2E tests with Flutter integration testing
 - [ ] Screenshot tests for UI regression
 - [ ] Accessibility tests
@@ -271,16 +290,19 @@ Planned testing additions:
 ## Troubleshooting
 
 ### Tests Fail Randomly
+
 - Ensure proper async/await usage
 - Check for race conditions
 - Verify test database cleanup
 
 ### Performance Tests Timeout
+
 - Increase timeout in test configuration
 - Run on more powerful hardware
 - Check for memory leaks
 
 ### Import Errors
+
 - Run `flutter pub get`
 - Verify all dependencies are installed
 - Check pubspec.yaml
@@ -288,6 +310,7 @@ Planned testing additions:
 ## Contributing
 
 When adding new features:
+
 1. Write unit tests for new repositories/services
 2. Add widget tests for new UI components
 3. Update integration tests if workflow changes
@@ -302,4 +325,3 @@ When adding new features:
 - **Performance Tests**: All operations with large datasets
 
 Current Status: ✅ All goals met
-

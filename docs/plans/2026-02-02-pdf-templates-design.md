@@ -7,6 +7,7 @@ Implement multiple PDF export templates for dive logbooks with template selectio
 ## Requirements
 
 From REMAINING_TASKS.md (10.3 Reports & Printing):
+
 - Multiple PDF templates (Simple, Detailed, Professional, PADI-style, NAUI-style)
 - Template selection in export dialog
 - Professional template with space for signatures, stamps
@@ -15,6 +16,7 @@ From REMAINING_TASKS.md (10.3 Reports & Printing):
 ## Template Specifications
 
 ### 1. Simple Template
+
 - **Density:** 15-20 dives per page
 - **Format:** Table with columns: # | Date | Site | Depth | Time | Temp
 - **Style:** Black/white, minimal spacing, no decorations
@@ -22,12 +24,14 @@ From REMAINING_TASKS.md (10.3 Reports & Printing):
 - **Excludes:** Notes, signatures, ratings, certification cards
 
 ### 2. Detailed Template (enhanced current)
+
 - **Density:** 3 dives per page
 - **Format:** Card-style entries with all dive data
 - **Includes:** All metrics, notes, gas info, tank data, rating stars, signatures
 - **Certification cards:** Optional page after summary
 
 ### 3. Professional Template
+
 - **Density:** 2 dives per page
 - **Format:** Formal log entries with verification areas
 - **Signature box:** 60x25mm labeled area
@@ -36,6 +40,7 @@ From REMAINING_TASKS.md (10.3 Reports & Printing):
 - **Use case:** Instructors, divemasters, agency verification
 
 ### 4. PADI-style Template
+
 - **Colors:** PADI blue (#003087) accents
 - **Layout:** Mimics PADI paper logbook format
 - **Sections:** Dive Data | Conditions | Equipment | Comments
@@ -43,6 +48,7 @@ From REMAINING_TASKS.md (10.3 Reports & Printing):
 - **Cert cards:** PADI certifications highlighted
 
 ### 5. NAUI-style Template
+
 - **Colors:** NAUI green (#006B5A) accents
 - **Layout:** Emphasis on dive planning data
 - **Sections:** Pre-dive planning, dive data, post-dive
@@ -83,8 +89,7 @@ class PdfExportOptions {
     this.includeCertificationCards = false,
   });
 }
-```
-
+```text
 ### Template Builder Interface
 
 ```dart
@@ -106,7 +111,8 @@ abstract class PdfTemplateBuilder {
 
 ## File Structure
 
-```
+```text
+
 lib/
   core/
     constants/
@@ -126,6 +132,7 @@ lib/
       presentation/
         widgets/
           pdf_export_dialog.dart      # Template selection dialog
+
 ```
 
 ## UI Flow
@@ -144,32 +151,37 @@ lib/
 ## Implementation Plan
 
 ### Phase 1: Foundation
+
 1. Create `pdf_templates.dart` with enums and options class
 2. Create `PdfTemplateBuilder` abstract class
 3. Create `PdfTemplateFactory`
 4. Extract current PDF logic into `PdfTemplateDetailed`
 
 ### Phase 2: Templates
-5. Implement `PdfTemplateSimple`
-6. Implement `PdfTemplateProfessional`
-7. Implement `PdfTemplatePadi`
-8. Implement `PdfTemplateNaui`
+
+1. Implement `PdfTemplateSimple`
+2. Implement `PdfTemplateProfessional`
+3. Implement `PdfTemplatePadi`
+4. Implement `PdfTemplateNaui`
 
 ### Phase 3: Certification Cards
-9. Create shared `buildCertificationCardsPage()` component
-10. Integrate cert cards into applicable templates
-11. Load cert card images from BLOB storage
+
+1. Create shared `buildCertificationCardsPage()` component
+2. Integrate cert cards into applicable templates
+3. Load cert card images from BLOB storage
 
 ### Phase 4: UI
-12. Create `PdfExportDialog` widget
-13. Update Transfer page to show dialog before export
-14. Update `ExportNotifier` to accept options
+
+1. Create `PdfExportDialog` widget
+2. Update Transfer page to show dialog before export
+3. Update `ExportNotifier` to accept options
 
 ### Phase 5: Testing & Polish
-15. Test all templates with various dive counts
-16. Test page size rendering
-17. Test certification card display
-18. Update REMAINING_TASKS.md
+
+1. Test all templates with various dive counts
+2. Test page size rendering
+3. Test certification card display
+4. Update REMAINING_TASKS.md
 
 ## Dependencies
 

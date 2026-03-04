@@ -17,7 +17,7 @@ Once the project reaches stable multi-version releases, older major versions wil
 Instead, report vulnerabilities through one of these channels:
 
 1. **GitHub Private Vulnerability Reporting** (preferred): Use the "Report a vulnerability" button on the [Security tab](https://github.com/submersion-app/submersion/security/advisories/new) of this repository.
-2. **Email**: Send details to security@submersion.app.
+2. **Email**: Send details to <security@submersion.app>.
 
 ### What to include
 

@@ -17,6 +17,7 @@
 ### Task 1: Create Plugin Package Structure
 
 **Files:**
+
 - Create: `packages/libdivecomputer_plugin/pubspec.yaml`
 - Create: `packages/libdivecomputer_plugin/lib/libdivecomputer_plugin.dart`
 - Create: `packages/libdivecomputer_plugin/lib/src/dive_computer_service.dart`
@@ -33,8 +34,7 @@ mkdir -p packages/libdivecomputer_plugin/android/src/main/kotlin/com/submersion/
 mkdir -p packages/libdivecomputer_plugin/linux
 mkdir -p packages/libdivecomputer_plugin/windows
 mkdir -p packages/libdivecomputer_plugin/third_party
-```
-
+```text
 **Step 2: Write pubspec.yaml**
 
 Create `packages/libdivecomputer_plugin/pubspec.yaml`:
@@ -72,8 +72,7 @@ flutter:
         pluginClass: LibdivecomputerPlugin
       windows:
         pluginClass: LibdivecomputerPlugin
-```
-
+```text
 **Step 3: Write the public API barrel file**
 
 Create `packages/libdivecomputer_plugin/lib/libdivecomputer_plugin.dart`:
@@ -81,20 +80,19 @@ Create `packages/libdivecomputer_plugin/lib/libdivecomputer_plugin.dart`:
 ```dart
 export 'src/generated/dive_computer_api.g.dart';
 export 'src/dive_computer_service.dart';
-```
-
+```text
 **Step 4: Commit**
 
 ```bash
 git add packages/libdivecomputer_plugin/
 git commit -m "feat: scaffold libdivecomputer plugin package"
-```
-
+```text
 ---
 
 ### Task 2: Write Pigeon API Schema
 
 **Files:**
+
 - Create: `packages/libdivecomputer_plugin/pigeons/dive_computer_api.dart`
 
 **Step 1: Write the Pigeon schema**
@@ -289,16 +287,15 @@ abstract class DiveComputerFlutterApi {
   void onDownloadComplete(int totalDives);
   void onError(DiveComputerError error);
 }
-```
-
+```text
 **Step 2: Run Pigeon code generation**
 
 ```bash
 cd packages/libdivecomputer_plugin
 dart run pigeon --input pigeons/dive_computer_api.dart
-```
-
+```text
 This generates:
+
 - `lib/src/generated/dive_computer_api.g.dart` (Dart)
 - `ios/Classes/DiveComputerApi.g.swift` (Swift)
 - `android/src/main/kotlin/.../DiveComputerApi.g.kt` (Kotlin)
@@ -309,8 +306,7 @@ This generates:
 ```bash
 cd packages/libdivecomputer_plugin
 dart analyze lib/
-```
-
+```text
 Expected: No errors.
 
 **Step 4: Commit**
@@ -321,13 +317,13 @@ git add packages/libdivecomputer_plugin/ios/Classes/DiveComputerApi.g.swift
 git add packages/libdivecomputer_plugin/android/src/main/kotlin/
 git add packages/libdivecomputer_plugin/linux/dive_computer_api.g.*
 git commit -m "feat: add Pigeon API schema and generated code"
-```
-
+```text
 ---
 
 ### Task 3: Write Dart-side DiveComputerService
 
 **Files:**
+
 - Create: `packages/libdivecomputer_plugin/lib/src/dive_computer_service.dart`
 - Create: `packages/libdivecomputer_plugin/test/dive_computer_service_test.dart`
 
@@ -512,15 +508,13 @@ void main() {
     });
   });
 }
-```
-
+```text
 **Step 2: Run the test to verify it fails**
 
 ```bash
 cd packages/libdivecomputer_plugin
 flutter test test/dive_computer_service_test.dart
-```
-
+```text
 Expected: FAIL (DiveComputerService not defined).
 
 **Step 3: Write DiveComputerService implementation**
@@ -664,15 +658,13 @@ class DiveComputerService implements DiveComputerFlutterApi {
     _downloadEventsController.close();
   }
 }
-```
-
+```text
 **Step 4: Run tests to verify they pass**
 
 ```bash
 cd packages/libdivecomputer_plugin
 flutter test test/dive_computer_service_test.dart
-```
-
+```text
 Expected: All tests PASS.
 
 **Step 5: Commit**
@@ -681,8 +673,7 @@ Expected: All tests PASS.
 git add packages/libdivecomputer_plugin/lib/src/dive_computer_service.dart
 git add packages/libdivecomputer_plugin/test/
 git commit -m "feat: add DiveComputerService with stream-based API and tests"
-```
-
+```diff
 ---
 
 ## Phase 2: libdivecomputer Submodule and macOS Build
@@ -694,14 +685,12 @@ git commit -m "feat: add DiveComputerService with stream-based API and tests"
 ```bash
 cd packages/libdivecomputer_plugin
 git submodule add https://github.com/libdivecomputer/libdivecomputer.git third_party/libdivecomputer
-```
-
+```text
 **Step 2: Verify the submodule**
 
 ```bash
 ls packages/libdivecomputer_plugin/third_party/libdivecomputer/include/libdivecomputer/
-```
-
+```text
 Expected: Header files like `context.h`, `device.h`, `descriptor.h`, `parser.h`, `iostream.h`, etc.
 
 **Step 3: Add .gitmodules entry and commit**
@@ -709,13 +698,13 @@ Expected: Header files like `context.h`, `device.h`, `descriptor.h`, `parser.h`,
 ```bash
 git add .gitmodules packages/libdivecomputer_plugin/third_party/libdivecomputer
 git commit -m "chore: add libdivecomputer as git submodule"
-```
-
+```diff
 ---
 
 ### Task 5: macOS Build Configuration
 
 **Files:**
+
 - Create: `packages/libdivecomputer_plugin/macos/libdivecomputer_plugin.podspec`
 - Create: `packages/libdivecomputer_plugin/macos/Classes/LibdivecomputerPlugin.swift`
 - Modify: `packages/libdivecomputer_plugin/macos/CMakeLists.txt` (if needed)
@@ -764,8 +753,7 @@ Pod::Spec.new do |s|
     :execution_position => :before_compile,
   }
 end
-```
-
+```text
 **Step 2: Create minimal plugin registration**
 
 Create `packages/libdivecomputer_plugin/macos/Classes/LibdivecomputerPlugin.swift`:
@@ -780,8 +768,7 @@ public class LibdivecomputerPlugin: NSObject, FlutterPlugin {
         DiveComputerHostApiSetup.setUp(binaryMessenger: messenger, api: api)
     }
 }
-```
-
+```text
 **Step 3: Create a minimal HostApi implementation that returns the version**
 
 Create `packages/libdivecomputer_plugin/macos/Classes/DiveComputerHostApiImpl.swift`:
@@ -826,8 +813,7 @@ class DiveComputerHostApiImpl: DiveComputerHostApi {
         return "0.0.0-stub"
     }
 }
-```
-
+```text
 **Step 4: Add plugin dependency to main app**
 
 Modify `pubspec.yaml` to add the plugin:
@@ -836,15 +822,13 @@ Modify `pubspec.yaml` to add the plugin:
 # In dependencies section, add:
   libdivecomputer_plugin:
     path: packages/libdivecomputer_plugin
-```
-
+```text
 **Step 5: Run flutter pub get and verify macOS builds**
 
 ```bash
 flutter pub get
 flutter build macos --debug 2>&1 | head -50
-```
-
+```text
 Expected: Build succeeds (or at least plugin is recognized). libdivecomputer may not build yet -- that's OK at this step, focus on Flutter plugin registration.
 
 **Step 6: Commit**
@@ -853,13 +837,13 @@ Expected: Build succeeds (or at least plugin is recognized). libdivecomputer may
 git add packages/libdivecomputer_plugin/macos/
 git add pubspec.yaml
 git commit -m "feat: macOS plugin scaffold with podspec and stub HostApi"
-```
-
+```typescript
 ---
 
 ### Task 6: Build libdivecomputer on macOS and Wire Up dc_version()
 
 **Files:**
+
 - Modify: `packages/libdivecomputer_plugin/macos/Classes/DiveComputerHostApiImpl.swift`
 - Create: `packages/libdivecomputer_plugin/macos/Classes/LibdcBridge.h` (bridging header)
 
@@ -881,8 +865,7 @@ Create `packages/libdivecomputer_plugin/macos/Classes/LibdcBridge.h`:
 #include <libdivecomputer/version.h>
 
 #endif
-```
-
+```text
 **Step 2: Update DiveComputerHostApiImpl to call dc_version()**
 
 Update `getLibdivecomputerVersion()` in `DiveComputerHostApiImpl.swift`:
@@ -894,15 +877,13 @@ func getLibdivecomputerVersion() -> String {
     }
     return String(cString: version)
 }
-```
-
+```text
 **Step 3: Build and test**
 
 ```bash
 flutter build macos --debug
 flutter run -d macos
-```
-
+```text
 In the app, add a temporary test to call `getLibdivecomputerVersion()` and verify it returns a real version string (e.g., "0.8.0").
 
 **Step 4: Commit**
@@ -910,8 +891,7 @@ In the app, add a temporary test to call `getLibdivecomputerVersion()` and verif
 ```bash
 git add packages/libdivecomputer_plugin/macos/
 git commit -m "feat: wire up dc_version() on macOS via C bridging header"
-```
-
+```diff
 ---
 
 ## Phase 3: macOS Native Implementation
@@ -919,6 +899,7 @@ git commit -m "feat: wire up dc_version() on macOS via C bridging header"
 ### Task 7: Implement Device Descriptor Enumeration (macOS)
 
 **Files:**
+
 - Modify: `packages/libdivecomputer_plugin/macos/Classes/DiveComputerHostApiImpl.swift`
 - Create: `packages/libdivecomputer_plugin/macos/Classes/LibdcWrapper.swift`
 
@@ -979,8 +960,7 @@ class LibdcWrapper {
         return descriptors
     }
 }
-```
-
+```typescript
 Note: The exact C API names (`dc_descriptor_get_transports`, `DC_TRANSPORT_BLE`, etc.) must be verified against libdivecomputer's headers. Check `third_party/libdivecomputer/include/libdivecomputer/descriptor.h` for the actual function signatures and transport type constants.
 
 **Step 2: Wire into HostApi**
@@ -994,8 +974,7 @@ func getDeviceDescriptors(completion: @escaping (Result<[DeviceDescriptor], any 
         completion(.success(descriptors))
     }
 }
-```
-
+```text
 **Step 3: Test by calling from Dart**
 
 Write a quick integration test or run the app and call `getDeviceDescriptors()`. Verify it returns 300+ entries.
@@ -1005,13 +984,13 @@ Write a quick integration test or run the app and call `getDeviceDescriptors()`.
 ```bash
 git add packages/libdivecomputer_plugin/macos/Classes/
 git commit -m "feat: implement device descriptor enumeration on macOS"
-```
-
+```diff
 ---
 
 ### Task 8: Implement Discovery and Download on macOS
 
 **Files:**
+
 - Modify: `packages/libdivecomputer_plugin/macos/Classes/DiveComputerHostApiImpl.swift`
 - Modify: `packages/libdivecomputer_plugin/macos/Classes/LibdcWrapper.swift`
 - Create: `packages/libdivecomputer_plugin/macos/Classes/DiveParser.swift`
@@ -1041,8 +1020,7 @@ static func startBleDiscovery(
         completion()
     }
 }
-```
-
+```text
 **Step 2: Implement download lifecycle in LibdcWrapper**
 
 Add to `LibdcWrapper.swift`:
@@ -1085,8 +1063,7 @@ static func downloadDives(
         // dc_device_close(device)
     }
 }
-```
-
+```text
 **Step 3: Implement DiveParser.swift**
 
 Create `packages/libdivecomputer_plugin/macos/Classes/DiveParser.swift`:
@@ -1134,14 +1111,13 @@ class DiveParserSwift {
         return nil // Placeholder
     }
 }
-```
-
+```text
 Note: The actual implementation requires careful C interop. The field extraction pattern is:
+
 ```swift
 var maxDepth: Double = 0
 dc_parser_get_field(parser, DC_FIELD_MAXDEPTH, 0, &maxDepth)
-```
-
+```text
 Consult `third_party/libdivecomputer/include/libdivecomputer/parser.h` for exact field IDs and callback signatures.
 
 **Step 4: Wire discovery and download into HostApi**
@@ -1153,8 +1129,7 @@ Update `DiveComputerHostApiImpl.swift` to call `LibdcWrapper.startBleDiscovery()
 ```bash
 flutter build macos --debug
 flutter run -d macos
-```
-
+```text
 Test with a physical dive computer if available, or verify the code compiles and the stub paths work.
 
 **Step 6: Commit**
@@ -1162,8 +1137,7 @@ Test with a physical dive computer if available, or verify the code compiles and
 ```bash
 git add packages/libdivecomputer_plugin/macos/Classes/
 git commit -m "feat: implement discovery and download on macOS"
-```
-
+```dart
 ---
 
 ## Phase 4: iOS Native Implementation
@@ -1171,6 +1145,7 @@ git commit -m "feat: implement discovery and download on macOS"
 ### Task 9: iOS Build Configuration and BLE Transport
 
 **Files:**
+
 - Create: `packages/libdivecomputer_plugin/ios/libdivecomputer_plugin.podspec`
 - Create: `packages/libdivecomputer_plugin/ios/Classes/LibdivecomputerPlugin.swift`
 - Create: `packages/libdivecomputer_plugin/ios/Classes/DiveComputerHostApiImpl.swift`
@@ -1189,6 +1164,7 @@ Create `packages/libdivecomputer_plugin/ios/Classes/BleTransport.swift`:
 This is the key iOS-specific file. It implements a custom `dc_iostream_t` that bridges CoreBluetooth's async callbacks to libdivecomputer's synchronous read/write calls using `DispatchSemaphore`.
 
 Key structure:
+
 ```swift
 class BleTransport: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
     private let centralManager: CBCentralManager
@@ -1229,8 +1205,7 @@ class BleTransport: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate {
         writeSemaphore.signal()
     }
 }
-```
-
+```typescript
 Note: The custom `dc_iostream_t` must be registered with C function pointers. This requires bridging Swift closures to C callbacks, typically via a thin C or Objective-C wrapper. Check libdivecomputer's `iostream.h` for the `dc_custom_io_t` structure.
 
 **Step 3: Share common Swift code with macOS**
@@ -1242,8 +1217,7 @@ cd packages/libdivecomputer_plugin/ios/Classes
 ln -s ../../macos/Classes/LibdcWrapper.swift LibdcWrapper.swift
 ln -s ../../macos/Classes/DiveParser.swift DiveParser.swift
 ln -s ../../macos/Classes/LibdcBridge.h LibdcBridge.h
-```
-
+```text
 Or, if symlinks cause issues with CocoaPods, copy the files and note they must stay in sync.
 
 **Step 4: Commit**
@@ -1251,8 +1225,7 @@ Or, if symlinks cause issues with CocoaPods, copy the files and note they must s
 ```bash
 git add packages/libdivecomputer_plugin/ios/
 git commit -m "feat: iOS plugin with CoreBluetooth BLE transport"
-```
-
+```diff
 ---
 
 ## Phase 5: Android Native Implementation
@@ -1260,6 +1233,7 @@ git commit -m "feat: iOS plugin with CoreBluetooth BLE transport"
 ### Task 10: Android Build Configuration and JNI Wrapper
 
 **Files:**
+
 - Create: `packages/libdivecomputer_plugin/android/build.gradle`
 - Create: `packages/libdivecomputer_plugin/android/CMakeLists.txt`
 - Create: `packages/libdivecomputer_plugin/android/src/main/kotlin/.../LibdivecomputerPlugin.kt`
@@ -1285,8 +1259,7 @@ add_subdirectory(../third_party/libdivecomputer libdivecomputer)
 add_library(libdc_jni SHARED src/main/cpp/libdc_jni.cpp)
 target_link_libraries(libdc_jni divecomputer)
 target_include_directories(libdc_jni PRIVATE ../third_party/libdivecomputer/include)
-```
-
+```text
 Note: libdivecomputer uses autotools, not CMake natively. You may need to write a custom `CMakeLists.txt` that builds libdivecomputer's source files directly, or use a script phase to run autotools first.
 
 **Step 3: Create JNI wrapper**
@@ -1294,6 +1267,7 @@ Note: libdivecomputer uses autotools, not CMake natively. You may need to write 
 Create `packages/libdivecomputer_plugin/android/src/main/cpp/libdc_jni.cpp`:
 
 The JNI wrapper exposes libdivecomputer C functions to Kotlin. Key functions:
+
 - `Java_com_submersion_libdivecomputer_LibdcWrapper_getVersion()`
 - `Java_com_submersion_libdivecomputer_LibdcWrapper_getDescriptors()`
 - `Java_com_submersion_libdivecomputer_LibdcWrapper_startDownload()`
@@ -1301,6 +1275,7 @@ The JNI wrapper exposes libdivecomputer C functions to Kotlin. Key functions:
 **Step 4: Create BleTransport.kt**
 
 Similar to iOS's BleTransport but using Android BLE APIs:
+
 - `BluetoothLeScanner.startScan()` for discovery
 - `BluetoothGatt` + `BluetoothGattCallback` for data transfer
 - `CountDownLatch` or `Semaphore` for synchronization
@@ -1308,6 +1283,7 @@ Similar to iOS's BleTransport but using Android BLE APIs:
 **Step 5: Create UsbTransport.kt**
 
 For Android USB support:
+
 - `UsbManager.openDevice()` → get file descriptor
 - Pass file descriptor to libdivecomputer via `dc_usb_open()` with custom I/O
 
@@ -1316,8 +1292,7 @@ For Android USB support:
 ```bash
 git add packages/libdivecomputer_plugin/android/
 git commit -m "feat: Android plugin with BLE and USB transports"
-```
-
+```diff
 ---
 
 ## Phase 6: Desktop Linux and Windows
@@ -1325,6 +1300,7 @@ git commit -m "feat: Android plugin with BLE and USB transports"
 ### Task 11: Linux Native Implementation
 
 **Files:**
+
 - Create: `packages/libdivecomputer_plugin/linux/libdivecomputer_plugin.cc`
 - Modify: `packages/libdivecomputer_plugin/linux/CMakeLists.txt`
 
@@ -1349,8 +1325,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE flutter divecomputer usb-1.0 bluet
 target_include_directories(${PROJECT_NAME} PRIVATE
   "${CMAKE_SOURCE_DIR}/../third_party/libdivecomputer/include"
 )
-```
-
+```text
 **Step 2: Implement C++ HostApi**
 
 Create `packages/libdivecomputer_plugin/linux/dive_computer_host_api_impl.cc` implementing the Pigeon-generated C++ interface. Uses libdivecomputer's native BlueZ and libusb backends directly.
@@ -1360,13 +1335,13 @@ Create `packages/libdivecomputer_plugin/linux/dive_computer_host_api_impl.cc` im
 ```bash
 git add packages/libdivecomputer_plugin/linux/
 git commit -m "feat: Linux plugin with BlueZ BLE and libusb backends"
-```
-
+```diff
 ---
 
 ### Task 12: Windows Native Implementation
 
 **Files:**
+
 - Create: `packages/libdivecomputer_plugin/windows/libdivecomputer_plugin.cpp`
 - Modify: `packages/libdivecomputer_plugin/windows/CMakeLists.txt`
 
@@ -1381,8 +1356,7 @@ Similar to Linux but linking WinUSB and WinRT BLE APIs instead of libusb/BlueZ.
 ```bash
 git add packages/libdivecomputer_plugin/windows/
 git commit -m "feat: Windows plugin with WinRT BLE and WinUSB backends"
-```
-
+```text
 ---
 
 ## Phase 7: Dart-Side Integration
@@ -1390,6 +1364,7 @@ git commit -m "feat: Windows plugin with WinRT BLE and WinUSB backends"
 ### Task 13: Update DeviceModel Entity
 
 **Files:**
+
 - Modify: `lib/features/dive_computer/domain/entities/device_model.dart`
 
 **Step 1: Write test for new DeviceModel creation from DeviceDescriptor**
@@ -1412,8 +1387,7 @@ test('creates DeviceModel from Pigeon DeviceDescriptor', () {
   expect(model.supportsBle, isTrue);
   expect(model.supportsUsb, isTrue);
 });
-```
-
+```text
 **Step 2: Update DeviceModel**
 
 Add a factory constructor:
@@ -1435,29 +1409,27 @@ factory DeviceModel.fromDescriptor(DeviceDescriptor descriptor) {
     dcModel: descriptor.model,
   );
 }
-```
-
+```text
 Similarly, update `DiscoveredDevice` to be constructable from the Pigeon type.
 
 **Step 3: Run tests**
 
 ```bash
 flutter test test/features/dive_computer/
-```
-
+```text
 **Step 4: Commit**
 
 ```bash
 git add lib/features/dive_computer/domain/entities/device_model.dart
 git add test/features/dive_computer/
 git commit -m "feat: add DeviceModel.fromDescriptor() factory"
-```
-
+```dart
 ---
 
 ### Task 14: Rewrite Discovery Providers
 
 **Files:**
+
 - Modify: `lib/features/dive_computer/presentation/providers/discovery_providers.dart`
 
 **Step 1: Rewrite providers to use DiveComputerService**
@@ -1505,8 +1477,7 @@ final libdcVersionProvider = Provider<String>((ref) {
 //         usbDevicesByManufacturerProvider, bluetoothAvailabilityProvider,
 //         hasPermissionsProvider, deviceManufacturersProvider,
 //         devicesByManufacturerProvider
-```
-
+```text
 Rewrite `DiscoveryNotifier` to use `DiveComputerService.startDiscovery()` and `stopDiscovery()` instead of `BluetoothConnectionManager`.
 
 **Step 2: Run tests and fix compilation**
@@ -1514,8 +1485,7 @@ Rewrite `DiscoveryNotifier` to use `DiveComputerService.startDiscovery()` and `s
 ```bash
 flutter analyze
 flutter test
-```
-
+```text
 Fix any compilation errors from removed providers referenced elsewhere.
 
 **Step 3: Commit**
@@ -1523,13 +1493,13 @@ Fix any compilation errors from removed providers referenced elsewhere.
 ```bash
 git add lib/features/dive_computer/presentation/providers/discovery_providers.dart
 git commit -m "refactor: rewrite discovery providers to use DiveComputerService"
-```
-
+```dart
 ---
 
 ### Task 15: Rewrite Download Providers
 
 **Files:**
+
 - Modify: `lib/features/dive_computer/presentation/providers/download_providers.dart`
 
 **Step 1: Rewrite providers**
@@ -1542,9 +1512,9 @@ final downloadEventsProvider = StreamProvider<DownloadEvent>((ref) {
   final service = ref.watch(diveComputerServiceProvider);
   return service.downloadEvents;
 });
-```
-
+```typescript
 Rewrite `DownloadNotifier` to:
+
 1. Call `service.startDownload(device)` instead of `downloadManager.downloadDives()`
 2. Listen to `service.downloadEvents` stream for progress/dives/completion
 3. Map `ParsedDive` to `DownloadedDive` (or update import service to accept `ParsedDive` directly)
@@ -1555,20 +1525,19 @@ Keep `DiveImportService` integration, `DiveComputerRepository` usage, PIN entry 
 
 ```bash
 flutter test
-```
-
+```text
 **Step 3: Commit**
 
 ```bash
 git add lib/features/dive_computer/presentation/providers/download_providers.dart
 git commit -m "refactor: rewrite download providers to use DiveComputerService"
-```
-
+```text
 ---
 
 ### Task 16: Update DiveImportService and Repository Mapping
 
 **Files:**
+
 - Modify: `lib/features/dive_computer/data/services/dive_import_service.dart`
 - Modify: `lib/features/dive_log/data/repositories/dive_computer_repository_impl.dart`
 
@@ -1615,8 +1584,7 @@ DownloadedDive parsedDiveToDownloaded(ParsedDive parsed) {
     }).toList(),
   );
 }
-```
-
+```text
 **Step 2: Write tests for the mapping**
 
 ```dart
@@ -1650,27 +1618,25 @@ test('converts ParsedDive to DownloadedDive correctly', () {
   expect(downloaded.tanks.first.o2Percent, 32.0);
   expect(downloaded.fingerprint, 'abc123');
 });
-```
-
+```text
 **Step 3: Run tests**
 
 ```bash
 flutter test
-```
-
+```text
 **Step 4: Commit**
 
 ```bash
 git add lib/features/dive_computer/data/services/
 git add test/
 git commit -m "feat: add ParsedDive to DownloadedDive mapping"
-```
-
+```text
 ---
 
 ### Task 17: Update UI Pages
 
 **Files:**
+
 - Modify: `lib/features/dive_computer/presentation/pages/device_discovery_page.dart`
 - Modify: `lib/features/dive_computer/presentation/pages/device_download_page.dart`
 - Modify: `lib/features/dive_computer/presentation/widgets/scan_step_widget.dart`
@@ -1685,12 +1651,14 @@ The UI layout stays the same -- only the data source changes.
 **Step 2: Update scan step to use new discovery stream**
 
 The `scan_step_widget.dart` needs to:
+
 - Watch `discoveredDevicesProvider` (now a `StreamProvider<DiscoveredDevice>` instead of `StreamProvider<List<DiscoveredDevice>>`)
 - Accumulate discovered devices in a local list or use a `StateNotifier`
 
 **Step 3: Update download step to use new download events**
 
 The `download_step_widget.dart` needs to:
+
 - Watch `downloadEventsProvider` for progress and dive events
 - Map `DownloadProgressEvent` to existing progress UI
 - Accumulate `DiveDownloadedEvent` for the dive count display
@@ -1700,15 +1668,13 @@ The `download_step_widget.dart` needs to:
 ```bash
 flutter analyze
 flutter run -d macos
-```
-
+```text
 **Step 5: Commit**
 
 ```bash
 git add lib/features/dive_computer/presentation/
 git commit -m "refactor: update UI pages to use new plugin providers"
-```
-
+```text
 ---
 
 ## Phase 8: Cleanup
@@ -1716,6 +1682,7 @@ git commit -m "refactor: update UI pages to use new plugin providers"
 ### Task 18: Delete Old Code and Dependencies
 
 **Files to delete:**
+
 - `lib/features/dive_computer/data/services/shearwater_ble_protocol.dart`
 - `lib/features/dive_computer/data/services/suunto_ble_protocol.dart`
 - `lib/features/dive_computer/data/services/aqualung_ble_protocol.dart`
@@ -1750,8 +1717,7 @@ rm lib/features/dive_computer/data/device_library.dart
 rm lib/features/dive_computer/domain/services/connection_manager.dart
 rm lib/features/dive_computer/domain/services/download_manager.dart
 rm -rf third_party/flutter_blue_plus_winrt/
-```
-
+```text
 **Step 2: Remove dependencies from pubspec.yaml**
 
 Remove these lines from `pubspec.yaml`:
@@ -1765,16 +1731,14 @@ Remove these lines from `pubspec.yaml`:
 # Remove from dependency_overrides:
   flutter_blue_plus_winrt:
     path: third_party/flutter_blue_plus_winrt
-```
-
+```text
 **Step 3: Remove ffi dependency if no longer used elsewhere**
 
 Check if `ffi: ^2.1.0` is used anywhere else. If only by `dive_computer`, remove it too.
 
 ```bash
 grep -r "import.*ffi" lib/ --include="*.dart" | grep -v dive_computer
-```
-
+```typescript
 If no results, remove `ffi: ^2.1.0` from pubspec.yaml.
 
 **Step 4: Run pub get and fix any remaining import errors**
@@ -1782,8 +1746,7 @@ If no results, remove `ffi: ^2.1.0` from pubspec.yaml.
 ```bash
 flutter pub get
 flutter analyze
-```
-
+```typescript
 Fix any files that still import deleted modules.
 
 **Step 5: Delete tests for removed code**
@@ -1792,29 +1755,25 @@ Remove test files that tested the deleted BLE protocols, connection manager, etc
 
 ```bash
 find test/ -name "*shearwater*" -o -name "*suunto*" -o -name "*aqualung*" -o -name "*mares*" -o -name "*bluetooth_connection*" -o -name "*device_library*" -o -name "*libdc_download*" -o -name "*libdc_ffi*" -o -name "*usb_device_scanner*" | xargs rm -f
-```
-
+```text
 **Step 6: Run full test suite**
 
 ```bash
 flutter test
-```
-
+```text
 Fix any failures.
 
 **Step 7: Run dart format**
 
 ```bash
 dart format lib/ test/
-```
-
+```text
 **Step 8: Commit**
 
 ```bash
 git add -A
 git commit -m "refactor: delete old BLE protocols, connection manager, and flutter_blue_plus dependency"
-```
-
+```diff
 ---
 
 ## Phase 9: Final Verification
@@ -1827,30 +1786,26 @@ git commit -m "refactor: delete old BLE protocols, connection manager, and flutt
 flutter clean
 flutter pub get
 dart run build_runner build --delete-conflicting-outputs
-```
-
+```text
 **Step 2: Analyze**
 
 ```bash
 flutter analyze
-```
-
+```text
 Expected: No errors, no warnings.
 
 **Step 3: Format check**
 
 ```bash
 dart format --set-exit-if-changed lib/ test/
-```
-
+```text
 Expected: No formatting changes needed.
 
 **Step 4: Run all tests**
 
 ```bash
 flutter test
-```
-
+```text
 Expected: All tests pass.
 
 **Step 5: Build for each platform**
@@ -1861,13 +1816,13 @@ flutter build ios --debug --no-codesign  # if on macOS
 flutter build apk --debug               # Android
 flutter build linux --debug              # if on Linux
 flutter build windows --debug            # if on Windows
-```
-
+```text
 Expected: All targeted platform builds succeed.
 
 **Step 6: Manual smoke test**
 
 Run the app on macOS, navigate to Transfer > Dive Computers, verify:
+
 - The device list page loads (pulls descriptors from libdivecomputer)
 - BLE scanning starts and shows a scanning indicator
 - The app doesn't crash
@@ -1896,6 +1851,7 @@ git commit -m "chore: final cleanup and verification"
 | 9 | 19 | Full build and test verification |
 
 **Key risk areas:**
+
 - Building libdivecomputer from source on each platform (autotools vs CMake)
 - C interop from Swift/Kotlin (bridging headers, JNI)
 - Custom dc_iostream_t on iOS/Android (semaphore-based BLE bridge)

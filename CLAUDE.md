@@ -5,6 +5,7 @@
 Submersion is a Flutter dive logging application for scuba divers. It provides dive tracking, site management, gear tracking, and statistics visualization.
 
 **Tech Stack:**
+
 - Flutter 3.x with Material 3 design
 - Drift ORM for SQLite database
 - Riverpod for state management
@@ -16,7 +17,7 @@ Submersion is a Flutter dive logging application for scuba divers. It provides d
 **For development tasks, use these two files:**
 
 | File | Purpose |
-|------|---------|
+| ------ | --------- |
 | [FEATURE_ROADMAP.md](FEATURE_ROADMAP.md) | Comprehensive roadmap with all features by phase (v1.0, v1.5, v2.0, v3.0), database schemas, and dependencies |
 
 ## Quick Start
@@ -29,8 +30,7 @@ Submersion is a Flutter dive logging application for scuba divers. It provides d
 flutter pub get
 git config core.hooksPath hooks
 dart run build_runner build --delete-conflicting-outputs
-```
-
+```text
 ## Common Commands
 
 ```bash
@@ -56,6 +56,7 @@ flutter clean && flutter pub get && dart run build_runner build --delete-conflic
 ## Git Hooks
 
 Pre-push hooks are configured in the `hooks/` directory. They automatically run:
+
 - `dart format --set-exit-if-changed` — ensures code is formatted
 - `flutter analyze` — catches lint issues
 - `flutter test` — runs unit tests
@@ -69,17 +70,20 @@ Pre-push hooks are configured in the `hooks/` directory. They automatically run:
 ### Key Patterns
 
 **Riverpod State Management:**
+
 - `Provider` for repository singletons
 - `FutureProvider` for async data fetching
 - `FutureProvider.family` for parameterized queries (by ID, search query)
 - `StateNotifierProvider` + `StateNotifier` for mutable state with CRUD operations
 
 **Domain/Data Separation:**
+
 - Domain entities in `domain/entities/` are clean Dart classes with `copyWith`
 - Data layer uses Drift ORM with generated classes
 - Import aliases (`as domain`) resolve naming conflicts between Drift and domain classes
 
 **Navigation:**
+
 - go_router with ShellRoute for persistent bottom navigation
 - Routes: `/dives`, `/sites`, `/gear`, `/stats`, `/settings`
 - Detail/edit pages at `/dives/:id`, `/dives/new`, etc.
@@ -89,7 +93,7 @@ Pre-push hooks are configured in the `hooks/` directory. They automatically run:
 Tables defined in `lib/core/database/database.dart`:
 
 | Table | Description |
-|-------|-------------|
+| ------- | ----------- |
 | `dives` | Core dive logs with date, depth, duration, etc. |
 | `dive_profiles` | Time-series depth/temp data points per dive |
 | `dive_tanks` | Tank info (volume, gas mix, pressures) per dive |
@@ -110,6 +114,7 @@ Tables defined in `lib/core/database/database.dart`:
 - **Null safety:** Project uses sound null safety
 
 ## Claude Specific Instructions
+
 - Use agents proactively
 - Anything displaying units should respect the active diver's unit settings
 - All Dart code should pass "dart format" with no changes

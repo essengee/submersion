@@ -164,6 +164,7 @@ Aggregate profile data:
 ### Interactive Charts
 
 All charts support:
+
 - **Tap** - View data point details
 - **Pinch** - Zoom in/out
 - **Drag** - Pan across data
@@ -184,6 +185,7 @@ All charts support:
 ### Date Range
 
 Filter statistics by:
+
 - **All Time** - Complete history
 - **This Year** - Current year
 - **Last 12 Months** - Rolling year
@@ -192,6 +194,7 @@ Filter statistics by:
 ### Other Filters
 
 Combine filters for specific analysis:
+
 - By dive site
 - By dive type
 - By buddy
@@ -228,6 +231,7 @@ Export raw data for external analysis:
 ### Data Quality
 
 Good statistics require good data:
+
 - Log dives promptly and accurately
 - Include all relevant fields
 - Use consistent terminology
@@ -235,6 +239,7 @@ Good statistics require good data:
 ### Insights
 
 Use stats to:
+
 - Identify favorite conditions
 - Plan future trips
 - Track safety metrics (ascent rates)

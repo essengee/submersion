@@ -29,9 +29,9 @@ class DragSelectGridView<T> extends StatefulWidget {
   final bool shrinkWrap;
   final ScrollPhysics? physics;
 }
-```
-
+```sql
 **Interaction model:**
+
 1. Normal mode: Taps pass through to itemBuilder's own gesture handling.
 2. Long-press any item: enters selection mode, that item becomes the anchor.
 3. Drag from long-press: all items from anchor to current finger position are selected.
@@ -45,11 +45,13 @@ class DragSelectGridView<T> extends StatefulWidget {
 Replace `_PhotoGrid` with `DragSelectGridView<AssetInfo>`, wired to existing `PhotoPickerNotifier`.
 
 **Toolbar additions** (below date range header, visible in selection mode):
+
 - "Select All" button (uses existing `selectAll()`)
 - "Clear" button (uses existing `clearSelection()`)
 - Selection count badge: "X selected"
 
 **Flow:**
+
 1. Open photo picker from dive detail - see grid of photos in time range.
 2. Tap any photo: toggles selection (same as today).
 3. Long-press + drag: range-select from anchor to finger.
@@ -65,12 +67,14 @@ Convert `DiveMediaSection` to `ConsumerStatefulWidget` with local selection stat
 Replace `_MediaGrid` with `DragSelectGridView<MediaItem>`.
 
 **Interaction model:**
+
 1. Normal mode: Tap opens PhotoViewerPage. Long-press enters multi-select mode.
 2. Selection mode: Header transforms to show selection count, Select All, Unlink Selected (trash icon), Cancel (X). Tap toggles items. Long-press + drag: range-select.
 3. Unlink Selected: confirmation dialog, then batch delete, exit selection mode.
 4. Cancel: clear selection, exit selection mode.
 
 **Visual indicators in selection mode:**
+
 - Selected thumbnails: checkmark overlay + colored border (consistent with PhotoPickerPage).
 - Unselected thumbnails: subtle dimming overlay.
 

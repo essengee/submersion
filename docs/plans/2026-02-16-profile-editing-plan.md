@@ -17,6 +17,7 @@
 Create the two new domain entities needed by the editing service.
 
 **Files:**
+
 - Create: `lib/features/dive_log/domain/entities/outlier_result.dart`
 - Create: `lib/features/dive_log/domain/entities/profile_waypoint.dart`
 - Test: `test/features/dive_log/domain/entities/outlier_result_test.dart`
@@ -66,8 +67,7 @@ class OutlierResult extends Equatable {
     isPhysicallyImpossible,
   ];
 }
-```
-
+```text
 **Step 2: Write ProfileWaypoint entity**
 
 ```dart
@@ -99,8 +99,7 @@ class ProfileWaypoint extends Equatable {
   @override
   List<Object?> get props => [timestamp, depth];
 }
-```
-
+```text
 **Step 3: Write tests for both entities**
 
 Test Equatable props, copyWith behavior. Keep simple -- these are value objects.
@@ -130,8 +129,7 @@ void main() {
     });
   });
 }
-```
-
+```text
 ```dart
 // profile_waypoint_test.dart
 import 'package:flutter_test/flutter_test.dart';
@@ -154,8 +152,7 @@ void main() {
     });
   });
 }
-```
-
+```text
 **Step 4: Run tests**
 
 Run: `flutter test test/features/dive_log/domain/entities/outlier_result_test.dart test/features/dive_log/domain/entities/profile_waypoint_test.dart`
@@ -169,8 +166,7 @@ git add lib/features/dive_log/domain/entities/outlier_result.dart \
         test/features/dive_log/domain/entities/outlier_result_test.dart \
         test/features/dive_log/domain/entities/profile_waypoint_test.dart
 git commit -m "feat: add OutlierResult and ProfileWaypoint entities"
-```
-
+```text
 ---
 
 ## Task 2: ProfileEditingService -- Outlier Detection
@@ -178,6 +174,7 @@ git commit -m "feat: add OutlierResult and ProfileWaypoint entities"
 Build the outlier detection algorithm (z-score on depth deltas).
 
 **Files:**
+
 - Create: `lib/features/dive_log/data/services/profile_editing_service.dart`
 - Create: `test/features/dive_log/data/services/profile_editing_service_test.dart`
 
@@ -275,8 +272,7 @@ void main() {
     });
   });
 }
-```
-
+```text
 **Step 2: Run tests to verify they fail**
 
 Run: `flutter test test/features/dive_log/data/services/profile_editing_service_test.dart`
@@ -366,8 +362,7 @@ class ProfileEditingService {
     return results;
   }
 }
-```
-
+```text
 **Step 4: Run tests to verify they pass**
 
 Run: `flutter test test/features/dive_log/data/services/profile_editing_service_test.dart`
@@ -379,8 +374,7 @@ Expected: ALL PASS
 git add lib/features/dive_log/data/services/profile_editing_service.dart \
         test/features/dive_log/data/services/profile_editing_service_test.dart
 git commit -m "feat: add ProfileEditingService with outlier detection"
-```
-
+```text
 ---
 
 ## Task 3: ProfileEditingService -- Smoothing & Outlier Removal
@@ -388,6 +382,7 @@ git commit -m "feat: add ProfileEditingService with outlier detection"
 Add smoothing and outlier removal methods.
 
 **Files:**
+
 - Modify: `lib/features/dive_log/data/services/profile_editing_service.dart`
 - Modify: `test/features/dive_log/data/services/profile_editing_service_test.dart`
 
@@ -513,8 +508,7 @@ Add to the test file:
       expect(cleaned, profile);
     });
   });
-```
-
+```text
 **Step 2: Run tests to verify they fail**
 
 Run: `flutter test test/features/dive_log/data/services/profile_editing_service_test.dart`
@@ -634,8 +628,7 @@ Add to `ProfileEditingService`:
 
     return result;
   }
-```
-
+```text
 **Step 4: Run tests**
 
 Run: `flutter test test/features/dive_log/data/services/profile_editing_service_test.dart`
@@ -647,8 +640,7 @@ Expected: ALL PASS
 git add lib/features/dive_log/data/services/profile_editing_service.dart \
         test/features/dive_log/data/services/profile_editing_service_test.dart
 git commit -m "feat: add profile smoothing and outlier removal"
-```
-
+```text
 ---
 
 ## Task 4: ProfileEditingService -- Range Operations
@@ -656,6 +648,7 @@ git commit -m "feat: add profile smoothing and outlier removal"
 Add segment shift, delete, and smooth-segment methods.
 
 **Files:**
+
 - Modify: `lib/features/dive_log/data/services/profile_editing_service.dart`
 - Modify: `test/features/dive_log/data/services/profile_editing_service_test.dart`
 
@@ -776,8 +769,7 @@ Add segment shift, delete, and smooth-segment methods.
       expect(result[1].timestamp, 16);
     });
   });
-```
-
+```text
 **Step 2: Run tests to verify they fail**
 
 Run: `flutter test test/features/dive_log/data/services/profile_editing_service_test.dart`
@@ -884,8 +876,7 @@ Add to `ProfileEditingService`:
 
     return [...before, ...after];
   }
-```
-
+```text
 **Step 4: Run tests**
 
 Run: `flutter test test/features/dive_log/data/services/profile_editing_service_test.dart`
@@ -897,8 +888,7 @@ Expected: ALL PASS
 git add lib/features/dive_log/data/services/profile_editing_service.dart \
         test/features/dive_log/data/services/profile_editing_service_test.dart
 git commit -m "feat: add range operations (shift depth, shift time, delete)"
-```
-
+```text
 ---
 
 ## Task 5: ProfileEditingService -- Waypoint Interpolation
@@ -906,6 +896,7 @@ git commit -m "feat: add range operations (shift depth, shift time, delete)"
 Add the `interpolateWaypoints` method for manual profile drawing.
 
 **Files:**
+
 - Modify: `lib/features/dive_log/data/services/profile_editing_service.dart`
 - Modify: `test/features/dive_log/data/services/profile_editing_service_test.dart`
 
@@ -969,8 +960,7 @@ Add the `interpolateWaypoints` method for manual profile drawing.
       expect(profile.first.depth, 10.0);
     });
   });
-```
-
+```text
 **Step 2: Run tests to verify they fail**
 
 Run: `flutter test test/features/dive_log/data/services/profile_editing_service_test.dart`
@@ -1031,8 +1021,7 @@ Add to `ProfileEditingService`:
 
     return result;
   }
-```
-
+```text
 **Step 4: Run tests**
 
 Run: `flutter test test/features/dive_log/data/services/profile_editing_service_test.dart`
@@ -1044,8 +1033,7 @@ Expected: ALL PASS
 git add lib/features/dive_log/data/services/profile_editing_service.dart \
         test/features/dive_log/data/services/profile_editing_service_test.dart
 git commit -m "feat: add waypoint interpolation for manual profile drawing"
-```
-
+```text
 ---
 
 ## Task 6: Repository -- Profile Persistence Methods
@@ -1053,10 +1041,12 @@ git commit -m "feat: add waypoint interpolation for manual profile drawing"
 Add `saveEditedProfile`, `getProfilesBySource`, `restoreOriginalProfile` to `DiveRepositoryImpl` and filter `getDiveProfile` by `isPrimary`.
 
 **Files:**
+
 - Modify: `lib/features/dive_log/data/repositories/dive_repository_impl.dart:212-237` (getDiveProfile)
 - Test: `test/features/dive_log/data/repositories/dive_repository_test.dart` (add profile editing tests)
 
 **Context:**
+
 - `getDiveProfile` is at line 212 of `dive_repository_impl.dart`
 - `DiveProfilesCompanion` usage example at line 448 (in createDive)
 - `isPrimary` column defined in `lib/core/database/database.dart:191`
@@ -1092,8 +1082,7 @@ Add a new group to the existing repository test file:
       // 3. getProfilesBySource returns map with both
     });
   });
-```
-
+```text
 Note: Exact test code depends on existing test setup patterns in `dive_repository_test.dart`. The implementing engineer should follow the file's existing patterns for database setup/teardown.
 
 **Step 2: Run tests to verify they fail**
@@ -1118,8 +1107,7 @@ Modify `getDiveProfile` at line 212 to filter by `isPrimary`:
     }
     // ...
   }
-```
-
+```text
 Add new methods after `getDiveProfile`:
 
 ```dart
@@ -1268,8 +1256,7 @@ Add new methods after `getDiveProfile`:
       rethrow;
     }
   }
-```
-
+```text
 **Step 4: Run tests**
 
 Run: `flutter test test/features/dive_log/data/repositories/dive_repository_test.dart`
@@ -1281,8 +1268,7 @@ Expected: ALL PASS
 git add lib/features/dive_log/data/repositories/dive_repository_impl.dart \
         test/features/dive_log/data/repositories/dive_repository_test.dart
 git commit -m "feat: add profile editing repository methods"
-```
-
+```dart
 ---
 
 ## Task 7: State Management -- ProfileEditorNotifier
@@ -1290,6 +1276,7 @@ git commit -m "feat: add profile editing repository methods"
 Create the StateNotifier and state class for the editor session.
 
 **Files:**
+
 - Create: `lib/features/dive_log/presentation/providers/profile_editor_provider.dart`
 - Test: `test/features/dive_log/presentation/providers/profile_editor_provider_test.dart`
 
@@ -1367,8 +1354,7 @@ void main() {
     expect(notifier.state.selectedRange, isNull);
   });
 }
-```
-
+```text
 **Step 2: Run tests to verify they fail**
 
 Run: `flutter test test/features/dive_log/presentation/providers/profile_editor_provider_test.dart`
@@ -1621,8 +1607,7 @@ class ProfileEditorNotifier extends StateNotifier<ProfileEditorState> {
     state = state.copyWith(editedProfile: generated, hasChanges: true);
   }
 }
-```
-
+```text
 **Step 4: Run tests**
 
 Run: `flutter test test/features/dive_log/presentation/providers/profile_editor_provider_test.dart`
@@ -1634,8 +1619,7 @@ Expected: ALL PASS
 git add lib/features/dive_log/presentation/providers/profile_editor_provider.dart \
         test/features/dive_log/presentation/providers/profile_editor_provider_test.dart
 git commit -m "feat: add ProfileEditorNotifier state management"
-```
-
+```dart
 ---
 
 ## Task 8: Outlier Suggestion Provider
@@ -1643,6 +1627,7 @@ git commit -m "feat: add ProfileEditorNotifier state management"
 Create the `FutureProvider` that detects outliers in the background for the dive detail badge.
 
 **Files:**
+
 - Create: `lib/features/dive_log/presentation/providers/outlier_suggestion_provider.dart`
 
 **Step 1: Implement provider**
@@ -1665,15 +1650,13 @@ final outlierSuggestionProvider =
   final service = ProfileEditingService();
   return service.detectOutliers(dive.profile);
 });
-```
-
+```text
 **Step 2: Commit**
 
 ```bash
 git add lib/features/dive_log/presentation/providers/outlier_suggestion_provider.dart
 git commit -m "feat: add outlier suggestion provider for dive detail badge"
-```
-
+```text
 ---
 
 ## Task 9: ProfileEditorChart Widget
@@ -1681,6 +1664,7 @@ git commit -m "feat: add outlier suggestion provider for dive detail badge"
 Build the simplified chart widget for the editor page.
 
 **Files:**
+
 - Create: `lib/features/dive_log/presentation/widgets/profile_editor_chart.dart`
 
 **Context:** The existing `DiveProfileChart` in `lib/features/dive_log/presentation/widgets/dive_profile_chart.dart` uses `fl_chart` `LineChart` with `LineChartData`. This new chart should be much simpler -- depth vs time only, with overlay markers for outliers/waypoints.
@@ -1688,6 +1672,7 @@ Build the simplified chart widget for the editor page.
 **Step 1: Implement ProfileEditorChart**
 
 This is a `ConsumerStatefulWidget` that renders:
+
 - An fl_chart `LineChart` with depth vs time
 - Original profile as a faded dashed line (using `dashArray`)
 - Edited profile as a bold primary-colored line
@@ -1697,6 +1682,7 @@ This is a `ConsumerStatefulWidget` that renders:
 - Zoom/pan via `FlTouchData`
 
 Key properties:
+
 ```dart
 class ProfileEditorChart extends ConsumerStatefulWidget {
   final List<DiveProfilePoint> originalProfile;
@@ -1709,9 +1695,9 @@ class ProfileEditorChart extends ConsumerStatefulWidget {
   final void Function(int waypointIndex, int timestamp, double depth)? onWaypointDrag;
   final void Function(int startTimestamp, int endTimestamp)? onRangeChanged;
 }
-```
-
+```text
 Implementation details:
+
 - Chart Y axis inverted (deeper = lower, matching existing chart convention)
 - Unit-aware labels using `UnitFormatter` from `lib/core/utils/unit_formatter.dart`
 - Respects active diver's unit settings (meters/feet)
@@ -1725,8 +1711,7 @@ This is a UI-heavy widget -- full code is too long for this plan. Implement foll
 ```bash
 git add lib/features/dive_log/presentation/widgets/profile_editor_chart.dart
 git commit -m "feat: add ProfileEditorChart widget"
-```
-
+```text
 ---
 
 ## Task 10: EditorToolbar & EditorContextPanel Widgets
@@ -1734,6 +1719,7 @@ git commit -m "feat: add ProfileEditorChart widget"
 Build the mode selector toolbar and mode-specific context panel.
 
 **Files:**
+
 - Create: `lib/features/dive_log/presentation/widgets/editor_toolbar.dart`
 - Create: `lib/features/dive_log/presentation/widgets/editor_context_panel.dart`
 
@@ -1747,8 +1733,7 @@ class EditorToolbar extends StatelessWidget {
   final void Function(EditorMode) onModeChanged;
   // ...
 }
-```
-
+```sql
 4 modes: Select (icon: `touch_app`), Smooth (icon: `auto_fix_high`), Outlier (icon: `warning_amber`), Draw (icon: `draw`).
 
 **Step 2: Implement EditorContextPanel**
@@ -1766,16 +1751,14 @@ class EditorContextPanel extends ConsumerWidget {
   final String diveId;
   // ...
 }
-```
-
+```text
 **Step 3: Commit**
 
 ```bash
 git add lib/features/dive_log/presentation/widgets/editor_toolbar.dart \
         lib/features/dive_log/presentation/widgets/editor_context_panel.dart
 git commit -m "feat: add editor toolbar and context panel widgets"
-```
-
+```text
 ---
 
 ## Task 11: ProfileEditorPage
@@ -1783,12 +1766,14 @@ git commit -m "feat: add editor toolbar and context panel widgets"
 Assemble the full editor page and register the route.
 
 **Files:**
+
 - Create: `lib/features/dive_log/presentation/pages/profile_editor_page.dart`
 - Modify: `lib/core/router/app_router.dart:237-244` (add route)
 
 **Step 1: Implement ProfileEditorPage**
 
 A `ConsumerStatefulWidget` that:
+
 1. Loads the dive's profile via `diveProvider(diveId)`
 2. Creates a `ProfileEditorNotifier` (use `StateNotifierProvider.autoDispose`)
 3. Renders `AppBar` with "Edit Profile" title, Undo and Save action buttons
@@ -1808,8 +1793,7 @@ class ProfileEditorPage extends ConsumerStatefulWidget {
   });
   // ...
 }
-```
-
+```text
 **Step 2: Register route**
 
 In `lib/core/router/app_router.dart`, after the existing `editDive` route (line 243), add:
@@ -1825,8 +1809,7 @@ GoRoute(
         : null,
   ),
 ),
-```
-
+```typescript
 Add import for `ProfileEditorPage` at the top of the router file.
 
 **Step 3: Commit**
@@ -1835,8 +1818,7 @@ Add import for `ProfileEditorPage` at the top of the router file.
 git add lib/features/dive_log/presentation/pages/profile_editor_page.dart \
         lib/core/router/app_router.dart
 git commit -m "feat: add ProfileEditorPage and register route"
-```
-
+```text
 ---
 
 ## Task 12: DiveDetailPage Integration
@@ -1844,6 +1826,7 @@ git commit -m "feat: add ProfileEditorPage and register route"
 Add "Edit Profile" button and outlier suggestion badge to the dive detail page.
 
 **Files:**
+
 - Modify: `lib/features/dive_log/presentation/pages/dive_detail_page.dart`
 
 **Step 1: Add entry points**
@@ -1862,8 +1845,7 @@ Add imports for `outlier_suggestion_provider.dart` and the `EditorMode` enum.
 ```bash
 git add lib/features/dive_log/presentation/pages/dive_detail_page.dart
 git commit -m "feat: add profile editor entry points to dive detail page"
-```
-
+```diff
 ---
 
 ## Task 13: Format, Analyze, Full Test Suite
@@ -1889,8 +1871,7 @@ Fix any failures.
 ```bash
 git add -A
 git commit -m "chore: format and fix analysis issues"
-```
-
+```diff
 ---
 
 ## Task 14: Update FEATURE_ROADMAP.md
@@ -1898,16 +1879,19 @@ git commit -m "chore: format and fix analysis issues"
 Mark profile editing tasks as complete.
 
 **Files:**
+
 - Modify: `FEATURE_ROADMAP.md`
 
 **Step 1: Update status**
 
 Change the profile editing section to show implemented status:
+
 - Smoothing / cleaning bad samples: Implemented
 - Manual profile drawing: Implemented
 - Segment editing: Implemented
 
 Mark tasks as done:
+
 - [x] Profile outlier detection algorithm
 - [x] Smoothing algorithm (weighted moving average)
 - [x] Manual profile editor with waypoint drawing

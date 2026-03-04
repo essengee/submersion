@@ -23,7 +23,7 @@ CNS% is already cumulative via recursive lookback. Tissue loading and OTU are no
 
 #### Data Flow
 
-```
+```dart
 profileAnalysisProvider(diveId)
   |
   +-- _computeResidualTissueState(ref, diveId)
@@ -52,7 +52,7 @@ profileAnalysisProvider(diveId)
 
 #### Data Flow
 
-```
+```text
 profileAnalysisProvider(diveId)
   |
   +-- _computeResidualOtu(ref, diveId)
@@ -100,6 +100,7 @@ Riverpod caches each `profileAnalysisProvider(diveId)` result. A 5-dive day with
 ### 5. Testing
 
 **Unit tests**:
+
 - `processProfile()` respects pre-loaded compartments
 - Two consecutive dives with surface interval match manual Schreiner calculation
 - 48-hour surface interval produces near-surface-saturated state
@@ -107,6 +108,7 @@ Riverpod caches each `profileAnalysisProvider(diveId)` result. A 5-dive day with
 - Daily OTU resets across calendar day boundary
 
 **Integration tests**:
+
 - 3-dive day: verify NDL decreases with each successive dive
 - Cross-day boundary: tissue carries across, daily OTU resets
 - Verify daily and weekly OTU accumulation

@@ -15,6 +15,7 @@
 ## Task 1: Add Dependencies
 
 **Files:**
+
 - Modify: `pubspec.yaml`
 
 **Step 1: Add auto_updater and package_info_plus to pubspec.yaml**
@@ -25,8 +26,7 @@ Add under `dependencies:` section (after the `# Utilities` comment block):
   # Auto-Update
   auto_updater: ^1.0.0
   package_info_plus: ^8.0.0
-```
-
+```text
 Note: `http` and `shared_preferences` are already in the project dependencies.
 
 **Step 2: Run flutter pub get**
@@ -39,13 +39,13 @@ Expected: Dependencies resolve successfully. `auto_updater` pulls in `auto_updat
 ```bash
 git add pubspec.yaml pubspec.lock
 git commit -m "chore: add auto_updater and package_info_plus dependencies"
-```
-
+```text
 ---
 
 ## Task 2: Domain Entities -- UpdateChannel and UpdateStatus
 
 **Files:**
+
 - Create: `lib/features/auto_update/domain/entities/update_channel.dart`
 - Create: `lib/features/auto_update/domain/entities/update_status.dart`
 - Test: `test/features/auto_update/domain/entities/update_channel_test.dart`
@@ -101,8 +101,7 @@ void main() {
     });
   });
 }
-```
-
+```typescript
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/features/auto_update/domain/entities/update_channel_test.dart`
@@ -135,8 +134,7 @@ class UpdateChannelConfig {
     return channel != UpdateChannel.github;
   }
 }
-```
-
+```text
 **Step 4: Run test to verify it passes**
 
 Run: `flutter test test/features/auto_update/domain/entities/update_channel_test.dart`
@@ -202,8 +200,7 @@ void main() {
     });
   });
 }
-```
-
+```typescript
 **Step 6: Run test to verify it fails**
 
 Run: `flutter test test/features/auto_update/domain/entities/update_status_test.dart`
@@ -256,8 +253,7 @@ class UpdateError extends UpdateStatus {
 
   const UpdateError({required this.message});
 }
-```
-
+```text
 **Step 8: Run test to verify it passes**
 
 Run: `flutter test test/features/auto_update/domain/entities/update_status_test.dart`
@@ -268,13 +264,13 @@ Expected: All tests PASS.
 ```bash
 git add lib/features/auto_update/domain/ test/features/auto_update/domain/
 git commit -m "feat: add UpdateChannel and UpdateStatus domain entities"
-```
-
+```text
 ---
 
 ## Task 3: GitHub Update Service (Linux/Android)
 
 **Files:**
+
 - Create: `lib/features/auto_update/data/services/update_service.dart`
 - Create: `lib/features/auto_update/data/services/github_update_service.dart`
 - Test: `test/features/auto_update/data/services/github_update_service_test.dart`
@@ -525,8 +521,7 @@ void main() {
     });
   });
 }
-```
-
+```typescript
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/features/auto_update/data/services/github_update_service_test.dart`
@@ -542,8 +537,7 @@ import 'package:submersion/features/auto_update/domain/entities/update_status.da
 abstract class UpdateService {
   Future<UpdateStatus> checkForUpdate();
 }
-```
-
+```text
 **Step 4: Write GithubUpdateService implementation**
 
 Create `lib/features/auto_update/data/services/github_update_service.dart`:
@@ -660,8 +654,7 @@ class GithubUpdateService implements UpdateService {
     return false;
   }
 }
-```
-
+```text
 **Step 5: Run test to verify it passes**
 
 Run: `flutter test test/features/auto_update/data/services/github_update_service_test.dart`
@@ -672,13 +665,13 @@ Expected: All tests PASS.
 ```bash
 git add lib/features/auto_update/data/services/ test/features/auto_update/data/services/
 git commit -m "feat: add GithubUpdateService for Linux/Android auto-update"
-```
-
+```text
 ---
 
 ## Task 4: Sparkle Update Service (macOS/Windows)
 
 **Files:**
+
 - Create: `lib/features/auto_update/data/services/sparkle_update_service.dart`
 
 Note: The `auto_updater` package wraps native Sparkle/WinSparkle frameworks. Unit testing native framework behavior isn't practical. We test the wrapper logic and rely on manual testing for native behavior. The `GithubUpdateService` tests (Task 3) cover the custom engine thoroughly.
@@ -740,20 +733,19 @@ class SparkleUpdateService implements UpdateService {
     await autoUpdater.checkForUpdates(inBackground: false);
   }
 }
-```
-
+```text
 **Step 2: Commit**
 
 ```bash
 git add lib/features/auto_update/data/services/sparkle_update_service.dart
 git commit -m "feat: add SparkleUpdateService for macOS/Windows auto-update"
-```
-
+```text
 ---
 
 ## Task 5: Update Preferences
 
 **Files:**
+
 - Create: `lib/features/auto_update/data/repositories/update_preferences.dart`
 - Test: `test/features/auto_update/data/repositories/update_preferences_test.dart`
 
@@ -821,8 +813,7 @@ void main() {
     });
   });
 }
-```
-
+```text
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/features/auto_update/data/repositories/update_preferences_test.dart`
@@ -872,8 +863,7 @@ class UpdatePreferences {
     return elapsed.inHours >= checkIntervalHours;
   }
 }
-```
-
+```text
 **Step 4: Run test to verify it passes**
 
 Run: `flutter test test/features/auto_update/data/repositories/update_preferences_test.dart`
@@ -884,13 +874,13 @@ Expected: All tests PASS.
 ```bash
 git add lib/features/auto_update/data/repositories/ test/features/auto_update/data/repositories/
 git commit -m "feat: add UpdatePreferences for auto-update settings persistence"
-```
-
+```dart
 ---
 
 ## Task 6: Riverpod Providers
 
 **Files:**
+
 - Create: `lib/features/auto_update/presentation/providers/update_providers.dart`
 
 **Step 1: Write update providers**
@@ -1003,20 +993,19 @@ final hasUpdateProvider = Provider<bool>((ref) {
   final status = ref.watch(updateStatusProvider);
   return status is UpdateAvailable || status is ReadyToInstall;
 });
-```
-
+```text
 **Step 2: Commit**
 
 ```bash
 git add lib/features/auto_update/presentation/providers/
 git commit -m "feat: add Riverpod providers for auto-update state management"
-```
-
+```text
 ---
 
 ## Task 7: Update Banner Widget
 
 **Files:**
+
 - Create: `lib/features/auto_update/presentation/widgets/update_banner.dart`
 - Test: `test/features/auto_update/presentation/widgets/update_banner_test.dart`
 
@@ -1103,8 +1092,7 @@ void main() {
     });
   });
 }
-```
-
+```text
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/features/auto_update/presentation/widgets/update_banner_test.dart`
@@ -1181,8 +1169,7 @@ class _UpdateBannerState extends ConsumerState<UpdateBanner> {
     }
   }
 }
-```
-
+```dart
 **Step 4: Run test to verify it passes**
 
 Run: `flutter test test/features/auto_update/presentation/widgets/update_banner_test.dart`
@@ -1193,13 +1180,13 @@ Expected: Tests PASS. (Note: Some tests may need adjustment depending on how the
 ```bash
 git add lib/features/auto_update/presentation/widgets/ test/features/auto_update/presentation/widgets/
 git commit -m "feat: add UpdateBanner widget for update notifications"
-```
-
+```typescript
 ---
 
 ## Task 8: Integrate Banner into MainScaffold
 
 **Files:**
+
 - Modify: `lib/shared/widgets/main_scaffold.dart`
 
 **Step 1: Add UpdateBanner to the main scaffold**
@@ -1207,11 +1194,12 @@ git commit -m "feat: add UpdateBanner widget for update notifications"
 In `lib/shared/widgets/main_scaffold.dart`, add the banner above the main content area. The banner should appear at the top of the content area (not above the NavigationRail or BottomNavigationBar).
 
 Add import at top:
+
 ```dart
 import 'package:submersion/features/auto_update/presentation/widgets/update_banner.dart';
-```
-
+```text
 In the desktop layout (line ~268), wrap `widget.child` in a Column with the banner:
+
 ```dart
 Expanded(
   child: Column(
@@ -1221,9 +1209,9 @@ Expanded(
     ],
   ),
 ),
-```
-
+```text
 In the mobile layout (line ~370), wrap `widget.child` similarly:
+
 ```dart
 body: Column(
   children: [
@@ -1231,8 +1219,7 @@ body: Column(
     Expanded(child: widget.child),
   ],
 ),
-```
-
+```text
 **Step 2: Verify the app builds**
 
 Run: `flutter build macos --debug` (or whichever platform you're on)
@@ -1243,18 +1230,19 @@ Expected: Builds successfully.
 ```bash
 git add lib/shared/widgets/main_scaffold.dart
 git commit -m "feat: integrate UpdateBanner into MainScaffold"
-```
-
+```dart
 ---
 
 ## Task 9: Settings Integration
 
 **Files:**
+
 - Modify: `lib/features/settings/presentation/pages/settings_page.dart`
 
 **Step 1: Add "About & Updates" section to settings page**
 
 In the settings page, add a new section (in `_buildSectionContent` switch and in the section list) that shows:
+
 - Current version (from `package_info_plus`)
 - "Check for Updates" button
 - Last check time
@@ -1263,6 +1251,7 @@ In the settings page, add a new section (in `_buildSectionContent` switch and in
 This task modifies the existing settings page. Look at the existing section pattern (e.g., `case 'notifications':`) and add an `'about'` case that renders an `_AboutSectionContent` widget.
 
 The widget should:
+
 - Use `PackageInfo.fromPlatform()` via a FutureProvider to display the current version
 - Show a "Check for Updates" button that calls `ref.read(updateStatusProvider.notifier).checkForUpdate()`
 - Show a `SwitchListTile` for auto-update enabled/disabled (reads/writes `updatePreferencesProvider`)
@@ -1278,13 +1267,13 @@ Run the app, navigate to Settings, tap "About". Verify the version number and up
 ```bash
 git add lib/features/settings/presentation/pages/settings_page.dart
 git commit -m "feat: add About & Updates section to settings page"
-```
-
+```diff
 ---
 
 ## Task 10: macOS Sparkle Configuration
 
 **Files:**
+
 - Modify: `macos/Runner/Info.plist`
 - Modify: `macos/Podfile` (if auto_updater requires CocoaPod configuration)
 
@@ -1303,8 +1292,7 @@ Add the following keys to `macos/Runner/Info.plist` inside the top-level `<dict>
 <true/>
 <key>SUScheduledCheckInterval</key>
 <integer>14400</integer>
-```
-
+```text
 Note: The `SUPublicEDKey` value will be replaced with the actual EdDSA public key generated by Sparkle's `generate_keys` tool during CI setup. For now, use a placeholder.
 
 **Step 2: Verify macOS build still compiles**
@@ -1317,13 +1305,13 @@ Expected: Build succeeds.
 ```bash
 git add macos/Runner/Info.plist
 git commit -m "feat: add Sparkle configuration to macOS Info.plist"
-```
-
+```diff
 ---
 
 ## Task 11: CI/CD -- Appcast Generation and Checksums
 
 **Files:**
+
 - Create: `scripts/generate_appcast.sh`
 - Modify: `.github/workflows/release.yml`
 
@@ -1368,13 +1356,12 @@ cat <<EOF
   </channel>
 </rss>
 EOF
-```
-
+```text
 Make it executable:
+
 ```bash
 chmod +x scripts/generate_appcast.sh
-```
-
+```text
 **Step 2: Add generate-appcast and generate-checksums jobs to release.yml**
 
 Add a new job `generate-appcast` in `.github/workflows/release.yml` that runs after `build-macos`:
@@ -1421,14 +1408,13 @@ Add a new job `generate-appcast` in `.github/workflows/release.yml` that runs af
           name: checksums
           path: checksums-sha256.txt
           retention-days: 5
-```
-
+```text
 Update the `create-release` job to depend on `generate-appcast`:
+
 ```yaml
   create-release:
     needs: [build-macos, build-windows, build-linux, build-android, build-ios, generate-appcast]
-```
-
+```text
 **Step 3: Add --dart-define to all flutter build commands**
 
 In each platform's build step in `release.yml`, add the `UPDATE_CHANNEL` flag:
@@ -1445,21 +1431,19 @@ flutter build linux --release --dart-define=UPDATE_CHANNEL=github
 
 # Android APK build:
 flutter build apk --release --dart-define=UPDATE_CHANNEL=github
-```
-
+```text
 For the macOS App Store build (Fastlane), add to the Fastfile or pass via environment:
+
 ```yaml
 # In the Fastlane lane, the build uses app store signing -- no UPDATE_CHANNEL needed
 # (defaults to 'github' but the Mac App Store build via Fastlane uses its own build command)
-```
-
+```text
 **Step 4: Commit**
 
 ```bash
 git add scripts/generate_appcast.sh .github/workflows/release.yml
 git commit -m "feat: add appcast generation and checksums to release workflow"
-```
-
+```diff
 ---
 
 ## Task 12: Format, Analyze, and Run All Tests
@@ -1495,6 +1479,7 @@ git commit -m "fix: address formatting and analysis issues in auto-update featur
 ## Summary of Files Created/Modified
 
 ### New Files (11)
+
 | File | Purpose |
 |------|---------|
 | `lib/features/auto_update/domain/entities/update_channel.dart` | UpdateChannel enum + config |
@@ -1513,6 +1498,7 @@ git commit -m "fix: address formatting and analysis issues in auto-update featur
 | `scripts/generate_appcast.sh` | CI appcast generation |
 
 ### Modified Files (4)
+
 | File | Change |
 |------|--------|
 | `pubspec.yaml` | Add auto_updater, package_info_plus |
@@ -1522,6 +1508,7 @@ git commit -m "fix: address formatting and analysis issues in auto-update featur
 | `.github/workflows/release.yml` | Add appcast job, checksums, --dart-define flags |
 
 ### New CI Secrets Required
+
 | Secret | Purpose |
 |--------|---------|
 | `SPARKLE_EDDSA_PRIVATE_KEY` | Sign macOS updates |

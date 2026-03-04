@@ -25,8 +25,7 @@ import 'package:go_router/go_router.dart';
 // Local imports (relative)
 import '../domain/entities/dive.dart';
 import '../widgets/dive_card.dart';
-```
-
+```text
 ### File Naming
 
 | Type | Convention | Example |
@@ -51,8 +50,7 @@ part 'dive.freezed.dart';
 // 4. Enums
 
 // 5. Classes/Widgets
-```
-
+```dart
 ## Provider Naming
 
 | Type | Convention | Example |
@@ -85,8 +83,7 @@ final diveListNotifierProvider =
     StateNotifierProvider<DiveListNotifier, AsyncValue<List<Dive>>>(
   (ref) => DiveListNotifier(ref.watch(diveRepositoryProvider), ref),
 );
-```
-
+```text
 ## Entity Patterns
 
 ### Domain Entities
@@ -121,8 +118,7 @@ class Dive {
     );
   }
 }
-```
-
+```text
 ### Import Aliases
 
 Use aliases to resolve naming conflicts:
@@ -138,8 +134,7 @@ domain.Dive _mapToDomain(Dive dbRow) {
     // ...
   );
 }
-```
-
+```dart
 ## Widget Patterns
 
 ### ConsumerWidget
@@ -164,8 +159,7 @@ class DiveListPage extends ConsumerWidget {
     );
   }
 }
-```
-
+```text
 ### Stateful with Consumer
 
 For stateful widgets:
@@ -200,8 +194,7 @@ class _DiveEditPageState extends ConsumerState<DiveEditPage> {
     // ...
   }
 }
-```
-
+```dart
 ### Widget Keys
 
 Use `super.key` pattern:
@@ -214,8 +207,7 @@ class DiveCard extends StatelessWidget {
 
   // ...
 }
-```
-
+```text
 ## Documentation
 
 ### When to Document
@@ -237,8 +229,7 @@ class DiveCard extends StatelessWidget {
 double calculateMOD({double ppO2Limit = 1.4}) {
   // ...
 }
-```
-
+```text
 ### Inline Comments
 
 Use for non-obvious code:
@@ -249,8 +240,7 @@ final timestamp = dateTime.millisecondsSinceEpoch;
 
 // Skip if no profiles (prevents division by zero)
 if (profiles.isEmpty) return null;
-```
-
+```text
 ## Navigation
 
 ### Named Routes
@@ -263,8 +253,7 @@ context.goNamed('diveDetail', pathParameters: {'diveId': dive.id});
 
 // Avoid
 context.go('/dives/${dive.id}');
-```
-
+```text
 ### Passing Data
 
 ```dart
@@ -273,8 +262,7 @@ context.goNamed('diveDetail', pathParameters: {'diveId': '123'});
 
 // Via extra for complex data
 context.goNamed('newBuddy', extra: {'name': 'John', 'email': 'john@example.com'});
-```
-
+```text
 ## Error Handling
 
 ### AsyncValue Pattern
@@ -285,8 +273,7 @@ divesAsync.when(
   error: (error, stack) => ErrorDisplay(error: error),
   data: (dives) => DiveList(dives: dives),
 );
-```
-
+```text
 ### Try-Catch
 
 Use specific error handling:
@@ -299,8 +286,7 @@ try {
 } on NetworkException catch (e) {
   // Handle network error
 }
-```
-
+```sql
 ## Performance
 
 ### Avoid Rebuilds
@@ -311,8 +297,7 @@ Use `select` to watch specific state:
 final depthUnit = ref.watch(
   settingsProvider.select((s) => s.depthUnit),
 );
-```
-
+```text
 ### Lazy Loading
 
 Load expensive data on demand:
@@ -320,8 +305,7 @@ Load expensive data on demand:
 ```dart
 // Load profiles only when needed
 final profilesAsync = ref.watch(diveProfilesProvider(diveId));
-```
-
+```text
 ## Formatting
 
 ### Line Length
@@ -338,16 +322,14 @@ const Dive(
   dateTime: DateTime(2024, 1, 15),
   maxDepth: 18.5,
 );
-```
-
+```text
 ### Run Formatter
 
 Always format before committing:
 
 ```bash
 dart format lib/
-```
-
+```text
 ## Analysis
 
 ### Enable Strict Analysis
@@ -356,8 +338,7 @@ The project uses strict analysis rules. Fix all warnings:
 
 ```bash
 flutter analyze
-```
-
+```typescript
 ### Common Issues
 
 | Warning | Fix |
@@ -381,8 +362,7 @@ test('creates dive with auto-incremented number', () async {
 test('returns null when dive not found', () async {
   // ...
 });
-```
-
+```text
 ### Test Organization
 
 ```dart
@@ -398,4 +378,3 @@ group('DiveRepository', () {
   });
 });
 ```
-

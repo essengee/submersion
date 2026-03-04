@@ -86,6 +86,7 @@ Common service intervals:
 ### Service Reminders
 
 When service is due:
+
 - Yellow badge appears 30 days before
 - Red badge when overdue
 - Notification in equipment list
@@ -98,6 +99,7 @@ When service is due:
 4. Enter service details
 
 Service record fields:
+
 - **Service Type** - Annual, Repair, Inspection, etc.
 - **Date** - When serviced
 - **Provider** - Shop or technician
@@ -120,6 +122,7 @@ Group equipment into sets for quick selection:
 ### Using Sets
 
 When logging a dive:
+
 1. Go to the Equipment section
 2. Tap **Apply Set**
 3. Select a set
@@ -190,6 +193,7 @@ The built-in weight calculator helps determine proper weighting:
 ### Retirement
 
 When equipment is no longer usable:
+
 1. Set status to **Retired**
 2. Add notes explaining why
 3. Item remains in history but not active
@@ -197,6 +201,7 @@ When equipment is no longer usable:
 ### Loaned Equipment
 
 Track borrowed/loaned gear:
+
 1. Set status to **Loaned**
 2. Add note with who has it
 3. Update when returned

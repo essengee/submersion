@@ -13,6 +13,7 @@ This guide explains how to submit effective pull requests.
 ### Discuss Large Changes
 
 For significant changes:
+
 1. Open an issue first
 2. Discuss the approach
 3. Get feedback before coding
@@ -31,8 +32,7 @@ git remote add upstream https://github.com/submersion-app/submersion.git
 
 # Create branch
 git checkout -b feature/your-feature
-```
-
+```text
 ### 2. Make Changes
 
 - Follow [code style](contributing/code-style.md)
@@ -48,14 +48,12 @@ git commit -m "feat: add nitrox calculator"
 git commit -m "fix: correct MOD calculation for trimix"
 git commit -m "docs: add calculator documentation"
 git commit -m "test: add unit tests for gas calculations"
-```
-
+```text
 ### 4. Push
 
 ```bash
 git push origin feature/your-feature
-```
-
+```text
 ### 5. Open PR
 
 1. Go to your fork on GitHub
@@ -103,8 +101,7 @@ Brief description of what this PR does.
 
 Fixes #123
 Related to #456
-```
-
+```text
 ## PR Best Practices
 
 ### Keep PRs Small
@@ -122,6 +119,7 @@ Related to #456
 ### Add Screenshots
 
 For UI changes:
+
 - Before and after
 - Different screen sizes
 - Light and dark mode
@@ -157,8 +155,7 @@ For UI changes:
 git add .
 git commit -m "fix: address review feedback"
 git push origin feature/your-feature
-```
-
+```text
 ## After Merge
 
 ### Clean Up
@@ -172,8 +169,7 @@ git branch -d feature/your-feature
 
 # Update from upstream
 git pull upstream main
-```
-
+```text
 ### Celebrate
 
 Your contribution is now part of Submersion!
@@ -195,8 +191,7 @@ Corrected the conversion factor from 3.28084 to 0.3048 for feet to meters.
 ## Testing
 - Added unit tests for both conversion directions
 - Manually verified in settings page
-```
-
+```text
 ### New Features
 
 ```markdown
@@ -214,8 +209,7 @@ Adds a nitrox calculator to the tools section.
 
 ## Documentation
 - Updated tools section in user guide
-```
-
+```text
 ### Refactoring
 
 ```markdown
@@ -232,8 +226,7 @@ Reduces code duplication across repositories.
 
 ## Testing
 All existing tests pass without modification.
-```
-
+```text
 ## Common Issues
 
 ### Merge Conflicts
@@ -263,6 +256,7 @@ git push origin feature/your-feature --force
 ### Stale PRs
 
 PRs inactive for 30+ days may be closed. To reopen:
+
 1. Rebase on latest main
 2. Resolve any conflicts
 3. Comment that it's ready for review
@@ -294,4 +288,3 @@ PRs inactive for 30+ days may be closed. To reopen:
 - Reference this guide
 
 Thank you for contributing!
-

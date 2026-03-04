@@ -17,7 +17,7 @@ A `ValueNotifier<Key>` lives above the `ProviderScope` in the widget tree. Chang
 key causes Flutter to unmount the entire ProviderScope subtree and rebuild it, disposing
 all providers and recreating them from the freshly-restored database.
 
-```
+```dart
 ValueNotifier<Key> _restartKey
   -> ValueListenableBuilder
     -> ProviderScope(key: _restartKey.value)
@@ -37,6 +37,7 @@ ValueNotifier<Key> _restartKey
 `lib/features/backup/presentation/pages/restore_complete_page.dart`
 
 Full-screen page shown after successful restore:
+
 - Success icon
 - "Restore Complete" heading
 - Brief description
@@ -56,7 +57,7 @@ setting a text message:
 
 ## Data Flow
 
-```
+```dart
 User confirms restore
   -> DB close, file copy, DB reinitialize
   -> _syncActiveDiverAfterRestore()

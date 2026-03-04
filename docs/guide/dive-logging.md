@@ -119,6 +119,7 @@ If you download dives from a dive computer, the profile data is stored and visua
 </div>
 
 Profile features:
+
 - **Zoom & Pan** - Pinch to zoom, drag to pan
 - **Touch Markers** - Tap to see data at any point
 - **Overlays** - Toggle temperature, pressure, heart rate
@@ -138,6 +139,7 @@ The dive list can be sorted and filtered:
 ### Search
 
 Use the search bar to find dives by:
+
 - Site name
 - Notes content
 - Buddy name
@@ -145,6 +147,7 @@ Use the search bar to find dives by:
 ### Bulk Operations
 
 Select multiple dives to:
+
 - Delete in bulk
 - Export selected dives
 - Apply tags

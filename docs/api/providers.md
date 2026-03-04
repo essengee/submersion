@@ -24,13 +24,12 @@ Repository singleton for dive data access.
 final diveRepositoryProvider = Provider<DiveRepository>((ref) {
   return DiveRepository();
 });
-```
-
+```text
 **Usage:**
+
 ```dart
 final repository = ref.read(diveRepositoryProvider);
-```
-
+```diff
 ---
 
 ### divesProvider
@@ -43,9 +42,9 @@ final divesProvider = FutureProvider<List<Dive>>((ref) async {
   final currentDiverId = ref.watch(currentDiverIdProvider);
   return repository.getAllDives(diverId: currentDiverId);
 });
-```
-
+```text
 **Usage:**
+
 ```dart
 final divesAsync = ref.watch(divesProvider);
 divesAsync.when(
@@ -53,8 +52,7 @@ divesAsync.when(
   loading: () => LoadingIndicator(),
   error: (e, st) => ErrorDisplay(error: e),
 );
-```
-
+```diff
 ---
 
 ### diveProvider
@@ -66,13 +64,12 @@ final diveProvider = FutureProvider.family<Dive?, String>((ref, id) async {
   final repository = ref.watch(diveRepositoryProvider);
   return repository.getDiveById(id);
 });
-```
-
+```text
 **Usage:**
+
 ```dart
 final diveAsync = ref.watch(diveProvider(diveId));
-```
-
+```diff
 ---
 
 ### diveListNotifierProvider
@@ -85,8 +82,7 @@ final diveListNotifierProvider =
   final repository = ref.watch(diveRepositoryProvider);
   return DiveListNotifier(repository, ref);
 });
-```
-
+```text
 **Methods:**
 
 | Method | Parameters | Description |
@@ -101,14 +97,14 @@ final diveListNotifierProvider =
 | `refresh` | - | Reload list |
 
 **Usage:**
+
 ```dart
 // Read notifier
 ref.read(diveListNotifierProvider.notifier).addDive(dive);
 
 // Watch state
 final divesAsync = ref.watch(diveListNotifierProvider);
-```
-
+```diff
 ---
 
 ### diveFilterProvider
@@ -119,8 +115,7 @@ Filter state for dive list.
 final diveFilterProvider = StateProvider<DiveFilterState>((ref) {
   return const DiveFilterState();
 });
-```
-
+```typescript
 **DiveFilterState Properties:**
 
 | Property | Type | Description |
@@ -135,6 +130,7 @@ final diveFilterProvider = StateProvider<DiveFilterState>((ref) {
 | `tagIds` | List\<String\> | Filter by tags |
 
 **Usage:**
+
 ```dart
 // Update filter
 ref.read(diveFilterProvider.notifier).state = filter.copyWith(
@@ -143,8 +139,7 @@ ref.read(diveFilterProvider.notifier).state = filter.copyWith(
 
 // Check for active filters
 final hasFilters = ref.watch(diveFilterProvider).hasActiveFilters;
-```
-
+```diff
 ---
 
 ### filteredDivesProvider
@@ -157,8 +152,7 @@ final filteredDivesProvider = Provider<AsyncValue<List<Dive>>>((ref) {
   final filter = ref.watch(diveFilterProvider);
   return divesAsync.whenData((dives) => filter.apply(dives));
 });
-```
-
+```diff
 ---
 
 ### diveStatisticsProvider
@@ -171,8 +165,7 @@ final diveStatisticsProvider = FutureProvider<DiveStatistics>((ref) async {
   final currentDiverId = ref.watch(currentDiverIdProvider);
   return repository.getStatistics(diverId: currentDiverId);
 });
-```
-
+```text
 **DiveStatistics Properties:**
 
 | Property | Type | Description |
@@ -195,8 +188,7 @@ final diveRecordsProvider = FutureProvider<DiveRecords>((ref) async {
   final currentDiverId = ref.watch(currentDiverIdProvider);
   return repository.getRecords(diverId: currentDiverId);
 });
-```
-
+```diff
 ---
 
 ### surfaceIntervalProvider
@@ -208,8 +200,7 @@ final surfaceIntervalProvider = FutureProvider.family<Duration?, String>((ref, d
   final repository = ref.watch(diveRepositoryProvider);
   return repository.getSurfaceInterval(diveId);
 });
-```
-
+```dart
 ---
 
 ## Diver Providers
@@ -222,8 +213,7 @@ Currently selected diver ID.
 
 ```dart
 final currentDiverIdProvider = StateNotifierProvider<CurrentDiverIdNotifier, String?>(...);
-```
-
+```diff
 ---
 
 ### validatedCurrentDiverIdProvider
@@ -237,8 +227,7 @@ final validatedCurrentDiverIdProvider = FutureProvider<String?>((ref) async {
   final diver = await ref.watch(diverProvider(currentId).future);
   return diver != null ? currentId : null;
 });
-```
-
+```diff
 ---
 
 ### diverProvider
@@ -249,8 +238,7 @@ Single diver by ID.
 final diverProvider = FutureProvider.family<Diver?, String>((ref, id) async {
   return ref.watch(diverRepositoryProvider).getDiverById(id);
 });
-```
-
+```dart
 ---
 
 ## Site Providers
@@ -263,8 +251,7 @@ final diverProvider = FutureProvider.family<Diver?, String>((ref, id) async {
 final siteRepositoryProvider = Provider<SiteRepository>((ref) {
   return SiteRepository();
 });
-```
-
+```text
 ### sitesProvider
 
 All dive sites.
@@ -273,8 +260,7 @@ All dive sites.
 final sitesProvider = FutureProvider<List<DiveSite>>((ref) async {
   return ref.watch(siteRepositoryProvider).getAllSites();
 });
-```
-
+```text
 ### siteProvider
 
 Single site by ID.
@@ -283,8 +269,7 @@ Single site by ID.
 final siteProvider = FutureProvider.family<DiveSite?, String>((ref, id) async {
   return ref.watch(siteRepositoryProvider).getSiteById(id);
 });
-```
-
+```text
 ### siteDiveCountProvider
 
 Number of dives at a site.
@@ -293,8 +278,7 @@ Number of dives at a site.
 final siteDiveCountProvider = FutureProvider.family<int, String>((ref, siteId) async {
   return ref.watch(siteRepositoryProvider).getDiveCount(siteId);
 });
-```
-
+```dart
 ---
 
 ## Equipment Providers
@@ -307,8 +291,7 @@ final siteDiveCountProvider = FutureProvider.family<int, String>((ref, siteId) a
 final equipmentRepositoryProvider = Provider<EquipmentRepository>((ref) {
   return EquipmentRepository();
 });
-```
-
+```text
 ### equipmentProvider
 
 All equipment items.
@@ -317,8 +300,7 @@ All equipment items.
 final equipmentProvider = FutureProvider<List<EquipmentItem>>((ref) async {
   return ref.watch(equipmentRepositoryProvider).getAllEquipment();
 });
-```
-
+```text
 ### equipmentItemProvider
 
 Single equipment item by ID.
@@ -327,8 +309,7 @@ Single equipment item by ID.
 final equipmentItemProvider = FutureProvider.family<EquipmentItem?, String>((ref, id) async {
   return ref.watch(equipmentRepositoryProvider).getEquipmentById(id);
 });
-```
-
+```dart
 ---
 
 ## Trip Providers
@@ -341,8 +322,7 @@ final equipmentItemProvider = FutureProvider.family<EquipmentItem?, String>((ref
 final tripRepositoryProvider = Provider<TripRepository>((ref) {
   return TripRepository();
 });
-```
-
+```text
 ### tripsProvider
 
 All trips.
@@ -351,8 +331,7 @@ All trips.
 final tripsProvider = FutureProvider<List<Trip>>((ref) async {
   return ref.watch(tripRepositoryProvider).getAllTrips();
 });
-```
-
+```text
 ### tripWithStatsProvider
 
 Trip with dive statistics.
@@ -361,8 +340,7 @@ Trip with dive statistics.
 final tripWithStatsProvider = FutureProvider.family<TripWithStats, String>((ref, tripId) async {
   return ref.watch(tripRepositoryProvider).getTripWithStats(tripId);
 });
-```
-
+```dart
 ---
 
 ## Settings Providers
@@ -377,8 +355,7 @@ Application settings.
 final settingsProvider = StateNotifierProvider<SettingsNotifier, Settings>((ref) {
   return SettingsNotifier(ref.watch(sharedPreferencesProvider));
 });
-```
-
+```sql
 **Settings Properties:**
 
 | Property | Type | Description |
@@ -401,8 +378,7 @@ Use `select` to watch specific state:
 final depthUnit = ref.watch(
   settingsProvider.select((s) => s.depthUnit),
 );
-```
-
+```dart
 ---
 
 ## Provider Invalidation
@@ -418,8 +394,7 @@ ref.invalidate(diveProvider(diveId));
 
 // Refresh and get new value
 final dives = await ref.refresh(divesProvider.future);
-```
-
+```diff
 ---
 
 ## Common Patterns
@@ -432,8 +407,7 @@ final dives = ref.watch(divesProvider);
 
 // Read: One-time access (use in callbacks)
 final repository = ref.read(diveRepositoryProvider);
-```
-
+```text
 ### Async Operations
 
 ```dart
@@ -444,8 +418,7 @@ onPressed: () async {
     context.go('/dives');
   }
 }
-```
-
+```dart
 ### Provider Dependencies
 
 ```dart
@@ -455,8 +428,7 @@ final filteredDivesProvider = Provider<AsyncValue<List<Dive>>>((ref) {
   final filter = ref.watch(diveFilterProvider);
   return divesAsync.whenData((dives) => filter.apply(dives));
 });
-```
-
+```text
 ### Testing with Overrides
 
 ```dart
@@ -472,4 +444,3 @@ testWidgets('shows dives', (tester) async {
   );
 });
 ```
-

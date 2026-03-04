@@ -17,6 +17,7 @@
 ### Task 1: Add TripType and DayType enums
 
 **Files:**
+
 - Modify: `lib/core/constants/enums.dart` (append at end of file)
 - Test: `test/core/constants/trip_enums_test.dart`
 
@@ -87,8 +88,7 @@ void main() {
     });
   });
 }
-```
-
+```text
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/core/constants/trip_enums_test.dart`
@@ -135,8 +135,7 @@ enum DayType {
     );
   }
 }
-```
-
+```text
 **Step 4: Run test to verify it passes**
 
 Run: `flutter test test/core/constants/trip_enums_test.dart`
@@ -147,13 +146,13 @@ Expected: PASS
 ```bash
 git add lib/core/constants/enums.dart test/core/constants/trip_enums_test.dart
 git commit -m "feat: add TripType and DayType enums for trip type system"
-```
-
+```text
 ---
 
 ### Task 2: Create LiveaboardDetails domain entity
 
 **Files:**
+
 - Create: `lib/features/trips/domain/entities/liveaboard_details.dart`
 - Test: `test/features/trips/domain/entities/liveaboard_details_test.dart`
 
@@ -248,8 +247,7 @@ void main() {
     });
   });
 }
-```
-
+```text
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/features/trips/domain/entities/liveaboard_details_test.dart`
@@ -376,8 +374,7 @@ class LiveaboardDetails extends Equatable {
 }
 
 const _undefined = Object();
-```
-
+```text
 **Step 4: Run test to verify it passes**
 
 Run: `flutter test test/features/trips/domain/entities/liveaboard_details_test.dart`
@@ -388,13 +385,13 @@ Expected: PASS
 ```bash
 git add lib/features/trips/domain/entities/liveaboard_details.dart test/features/trips/domain/entities/liveaboard_details_test.dart
 git commit -m "feat: add LiveaboardDetails domain entity"
-```
-
+```text
 ---
 
 ### Task 3: Create ItineraryDay domain entity
 
 **Files:**
+
 - Create: `lib/features/trips/domain/entities/itinerary_day.dart`
 - Test: `test/features/trips/domain/entities/itinerary_day_test.dart`
 
@@ -530,8 +527,7 @@ void main() {
     });
   });
 }
-```
-
+```text
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/features/trips/domain/entities/itinerary_day_test.dart`
@@ -659,8 +655,7 @@ class ItineraryDay extends Equatable {
 }
 
 const _undefined = Object();
-```
-
+```text
 **Step 4: Run test to verify it passes**
 
 Run: `flutter test test/features/trips/domain/entities/itinerary_day_test.dart`
@@ -671,13 +666,13 @@ Expected: PASS
 ```bash
 git add lib/features/trips/domain/entities/itinerary_day.dart test/features/trips/domain/entities/itinerary_day_test.dart
 git commit -m "feat: add ItineraryDay domain entity with auto-generation"
-```
-
+```text
 ---
 
 ### Task 4: Update Trip entity with tripType field
 
 **Files:**
+
 - Modify: `lib/features/trips/domain/entities/trip.dart`
 - Modify: `test/features/trips/domain/entities/trip_test.dart`
 
@@ -744,8 +739,7 @@ import 'package:submersion/core/constants/enums.dart';
       expect(updated.tripType, TripType.liveaboard);
     });
   });
-```
-
+```sql
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/features/trips/domain/entities/trip_test.dart`
@@ -754,6 +748,7 @@ Expected: FAIL - `tripType` not a field on Trip
 **Step 3: Write minimal implementation**
 
 Modify `lib/features/trips/domain/entities/trip.dart`:
+
 - Add import: `import 'package:submersion/core/constants/enums.dart';`
 - Add field: `final TripType tripType;`
 - Add to constructor: `this.tripType = TripType.shore,`
@@ -772,6 +767,7 @@ Expected: PASS
 Run: `flutter analyze`
 
 Update any callers that construct `Trip` without `tripType` (they should all work since it defaults to `shore`). The existing `isLiveaboard` getter changes behavior — callers that previously set `liveaboardName` to trigger `isLiveaboard` now need `tripType: TripType.liveaboard`. Check:
+
 - `lib/features/trips/data/repositories/trip_repository.dart` (`_mapRowToTrip`)
 - `lib/features/trips/presentation/pages/trip_edit_page.dart` (`_saveTrip`)
 - `lib/core/services/sync/sync_data_serializer.dart` (trip JSON mapping)
@@ -782,8 +778,7 @@ Update any callers that construct `Trip` without `tripType` (they should all wor
 ```bash
 git add lib/features/trips/domain/entities/trip.dart test/features/trips/domain/entities/trip_test.dart
 git commit -m "feat: add tripType field to Trip entity"
-```
-
+```text
 ---
 
 ## Phase 2: Database Schema Changes
@@ -791,6 +786,7 @@ git commit -m "feat: add tripType field to Trip entity"
 ### Task 5: Add Drift table definitions
 
 **Files:**
+
 - Modify: `lib/core/database/database.dart`
   - Add `LiveaboardDetailRecords` table class (~line 62, after `Trips`)
   - Add `TripItineraryDays` table class
@@ -810,8 +806,7 @@ class Trips extends Table {
       text().withDefault(const Constant('shore'))(); // TripType enum as string
   // ... rest of existing columns
 }
-```
-
+```text
 **Step 2: Add LiveaboardDetailRecords table**
 
 Add after the `Trips` class definition (around line 62):
@@ -857,8 +852,7 @@ class TripItineraryDays extends Table {
   @override
   Set<Column> get primaryKey => {id};
 }
-```
-
+```text
 **Step 3: Register tables in @DriftDatabase**
 
 Add `LiveaboardDetailRecords` and `TripItineraryDays` to the tables list at ~line 1067:
@@ -871,8 +865,7 @@ Add `LiveaboardDetailRecords` and `TripItineraryDays` to the tables list at ~lin
     TripItineraryDays,
   ],
 )
-```
-
+```text
 **Step 4: Bump schema version and add migration**
 
 Change `schemaVersion` from 45 to 46 at line 1122.
@@ -963,8 +956,7 @@ if (from < 46) {
     WHERE trip_type = 'liveaboard'
   ''');
 }
-```
-
+```text
 **Step 5: Run code generation**
 
 Run: `dart run build_runner build --delete-conflicting-outputs`
@@ -980,8 +972,7 @@ Expected: All existing tests pass
 ```bash
 git add lib/core/database/database.dart lib/core/database/database.g.dart
 git commit -m "feat: add liveaboard_details and trip_itinerary_days tables, schema v46"
-```
-
+```text
 ---
 
 ## Phase 3: Repository Layer
@@ -989,6 +980,7 @@ git commit -m "feat: add liveaboard_details and trip_itinerary_days tables, sche
 ### Task 6: Update TripRepository for tripType
 
 **Files:**
+
 - Modify: `lib/features/trips/data/repositories/trip_repository.dart`
 - Modify: `test/features/trips/data/repositories/trip_repository_test.dart`
 
@@ -998,29 +990,28 @@ In `lib/features/trips/data/repositories/trip_repository.dart`, update the `_map
 
 ```dart
 tripType: TripType.fromName(row.tripType),
-```
-
+```dart
 Also add import: `import 'package:submersion/core/constants/enums.dart';`
 
 **Step 2: Update `createTrip` and `updateTrip` to persist tripType**
 
 In `createTrip` (line 96), add to `TripsCompanion`:
+
 ```dart
 tripType: Value(trip.tripType.name),
-```
-
+```text
 In `updateTrip` (line 136), add to `TripsCompanion`:
+
 ```dart
 tripType: Value(trip.tripType.name),
-```
-
+```text
 **Step 3: Update all `customSelect` methods that construct Trip**
 
 Search for manual `domain.Trip(` constructions in `searchTrips`, `findTripForDate`, `getAllTripsWithStats` and add:
+
 ```dart
 tripType: TripType.fromName((row.data['trip_type'] as String?) ?? 'shore'),
-```
-
+```text
 **Step 4: Run tests**
 
 Run: `flutter test test/features/trips/`
@@ -1031,13 +1022,13 @@ Expected: PASS (existing tests should still work since tripType defaults to shor
 ```bash
 git add lib/features/trips/data/repositories/trip_repository.dart
 git commit -m "feat: persist tripType in TripRepository"
-```
-
+```text
 ---
 
 ### Task 7: Create LiveaboardDetailsRepository
 
 **Files:**
+
 - Create: `lib/features/trips/data/repositories/liveaboard_details_repository.dart`
 - Test: `test/features/trips/data/repositories/liveaboard_details_repository_test.dart`
 
@@ -1046,6 +1037,7 @@ git commit -m "feat: persist tripType in TripRepository"
 Create `test/features/trips/data/repositories/liveaboard_details_repository_test.dart`. Note: this project uses a real in-memory database for repository tests. Check existing `test/features/trips/data/repositories/trip_repository_test.dart` for the pattern and replicate it.
 
 The test should cover:
+
 - `getByTripId` returns null when no details exist
 - `createOrUpdate` creates new details
 - `getByTripId` returns created details
@@ -1167,20 +1159,19 @@ class LiveaboardDetailsRepository {
     );
   }
 }
-```
-
+```text
 **Step 3: Run tests, commit**
 
 ```bash
 git add lib/features/trips/data/repositories/liveaboard_details_repository.dart test/features/trips/data/repositories/liveaboard_details_repository_test.dart
 git commit -m "feat: add LiveaboardDetailsRepository with CRUD"
-```
-
+```sql
 ---
 
 ### Task 8: Create ItineraryDayRepository
 
 **Files:**
+
 - Create: `lib/features/trips/data/repositories/itinerary_day_repository.dart`
 - Test: `test/features/trips/data/repositories/itinerary_day_repository_test.dart`
 
@@ -1195,6 +1186,7 @@ Follow the same pattern as Task 7. Key methods:
 - `regenerateForTrip(String tripId, DateTime startDate, DateTime endDate)` -> delete old days, generate and save new ones, preserving notes from matching dates
 
 The `regenerateForTrip` method is the key logic: when a trip's date range changes, it should:
+
 1. Load existing days
 2. Generate new days from the new date range
 3. For dates that exist in both old and new ranges, preserve the old day's type, port, and notes
@@ -1205,8 +1197,7 @@ The `regenerateForTrip` method is the key logic: when a trip's date range change
 ```bash
 git add lib/features/trips/data/repositories/itinerary_day_repository.dart test/features/trips/data/repositories/itinerary_day_repository_test.dart
 git commit -m "feat: add ItineraryDayRepository with regeneration logic"
-```
-
+```typescript
 ---
 
 ## Phase 4: Sync Integration
@@ -1214,6 +1205,7 @@ git commit -m "feat: add ItineraryDayRepository with regeneration logic"
 ### Task 9: Add liveaboard_details and trip_itinerary_days to sync
 
 **Files:**
+
 - Modify: `lib/core/services/sync/sync_data_serializer.dart`
   - Add fields to `SyncData` class (~line 96)
   - Add export calls in `exportData()` (~line 265)
@@ -1231,11 +1223,11 @@ git commit -m "feat: add ItineraryDayRepository with regeneration logic"
 **Step 1: Update SyncData class**
 
 Add two new fields:
+
 ```dart
 final List<Map<String, dynamic>> liveaboardDetails;
 final List<Map<String, dynamic>> itineraryDays;
-```
-
+```text
 Add to constructor, toJson, fromJson.
 
 **Step 2: Update _tripToJson to include tripType**
@@ -1245,8 +1237,7 @@ Map<String, dynamic> _tripToJson(Trip r) => {
   // ... existing fields ...
   'tripType': r.tripType, // ADD THIS
 };
-```
-
+```text
 **Step 3: Add export, fetch, upsert, delete handlers**
 
 Follow the exact pattern of existing trip handlers. Place `liveaboardDetails` and `itineraryDays` in `mergeOrder` right after `trips` since they have a FK dependency on trips:
@@ -1255,8 +1246,7 @@ Follow the exact pattern of existing trip handlers. Place `liveaboardDetails` an
 (type: 'trips', records: data.trips, hasUpdatedAt: true),
 (type: 'liveaboardDetails', records: data.liveaboardDetails, hasUpdatedAt: true),
 (type: 'itineraryDays', records: data.itineraryDays, hasUpdatedAt: true),
-```
-
+```text
 **Step 4: Run existing sync tests**
 
 Run: `flutter test test/core/services/`
@@ -1267,8 +1257,7 @@ Expected: PASS
 ```bash
 git add lib/core/services/sync/sync_data_serializer.dart lib/core/services/sync/sync_service.dart
 git commit -m "feat: add liveaboard details and itinerary days to sync"
-```
-
+```dart
 ---
 
 ## Phase 5: Providers
@@ -1276,6 +1265,7 @@ git commit -m "feat: add liveaboard details and itinerary days to sync"
 ### Task 10: Add liveaboard and itinerary providers
 
 **Files:**
+
 - Modify: `lib/features/trips/presentation/providers/trip_providers.dart`
 - Create: `lib/features/trips/presentation/providers/liveaboard_providers.dart`
 
@@ -1312,15 +1302,13 @@ final itineraryDaysProvider =
   final repository = ref.watch(itineraryDayRepositoryProvider);
   return repository.getByTripId(tripId);
 });
-```
-
+```text
 **Step 2: Commit**
 
 ```bash
 git add lib/features/trips/presentation/providers/liveaboard_providers.dart
 git commit -m "feat: add Riverpod providers for liveaboard details and itinerary"
-```
-
+```swift
 ---
 
 ## Phase 6: Localization
@@ -1328,6 +1316,7 @@ git commit -m "feat: add Riverpod providers for liveaboard details and itinerary
 ### Task 11: Add l10n strings for liveaboard UI
 
 **Files:**
+
 - Modify: `lib/l10n/arb/app_en.arb`
 - Run: `flutter gen-l10n` (or let build_runner handle it)
 
@@ -1389,8 +1378,7 @@ Add trip type and liveaboard-specific strings following the existing `trips_` na
 "trips_vesselType_motorYacht": "Motor Yacht",
 "trips_vesselType_sailingYacht": "Sailing Yacht",
 "trips_vesselType_other": "Other"
-```
-
+```text
 **Step 2: Regenerate l10n**
 
 Run: `flutter gen-l10n`
@@ -1401,8 +1389,7 @@ Expected: Updates `app_localizations.dart` and `app_localizations_en.dart`
 ```bash
 git add lib/l10n/
 git commit -m "feat: add l10n strings for liveaboard tracking UI"
-```
-
+```sql
 ---
 
 ## Phase 7: UI - Trip Edit Form
@@ -1410,11 +1397,13 @@ git commit -m "feat: add l10n strings for liveaboard tracking UI"
 ### Task 12: Add trip type selector to trip edit page
 
 **Files:**
+
 - Modify: `lib/features/trips/presentation/pages/trip_edit_page.dart`
 
 **Step 1: Add state for trip type and liveaboard fields**
 
 Add to `_TripEditPageState`:
+
 - `TripType _tripType = TripType.shore;`
 - Controllers: `_vesselNameController`, `_operatorController`, `_cabinTypeController`, `_capacityController`, `_embarkPortController`, `_disembarkPortController`
 - `String? _vesselType`
@@ -1439,13 +1428,13 @@ SegmentedButton<TripType>(
     });
   },
 ),
-```
-
+```typescript
 **Step 3: Conditionally show vessel and embark/disembark sections**
 
 Wrap liveaboard-specific fields in `if (_tripType == TripType.liveaboard) ...[ ]`
 
 Add vessel name validation that only fires when type is liveaboard:
+
 ```dart
 validator: (value) {
   if (_tripType == TripType.liveaboard && (value == null || value.trim().isEmpty)) {
@@ -1453,8 +1442,7 @@ validator: (value) {
   }
   return null;
 },
-```
-
+```typescript
 **Step 4: Update _loadTrip to load liveaboard details**
 
 When editing an existing liveaboard trip, also load from `LiveaboardDetailsRepository` and populate the new controllers.
@@ -1475,8 +1463,7 @@ Expected: Existing tests pass (they create shore trips by default)
 ```bash
 git add lib/features/trips/presentation/pages/trip_edit_page.dart
 git commit -m "feat: add trip type selector and liveaboard form fields"
-```
-
+```text
 ---
 
 ## Phase 8: UI - Trip Detail (Tabbed Layout)
@@ -1484,6 +1471,7 @@ git commit -m "feat: add trip type selector and liveaboard form fields"
 ### Task 13: Refactor trip detail page for liveaboard tabbed layout
 
 **Files:**
+
 - Modify: `lib/features/trips/presentation/pages/trip_detail_page.dart`
 - Create: `lib/features/trips/presentation/widgets/trip_overview_tab.dart`
 - Create: `lib/features/trips/presentation/widgets/trip_itinerary_tab.dart`
@@ -1497,6 +1485,7 @@ Move the existing `_TripDetailContent` body into a new `TripOverviewTab` widget.
 **Step 2: Create TripItineraryTab**
 
 Displays the auto-generated day timeline:
+
 - Uses `itineraryDaysProvider(tripId)` and `divesForTripProvider(tripId)`
 - Groups dives by date to show under each day
 - Each day row is tappable to edit type/port/notes via a bottom sheet
@@ -1504,6 +1493,7 @@ Displays the auto-generated day timeline:
 **Step 3: Create TripVoyageMap**
 
 Interactive flutter_map widget showing:
+
 - Embark port marker (from `liveaboardDetails`)
 - Dive site markers (from `tripSitesWithLocationsProvider`)
 - Disembark port marker (from `liveaboardDetails`)
@@ -1527,8 +1517,7 @@ Expected: PASS
 ```bash
 git add lib/features/trips/presentation/
 git commit -m "feat: add tabbed liveaboard detail page with itinerary and voyage map"
-```
-
+```typescript
 ---
 
 ## Phase 9: Itinerary Day Editing
@@ -1536,11 +1525,13 @@ git commit -m "feat: add tabbed liveaboard detail page with itinerary and voyage
 ### Task 14: Add itinerary day edit bottom sheet
 
 **Files:**
+
 - Create: `lib/features/trips/presentation/widgets/itinerary_day_edit_sheet.dart`
 
 **Step 1: Create bottom sheet widget**
 
 A `showModalBottomSheet` that allows editing:
+
 - Day type (dropdown of DayType values)
 - Port name (text field)
 - Notes (text field, multiline)
@@ -1556,8 +1547,7 @@ Each day row in `TripItineraryTab` calls `showItineraryDayEditSheet()` on tap.
 ```bash
 git add lib/features/trips/presentation/widgets/itinerary_day_edit_sheet.dart
 git commit -m "feat: add itinerary day editing bottom sheet"
-```
-
+```text
 ---
 
 ## Phase 10: Daily Breakdown & Final Polish
@@ -1565,6 +1555,7 @@ git commit -m "feat: add itinerary day editing bottom sheet"
 ### Task 15: Add daily breakdown section
 
 **Files:**
+
 - Create: `lib/features/trips/presentation/widgets/trip_daily_breakdown.dart`
 
 **Step 1: Create widget**
@@ -1578,13 +1569,13 @@ A collapsible `ExpansionTile` or similar that shows a compact table: Day | Type 
 ```bash
 git add lib/features/trips/presentation/widgets/trip_daily_breakdown.dart
 git commit -m "feat: add daily breakdown summary for liveaboard trips"
-```
-
+```typescript
 ---
 
 ### Task 16: Update UDDF/CSV import/export for trip type
 
 **Files:**
+
 - Modify: `lib/core/services/export/csv/csv_export_service.dart`
 - Modify: `lib/core/services/export/csv/csv_import_service.dart`
 - Modify: `lib/core/services/export/uddf/uddf_export_builders.dart`
@@ -1608,8 +1599,7 @@ Expected: PASS
 ```bash
 git add lib/core/services/export/
 git commit -m "feat: include trip type in CSV and UDDF import/export"
-```
-
+```diff
 ---
 
 ### Task 17: Run full test suite and format

@@ -13,6 +13,7 @@
 ### Task 1: Localization Strings
 
 **Files:**
+
 - Modify: `lib/l10n/arb/app_en.arb`
 
 **Step 1: Add new l10n strings to the English ARB file**
@@ -60,13 +61,12 @@ Add these entries to `lib/l10n/arb/app_en.arb`, alphabetically within the existi
       "count": { "type": "int" }
     }
   },
-```
-
+```text
 Also update the existing thumbnail label to mention drag:
+
 ```json
   "media_diveMediaSection_thumbnailLabel": "View photo. Long press to select",
-```
-
+```text
 **Step 2: Run code generation**
 
 Run: `dart run build_runner build --delete-conflicting-outputs`
@@ -80,15 +80,17 @@ Expected: No new analysis errors.
 **Step 4: Commit**
 
 ```
+
 git add lib/l10n/
 git commit -m "feat: add l10n strings for bulk media selection"
-```
 
+```text
 ---
 
 ### Task 2: Batch Delete in MediaRepository
 
 **Files:**
+
 - Modify: `lib/features/media/data/repositories/media_repository.dart:170-181`
 - Test: `test/features/media/data/repositories/media_repository_test.dart`
 
@@ -128,8 +130,7 @@ Add to the end of `test/features/media/data/repositories/media_repository_test.d
       // Should not throw
     });
   });
-```
-
+```text
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/features/media/data/repositories/media_repository_test.dart --name "deleteMultipleMedia"`
@@ -162,8 +163,7 @@ Add to `lib/features/media/data/repositories/media_repository.dart`, after the e
       rethrow;
     }
   }
-```
-
+```text
 **Step 4: Run test to verify it passes**
 
 Run: `flutter test test/features/media/data/repositories/media_repository_test.dart --name "deleteMultipleMedia"`
@@ -172,15 +172,17 @@ Expected: All 3 tests PASS.
 **Step 5: Commit**
 
 ```
+
 git add lib/features/media/data/repositories/media_repository.dart test/features/media/data/repositories/media_repository_test.dart
 git commit -m "feat: add deleteMultipleMedia to MediaRepository"
-```
 
+```text
 ---
 
 ### Task 3: Batch Delete in MediaListNotifier
 
 **Files:**
+
 - Modify: `lib/features/media/presentation/providers/media_providers.dart:117-120`
 
 **Step 1: Add deleteMultipleMedia to MediaListNotifier**
@@ -193,8 +195,7 @@ Add after the existing `deleteMedia` method (after line 120) in `lib/features/me
     await _repository.deleteMultipleMedia(ids);
     await refresh();
   }
-```
-
+```text
 **Step 2: Verify build**
 
 Run: `flutter analyze`
@@ -203,10 +204,11 @@ Expected: No new analysis errors.
 **Step 3: Commit**
 
 ```
+
 git add lib/features/media/presentation/providers/media_providers.dart
 git commit -m "feat: add deleteMultipleMedia to MediaListNotifier"
-```
 
+```dart
 ---
 
 ### Task 4: DragSelectGridView Widget
@@ -214,6 +216,7 @@ git commit -m "feat: add deleteMultipleMedia to MediaListNotifier"
 This is the core shared widget. It's a pure Flutter widget with no Riverpod dependency — it communicates via callbacks.
 
 **Files:**
+
 - Create: `lib/shared/widgets/drag_select_grid_view.dart`
 - Create: `test/shared/widgets/drag_select_grid_view_test.dart`
 
@@ -370,8 +373,7 @@ void main() {
     });
   });
 }
-```
-
+```text
 **Step 2: Run tests to verify they fail**
 
 Run: `flutter test test/shared/widgets/drag_select_grid_view_test.dart`
@@ -706,8 +708,7 @@ class _DragSelectGridViewState<T> extends State<DragSelectGridView<T>> {
     );
   }
 }
-```
-
+```text
 **Step 4: Run tests to verify they pass**
 
 Run: `flutter test test/shared/widgets/drag_select_grid_view_test.dart`
@@ -721,24 +722,26 @@ Expected: No analysis errors.
 **Step 6: Commit**
 
 ```
+
 git add lib/shared/widgets/drag_select_grid_view.dart test/shared/widgets/drag_select_grid_view_test.dart
 git commit -m "feat: add DragSelectGridView shared widget"
-```
 
+```typescript
 ---
 
 ### Task 5: Integrate DragSelectGridView into PhotoPickerPage
 
 **Files:**
+
 - Modify: `lib/features/media/presentation/pages/photo_picker_page.dart`
 
 **Step 1: Add import for the shared widget**
 
 At the top of `photo_picker_page.dart`, add:
+
 ```dart
 import 'package:submersion/shared/widgets/drag_select_grid_view.dart';
-```
-
+```text
 **Step 2: Add selection toolbar below date range header**
 
 In `_buildBody`, replace the existing `Column` (lines 156-174) with a version that includes a selection toolbar:
@@ -795,8 +798,7 @@ In `_buildBody`, replace the existing `Column` (lines 156-174) with a version th
         ),
       ],
     );
-```
-
+```text
 **Step 3: Add helper methods to _PhotoPickerPageState**
 
 Add these methods to `_PhotoPickerPageState`:
@@ -821,8 +823,7 @@ Add these methods to `_PhotoPickerPageState`:
         .toList();
     ref.read(photoPickerNotifierProvider.notifier).selectAll(ids);
   }
-```
-
+```text
 **Step 4: Add the _SelectionToolbar widget**
 
 Add this widget class in the same file, after `_DateRangeHeader`:
@@ -880,8 +881,7 @@ class _SelectionToolbar extends StatelessWidget {
     );
   }
 }
-```
-
+```text
 **Step 5: Remove the old _PhotoGrid class**
 
 Delete the `_PhotoGrid` class (lines 226-257 in the original) since `DragSelectGridView` replaces it. Keep `_PhotoThumbnail` as-is since it's still used by `DragSelectGridView`'s `itemBuilder`.
@@ -898,10 +898,11 @@ Run: `dart format lib/features/media/presentation/pages/photo_picker_page.dart`
 **Step 8: Commit**
 
 ```
+
 git add lib/features/media/presentation/pages/photo_picker_page.dart
 git commit -m "feat: integrate DragSelectGridView into PhotoPickerPage"
-```
 
+```sql
 ---
 
 ### Task 6: DiveMediaSection Multi-Select Mode
@@ -909,6 +910,7 @@ git commit -m "feat: integrate DragSelectGridView into PhotoPickerPage"
 This is the most complex task. Convert `DiveMediaSection` from `ConsumerWidget` to `ConsumerStatefulWidget` with local selection state, and replace `_MediaGrid` with `DragSelectGridView`.
 
 **Files:**
+
 - Modify: `lib/features/media/presentation/widgets/dive_media_section.dart`
 
 **Step 1: Convert DiveMediaSection to ConsumerStatefulWidget**
@@ -1128,8 +1130,7 @@ class _DiveMediaSectionState extends ConsumerState<DiveMediaSection> {
     );
   }
 }
-```
-
+```text
 **Step 2: Add the _SelectionHeader widget**
 
 Replace the old `_MediaGrid` and `_MediaThumbnail` classes with:
@@ -1186,8 +1187,7 @@ class _SelectionHeader extends StatelessWidget {
     );
   }
 }
-```
-
+```dart
 **Step 3: Replace _MediaThumbnail with _MediaThumbnailContent**
 
 The old `_MediaThumbnail` was a `ConsumerWidget` that handled taps/long-presses and managed its own gestures. The new version is just the visual content — gestures are handled by `DragSelectGridView`:
@@ -1351,15 +1351,14 @@ class _MediaThumbnailContent extends ConsumerWidget {
     );
   }
 }
-```
-
+```text
 **Step 4: Add the DragSelectGridView import**
 
 At the top of `dive_media_section.dart`:
+
 ```dart
 import 'package:submersion/shared/widgets/drag_select_grid_view.dart';
-```
-
+```text
 **Step 5: Remove the old _MediaGrid and _MediaThumbnail classes**
 
 Delete the `_MediaGrid` class (lines 122-153 in original) and the `_MediaThumbnail` class (lines 156-339 in original). Keep `_EmptyMediaState` and `_OrphanedPlaceholder`.
@@ -1376,10 +1375,11 @@ Run: `dart format lib/features/media/presentation/widgets/dive_media_section.dar
 **Step 8: Commit**
 
 ```
+
 git add lib/features/media/presentation/widgets/dive_media_section.dart
 git commit -m "feat: add multi-select mode with bulk unlink to DiveMediaSection"
-```
 
+```sql
 ---
 
 ### Task 7: Manual Testing & Polish
@@ -1408,6 +1408,7 @@ Run: `flutter run -d macos`
 Test the following scenarios:
 
 **PhotoPickerPage (linking):**
+
 - [ ] Open a dive detail, tap the + button on the media section
 - [ ] Verify photos load in the picker
 - [ ] Tap to toggle individual photos (existing behavior still works)
@@ -1419,6 +1420,7 @@ Test the following scenarios:
 - [ ] Tap Done to import selected photos
 
 **DiveMediaSection (unlinking):**
+
 - [ ] On a dive with linked photos, long-press a thumbnail
 - [ ] Verify selection mode activates (header changes to show count, Select All, trash icon, X)
 - [ ] Tap other thumbnails to toggle selection
@@ -1432,9 +1434,12 @@ Test the following scenarios:
 **Step 5: Commit any polish fixes**
 
 If any fixes were needed:
-```
+
+```bash
+
 git add -A
 git commit -m "fix: polish bulk media selection interactions"
+
 ```
 
 ---

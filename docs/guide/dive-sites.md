@@ -14,6 +14,7 @@ The **Sites** tab shows all your dive sites in a list or map view.
 ### Switching Views
 
 Toggle between:
+
 - **List View** - Scrollable list sorted by name or dive count
 - **Map View** - Interactive map with clustered markers
 
@@ -65,6 +66,7 @@ If you're at the dive site:
 ### Manual Entry
 
 Enter coordinates manually in decimal format:
+
 - Latitude: 7.3456 (positive for North)
 - Longitude: 134.4567 (positive for East)
 
@@ -80,6 +82,7 @@ Enter coordinates manually in decimal format:
 ### Marker Clustering
 
 When zoomed out, nearby sites are grouped into clusters:
+
 - Number shows count of sites in cluster
 - Tap cluster to zoom in
 - Clusters expand as you zoom
@@ -87,6 +90,7 @@ When zoomed out, nearby sites are grouped into clusters:
 ### Marker Colors
 
 Markers are color-coded by difficulty:
+
 - **Green** - Beginner
 - **Blue** - Intermediate
 - **Orange** - Advanced
@@ -142,6 +146,7 @@ Each site detail page shows:
 ## Importing Sites
 
 Import sites from:
+
 - **CSV files** - Spreadsheet format
 - **Other apps** - Via UDDF import
 
@@ -152,6 +157,7 @@ Import sites from:
 ### Naming Conventions
 
 Be consistent with naming:
+
 - "Blue Corner, Palau" not just "Blue Corner"
 - Include identifiers: "Wreck of the Thistlegorm"
 - Use local names when helpful
@@ -165,6 +171,7 @@ Be consistent with naming:
 ### Hazards Documentation
 
 Note important hazards:
+
 - Strong currents and their patterns
 - Boat traffic areas
 - Jellyfish seasons
@@ -173,6 +180,7 @@ Note important hazards:
 ### Access Notes
 
 Include practical information:
+
 - Shore entry points
 - Parking locations
 - Entry fees

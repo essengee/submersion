@@ -29,12 +29,14 @@ This roadmap outlines planned features and development phases for Submersion.
 Core dive logging functionality.
 
 ### Dive Logging
+
 - :white_check_mark: Dive number, date, time, duration
 - :white_check_mark: Max/average depth, temperature
 - :white_check_mark: 20+ dive types
 - :white_check_mark: Star rating, notes
 
 ### Tanks & Gases
+
 - :white_check_mark: Multiple tanks per dive
 - :white_check_mark: Air, Nitrox, Trimix support
 - :white_check_mark: Volume, pressure tracking
@@ -42,23 +44,27 @@ Core dive logging functionality.
 - :white_check_mark: MOD, END calculations
 
 ### Dive Sites
+
 - :white_check_mark: Site database with GPS
 - :white_check_mark: Region, country, description
 - :white_check_mark: Map visualization
 - :white_check_mark: Depth range, difficulty
 
 ### Equipment
+
 - :white_check_mark: 20+ equipment types
 - :white_check_mark: Service tracking
 - :white_check_mark: Equipment sets
 - :white_check_mark: Per-dive gear selection
 
 ### People
+
 - :white_check_mark: Buddy management with roles
 - :white_check_mark: Dive center tracking
 - :white_check_mark: Certification records
 
 ### Import/Export
+
 - :white_check_mark: UDDF import/export
 - :white_check_mark: CSV import/export
 - :white_check_mark: PDF logbook export
@@ -70,6 +76,7 @@ Core dive logging functionality.
 Usability improvements and better GPS integration.
 
 ### Dive Logging
+
 - :white_check_mark: Separate entry/exit times
 - :white_check_mark: Surface interval calculation
 - :white_check_mark: Dive number gap detection
@@ -77,11 +84,13 @@ Usability improvements and better GPS integration.
 - :white_check_mark: Tag system with colors
 
 ### Profile Visualization
+
 - :white_check_mark: Zoom and pan controls
 - :white_check_mark: Touch markers with tooltips
 - :white_check_mark: Temperature overlay toggle
 
 ### GPS & Maps
+
 - :white_check_mark: Capture GPS from phone
 - :white_check_mark: Reverse geocoding
 - :white_check_mark: Nearby site suggestions
@@ -89,12 +98,14 @@ Usability improvements and better GPS integration.
 - :white_check_mark: Color-coded markers
 
 ### Equipment
+
 - :white_check_mark: Tank material tracking
 - :white_check_mark: Tank role (back gas, stage, etc.)
 - :white_check_mark: Tank presets
 - :white_check_mark: Quick-select equipment sets
 
 ### Testing
+
 - :white_check_mark: 165+ unit tests
 - :white_check_mark: 48+ widget tests
 - :white_check_mark: Integration tests
@@ -107,6 +118,7 @@ Usability improvements and better GPS integration.
 Dive computer integration and decompression support.
 
 ### Dive Computer Connectivity :white_check_mark:
+
 - :white_check_mark: libdivecomputer FFI integration
 - :white_check_mark: Bluetooth Classic/LE support
 - :white_check_mark: USB connectivity
@@ -117,6 +129,7 @@ Dive computer integration and decompression support.
 - :white_check_mark: Duplicate detection
 
 ### Decompression Algorithm :white_check_mark:
+
 - :white_check_mark: Bühlmann ZH-L16C implementation
 - :white_check_mark: Gradient Factor support (GF Low/High)
 - :white_check_mark: NDL calculation
@@ -126,12 +139,14 @@ Dive computer integration and decompression support.
 - :white_check_mark: Deco stop schedule
 
 ### O₂ Toxicity :white_check_mark:
+
 - :white_check_mark: CNS% tracking (NOAA tables)
 - :white_check_mark: OTU calculation
 - :white_check_mark: ppO₂ monitoring
 - :white_check_mark: Warning/critical thresholds
 
 ### Profile Analysis :white_check_mark:
+
 - :white_check_mark: Profile event markers
 - :white_check_mark: Ascent rate indicators
 - :white_check_mark: NDL curve overlay
@@ -139,16 +154,19 @@ Dive computer integration and decompression support.
 - :white_check_mark: SAC/RMV overlay
 
 ### Multi-Profile Support :white_check_mark:
+
 - :white_check_mark: Multiple computers per dive
 - :white_check_mark: Profile selector UI
 - :white_check_mark: Primary profile indicator
 
 ### Weather Integration :white_check_mark:
+
 - :white_check_mark: OpenWeatherMap API
 - :white_check_mark: World Tides API
 - :white_check_mark: Auto-populate conditions
 
 ### Planned for v1.5
+
 - :clipboard: Dive planner with deco schedules
 - :clipboard: Gas calculators (Best Mix, Rock Bottom)
 - :clipboard: CCR/Rebreather support
@@ -164,39 +182,46 @@ Dive computer integration and decompression support.
 Multi-device sync and social features.
 
 ### Cloud Sync
+
 - :clipboard: Optional cloud account
 - :clipboard: Multi-device sync
 - :clipboard: Automatic backup
 - :clipboard: Conflict resolution
 
 ### Multi-User Support
+
 - :white_check_mark: Multiple divers per database
 - :white_check_mark: Account switching
 - :clipboard: Family subscriptions
 
 ### Localization
+
 - :clipboard: Multi-language support (7+ languages)
 - :clipboard: RTL language support
 - :clipboard: Localized formats
 
 ### Photography
+
 - :clipboard: Attach photos/videos to dives
 - :clipboard: Auto-match by timestamp
 - :clipboard: Photo galleries
 - :clipboard: Species tagging
 
 ### Advanced Statistics
+
 - :clipboard: Customizable dashboards
 - :clipboard: Year-in-review summary
 - :clipboard: SAC trend analysis
 - :clipboard: Temperature preferences
 
 ### Social Features
+
 - :clipboard: Share dives to social media
 - :clipboard: Shareable dive images
 - :clipboard: Public dive view pages
 
 ### Partner Integration
+
 - :clipboard: Shearwater Cloud sync
 - :clipboard: Garmin Connect import
 - :clipboard: PADI eCard integration
@@ -208,18 +233,21 @@ Multi-device sync and social features.
 Community features and advanced integrations.
 
 ### Community Platform
+
 - :crystal_ball: Community dive site database
 - :crystal_ball: User reviews and ratings
 - :crystal_ball: Site photo galleries
 - :crystal_ball: Discover nearby sites
 
 ### Advanced Features
+
 - :crystal_ball: AI species recognition
 - :crystal_ball: Dive recommendations
 - :crystal_ball: Booking integration
 - :crystal_ball: Course booking
 
 ### Hardware
+
 - :crystal_ball: Smartphone as dive computer
 - :crystal_ball: Real-time data display
 - :crystal_ball: Depth/time overlays
@@ -270,15 +298,19 @@ When planning features, we consider:
 ## Philosophy
 
 ### Local-First
+
 Data stays on your device. Cloud sync is optional.
 
 ### Privacy-Focused
+
 No tracking, no ads. Your data is yours.
 
 ### Open Source
+
 Community-driven development.
 
 ### Free Core
+
 Essential features are always free.
 
 ---
@@ -291,4 +323,3 @@ Essential features are always free.
 | v1.0 | 2024-Q3 | Buddies, certs, trips, import/export |
 | v1.1 | 2024-Q4 | GPS, maps, tags, testing |
 | v1.5 | 2025 | Dive computers, deco, O₂ toxicity |
-

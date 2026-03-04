@@ -22,7 +22,7 @@ The EquipmentListPage becomes a tabbed container page hosting two child views:
 - **Tab 1 (Equipment)**: Existing EquipmentListContent widget (filters, sort, search, equipment list) -- unchanged
 - **Tab 2 (Sets)**: New EquipmentSetListContent widget extracted from EquipmentSetListPage
 
-```
+```text
 Mobile Layout:
 +------------------------------+
 | AppBar: "Equipment"          |

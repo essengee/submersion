@@ -39,6 +39,7 @@ Submersion includes professional-grade features for all levels of divers.
 ### v1.5 (Current)
 
 Technical diving features:
+
 - Dive computer integration (300+ models)
 - Buhlmann ZH-L16C decompression algorithm
 - CNS% and OTU oxygen toxicity tracking
@@ -48,6 +49,7 @@ Technical diving features:
 ### v1.1
 
 Enhanced mapping and organization:
+
 - GPS capture and reverse geocoding
 - Interactive maps with clustering
 - Tag system with colors
@@ -57,6 +59,7 @@ Enhanced mapping and organization:
 ### v1.0
 
 Core functionality:
+
 - Dive logging with all fields
 - Dive site database
 - Equipment management

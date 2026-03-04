@@ -13,6 +13,7 @@
 ### Task 1: Add restart mechanism to main.dart
 
 **Files:**
+
 - Modify: `lib/main.dart:1-108`
 
 **Step 1: Add the restart infrastructure**
@@ -32,8 +33,7 @@ runApp(
 
 // After:
 runApp(SubmersionRestart(prefs: prefs));
-```
-
+```typescript
 Add the `SubmersionRestart` widget and `restartApp` function at the bottom of `main.dart`:
 
 ```dart
@@ -66,8 +66,7 @@ class SubmersionRestart extends StatelessWidget {
     );
   }
 }
-```
-
+```text
 **Step 2: Verify it compiles**
 
 Run: `flutter analyze lib/main.dart`
@@ -76,14 +75,16 @@ Expected: No issues found
 **Step 3: Commit**
 
 ```
-feat: add soft restart mechanism to main.dart
-```
 
+feat: add soft restart mechanism to main.dart
+
+```diff
 ---
 
 ### Task 2: Add localization strings for restore complete page
 
 **Files:**
+
 - Modify: `lib/l10n/arb/app_en.arb`
 - Modify: all other locale `app_*.arb` files (ar, de, es, fr, he, hu, it, nl, pt)
 
@@ -95,8 +96,7 @@ Add these entries (alphabetically near other `backup_restore_` keys):
 "backup_restoreComplete_title": "Restore Complete",
 "backup_restoreComplete_description": "Your data has been restored successfully. Tap continue to reload the app with your restored data.",
 "backup_restoreComplete_continue": "Continue",
-```
-
+```text
 **Step 2: Add translated strings to all other locale files**
 
 Add the same three keys with appropriate translations to each `app_*.arb` file.
@@ -109,14 +109,16 @@ Expected: Completes without errors (existing untranslated message warnings are f
 **Step 4: Commit**
 
 ```
-feat: add restore complete page localization strings
-```
 
+feat: add restore complete page localization strings
+
+```dart
 ---
 
 ### Task 3: Create RestoreCompletePage
 
 **Files:**
+
 - Create: `lib/features/backup/presentation/pages/restore_complete_page.dart`
 
 **Step 1: Create the page**
@@ -193,8 +195,7 @@ class RestoreCompletePage extends StatelessWidget {
     );
   }
 }
-```
-
+```text
 **Step 2: Verify it compiles**
 
 Run: `flutter analyze lib/features/backup/presentation/pages/restore_complete_page.dart`
@@ -203,14 +204,16 @@ Expected: No issues found
 **Step 3: Commit**
 
 ```
-feat: add RestoreCompletePage for post-restore soft restart
-```
 
+feat: add RestoreCompletePage for post-restore soft restart
+
+```dart
 ---
 
 ### Task 4: Wire up BackupOperationNotifier restore flows
 
 **Files:**
+
 - Modify: `lib/features/backup/presentation/pages/backup_settings_page.dart:220-228,340-348`
 - Modify: `lib/features/backup/presentation/providers/backup_providers.dart:182-205,282-320`
 
@@ -226,11 +229,11 @@ enum BackupOperationStatus { idle, inProgress, success, error }
 
 // To:
 enum BackupOperationStatus { idle, inProgress, success, restoreComplete, error }
-```
-
+```text
 **Step 2: Use `restoreComplete` status in both restore methods**
 
 In `restoreFromBackup()` (line 194), change:
+
 ```dart
 // From:
 state = const BackupOperationState(
@@ -242,9 +245,9 @@ state = const BackupOperationState(
 state = const BackupOperationState(
   status: BackupOperationStatus.restoreComplete,
 );
-```
-
+```text
 In `restoreFromFilePath()` (line 309), make the same change:
+
 ```dart
 // From:
 state = const BackupOperationState(
@@ -256,8 +259,7 @@ state = const BackupOperationState(
 state = const BackupOperationState(
   status: BackupOperationStatus.restoreComplete,
 );
-```
-
+```dart
 **Step 3: React to `restoreComplete` in the backup settings page**
 
 In `lib/features/backup/presentation/pages/backup_settings_page.dart`, add a `ref.listen` call in the `build` method to navigate when the status changes to `restoreComplete`. Add this after the existing `ref.watch(backupOperationProvider)` on line 23:
@@ -268,13 +270,12 @@ ref.listen<BackupOperationState>(backupOperationProvider, (previous, next) {
     RestoreCompletePage.show(context);
   }
 });
-```
-
+```typescript
 Add the import at the top of the file:
+
 ```dart
 import 'package:submersion/features/backup/presentation/pages/restore_complete_page.dart';
-```
-
+```text
 **Step 4: Update `_buildStatusMessage` to handle restoreComplete**
 
 In the switch statement in `_buildStatusMessage` (line 75-81), `restoreComplete` should use the green color like `success`:
@@ -283,8 +284,7 @@ In the switch statement in `_buildStatusMessage` (line 75-81), `restoreComplete`
 case BackupOperationStatus.success:
 case BackupOperationStatus.restoreComplete:
   color = Colors.green;
-```
-
+```text
 **Step 5: Format and analyze**
 
 Run: `dart format lib/features/backup/presentation/providers/backup_providers.dart lib/features/backup/presentation/pages/backup_settings_page.dart`
@@ -294,14 +294,16 @@ Expected: No issues found
 **Step 6: Commit**
 
 ```
-feat: navigate to RestoreCompletePage after backup restore
-```
 
+feat: navigate to RestoreCompletePage after backup restore
+
+```text
 ---
 
 ### Task 5: Wire up ExportNotifier restore flow
 
 **Files:**
+
 - Modify: `lib/features/settings/presentation/providers/export_providers.dart:1301-1363`
 
 The `ExportNotifier.restoreBackup()` method is currently not called from any UI (dead code), but it should still be updated for correctness and future use.
@@ -336,16 +338,14 @@ state = state.copyWith(
   status: ExportStatus.restoreComplete,
   message: 'Restore complete',
 );
-```
-
+```text
 **Step 2: Add `restoreComplete` to ExportStatus enum**
 
 Find the `ExportStatus` enum (should be near the top of export_providers.dart) and add `restoreComplete`:
 
 ```dart
 enum ExportStatus { idle, exporting, success, restoreComplete, error }
-```
-
+```dart
 **Step 3: Remove the now-unnecessary individual provider invalidations**
 
 The 6 `_ref.invalidate()` calls (lines 1346-1351) are no longer needed since the entire ProviderScope will be rebuilt. They were removed in Step 1 above.
@@ -363,14 +363,16 @@ Expected: No issues found
 **Step 6: Commit**
 
 ```
-feat: update ExportNotifier restore flow for soft restart
-```
 
+feat: update ExportNotifier restore flow for soft restart
+
+```text
 ---
 
 ### Task 6: Run full test suite and verify
 
 **Files:**
+
 - No new files; verification only
 
 **Step 1: Format all modified files**
@@ -391,8 +393,10 @@ If any tests reference `BackupOperationStatus` or `ExportStatus` enums in switch
 
 **Step 4: Commit**
 
-```
+```text
+
 test: verify all tests pass with soft restart changes
+
 ```
 
 ---

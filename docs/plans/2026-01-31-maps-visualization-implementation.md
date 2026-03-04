@@ -15,6 +15,7 @@
 ### Task 1.1: Add flutter_map_tile_caching dependency
 
 **Files:**
+
 - Modify: `pubspec.yaml`
 
 **Step 1: Add the dependency**
@@ -24,8 +25,7 @@ Add to `pubspec.yaml` under dependencies:
 ```yaml
   # Map tile caching for offline use
   flutter_map_tile_caching: ^9.1.0
-```
-
+```text
 **Step 2: Run pub get**
 
 Run: `flutter pub get`
@@ -36,13 +36,13 @@ Expected: Dependencies resolve successfully
 ```bash
 git add pubspec.yaml pubspec.lock
 git commit -m "feat(maps): add flutter_map_tile_caching dependency"
-```
-
+```text
 ---
 
 ### Task 1.2: Create CachedRegion entity
 
 **Files:**
+
 - Create: `lib/features/maps/domain/entities/cached_region.dart`
 
 **Step 1: Create the entity file**
@@ -142,20 +142,19 @@ class CachedRegion extends Equatable {
         lastAccessedAt,
       ];
 }
-```
-
+```text
 **Step 2: Commit**
 
 ```bash
 git add lib/features/maps/domain/entities/cached_region.dart
 git commit -m "feat(maps): add CachedRegion entity"
-```
-
+```text
 ---
 
 ### Task 1.3: Add cached_regions table to database
 
 **Files:**
+
 - Modify: `lib/core/database/database.dart`
 
 **Step 1: Add the table definition**
@@ -181,8 +180,7 @@ class CachedRegions extends Table {
   @override
   Set<Column> get primaryKey => {id};
 }
-```
-
+```text
 **Step 2: Add table to @DriftDatabase annotation**
 
 Add `CachedRegions` to the tables list in the `@DriftDatabase` annotation.
@@ -213,8 +211,7 @@ if (from < 21) {
     )
   ''');
 }
-```
-
+```text
 **Step 4: Run build_runner**
 
 Run: `dart run build_runner build --delete-conflicting-outputs`
@@ -225,13 +222,13 @@ Expected: database.g.dart regenerated successfully
 ```bash
 git add lib/core/database/database.dart lib/core/database/database.g.dart
 git commit -m "feat(maps): add cached_regions table for offline maps"
-```
-
+```text
 ---
 
 ### Task 1.4: Create OfflineMapRepository
 
 **Files:**
+
 - Create: `lib/features/maps/data/repositories/offline_map_repository.dart`
 
 **Step 1: Create the repository**
@@ -361,8 +358,7 @@ class OfflineMapRepository {
     );
   }
 }
-```
-
+```text
 Note: The repository will need adjustment after code generation - the Drift generated types will be different from the domain entity.
 
 **Step 2: Commit**
@@ -370,13 +366,13 @@ Note: The repository will need adjustment after code generation - the Drift gene
 ```bash
 git add lib/features/maps/data/repositories/offline_map_repository.dart
 git commit -m "feat(maps): add OfflineMapRepository"
-```
-
+```text
 ---
 
 ### Task 1.5: Create TileCacheService
 
 **Files:**
+
 - Create: `lib/features/maps/data/services/tile_cache_service.dart`
 
 **Step 1: Create the service**
@@ -493,20 +489,19 @@ class TileCacheService {
     // A more sophisticated approach would require custom tile tracking
   }
 }
-```
-
+```text
 **Step 2: Commit**
 
 ```bash
 git add lib/features/maps/data/services/tile_cache_service.dart
 git commit -m "feat(maps): add TileCacheService for tile caching"
-```
-
+```text
 ---
 
 ### Task 1.6: Create offline map providers
 
 **Files:**
+
 - Create: `lib/features/maps/presentation/providers/offline_map_providers.dart`
 
 **Step 1: Create the providers file**
@@ -669,8 +664,7 @@ final downloadProgressProvider =
   final repository = ref.watch(offlineMapRepositoryProvider);
   return DownloadProgressNotifier(cacheService, repository, ref);
 });
-```
-
+```dart
 Note: This file needs `import 'package:latlong2/latlong.dart';` added.
 
 **Step 2: Commit**
@@ -678,8 +672,7 @@ Note: This file needs `import 'package:latlong2/latlong.dart';` added.
 ```bash
 git add lib/features/maps/presentation/providers/offline_map_providers.dart
 git commit -m "feat(maps): add offline map providers"
-```
-
+```text
 ---
 
 ## Phase 2: Region Download UI
@@ -687,6 +680,7 @@ git commit -m "feat(maps): add offline map providers"
 ### Task 2.1: Create RegionSelector widget
 
 **Files:**
+
 - Create: `lib/features/maps/presentation/widgets/region_selector.dart`
 
 **Step 1: Create the widget**
@@ -941,20 +935,19 @@ class _SelectionPainter extends CustomPainter {
         northEast != oldDelegate.northEast;
   }
 }
-```
-
+```text
 **Step 2: Commit**
 
 ```bash
 git add lib/features/maps/presentation/widgets/region_selector.dart
 git commit -m "feat(maps): add RegionSelector widget for bounding box selection"
-```
-
+```text
 ---
 
 ### Task 2.2: Create RegionDownloadDialog
 
 **Files:**
+
 - Create: `lib/features/maps/presentation/widgets/region_download_dialog.dart`
 
 **Step 1: Create the dialog widget**
@@ -1208,20 +1201,19 @@ class _RegionDownloadDialogState extends ConsumerState<RegionDownloadDialog> {
     );
   }
 }
-```
-
+```text
 **Step 2: Commit**
 
 ```bash
 git add lib/features/maps/presentation/widgets/region_download_dialog.dart
 git commit -m "feat(maps): add RegionDownloadDialog for download configuration"
-```
-
+```text
 ---
 
 ### Task 2.3: Create OfflineMapsPage
 
 **Files:**
+
 - Create: `lib/features/maps/presentation/pages/offline_maps_page.dart`
 
 **Step 1: Create the page**
@@ -1541,15 +1533,13 @@ class OfflineMapsPage extends ConsumerWidget {
     return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(2)} GB';
   }
 }
-```
-
+```text
 **Step 2: Commit**
 
 ```bash
 git add lib/features/maps/presentation/pages/offline_maps_page.dart
 git commit -m "feat(maps): add OfflineMapsPage for managing cached regions"
-```
-
+```text
 ---
 
 ## Phase 3: Heat Map Core
@@ -1557,6 +1547,7 @@ git commit -m "feat(maps): add OfflineMapsPage for managing cached regions"
 ### Task 3.1: Create HeatMapPoint entity
 
 **Files:**
+
 - Create: `lib/features/maps/domain/entities/heat_map_point.dart`
 
 **Step 1: Create the entity**
@@ -1580,20 +1571,19 @@ class HeatMapPoint extends Equatable {
   @override
   List<Object?> get props => [location, weight, label];
 }
-```
-
+```text
 **Step 2: Commit**
 
 ```bash
 git add lib/features/maps/domain/entities/heat_map_point.dart
 git commit -m "feat(maps): add HeatMapPoint entity"
-```
-
+```text
 ---
 
 ### Task 3.2: Create heat map providers
 
 **Files:**
+
 - Create: `lib/features/maps/presentation/providers/heat_map_providers.dart`
 
 **Step 1: Create the providers**
@@ -1694,20 +1684,19 @@ class HeatMapSettings {
 final heatMapSettingsProvider = StateProvider<HeatMapSettings>((ref) {
   return const HeatMapSettings();
 });
-```
-
+```text
 **Step 2: Commit**
 
 ```bash
 git add lib/features/maps/presentation/providers/heat_map_providers.dart
 git commit -m "feat(maps): add heat map data providers"
-```
-
+```text
 ---
 
 ### Task 3.3: Create HeatMapLayer widget
 
 **Files:**
+
 - Create: `lib/features/maps/presentation/widgets/heat_map_layer.dart`
 
 **Step 1: Create the widget with CustomPainter**
@@ -1863,20 +1852,19 @@ class _HeatMapPainter extends CustomPainter {
         camera != oldDelegate.camera;
   }
 }
-```
-
+```text
 **Step 2: Commit**
 
 ```bash
 git add lib/features/maps/presentation/widgets/heat_map_layer.dart
 git commit -m "feat(maps): add HeatMapLayer widget with gradient rendering"
-```
-
+```text
 ---
 
 ### Task 3.4: Create HeatMapControls widget
 
 **Files:**
+
 - Create: `lib/features/maps/presentation/widgets/heat_map_controls.dart`
 
 **Step 1: Create the controls widget**
@@ -1973,15 +1961,13 @@ class HeatMapControls extends ConsumerWidget {
     );
   }
 }
-```
-
+```text
 **Step 2: Commit**
 
 ```bash
 git add lib/features/maps/presentation/widgets/heat_map_controls.dart
 git commit -m "feat(maps): add HeatMapControls widget"
-```
-
+```text
 ---
 
 ## Phase 4: Integration
@@ -1989,6 +1975,7 @@ git commit -m "feat(maps): add HeatMapControls widget"
 ### Task 4.1: Add Activity view to SiteMapPage
 
 **Files:**
+
 - Modify: `lib/features/dive_sites/presentation/pages/site_map_page.dart`
 
 **Step 1: Add imports and view state**
@@ -1999,8 +1986,7 @@ Add to imports at top:
 import 'package:submersion/features/maps/presentation/providers/heat_map_providers.dart';
 import 'package:submersion/features/maps/presentation/widgets/heat_map_layer.dart';
 import 'package:submersion/features/maps/presentation/widgets/heat_map_controls.dart';
-```
-
+```text
 **Step 2: Add view mode enum and state**
 
 Add inside the `_SiteMapPageState` class:
@@ -2010,8 +1996,7 @@ enum SiteMapViewMode { sites, coverage }
 
 // Add as state variable:
 SiteMapViewMode _viewMode = SiteMapViewMode.sites;
-```
-
+```text
 **Step 3: Add segmented button to AppBar**
 
 Replace the AppBar title with:
@@ -2035,8 +2020,7 @@ title: SegmentedButton<SiteMapViewMode>(
     setState(() => _viewMode = selection.first);
   },
 ),
-```
-
+```text
 **Step 4: Add heat map layer conditionally**
 
 In the FlutterMap children list, add after the TileLayer:
@@ -2061,8 +2045,7 @@ if (_viewMode == SiteMapViewMode.coverage)
       );
     },
   ),
-```
-
+```text
 **Step 5: Add heat map controls overlay**
 
 Add in the Stack children (after the empty state overlay):
@@ -2075,20 +2058,19 @@ if (_viewMode == SiteMapViewMode.coverage)
     right: 0,
     child: HeatMapControls(),
   ),
-```
-
+```text
 **Step 6: Commit**
 
 ```bash
 git add lib/features/dive_sites/presentation/pages/site_map_page.dart
 git commit -m "feat(maps): add Coverage heat map view to SiteMapPage"
-```
-
+```text
 ---
 
 ### Task 4.2: Create DiveActivityMapPage
 
 **Files:**
+
 - Create: `lib/features/maps/presentation/pages/dive_activity_map_page.dart`
 
 **Step 1: Create the page**
@@ -2239,20 +2221,19 @@ class _DiveActivityMapPageState extends ConsumerState<DiveActivityMapPage> {
     );
   }
 }
-```
-
+```text
 **Step 2: Commit**
 
 ```bash
 git add lib/features/maps/presentation/pages/dive_activity_map_page.dart
 git commit -m "feat(maps): add DiveActivityMapPage for dive heat map"
-```
-
+```text
 ---
 
 ### Task 4.3: Add routes for new pages
 
 **Files:**
+
 - Modify: `lib/core/navigation/app_router.dart`
 
 **Step 1: Add imports**
@@ -2260,8 +2241,7 @@ git commit -m "feat(maps): add DiveActivityMapPage for dive heat map"
 ```dart
 import 'package:submersion/features/maps/presentation/pages/dive_activity_map_page.dart';
 import 'package:submersion/features/maps/presentation/pages/offline_maps_page.dart';
-```
-
+```text
 **Step 2: Add routes**
 
 Add routes for the new pages (exact location depends on existing router structure):
@@ -2280,20 +2260,19 @@ GoRoute(
   name: 'offlineMaps',
   builder: (context, state) => const OfflineMapsPage(),
 ),
-```
-
+```text
 **Step 3: Commit**
 
 ```bash
 git add lib/core/navigation/app_router.dart
 git commit -m "feat(maps): add routes for DiveActivityMapPage and OfflineMapsPage"
-```
-
+```text
 ---
 
 ### Task 4.4: Add navigation entry points
 
 **Files:**
+
 - Modify: `lib/features/settings/presentation/pages/settings_page.dart`
 - Modify: `lib/features/dive_log/presentation/widgets/dive_list_content.dart`
 
@@ -2309,8 +2288,7 @@ ListTile(
   trailing: const Icon(Icons.chevron_right),
   onTap: () => context.push('/settings/offline-maps'),
 ),
-```
-
+```text
 **Step 2: Add "Activity Map" action to DiveListContent**
 
 Add to the AppBar actions or overflow menu:
@@ -2321,21 +2299,20 @@ IconButton(
   tooltip: 'Activity Map',
   onPressed: () => context.push('/dives/activity'),
 ),
-```
-
+```text
 **Step 3: Commit**
 
 ```bash
 git add lib/features/settings/presentation/pages/settings_page.dart
 git add lib/features/dive_log/presentation/widgets/dive_list_content.dart
 git commit -m "feat(maps): add navigation to Offline Maps and Activity Map"
-```
-
+```typescript
 ---
 
 ### Task 4.5: Initialize tile cache service at app startup
 
 **Files:**
+
 - Modify: `lib/main.dart`
 
 **Step 1: Add initialization**
@@ -2347,15 +2324,13 @@ import 'package:submersion/features/maps/data/services/tile_cache_service.dart';
 
 // In main() or initialization:
 await TileCacheService.instance.initialize();
-```
-
+```text
 **Step 2: Commit**
 
 ```bash
 git add lib/main.dart
 git commit -m "feat(maps): initialize tile cache service at app startup"
-```
-
+```text
 ---
 
 ## Phase 5: Testing
@@ -2363,6 +2338,7 @@ git commit -m "feat(maps): initialize tile cache service at app startup"
 ### Task 5.1: Write unit tests for heat map point aggregation
 
 **Files:**
+
 - Create: `test/features/maps/heat_map_providers_test.dart`
 
 **Step 1: Create tests**
@@ -2414,8 +2390,7 @@ void main() {
     });
   });
 }
-```
-
+```text
 **Step 2: Run tests**
 
 Run: `flutter test test/features/maps/heat_map_providers_test.dart`
@@ -2426,13 +2401,13 @@ Expected: All tests pass
 ```bash
 git add test/features/maps/heat_map_providers_test.dart
 git commit -m "test(maps): add unit tests for HeatMapPoint"
-```
-
+```text
 ---
 
 ### Task 5.2: Write unit tests for CachedRegion entity
 
 **Files:**
+
 - Create: `test/features/maps/cached_region_test.dart`
 
 **Step 1: Create tests**
@@ -2512,8 +2487,7 @@ void main() {
     });
   });
 }
-```
-
+```text
 **Step 2: Run tests**
 
 Run: `flutter test test/features/maps/cached_region_test.dart`

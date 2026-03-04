@@ -4,7 +4,7 @@ Submersion follows a clean architecture pattern with clear separation between la
 
 ## High-Level Overview
 
-```
+```dart
 ┌─────────────────────────────────────────────────────────────────┐
 │                       Client Applications                        │
 ├──────────────┬──────────────┬──────────────┬───────────────────┤
@@ -44,12 +44,14 @@ Submersion follows a clean architecture pattern with clear separation between la
 Located in `lib/features/*/presentation/`
 
 **Responsibilities:**
+
 - UI rendering (pages, widgets)
 - User interaction handling
 - State subscription (watching providers)
 - Navigation triggers
 
 **Components:**
+
 - `pages/` - Full screen views
 - `widgets/` - Reusable UI components
 - `providers/` - Riverpod state providers
@@ -59,12 +61,14 @@ Located in `lib/features/*/presentation/`
 Located in `lib/features/*/domain/`
 
 **Responsibilities:**
+
 - Business entities
 - Business rules
 - Domain calculations
 - Repository interfaces
 
 **Components:**
+
 - `entities/` - Pure Dart classes with business logic
 - Entity methods like `copyWith()`, computed properties
 
@@ -73,19 +77,21 @@ Located in `lib/features/*/domain/`
 Located in `lib/features/*/data/` and `lib/core/`
 
 **Responsibilities:**
+
 - Data persistence (SQLite)
 - External API calls
 - Data transformation
 - Caching
 
 **Components:**
+
 - `repositories/` - Data access implementations
 - `models/` - Data transfer objects
 - Database tables (Drift)
 
 ## Project Structure
 
-```
+```dart
 lib/
 ├── main.dart                    # Entry point
 ├── app.dart                     # Root ProviderScope and MaterialApp
@@ -185,8 +191,7 @@ domain.Dive _mapToDomain(Dive dbRow) {
     // ...
   );
 }
-```
-
+```dart
 ## Dependency Injection
 
 ### Riverpod Providers
@@ -205,8 +210,7 @@ class MyWidget extends ConsumerWidget {
     // ...
   }
 }
-```
-
+```text
 ### Database Service
 
 Singleton pattern for database:
@@ -224,13 +228,13 @@ class DatabaseService {
     database = AppDatabase(NativeDatabase(file));
   }
 }
-```
-
+```text
 ## External Integrations
 
 ### Dive Computer (libdivecomputer)
 
 ```
+
 Flutter App
     │
     ▼
@@ -241,11 +245,12 @@ libdivecomputer (C library)
     │
     ▼
 Dive Computer (Bluetooth/USB)
-```
 
+```text
 ### Cloud Sync
 
 ```
+
 ┌─────────────────┐     ┌─────────────────┐
 │   SyncService   │────▶│ CloudProvider   │
 └─────────────────┘     └────────┬────────┘
@@ -255,8 +260,8 @@ Dive Computer (Bluetooth/USB)
            ┌─────────────┐           ┌─────────────┐
            │Google Drive │           │   iCloud    │
            └─────────────┘           └─────────────┘
-```
 
+```text
 ## Error Handling
 
 ### Result Pattern
@@ -268,8 +273,7 @@ class Result<T> {
 
   bool get isSuccess => error == null;
 }
-```
-
+```text
 ### Error Types
 
 ```dart
@@ -281,8 +285,7 @@ abstract class AppError {
 class DatabaseError extends AppError { }
 class NetworkError extends AppError { }
 class ValidationError extends AppError { }
-```
-
+```text
 ## Configuration
 
 ### Environment
@@ -300,6 +303,7 @@ class AppConfig {
 ### Build Flavors
 
 Different configurations for:
+
 - Development
 - Staging
 - Production
@@ -315,12 +319,14 @@ Different configurations for:
 ### Database Indexing
 
 Key indexes in schema:
+
 - `dive_profiles(dive_id, timestamp)`
 - `dives(diver_id, dive_date_time)`
 
 ### Profile Memory
 
 Large profile data:
+
 - Loaded only when viewing
 - Disposed after navigation
 - Streamed for charts

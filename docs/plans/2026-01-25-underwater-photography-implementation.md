@@ -17,6 +17,7 @@
 ### Task 1.1: Add New Database Tables
 
 **Files:**
+
 - Modify: `lib/core/database/database.dart`
 
 **Step 1: Add MediaEnrichment table definition**
@@ -44,8 +45,7 @@ class MediaEnrichment extends Table {
   @override
   Set<Column> get primaryKey => {id};
 }
-```
-
+```text
 **Step 2: Add MediaSpecies table definition**
 
 Add after MediaEnrichment:
@@ -71,8 +71,7 @@ class MediaSpecies extends Table {
   @override
   Set<Column> get primaryKey => {id};
 }
-```
-
+```text
 **Step 3: Add PendingPhotoSuggestions table definition**
 
 Add after MediaSpecies:
@@ -92,8 +91,7 @@ class PendingPhotoSuggestions extends Table {
   @override
   Set<Column> get primaryKey => {id};
 }
-```
-
+```text
 **Step 4: Update Media table with new columns**
 
 Modify the existing `Media` class to add new columns. Find the Media table and update it:
@@ -143,8 +141,7 @@ class Media extends Table {
   @override
   Set<Column> get primaryKey => {id};
 }
-```
-
+```text
 **Step 5: Register new tables in @DriftDatabase annotation**
 
 Find the `@DriftDatabase` annotation and add the new tables:
@@ -160,8 +157,7 @@ Find the `@DriftDatabase` annotation and add the new tables:
     // ... rest of tables ...
   ],
 )
-```
-
+```text
 **Step 6: Add migration for schema version 20**
 
 In the `onUpgrade` method, add migration for version 20:
@@ -281,8 +277,7 @@ if (from < 20) {
     WHERE created_at IS NULL
   ''');
 }
-```
-
+```text
 **Step 7: Update schemaVersion**
 
 Change `int get schemaVersion => 19;` to `int get schemaVersion => 20;`
@@ -303,8 +298,7 @@ git commit -m "feat(media): add database schema for underwater photography
 - Add PendingPhotoSuggestions table for background scan feature
 - Extend Media table with platform_asset_id, orphan tracking, thumbnails
 - Add migration v20 with indexes"
-```
-
+```text
 ---
 
 ## Phase 2: Domain Entities
@@ -312,6 +306,7 @@ git commit -m "feat(media): add database schema for underwater photography
 ### Task 2.1: Create Media Domain Entity
 
 **Files:**
+
 - Create: `lib/features/media/domain/entities/media_item.dart`
 
 **Step 1: Write the test**
@@ -398,8 +393,7 @@ void main() {
     });
   });
 }
-```
-
+```text
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/features/media/domain/entities/media_item_test.dart`
@@ -764,8 +758,7 @@ class PendingPhotoSuggestion extends Equatable {
         createdAt,
       ];
 }
-```
-
+```text
 **Step 4: Run test to verify it passes**
 
 Run: `flutter test test/features/media/domain/entities/media_item_test.dart`
@@ -781,8 +774,7 @@ git commit -m "feat(media): add domain entities for underwater photography
 - MediaEnrichment: dive profile data at photo timestamp
 - MediaSpeciesTag: species tagging on photos
 - PendingPhotoSuggestion: background scan suggestions"
-```
-
+```text
 ---
 
 ## Phase 3: Repository Layer
@@ -790,6 +782,7 @@ git commit -m "feat(media): add domain entities for underwater photography
 ### Task 3.1: Create Media Repository
 
 **Files:**
+
 - Create: `lib/features/media/data/repositories/media_repository.dart`
 - Create: `test/features/media/data/repositories/media_repository_test.dart`
 
@@ -869,8 +862,7 @@ void main() {
     });
   });
 }
-```
-
+```text
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/features/media/data/repositories/media_repository_test.dart`
@@ -1195,8 +1187,7 @@ class MediaRepository {
     );
   }
 }
-```
-
+```text
 **Step 4: Run test to verify it passes**
 
 Run: `flutter test test/features/media/data/repositories/media_repository_test.dart`
@@ -1212,8 +1203,7 @@ git commit -m "feat(media): add MediaRepository for CRUD operations
 - Orphan tracking and cleanup
 - Enrichment data storage
 - Pending suggestions count"
-```
-
+```text
 ---
 
 ## Phase 4: Enrichment Service
@@ -1221,6 +1211,7 @@ git commit -m "feat(media): add MediaRepository for CRUD operations
 ### Task 4.1: Create Profile Interpolation Service
 
 **Files:**
+
 - Create: `lib/features/media/data/services/enrichment_service.dart`
 - Create: `test/features/media/data/services/enrichment_service_test.dart`
 
@@ -1317,8 +1308,7 @@ void main() {
     });
   });
 }
-```
-
+```text
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/features/media/data/services/enrichment_service_test.dart`
@@ -1466,8 +1456,7 @@ class EnrichmentService {
     );
   }
 }
-```
-
+```text
 **Step 4: Run test to verify it passes**
 
 Run: `flutter test test/features/media/data/services/enrichment_service_test.dart`
@@ -1482,8 +1471,7 @@ git commit -m "feat(media): add EnrichmentService for dive profile interpolation
 - Interpolates depth/temperature at photo timestamp
 - Confidence levels: exact, interpolated, estimated, noProfile
 - Handles edge cases (empty profile, photo outside dive time)"
-```
-
+```dart
 ---
 
 ## Phase 5: Provider Layer
@@ -1491,6 +1479,7 @@ git commit -m "feat(media): add EnrichmentService for dive profile interpolation
 ### Task 5.1: Create Media Providers
 
 **Files:**
+
 - Create: `lib/features/media/presentation/providers/media_providers.dart`
 
 **Step 1: Create the providers**
@@ -1594,8 +1583,7 @@ final mediaListNotifierProvider = StateNotifierProvider.family<
   final repository = ref.watch(mediaRepositoryProvider);
   return MediaListNotifier(repository, ref, diveId);
 });
-```
-
+```text
 **Step 2: Commit**
 
 ```bash
@@ -1606,8 +1594,7 @@ git commit -m "feat(media): add Riverpod providers for media state management
 - mediaByIdProvider: fetch single media item
 - mediaCountForDiveProvider: for dive card badges
 - MediaListNotifier: mutations with refresh"
-```
-
+```dart
 ---
 
 ## Phase 6: UI Components (Foundation)
@@ -1615,6 +1602,7 @@ git commit -m "feat(media): add Riverpod providers for media state management
 ### Task 6.1: Create Media Section Widget for Dive Detail
 
 **Files:**
+
 - Create: `lib/features/media/presentation/widgets/dive_media_section.dart`
 
 **Step 1: Create the widget**
@@ -1828,8 +1816,7 @@ class _OrphanedPlaceholder extends StatelessWidget {
     );
   }
 }
-```
-
+```text
 **Step 2: Commit**
 
 ```bash
@@ -1849,22 +1836,26 @@ git commit -m "feat(media): add DiveMediaSection widget for dive detail page
 The following phases should be implemented after the foundation is in place:
 
 ### Phase 7: Platform Photo Access
+
 - Add `photo_manager` package
 - Create `PhotoLibraryService` for iOS/Android photo access
 - Implement photo picker with time-based filtering
 - Handle permissions
 
 ### Phase 8: Thumbnail Service
+
 - Generate thumbnails on import
 - Cache management
 - Regeneration for orphaned thumbnails
 
 ### Phase 9: Background Scan
+
 - Scan for matching photos after dive import
 - Store pending suggestions
 - UI for suggestion badges and acceptance
 
 ### Phase 10: Full UI
+
 - Photo picker sheet
 - Full-screen photo viewer with swipe
 - Photo detail page with enrichment display
@@ -1872,6 +1863,7 @@ The following phases should be implemented after the foundation is in place:
 - Settings page for orphan cleanup
 
 ### Phase 11: Optional EXIF Writing
+
 - Platform-specific EXIF writing
 - Permission handling
 - Batch write tool

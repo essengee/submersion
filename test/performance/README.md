@@ -5,6 +5,7 @@
 Performance benchmarks for Submersion at scale (5,000+ dives, 2,000+ sites, 8M+ profile points).
 
 Two-layer measurement approach:
+
 - **PerfTimer** (Stopwatch wrapper): instruments data-layer hot paths with named operations
 - **Inline smoke tests**: lightweight assertions in existing test files using the `light` preset
 
@@ -14,16 +15,14 @@ Two-layer measurement approach:
 
 ```bash
 flutter test
-```
-
+```text
 Smoke tests use the `light` preset (100 dives, 30 sites) and run as part of the normal test suite.
 
 ### Heavy benchmarks only
 
 ```bash
 flutter test test/performance/
-```
-
+```text
 Uses `realistic` preset (5,000 dives, 2,000 sites). Takes several minutes due to data generation.
 
 ### With summary output

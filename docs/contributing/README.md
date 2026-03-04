@@ -7,6 +7,7 @@ Thank you for your interest in contributing to Submersion! This guide will help 
 ### Report Bugs
 
 Found a bug? [Open an issue](https://github.com/submersion-app/submersion/issues) with:
+
 - Clear title and description
 - Steps to reproduce
 - Expected vs actual behavior
@@ -55,8 +56,7 @@ dart run build_runner build --delete-conflicting-outputs
 
 # Run tests to verify setup
 flutter test
-```
-
+```text
 ### Create a Branch
 
 ```bash
@@ -67,8 +67,7 @@ git merge upstream/main
 
 # Create feature branch
 git checkout -b feature/your-feature-name
-```
-
+```dart
 ## Development Workflow
 
 ### 1. Make Changes
@@ -92,21 +91,22 @@ flutter analyze
 
 # Format code
 dart format lib/
-```
-
+```text
 ### 4. Commit
 
 Write clear, descriptive commit messages:
 
 ```
+
 feat: add nitrox calculator to tools page
 
 - Add NitroxCalculatorPage with MOD and best-mix inputs
 - Add calculator logic to GasMix entity
 - Add unit tests for calculations
-```
 
+```text
 Follow [conventional commits](https://www.conventionalcommits.org/):
+
 - `feat:` - New feature
 - `fix:` - Bug fix
 - `docs:` - Documentation
@@ -121,6 +121,7 @@ See [Pull Request Guidelines](contributing/pull-requests.md).
 ## Project Structure
 
 ```
+
 lib/
 ├── core/              # Shared infrastructure
 │   ├── database/      # Drift ORM schema
@@ -134,11 +135,12 @@ lib/
 │   ├── equipment/
 │   └── ...
 └── shared/            # Shared widgets
-```
 
+```text
 Each feature follows:
 
 ```
+
 feature_name/
 ├── data/
 │   ├── models/
@@ -149,8 +151,8 @@ feature_name/
     ├── pages/
     ├── widgets/
     └── providers/
-```
 
+```dart
 ## Key Technologies
 
 | Layer | Technology |
@@ -178,13 +180,15 @@ flutter test --coverage
 
 ### Test Structure
 
-```
+```text
+
 test/
 ├── features/          # Feature unit tests
 ├── widget/            # Widget tests
 ├── integration/       # Integration tests
 ├── performance/       # Performance tests
 └── helpers/           # Test utilities
+
 ```
 
 ## Documentation
@@ -220,4 +224,3 @@ By contributing, you agree that your contributions will be licensed under the sa
 Open a [discussion](https://github.com/submersion-app/submersion/discussions) or check existing issues.
 
 Thank you for helping make Submersion better!
-

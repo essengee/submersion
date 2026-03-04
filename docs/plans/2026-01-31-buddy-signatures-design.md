@@ -30,8 +30,7 @@ Add the ability for dive buddies to digitally sign dive log entries, with signat
 ```dart
 // Add to Media table in database.dart
 TextColumn get signatureType => text().nullable()(); // 'instructor' | 'buddy'
-```
-
+```text
 Existing signatures default to `null` (treated as instructor for backward compatibility).
 
 ### Migration
@@ -62,8 +61,7 @@ class Signature {
 
   // copyWith, equality, etc.
 }
-```
-
+```text
 ## Service Changes
 
 ### SignatureStorageService
@@ -88,8 +86,7 @@ Future<Signature> saveBuddySignature({
 
 /// Check if a specific buddy has signed
 Future<bool> hasBuddySigned(int diveId, int buddyId);
-```
-
+```text
 ## UI Components
 
 ### Dive Detail Page Section
@@ -97,11 +94,12 @@ Future<bool> hasBuddySigned(int diveId, int buddyId);
 New section appearing after Buddies section:
 
 ```
+
 Signatures
 ├── Signed buddy cards (with signature preview)
 └── Unsigned buddy cards (with "Request Signature" button)
-```
 
+```dart
 ### New Widgets
 
 | Widget | File | Purpose |
@@ -129,7 +127,8 @@ Signatures
 
 Signatures appear at the bottom of each dive entry:
 
-```
+```text
+
 ┌─────────────────────────────────────────────────────────┐
 │ Dive #42 - Blue Corner, Palau                           │
 │ Jan 15, 2024 at 10:30 AM                                │
@@ -146,6 +145,7 @@ Signatures appear at the bottom of each dive entry:
 │ │ Jan 15, 2024 │  │ Jan 15, 2024 │                      │
 │ └──────────────┘  └──────────────┘                      │
 └─────────────────────────────────────────────────────────┘
+
 ```
 
 ### Implementation

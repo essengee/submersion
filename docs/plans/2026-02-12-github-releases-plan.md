@@ -17,6 +17,7 @@
 Update the Android Gradle build to support release signing via `key.properties`. This is required for the CI workflow to produce signed APKs.
 
 **Files:**
+
 - Modify: `android/app/build.gradle.kts:1-52`
 
 **Step 1: Update build.gradle.kts to load keystore from key.properties**
@@ -92,8 +93,7 @@ dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
     implementation("androidx.exifinterface:exifinterface:1.3.7")
 }
-```
-
+```text
 **Step 2: Verify the build still works locally**
 
 Run: `flutter build apk --debug --target-platform android-arm64`
@@ -104,8 +104,7 @@ Expected: BUILD SUCCESSFUL (falls back to debug signing since no key.properties 
 ```bash
 git add android/app/build.gradle.kts
 git commit -m "feat: add release signing config to Android build"
-```
-
+```diff
 ---
 
 ## Task 2: macOS Fastlane Setup
@@ -113,6 +112,7 @@ git commit -m "feat: add release signing config to Android build"
 Create the Fastlane configuration for macOS builds, mirroring the iOS setup.
 
 **Files:**
+
 - Create: `macos/Gemfile`
 - Create: `macos/fastlane/Matchfile`
 - Create: `macos/fastlane/Fastfile`
@@ -126,8 +126,7 @@ gem "fastlane"
 
 plugins_path = File.join(File.dirname(__FILE__), 'fastlane', 'Pluginfile')
 eval_gemfile(plugins_path) if File.exist?(plugins_path)
-```
-
+```text
 **Step 2: Create macos/fastlane/Matchfile**
 
 ```ruby
@@ -154,8 +153,7 @@ readonly(true)
 shallow_clone(true)
 
 platform("macos")
-```
-
+```text
 **Step 3: Create macos/fastlane/Fastfile**
 
 ```ruby
@@ -304,8 +302,7 @@ platform :mac do
     UI.success("macOS build uploaded to Mac App Store!")
   end
 end
-```
-
+```text
 **Step 4: Verify Fastfile syntax**
 
 Run: `ruby -c macos/fastlane/Fastfile`
@@ -316,8 +313,7 @@ Expected: `Syntax OK`
 ```bash
 git add macos/Gemfile macos/fastlane/Matchfile macos/fastlane/Fastfile
 git commit -m "feat: add macOS Fastlane config for Mac App Store distribution"
-```
-
+```diff
 ---
 
 ## Task 3: Unified Release Workflow
@@ -325,6 +321,7 @@ git commit -m "feat: add macOS Fastlane config for Mac App Store distribution"
 Create the main GitHub Actions workflow that builds all platforms and creates a GitHub Release.
 
 **Files:**
+
 - Create: `.github/workflows/release.yml`
 
 **Step 1: Create the workflow file**
@@ -779,8 +776,7 @@ jobs:
           files: Submersion-*
           prerelease: ${{ steps.prerelease.outputs.prerelease }}
           generate_release_notes: true
-```
-
+```typescript
 **Step 2: Validate YAML syntax**
 
 Run: `python3 -c "import yaml; yaml.safe_load(open('.github/workflows/release.yml'))"`
@@ -791,8 +787,7 @@ Expected: No output (valid YAML)
 ```bash
 git add .github/workflows/release.yml
 git commit -m "feat: add unified multi-platform release workflow"
-```
-
+```diff
 ---
 
 ## Task 4: Retire Old iOS Release Workflow
@@ -800,22 +795,21 @@ git commit -m "feat: add unified multi-platform release workflow"
 Replace the standalone iOS release workflow with the unified one.
 
 **Files:**
+
 - Delete: `.github/workflows/ios-release.yml`
 
 **Step 1: Remove the old workflow**
 
 ```bash
 git rm .github/workflows/ios-release.yml
-```
-
+```text
 **Step 2: Commit**
 
 ```bash
 git commit -m "chore: retire standalone ios-release workflow
 
 Replaced by the iOS job in the unified release.yml workflow."
-```
-
+```diff
 ---
 
 ## Task 5: Validate and Document
@@ -823,6 +817,7 @@ Replaced by the iOS job in the unified release.yml workflow."
 Final validation and documentation updates.
 
 **Files:**
+
 - Modify: `docs/developer/building.md` (update Release Checklist section)
 
 **Step 1: Update the Release Checklist in building.md**
@@ -846,15 +841,13 @@ Before releasing:
 10. [ ] Verify macOS build appears in TestFlight
 
 For beta releases, use tags like `v1.0.0-beta.1` (creates a pre-release).
-```
-
+```text
 **Step 2: Commit**
 
 ```bash
 git add docs/developer/building.md
 git commit -m "docs: update release checklist for automated workflow"
-```
-
+```diff
 ---
 
 ## Task 6: Secrets Setup Guide
@@ -862,6 +855,7 @@ git commit -m "docs: update release checklist for automated workflow"
 Create a one-time setup guide for configuring the required GitHub Secrets.
 
 **Files:**
+
 - Create: `docs/developer/release-secrets-setup.md`
 
 **Step 1: Create the secrets setup guide**
@@ -934,8 +928,7 @@ Base64 encode your release keystore:
 
 ```bash
 base64 -i your-release.keystore | pbcopy
-```
-
+```text
 Paste as the secret value.
 
 **ANDROID_KEYSTORE_PASSWORD**
@@ -958,8 +951,7 @@ If macOS provisioning profiles have not been added to your Match repository yet:
 cd macos
 bundle install
 bundle exec fastlane match appstore --platform macos
-```
-
+```text
 This will generate Mac App Store certificates and provisioning profiles and
 store them encrypted in your certificates repository.
 
@@ -970,15 +962,14 @@ After configuring all secrets, trigger a test release:
 ```bash
 git tag v0.0.1-test.1
 git push origin v0.0.1-test.1
-```
-
+```text
 Monitor the workflow in GitHub Actions. If successful, delete the test release:
 
 ```bash
 git tag -d v0.0.1-test.1
 git push origin :refs/tags/v0.0.1-test.1
 gh release delete v0.0.1-test.1 --yes
-```
+```text
 ```
 
 **Step 2: Commit**

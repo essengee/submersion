@@ -5,6 +5,7 @@ Monitor CNS%, OTU, and ppO2 exposure for safe nitrox and technical diving.
 ## Why Track Oxygen?
 
 High oxygen partial pressures can cause:
+
 - **CNS Toxicity** - Seizures underwater (acute)
 - **Pulmonary Toxicity** - Lung damage (chronic/OTU)
 
@@ -16,12 +17,13 @@ Submersion tracks both to keep you within safe limits.
 
 ppO2 is the oxygen pressure at depth:
 
-```
+```text
 ppO2 = (Depth in ATM) × (O2 fraction)
 ```
 
 Example at 30m (4 ATM) on 32% nitrox:
-```
+
+```text
 ppO2 = 4 × 0.32 = 1.28 bar
 ```
 
@@ -40,6 +42,7 @@ ppO2 = 4 × 0.32 = 1.28 bar
 ### ppO2 Display
 
 On the profile:
+
 - ppO2 curve shows oxygen pressure
 - Yellow zone above 1.4 bar
 - Red zone above 1.6 bar
@@ -66,7 +69,7 @@ CNS% tracks acute oxygen exposure as a percentage of the NOAA limit. 100% = maxi
 
 Each minute of exposure accumulates CNS%:
 
-```
+```text
 CNS% per minute = 100 / (limit at current ppO2)
 ```
 
@@ -78,6 +81,7 @@ CNS% per minute = 100 / (limit at current ppO2)
 </div>
 
 Submersion shows:
+
 - **CNS Start** - Percentage at dive start
 - **CNS End** - Percentage at dive end
 - **Peak CNS** - Maximum during dive
@@ -98,7 +102,7 @@ OTUs track cumulative pulmonary (lung) oxygen exposure over multiple dives.
 
 ### OTU Calculation
 
-```
+```text
 OTU = time × ((ppO2 - 0.5) / 0.5)^0.83
 ```
 
@@ -113,6 +117,7 @@ OTU = time × ((ppO2 - 0.5) / 0.5)^0.83
 ### OTU Tracking
 
 Submersion tracks:
+
 - OTU per dive
 - Cumulative OTU over multiple dives
 - Rolling totals
@@ -122,12 +127,14 @@ Submersion tracks:
 ### CNS Decay
 
 CNS% decays during surface intervals:
+
 - Half-life: ~90 minutes
 - Nearly zero after 12 hours
 
 ### OTU Accumulation
 
 OTUs accumulate over days:
+
 - Track daily totals
 - Monitor weekly patterns
 - Allow recovery between dive days
@@ -147,6 +154,7 @@ Configure O2 tracking in **Settings** > **Decompression**:
 ### ppO2 Curve
 
 Toggle the ppO2 overlay on profiles:
+
 - Green zone: < 1.4 bar
 - Yellow zone: 1.4 - 1.6 bar
 - Red zone: > 1.6 bar
@@ -160,19 +168,22 @@ View CNS buildup throughout the dive as a cumulative curve.
 ### MOD (Maximum Operating Depth)
 
 For a given O2%:
-```
+
+```text
 MOD = ((ppO2 limit / O2%) - 1) × 10m
 ```
 
 Example for EAN32 at 1.4 ppO2:
-```
+
+```text
 MOD = ((1.4 / 0.32) - 1) × 10 = 33.75m
 ```
 
 ### Best Mix
 
 For a given depth, the optimal O2% with target ppO2:
-```
+
+```text
 Best Mix = ppO2 / (depth in ATM)
 ```
 
@@ -181,6 +192,7 @@ Best Mix = ppO2 / (depth in ATM)
 ### CCR Considerations
 
 For rebreathers:
+
 - Track setpoint changes
 - Monitor diluent O2
 - Account for bailout scenarios
@@ -188,6 +200,7 @@ For rebreathers:
 ### Multi-Gas Dives
 
 Track O2 exposure across:
+
 - Bottom gas
 - Travel gas
 - Deco gases

@@ -35,7 +35,7 @@ The gaps are entirely in the platform-specific mapping layers above it.
 
 Three layers. Layer 1 (shared C) is complete. Work is in Layers 2 and 3.
 
-```
+```text
 Layer 3: Pigeon Contract (Dart <-> Native)
   dive_computer_api.dart -> generated per-platform code
   ParsedDive, ProfileSample, DiveEvent (no changes needed)
@@ -59,7 +59,7 @@ Extract common Swift code into a local Swift package to prevent drift.
 
 ### Structure
 
-```
+```text
 packages/libdivecomputer_plugin/
   darwin/
     Package.swift
@@ -86,8 +86,7 @@ import Flutter
 #elseif os(macOS)
 import FlutterMacOS
 #endif
-```
-
+```dart
 Both podspecs reference the shared darwin/ sources. iOS immediately gets full parity
 by sharing the exact same Swift code as macOS.
 
@@ -230,13 +229,15 @@ POSIX read/write.
 
 ### Layer 1: Shared C Wrapper Tests (macOS CI)
 
-```
+```text
+
 test/native/
   test_sample_callback.c     - synthetic DC_SAMPLE_* values -> libdc_sample_t
   test_event_callback.c      - synthetic DC_SAMPLE_EVENT -> libdc_event_t
   test_deco_parsing.c        - synthetic DC_FIELD_DECOMODEL -> parsed fields
   test_descriptor_match.c    - BLE name -> descriptor matching
   CMakeLists.txt             - builds and runs via ctest
+
 ```
 
 ### Layer 2: Platform Mapping Tests

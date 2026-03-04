@@ -13,6 +13,7 @@
 ## Task 1: Extend MasterDetailScaffold with Map Support
 
 **Files:**
+
 - Modify: `lib/shared/widgets/master_detail/master_detail_scaffold.dart`
 - Test: `test/shared/widgets/master_detail/master_detail_scaffold_test.dart`
 
@@ -35,8 +36,7 @@ final Widget Function(
   void Function(String?) onItemSelected,
 )?
 mapBuilder;
-```
-
+```text
 **Step 2: Add _isMapView getter**
 
 Add after `_mode` getter (around line 151):
@@ -47,8 +47,7 @@ bool get _isMapView {
   final state = GoRouterState.of(context);
   return state.uri.queryParameters['view'] == 'map';
 }
-```
-
+```text
 **Step 3: Add _toggleMapView method**
 
 Add after `_onCancel` method (around line 217):
@@ -77,8 +76,7 @@ void _toggleMapView() {
     }
   }
 }
-```
-
+```text
 **Step 4: Update desktop build method to show map in right pane**
 
 In the `build` method, update the desktop layout (around line 252) to conditionally show map:
@@ -100,8 +98,7 @@ Expanded(
           onCancel: _onCancel,
         ),
 ),
-```
-
+```text
 **Step 5: Pass toggle callback and state to masterBuilder**
 
 The masterBuilder needs to know if map view is active and have access to toggle. Update the signature to include these. We'll do this via a new parameter object or by passing the toggle callback through the existing callbacks.
@@ -118,13 +115,13 @@ Expected: All existing tests pass
 ```bash
 git add lib/shared/widgets/master_detail/master_detail_scaffold.dart
 git commit -m "feat(master-detail): add mapBuilder parameter for map view toggle"
-```
-
+```text
 ---
 
 ## Task 2: Create MapViewToggleButton Widget
 
 **Files:**
+
 - Create: `lib/shared/widgets/master_detail/map_view_toggle_button.dart`
 - Test: `test/shared/widgets/master_detail/map_view_toggle_button_test.dart`
 
@@ -220,8 +217,7 @@ void main() {
     expect(iconButton.tooltip, 'Map View');
   });
 }
-```
-
+```text
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/shared/widgets/master_detail/map_view_toggle_button_test.dart`
@@ -269,8 +265,7 @@ class MapViewToggleButton extends StatelessWidget {
     );
   }
 }
-```
-
+```text
 **Step 4: Run test to verify it passes**
 
 Run: `flutter test test/shared/widgets/master_detail/map_view_toggle_button_test.dart`
@@ -281,13 +276,13 @@ Expected: PASS
 ```bash
 git add lib/shared/widgets/master_detail/map_view_toggle_button.dart test/shared/widgets/master_detail/map_view_toggle_button_test.dart
 git commit -m "feat: add MapViewToggleButton widget"
-```
-
+```text
 ---
 
 ## Task 3: Update DiveCenterListContent to Support Map Toggle
 
 **Files:**
+
 - Modify: `lib/features/dive_centers/presentation/widgets/dive_center_list_content.dart`
 - Test: Existing tests should still pass
 
@@ -304,8 +299,7 @@ final bool isMapViewActive;
 /// Callback when map view toggle is pressed.
 /// If null, the map icon will navigate to the map page (mobile behavior).
 final VoidCallback? onMapViewToggle;
-```
-
+```text
 Update constructor to include defaults:
 
 ```dart
@@ -314,8 +308,7 @@ const DiveCenterListContent({
   this.isMapViewActive = false,
   this.onMapViewToggle,
 });
-```
-
+```text
 **Step 2: Update _buildCompactAppBar to use toggle**
 
 Replace the map IconButton (lines 222-226) with conditional logic:
@@ -332,16 +325,14 @@ else
     tooltip: 'Map View',
     onPressed: () => context.go('/dive-centers/map'),
   ),
-```
-
+```typescript
 **Step 3: Add import for MapViewToggleButton**
 
 Add at top of file:
 
 ```dart
 import 'package:submersion/shared/widgets/master_detail/map_view_toggle_button.dart';
-```
-
+```text
 **Step 4: Run tests to verify no regressions**
 
 Run: `flutter test test/features/dive_centers/`
@@ -352,13 +343,13 @@ Expected: All tests pass
 ```bash
 git add lib/features/dive_centers/presentation/widgets/dive_center_list_content.dart
 git commit -m "feat(dive-center-list): add map view toggle support"
-```
-
+```dart
 ---
 
 ## Task 4: Create DiveCenterMapContent Widget (Extracted from DiveCenterMapPage)
 
 **Files:**
+
 - Create: `lib/features/dive_centers/presentation/widgets/dive_center_map_content.dart`
 - Test: `test/features/dive_centers/presentation/widgets/dive_center_map_content_test.dart`
 
@@ -467,8 +458,7 @@ class _DiveCenterMapContentState extends ConsumerState<DiveCenterMapContent>
   // Include: _buildMap, _buildMarker, _buildClusterMarker, _getMarkerColor,
   // _onMarkerTapped, _animateToCluster, _fitAllCenters, _calculateBounds
 }
-```
-
+```text
 **Step 2: Write basic test**
 
 ```dart
@@ -494,8 +484,7 @@ void main() {
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
   });
 }
-```
-
+```text
 **Step 3: Run tests**
 
 Run: `flutter test test/features/dive_centers/presentation/widgets/dive_center_map_content_test.dart`
@@ -506,13 +495,13 @@ Expected: PASS
 ```bash
 git add lib/features/dive_centers/presentation/widgets/dive_center_map_content.dart test/features/dive_centers/presentation/widgets/dive_center_map_content_test.dart
 git commit -m "feat: extract DiveCenterMapContent for embedded map view"
-```
-
+```text
 ---
 
 ## Task 5: Update DiveCenterListPage to Use Map Toggle
 
 **Files:**
+
 - Modify: `lib/features/dive_centers/presentation/pages/dive_center_list_page.dart`
 
 **Context:** Wire up the `mapBuilder` in `MasterDetailScaffold` and pass toggle state to list content.
@@ -523,8 +512,7 @@ Add imports:
 
 ```dart
 import 'package:submersion/features/dive_centers/presentation/widgets/dive_center_map_content.dart';
-```
-
+```dart
 **Step 2: Convert to StatefulWidget to access GoRouterState**
 
 The page needs to read URL params for `view=map`. Convert from `ConsumerWidget` to `ConsumerStatefulWidget`:
@@ -569,8 +557,7 @@ class _DiveCenterListPageState extends ConsumerState<DiveCenterListPage> {
     // ... existing build logic with additions
   }
 }
-```
-
+```text
 **Step 3: Add mapBuilder to MasterDetailScaffold**
 
 In the desktop branch, add `mapBuilder`:
@@ -597,8 +584,7 @@ return MasterDetailScaffold(
   ),
   // ... rest of existing params
 );
-```
-
+```text
 **Step 4: Run tests**
 
 Run: `flutter test test/features/dive_centers/`
@@ -609,13 +595,13 @@ Expected: All tests pass
 ```bash
 git add lib/features/dive_centers/presentation/pages/dive_center_list_page.dart
 git commit -m "feat(dive-centers): integrate map view toggle in list page"
-```
-
+```text
 ---
 
 ## Task 6: Repeat for SiteListContent and SiteListPage
 
 **Files:**
+
 - Modify: `lib/features/dive_sites/presentation/widgets/site_list_content.dart`
 - Create: `lib/features/dive_sites/presentation/widgets/site_map_content.dart`
 - Modify: `lib/features/dive_sites/presentation/pages/site_list_page.dart`
@@ -629,13 +615,13 @@ git commit -m "feat(dive-centers): integrate map view toggle in list page"
 ```bash
 git add lib/features/dive_sites/
 git commit -m "feat(sites): integrate map view toggle in list page"
-```
-
+```text
 ---
 
 ## Task 7: Repeat for DiveListContent and DiveListPage
 
 **Files:**
+
 - Modify: `lib/features/dive_log/presentation/widgets/dive_list_content.dart`
 - Create: `lib/features/dive_log/presentation/widgets/dive_map_content.dart`
 - Modify: `lib/features/dive_log/presentation/pages/dive_list_page.dart`
@@ -649,13 +635,13 @@ git commit -m "feat(sites): integrate map view toggle in list page"
 ```bash
 git add lib/features/dive_log/
 git commit -m "feat(dives): integrate map view toggle in list page"
-```
-
+```text
 ---
 
 ## Task 8: Update Mobile App Bar to Keep Navigation Behavior
 
 **Files:**
+
 - Modify: `lib/features/dive_centers/presentation/widgets/dive_center_list_content.dart`
 - Modify: `lib/features/dive_sites/presentation/widgets/site_list_content.dart`
 - Modify: `lib/features/dive_log/presentation/widgets/dive_list_content.dart`
@@ -672,8 +658,7 @@ IconButton(
   tooltip: 'Map View',
   onPressed: () => context.go('/dive-centers/map'),  // Keep navigation
 ),
-```
-
+```text
 Only the compact app bar (desktop master pane) should use the toggle.
 
 **Step 2: Run tests**
@@ -686,8 +671,7 @@ Expected: All tests pass
 ```bash
 git add lib/features/*/presentation/widgets/*_list_content.dart
 git commit -m "fix: keep map navigation on mobile, toggle only on desktop"
-```
-
+```diff
 ---
 
 ## Task 9: Format Code and Run Full Test Suite
@@ -696,20 +680,17 @@ git commit -m "fix: keep map navigation on mobile, toggle only on desktop"
 
 ```bash
 dart format lib/ test/
-```
-
+```text
 **Step 2: Run analyzer**
 
 ```bash
 flutter analyze
-```
-
+```text
 **Step 3: Run full test suite**
 
 ```bash
 flutter test
-```
-
+```text
 Expected: All tests pass, no analyzer issues
 
 **Step 4: Commit any formatting changes**
@@ -717,8 +698,7 @@ Expected: All tests pass, no analyzer issues
 ```bash
 git add -A
 git commit -m "style: format code"
-```
-
+```dart
 ---
 
 ## Task 10: Manual Testing and Final Review

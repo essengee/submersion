@@ -18,7 +18,7 @@ Flutter dive logging application using feature-first architecture with clean sep
 
 ## Directory Structure
 
-```
+```dart
 lib/
 ├── main.dart                 # App entry, DB init, provider scope
 ├── app.dart                  # SubmersionApp widget, theme config
@@ -101,23 +101,24 @@ final diveByIdProvider = FutureProvider.autoDispose.family<Dive?, String>(
 
 // Mutable state
 final diveEditNotifierProvider = StateNotifierProvider.autoDispose<...>(...);
-```
-
+```text
 ## Navigation Structure
 
-```
+```text
+
 /dashboard              # Home
-/planning/*             # Planning hub (ShellRoute)
+/planning/*# Planning hub (ShellRoute)
   /dive-planner         # Deco planner
   /deco-calculator      # Real-time calc
   /gas-calculators      # MOD/END tools
 /dives/*                # Dive log
-/sites/*                # Dive sites
+/sites/*# Dive sites
 /equipment/*            # Gear management
-/buddies/*              # Buddy contacts
+/buddies/*# Buddy contacts
 /statistics/*           # Analytics (10 sub-pages)
 /settings/*             # Configuration
 /transfer               # Import/Export hub
+
 ```
 
 ## Key Dependencies

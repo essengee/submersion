@@ -49,6 +49,7 @@ Change callback signature from `void Function(DiveProfilePoint?)` to `void Funct
 The chart already has `spot.spotIndex` from fl_chart. Pass it directly to the parent. The parent can do `dive.profile[index]` in O(1) if it needs the point.
 
 **Before:**
+
 ```dart
 // In chart
 widget.onPointSelected!(widget.profile[spot.spotIndex]);
@@ -60,9 +61,9 @@ onPointSelected: (point) {
   );
   setState(() => _selectedPointIndex = index >= 0 ? index : null);
 }
-```
-
+```text
 **After:**
+
 ```dart
 // In chart
 widget.onPointSelected!(spot.spotIndex);
@@ -80,6 +81,7 @@ onPointSelected: (index) {
 Replace `int? _selectedPointIndex` state field with `ValueNotifier<int?>`.
 
 Wrap only the widgets that react to selection changes in `ValueListenableBuilder`:
+
 - Tissue loading card
 - Deco status card
 - O2 toxicity panel

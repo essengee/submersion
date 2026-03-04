@@ -17,31 +17,34 @@
 The macOS window defaults to 1280x720. App Store Connect requires 2560x1600 pixel screenshots (1280x800 points on Retina 2x). Update the XIB to 1280x800.
 
 **Files:**
+
 - Modify: `macos/Runner/Base.lproj/MainMenu.xib:335` (contentRect height)
 - Modify: `macos/Runner/Base.lproj/MainMenu.xib:338` (frame height)
 
 **Step 1: Update contentRect height**
 
 In `MainMenu.xib`, line 335, change:
+
 ```xml
 <rect key="contentRect" x="335" y="390" width="1280" height="720"/>
-```
+```yaml
 to:
+
 ```xml
 <rect key="contentRect" x="335" y="390" width="1280" height="800"/>
-```
-
+```text
 **Step 2: Update frame height**
 
 In `MainMenu.xib`, line 338, change:
+
 ```xml
 <rect key="frame" x="0.0" y="0.0" width="1280" height="720"/>
-```
+```yaml
 to:
+
 ```xml
 <rect key="frame" x="0.0" y="0.0" width="1280" height="800"/>
-```
-
+```text
 **Step 3: Verify the app builds and launches**
 
 Run: `flutter build macos --release`
@@ -53,8 +56,7 @@ Expected: Window opens at 1280x800 points. NavigationRail is visible in extended
 ```bash
 git add macos/Runner/Base.lproj/MainMenu.xib
 git commit -m "chore: update macOS window size to 1280x800 for App Store screenshots"
-```
-
+```typescript
 ---
 
 ### Task 2: Make Integration Test Navigation Responsive
@@ -62,19 +64,21 @@ git commit -m "chore: update macOS window size to 1280x800 for App Store screens
 The existing `screenshots_test.dart` uses `_tapBottomNavItem` which only works on mobile (bottom nav). Add desktop NavigationRail support.
 
 **Files:**
+
 - Modify: `integration_test/screenshots_test.dart`
 
 **Step 1: Add platform detection import and constant**
 
 At the top of `screenshots_test.dart`, after the existing imports (around line 16), add:
+
 ```dart
 import 'dart:io' show Platform;
-```
-
+```typescript
 Note: `dart:io` is already imported on line 16 for `File`. Change that import to also expose `Platform`:
+
 ```dart
 import 'dart:io';
-```
+```typescript
 (This already imports both `File` and `Platform`.)
 
 **Step 2: Add NavigationRail tap helper**
@@ -128,8 +132,7 @@ Widget? _findIconInNavRail(
   }
   return null;
 }
-```
-
+```typescript
 **Step 3: Add unified navigation function**
 
 Add a function that picks the right navigation method based on platform:
@@ -149,11 +152,11 @@ Future<void> _navigateTo(WidgetTester tester, IconData icon) async {
     await _tapBottomNavItem(tester, icon);
   }
 }
-```
-
+```dart
 **Step 4: Update the test body to use `_navigateTo` and handle desktop layout**
 
 Replace the navigation calls in the main test body. The key differences on desktop:
+
 - Equipment and Statistics are directly in the NavigationRail (no "More" menu)
 - NavigationRail icons: `Icons.backpack_outlined` for Equipment (rail index 4), `Icons.bar_chart_outlined` for Statistics (rail index 9)
 
@@ -166,6 +169,7 @@ Update the navigation calls in the `'Capture all screens'` test:
    with: `await _navigateTo(tester, Icons.location_on_outlined);`
 
 3. Lines ~427-465 (Equipment via "More" menu): Replace with platform-aware logic:
+
 ```dart
 // 6. Navigate to Equipment
 if (_isDesktop) {
@@ -220,9 +224,9 @@ if (_isDesktop) {
     await screenshotHelper.takeScreenshot(tester, 'equipment');
   }
 }
-```
+```text
+1. Lines ~467-480 (Statistics via "More" menu): Replace similarly:
 
-4. Lines ~467-480 (Statistics via "More" menu): Replace similarly:
 ```dart
 // 7. Navigate to Statistics
 if (_isDesktop) {
@@ -246,11 +250,11 @@ if (_isDesktop) {
     await screenshotHelper.takeScreenshot(tester, 'statistics');
   }
 }
-```
+```text
+1. For the map view navigation (section 5, lines ~239-425): The map icon button approach should work on both platforms since it finds `IconButton` by icon, not by position in bottom nav. No changes needed.
 
-5. For the map view navigation (section 5, lines ~239-425): The map icon button approach should work on both platforms since it finds `IconButton` by icon, not by position in bottom nav. No changes needed.
+2. For the Records section (~lines 482-501): Records may appear differently on desktop. Use the same approach -- try finding Records text directly first:
 
-6. For the Records section (~lines 482-501): Records may appear differently on desktop. Use the same approach -- try finding Records text directly first:
 ```dart
 // 8. Records (same on both platforms - found by text)
 final recordsText = find.text('Records');
@@ -271,8 +275,7 @@ if (recordsText.evaluate().isNotEmpty) {
     await screenshotHelper.takeScreenshot(tester, 'records');
   }
 }
-```
-
+```text
 **Step 5: Run the test on macOS**
 
 Run: `flutter test integration_test/screenshots_test.dart -d macos --dart-define=SCREENSHOT_MODE=true --dart-define=SCREENSHOT_DEVICE_NAME=macOS --dart-define=SCREENSHOT_OUTPUT_DIR=screenshots --dart-define=UDDF_TEST_DATA_PATH=integration_test/fixtures/screenshot_test_data.uddf`
@@ -293,8 +296,7 @@ Expected: Test passes, screenshots saved to `screenshots/iPhone_6_7_inch/`.
 ```bash
 git add integration_test/screenshots_test.dart
 git commit -m "feat: make screenshot integration test responsive to desktop NavigationRail"
-```
-
+```diff
 ---
 
 ### Task 3: Update capture_screenshots.sh for macOS Integration Tests
@@ -302,6 +304,7 @@ git commit -m "feat: make screenshot integration test responsive to desktop Navi
 Replace the AppleScript-based macOS section with the same integration test pattern used for iOS.
 
 **Files:**
+
 - Modify: `scripts/release/capture_screenshots.sh:175-206` (macOS section)
 - Modify: `scripts/release/capture_screenshots.sh:281-282` (organize section)
 
@@ -336,15 +339,14 @@ else
   echo "Warning: Not running on macOS. Skipping macOS screenshots."
 fi
 echo ""
-```
-
+```text
 **Step 2: Add macOS to the organize section**
 
 After line 282 (`organize_device "iPad_13_inch"`), add:
+
 ```bash
 organize_device "macOS"
-```
-
+```text
 **Step 3: Test the unified script**
 
 Run: `./scripts/release/capture_screenshots.sh`
@@ -357,8 +359,7 @@ Note: For a quick test of just the macOS portion, you can comment out the iOS de
 ```bash
 git add scripts/release/capture_screenshots.sh
 git commit -m "feat: replace AppleScript macOS screenshots with integration tests in unified script"
-```
-
+```diff
 ---
 
 ### Task 4: Add Screenshot and Release Lanes to macOS Fastfile
@@ -366,6 +367,7 @@ git commit -m "feat: replace AppleScript macOS screenshots with integration test
 Add the missing lanes to the macOS Fastfile to match the iOS Fastfile structure.
 
 **Files:**
+
 - Modify: `macos/fastlane/Fastfile`
 
 **Step 1: Add screenshot lanes**
@@ -434,8 +436,7 @@ After the `load_api_key` method (line 50) and before the build lanes section (li
     screenshots
     upload_screenshots
   end
-```
-
+```text
 **Step 2: Add full_release lane**
 
 After the existing `:release` lane (line ~118), add:
@@ -447,8 +448,7 @@ After the existing `:release` lane (line ~118), add:
     upload_screenshots
     release
   end
-```
-
+```text
 **Step 3: Add utility lanes**
 
 At the end of the `platform :mac do` block, before `end`:
@@ -504,8 +504,7 @@ At the end of the `platform :mac do` block, before `end`:
     UI.message("    clean_screenshots  - Clean screenshot directory")
     UI.message("    lanes_help         - Show this help")
   end
-```
-
+```text
 **Step 4: Verify Fastlane can parse the file**
 
 Run: `cd macos && bundle exec fastlane lanes_help`
@@ -521,8 +520,7 @@ Expected: Generates UDDF data, runs integration test, captures macOS screenshots
 ```bash
 git add macos/fastlane/Fastfile
 git commit -m "feat: add screenshot capture, upload, and full_release lanes to macOS Fastfile"
-```
-
+```diff
 ---
 
 ### Task 5: Update organize_screenshots_for_fastlane.sh for macOS
@@ -530,6 +528,7 @@ git commit -m "feat: add screenshot capture, upload, and full_release lanes to m
 The standalone organize script also needs macOS support.
 
 **Files:**
+
 - Modify: `scripts/release/organize_screenshots_for_fastlane.sh`
 
 **Step 1: Add macOS organization block**
@@ -550,47 +549,45 @@ if [ -d "$SCREENSHOTS_DIR/macOS" ]; then
     done
     echo "  Done!"
 fi
-```
-
+```text
 **Step 2: Update the closing instructions**
 
 Change line 99 from:
+
 ```bash
 echo "You can now run: cd ios && bundle exec fastlane upload_screenshots"
-```
+```yaml
 to:
+
 ```bash
 echo "You can now upload screenshots:"
 echo "  iOS:   cd ios && bundle exec fastlane upload_screenshots"
 echo "  macOS: cd macos && bundle exec fastlane upload_screenshots"
-```
-
+```text
 **Step 3: Commit**
 
 ```bash
 git add scripts/release/organize_screenshots_for_fastlane.sh
 git commit -m "feat: add macOS screenshot organization for Fastlane"
-```
-
+```diff
 ---
 
 ### Task 6: Delete Old AppleScript Screenshot Script
 
 **Files:**
+
 - Delete: `scripts/release/capture_macos_screenshots.sh`
 
 **Step 1: Remove the file**
 
 ```bash
 git rm scripts/release/capture_macos_screenshots.sh
-```
-
+```text
 **Step 2: Commit**
 
 ```bash
 git commit -m "chore: remove AppleScript-based macOS screenshot script (replaced by integration tests)"
-```
-
+```diff
 ---
 
 ### Task 7: End-to-End Verification
@@ -601,47 +598,48 @@ Run the full macOS release flow to verify everything works together.
 
 ```bash
 cd macos && bundle exec fastlane clean_screenshots
-```
-
+```text
 **Step 2: Run macOS full_release (dry run -- skip actual upload)**
 
 For testing, run just the screenshot capture portion:
+
 ```bash
 cd macos && bundle exec fastlane screenshots
-```
-
+```text
 **Step 3: Verify screenshots**
 
 Check: `ls screenshots/macOS/`
 Expected: `macOS_01_dashboard.png`, `macOS_02_dive_list.png`, `macOS_03_dive_detail.png`, etc.
 
 Check screenshot dimensions:
+
 ```bash
 sips -g pixelWidth -g pixelHeight screenshots/macOS/macOS_01_dashboard.png
-```
+```text
 Expected: `pixelWidth: 2560`, `pixelHeight: 1600` (on Retina display).
 
 **Step 4: Verify Fastlane organization**
 
 Run the organize step manually to confirm macOS screenshots get into `en-US/`:
+
 ```bash
 ./scripts/release/organize_screenshots_for_fastlane.sh
 ls screenshots/en-US/ | grep macOS
-```
+```text
 Expected: macOS PNG files present in `en-US/` directory.
 
 **Step 5: Run unified capture script**
 
 ```bash
 ./scripts/release/capture_screenshots.sh
-```
+```text
 Expected: Captures iPhone + iPad + macOS screenshots. All organized into `en-US/`.
 
 **Step 6: Verify iOS screenshots still work**
 
 ```bash
 cd ios && bundle exec fastlane screenshots
-```
+```text
 Expected: iOS screenshots captured successfully, no regressions.
 
 ---
@@ -652,20 +650,19 @@ Expected: iOS screenshots captured successfully, no regressions.
 
 ```bash
 dart format lib/ test/ integration_test/
-```
-
+```text
 **Step 2: Run analyzer**
 
 ```bash
 flutter analyze
-```
+```text
 Expected: No new issues.
 
 **Step 3: Run unit tests**
 
 ```bash
 flutter test
-```
+```text
 Expected: All existing tests pass.
 
 **Step 4: Final commit if any formatting changes**

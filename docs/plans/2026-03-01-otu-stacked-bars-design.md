@@ -21,7 +21,7 @@ CNS `_buildStackedCnsBar` pattern with 4 layers.
 
 ### Visual Layout
 
-```
+```text
 Oxygen Tolerance Units
 
 Daily                                85 / 300 OTU
@@ -49,6 +49,7 @@ Prior: 277 OTU                   +43 this dive
 ### Data Flow
 
 **Daily bar** (all data already available in O2Exposure):
+
 - `prior` = `exposure.otuStart` (earlier same-day dives)
 - `thisDive` = `exposure.otu`
 - `total` = `exposure.otuDaily` (= otuStart + otu)
@@ -56,6 +57,7 @@ Prior: 277 OTU                   +43 this dive
 - `cursorDelta` = `selectedOtu` when non-null (OTU at cursor point within this dive)
 
 **Weekly bar** (derived from existing `weeklyOtu` parameter):
+
 - `prior` = `weeklyOtu - exposure.otu` (weekly total minus this dive)
 - `thisDive` = `exposure.otu`
 - `total` = `weeklyOtu`
@@ -79,6 +81,7 @@ Same as existing `_getOtuLimitColor`:
 ### Label Rows
 
 Each bar section has:
+
 - **Header row**: label left ("Daily" / "Weekly") + value right ("85 / 300 OTU", colored)
 - **Footer row**: prior amount left ("Start: 42 OTU" / "Prior: 277 OTU") + delta right ("+43 this dive")
 - **Cursor mode**: header value shows "cursor / total" format (e.g., "21 / 85 / 300 OTU")
@@ -98,10 +101,12 @@ Each bar section has:
 ### Method Changes in CompactO2ToxicityPanel
 
 **Remove:**
+
 - `_buildOtuBreakdown` (3-column text metrics)
 - `_buildOtuMetric` (individual text metric helper)
 
 **Add:**
+
 - `_buildOtuProgress` - renders "Oxygen Tolerance Units" header + daily bar + weekly bar
 - `_buildStackedOtuBar` - renders one stacked bar with 4 layers (parameterized by prior/total/limit/cursor/label)
 - `_buildOtuLabelRow` - header row with label + value

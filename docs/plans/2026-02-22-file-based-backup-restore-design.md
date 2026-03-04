@@ -28,6 +28,7 @@ are stored.
 The redesigned `BackupSettingsPage` has four sections, top to bottom:
 
 **Section 1 -- Export Backup (Card)**
+
 - Icon: `Icons.backup`
 - Title: "Export Backup"
 - Subtitle: "Save your dive data to a file"
@@ -39,6 +40,7 @@ The redesigned `BackupSettingsPage` has four sections, top to bottom:
 - Success snackbar: "Backup saved to [path]"
 
 **Section 2 -- Restore from File (Card)**
+
 - Icon: `Icons.restore`
 - Title: "Restore from File"
 - Subtitle: "Import a backup from any location"
@@ -47,6 +49,7 @@ The redesigned `BackupSettingsPage` has four sections, top to bottom:
 - Creates a safety backup before restoring (existing behavior)
 
 **Section 3 -- Backup History (List)**
+
 - Shows all known backup records
 - On load, validates each record's `localPath` exists; removes stale entries
   where the file is gone and there is no cloud backup
@@ -54,6 +57,7 @@ The redesigned `BackupSettingsPage` has four sections, top to bottom:
 - Popup menu: "Restore", "Delete"
 
 **Section 4 -- Automatic Backups (Collapsible)**
+
 - `ExpansionTile` with on/off toggle in header
 - When expanded:
   - Backup location: shows current path, tap to change via folder picker

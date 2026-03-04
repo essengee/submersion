@@ -13,6 +13,7 @@
 ### Task 1: Database Migration (v41) - Add Setting Column
 
 **Files:**
+
 - Modify: `lib/core/database/database.dart:565` (DiverSettings table)
 - Modify: `lib/core/database/database.dart:1106` (schemaVersion)
 - Modify: `lib/core/database/database.dart` (migration block, after `if (from < 40)`)
@@ -24,8 +25,7 @@ In `lib/core/database/database.dart`, after line 565 (`decoStopIncrement`), add:
 ```dart
   BoolColumn get useDiveComputerCnsData =>
       boolean().withDefault(const Constant(false))();
-```
-
+```text
 **Step 2: Bump schema version**
 
 Change line 1106 from `int get schemaVersion => 40;` to `int get schemaVersion => 41;`
@@ -40,8 +40,7 @@ After the `if (from < 40)` block, add:
             'ALTER TABLE diver_settings ADD COLUMN use_dive_computer_cns_data INTEGER NOT NULL DEFAULT 0',
           );
         }
-```
-
+```text
 **Step 4: Regenerate Drift code**
 
 Run: `dart run build_runner build --delete-conflicting-outputs`
@@ -50,14 +49,16 @@ Expected: Build completes, `database.g.dart` regenerated with new column.
 **Step 5: Commit**
 
 ```
-feat: add useDiveComputerCnsData setting column (migration v41)
-```
 
+feat: add useDiveComputerCnsData setting column (migration v41)
+
+```text
 ---
 
 ### Task 2: Settings Data Model - AppSettings + Repository
 
 **Files:**
+
 - Modify: `lib/features/settings/presentation/providers/settings_providers.dart:105` (AppSettings field)
 - Modify: `lib/features/settings/presentation/providers/settings_providers.dart:221` (constructor default)
 - Modify: `lib/features/settings/presentation/providers/settings_providers.dart:315` (copyWith param)
@@ -73,65 +74,60 @@ In `settings_providers.dart`, after `decoStopIncrement` (line 105), add:
 ```dart
   /// Whether to use dive-computer-reported CNS data when available
   final bool useDiveComputerCnsData;
-```
-
+```text
 **Step 2: Add constructor default**
 
 After `this.decoStopIncrement = 3.0,` (around line 221), add:
 
 ```dart
     this.useDiveComputerCnsData = false,
-```
-
+```text
 **Step 3: Add copyWith parameter and body line**
 
 Add to copyWith params (after `decoStopIncrement`):
 
 ```dart
     bool? useDiveComputerCnsData,
-```
-
+```text
 Add to copyWith body (after `decoStopIncrement` line):
 
 ```dart
       useDiveComputerCnsData: useDiveComputerCnsData ?? this.useDiveComputerCnsData,
-```
-
+```text
 **Step 4: Add to repository create method**
 
 In `diver_settings_repository.dart` `createSettingsForDiver`, after `decoStopIncrement` line (~76), add:
 
 ```dart
               useDiveComputerCnsData: Value(s.useDiveComputerCnsData),
-```
-
+```text
 **Step 5: Add to repository update method**
 
 In `updateSettingsForDiver`, after `decoStopIncrement` line (~175), add:
 
 ```dart
           useDiveComputerCnsData: Value(settings.useDiveComputerCnsData),
-```
-
+```text
 **Step 6: Add to repository read mapping**
 
 In `_mapRowToAppSettings`, after `decoStopIncrement` line (~310), add:
 
 ```dart
       useDiveComputerCnsData: row.useDiveComputerCnsData,
-```
-
+```text
 **Step 7: Commit**
 
 ```
-feat: add useDiveComputerCnsData to AppSettings and repository
-```
 
+feat: add useDiveComputerCnsData to AppSettings and repository
+
+```dart
 ---
 
 ### Task 3: Settings Provider + Convenience Provider
 
 **Files:**
+
 - Modify: `lib/features/settings/presentation/providers/settings_providers.dart:680` (SettingsNotifier setter)
 - Modify: `lib/features/settings/presentation/providers/settings_providers.dart:957` (convenience provider)
 
@@ -144,8 +140,7 @@ After `setDecoStopIncrement` (~line 680), add:
     state = state.copyWith(useDiveComputerCnsData: value);
     await _saveSettings();
   }
-```
-
+```text
 **Step 2: Add convenience provider**
 
 After `showNdlOnProfileProvider` (~line 957), add:
@@ -154,19 +149,20 @@ After `showNdlOnProfileProvider` (~line 957), add:
 final useDiveComputerCnsDataProvider = Provider<bool>((ref) {
   return ref.watch(settingsProvider.select((s) => s.useDiveComputerCnsData));
 });
-```
-
+```text
 **Step 3: Commit**
 
 ```
-feat: add useDiveComputerCnsData setter and convenience provider
-```
 
+feat: add useDiveComputerCnsData setter and convenience provider
+
+```text
 ---
 
 ### Task 4: Settings UI - Toggle in Decompression Section
 
 **Files:**
+
 - Modify: `lib/features/settings/presentation/pages/settings_page.dart:771-778` (_DecompressionSectionContent)
 
 **Step 1: Add SwitchListTile to decompression section**
@@ -195,8 +191,7 @@ In `_DecompressionSectionContent.build()`, before the closing `],` of the Column
               },
             ),
           ),
-```
-
+```text
 Note: Localization strings should be added later when all l10n keys are batched. Use string literals for now.
 
 **Step 2: Verify visually**
@@ -207,14 +202,16 @@ Expected: New "Dive Computer Data" section with toggle visible below gradient fa
 **Step 3: Commit**
 
 ```
-feat: add dive computer CNS data toggle to decompression settings
-```
 
+feat: add dive computer CNS data toggle to decompression settings
+
+```text
 ---
 
 ### Task 5: extractComputerCns Helper - Tests First
 
 **Files:**
+
 - Create: `test/features/dive_log/domain/services/computer_cns_extractor_test.dart`
 - Create: `lib/features/dive_log/domain/services/computer_cns_extractor.dart`
 
@@ -294,8 +291,7 @@ void main() {
     });
   });
 }
-```
-
+```typescript
 **Step 2: Run tests to verify they fail**
 
 Run: `flutter test test/features/dive_log/domain/services/computer_cns_extractor_test.dart`
@@ -332,8 +328,7 @@ ComputerCnsResult? extractComputerCns(List<DiveProfilePoint> profile) {
 bool hasComputerCns(List<DiveProfilePoint> profile) {
   return profile.any((p) => p.cns != null);
 }
-```
-
+```text
 **Step 4: Run tests to verify they pass**
 
 Run: `flutter test test/features/dive_log/domain/services/computer_cns_extractor_test.dart`
@@ -342,14 +337,16 @@ Expected: All 6 tests PASS
 **Step 5: Commit**
 
 ```
-feat: add extractComputerCns and hasComputerCns helpers with tests
-```
 
+feat: add extractComputerCns and hasComputerCns helpers with tests
+
+```text
 ---
 
 ### Task 6: Wire Setting into profileAnalysisProvider
 
 **Files:**
+
 - Modify: `lib/features/dive_log/presentation/providers/profile_analysis_provider.dart`
 
 This is the core logic change. Three modifications:
@@ -360,8 +357,7 @@ Add at top of `profile_analysis_provider.dart`:
 
 ```dart
 import 'package:submersion/features/dive_log/domain/services/computer_cns_extractor.dart';
-```
-
+```text
 **Step 2: Modify profileAnalysisProvider to check setting**
 
 In `profileAnalysisProvider`, before the `_computeResidualCns` call (around line 307), add the setting check and conditional logic:
@@ -377,8 +373,7 @@ In `profileAnalysisProvider`, before the `_computeResidualCns` call (around line
       final startCns = computerCns != null
           ? 0.0  // Will be overridden by computer data
           : await _computeResidualCns(ref, diveId);
-```
-
+```dart
 Replace the existing `final startCns = await _computeResidualCns(ref, diveId);` line.
 
 **Step 3: After overlayComputerDecoData, override o2Exposure if computer CNS available**
@@ -395,8 +390,7 @@ After the `overlayComputerDecoData` call (around line 334), and before the event
               ),
             )
           : overlaid;
-```
-
+```typescript
 Then use `withCns` instead of `overlaid` in the rest of the function (event merging).
 
 **Step 4: Modify _computeResidualCns to short-circuit**
@@ -421,8 +415,7 @@ In `_computeResidualCns`, after `getPreviousDive` (line 364), add the short-circ
     }
 
     // Fall through to recursive calculation
-```
-
+```text
 The existing recursive code after this point remains unchanged.
 
 **Step 5: Verify builds**
@@ -433,19 +426,22 @@ Expected: No issues
 **Step 6: Commit**
 
 ```
-feat: wire useDiveComputerCnsData setting into profile analysis
-```
 
+feat: wire useDiveComputerCnsData setting into profile analysis
+
+```dart
 ---
 
 ### Task 7: Provider Integration Tests
 
 **Files:**
+
 - Create: `test/features/dive_log/domain/services/computer_cns_provider_integration_test.dart`
 
 **Step 1: Write integration tests for the provider behavior**
 
 Test scenarios:
+
 1. Setting ON + dive with computer CNS -> o2Exposure uses computer values
 2. Setting ON + dive without computer CNS -> o2Exposure uses calculated values
 3. Setting OFF + dive with computer CNS -> o2Exposure uses calculated values (ignores computer)
@@ -460,8 +456,10 @@ Expected: All tests PASS
 
 **Step 3: Commit**
 
-```
+```text
+
 test: add integration tests for computer CNS preference setting
+
 ```
 
 ---
@@ -492,6 +490,7 @@ Expected: No formatting changes needed
 **Step 1: Review all changes**
 
 Verify the complete list of modified/created files:
+
 - `lib/core/database/database.dart` (migration v41, new column)
 - `lib/features/settings/presentation/providers/settings_providers.dart` (field, copyWith, setter, convenience provider)
 - `lib/features/settings/data/repositories/diver_settings_repository.dart` (create, update, read mapping)

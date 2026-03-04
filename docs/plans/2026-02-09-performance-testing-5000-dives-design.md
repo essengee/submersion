@@ -62,8 +62,7 @@ class PerfTimer {
   static Duration? lastResult(String name);
   static void reset();
 }
-```
-
+```text
 - `kDebugMode` guard: zero overhead in release builds (tree-shaken by Dart compiler)
 - Test API: `PerfTimer.lastResult('name')` for threshold assertions
 - Static methods, no DI (development/test tool, not production service)
@@ -164,7 +163,8 @@ Added to existing test files, tagged `@Tags(['performance'])`. Use `light` prese
 
 ### Heavy Benchmarks (run on demand)
 
-```
+```text
+
 test/performance/
   dive_repository_perf_test.dart     # Data-layer dive benchmarks
   site_repository_perf_test.dart     # Data-layer site benchmarks
@@ -176,6 +176,7 @@ test/performance/
 ```
 
 Run via:
+
 ```bash
 flutter test test/performance/
 ./scripts/run_perf_tests.sh          # Wrapper with summary table output
@@ -183,9 +184,10 @@ flutter test test/performance/
 
 ### Summary Table Output
 
-```
+```text
+
 Performance Results (realistic - 5,000 dives, 2,000 sites)
-------------------------------------------------------------
+
 getDiveSummaries (page 1)    48ms   [PASS < 500ms]
 getDiveCount (filtered)      12ms   [PASS < 200ms]
 getDiveById                  23ms   [PASS < 100ms]
@@ -197,32 +199,38 @@ getSitesWithDiveCounts       2301ms [FAIL < 500ms]
 searchSites                  67ms   [PASS < 150ms]
 Scroll 60fps worst frame     11ms   [PASS < 16ms]
 Map render (1,600 pins)      890ms  [PASS < 1000ms]
+
 ```
 
 ## 7. Implementation Sequence
 
 ### Phase 1: Data Generator
+
 - `test/helpers/performance_data_generator.dart`
 - Self-test verifying correct counts per preset
 - Measure generation time (target: < 15s for realistic)
 
 ### Phase 2: PerfTimer Utility
+
 - `lib/core/performance/perf_timer.dart`
 - Instrument 11 hot paths (7 dive + 4 site)
 - Unit test for timing capture
 
 ### Phase 3: Smoke Tests
+
 - Add lightweight perf assertions to existing test files
 - Tagged `@Tags(['performance'])`
 - Verify all pass on current codebase (establish baseline)
 
 ### Phase 4: Heavy Benchmarks
+
 - Full stress tests with realistic/heavy presets
 - `test/performance/` directory with 3 data-layer test files
 - `./scripts/run_perf_tests.sh`
 - Run once, record initial results, identify failures
 
 ### Phase 5: Fix Bottlenecks
+
 - Address failures from Phase 4 in priority order
 - `getSitesWithDiveCounts()` N+1 fix (if confirmed)
 - Database index additions
@@ -230,10 +238,12 @@ Map render (1,600 pins)      890ms  [PASS < 1000ms]
 - `getAllDives()` legacy path warning/migration
 
 ### Phase 6: UI Integration Tests
+
 - 3 integration test files with frame tracing
 - Map pin clustering implementation (if benchmarks confirm needed)
 
 ### Phase 7: Documentation and CI Script
+
 - `test/performance/README.md`
 - Finalized `./scripts/run_perf_tests.sh`
 

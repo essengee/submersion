@@ -33,8 +33,7 @@ CREATE TABLE dive_custom_fields (
 
 CREATE INDEX idx_dive_custom_fields_dive_id ON dive_custom_fields(dive_id);
 CREATE INDEX idx_dive_custom_fields_key ON dive_custom_fields(field_key);
-```
-
+```text
 ### Drift Table Definition
 
 ```dart
@@ -50,8 +49,7 @@ class DiveCustomFields extends Table {
   @override
   Set<Column> get primaryKey => {id};
 }
-```
-
+```text
 ## Domain Entity
 
 ```dart
@@ -73,8 +71,7 @@ class DiveCustomField extends Equatable {
   @override
   List<Object?> get props => [id, key, value, sortOrder];
 }
-```
-
+```dart
 The `Dive` entity gains: `final List<DiveCustomField> customFields;` (defaults to `const []`).
 
 ## Repository
@@ -94,8 +91,7 @@ class DiveCustomFieldRepository {
   Future<List<String>> findDiveIdsWithKey(String diverId, String key);
   Future<List<String>> findDiveIdsWithKeyValue(String diverId, String key, String value);
 }
-```
-
+```dart
 ### DiveRepository Integration
 
 - **Single load** (`getDiveById`): Query custom fields and attach to Dive
@@ -154,6 +150,7 @@ final customFieldKeySuggestionsProvider = FutureProvider.family<List<String>, St
 ### UDDF Export/Import
 
 - Uses UDDF `<applicationdata>` extension point:
+
   ```xml
   <applicationdata>
     <submersion>

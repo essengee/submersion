@@ -5,6 +5,7 @@ Organize dives into trips for better organization and trip-level statistics.
 ## What Is a Trip?
 
 A trip groups related dives together:
+
 - Multi-day dive vacation
 - Liveaboard expedition
 - Weekend dive trip
@@ -22,6 +23,7 @@ A trip groups related dives together:
 ### From Dive Entry
 
 When logging a dive:
+
 1. Find **Trip** field
 2. Tap to select or create
 3. Link dive to trip
@@ -43,6 +45,7 @@ When logging a dive:
 ### Resort Trip
 
 For shore-based diving:
+
 - Set **Resort Name**
 - Location = resort location
 - Add multiple dive sites
@@ -50,6 +53,7 @@ For shore-based diving:
 ### Liveaboard
 
 For live-aboard trips:
+
 - Set **Liveaboard Name**
 - Location = cruising area
 - Track multiple sites visited
@@ -57,6 +61,7 @@ For live-aboard trips:
 ### Day Trip
 
 For single-day excursions:
+
 - Same start/end date
 - Location = departure point
 - Quick organization
@@ -73,6 +78,7 @@ For single-day excursions:
 ### Bulk Linking
 
 For existing dives:
+
 1. Go to dive list
 2. Select multiple dives
 3. Choose **Add to Trip**
@@ -81,6 +87,7 @@ For existing dives:
 ### Auto-Suggestion
 
 When creating a dive:
+
 - If date falls within a trip
 - Trip is suggested automatically
 - Tap to confirm or change
@@ -107,6 +114,7 @@ Each trip page shows:
 ### Trip Dive List
 
 All dives on the trip:
+
 - Sorted by date/time
 - Quick access to details
 - Day-by-day grouping
@@ -114,6 +122,7 @@ All dives on the trip:
 ### Trip Map
 
 Visual overview:
+
 - All dive sites on map
 - Route of travel (liveaboard)
 - Geographic spread
@@ -123,6 +132,7 @@ Visual overview:
 ### Naming Conventions
 
 Clear trip names help:
+
 - "Palau November 2024"
 - "Red Sea Liveaboard - MY Blue"
 - "Kona Big Island Week"
@@ -130,6 +140,7 @@ Clear trip names help:
 ### Date Accuracy
 
 Set accurate dates:
+
 - Include travel days or not (your choice)
 - Helps with auto-suggestions
 - Better historical tracking
@@ -139,6 +150,7 @@ Set accurate dates:
 ### Trip List
 
 Access all trips:
+
 1. Go to **Settings** > **Trips**
 2. View sorted by date
 3. Filter by year
@@ -146,6 +158,7 @@ Access all trips:
 ### Trip Filtering
 
 In dive list:
+
 1. Tap filter icon
 2. Select **By Trip**
 3. Choose a trip
@@ -170,6 +183,7 @@ In dive list:
 ### Using Both
 
 You can combine:
+
 - Trip: "Cozumel March 2024"
 - Tags: "Night Dive", "Cenote", "Training"
 
@@ -178,6 +192,7 @@ You can combine:
 ### Trip Export
 
 Export all trip dives:
+
 1. Open trip detail
 2. Tap **Export**
 3. Choose format
@@ -186,6 +201,7 @@ Export all trip dives:
 ### Trip Report
 
 Generate trip summary:
+
 - PDF with all dives
 - Statistics summary
 - Site list
@@ -196,6 +212,7 @@ Generate trip summary:
 ### Placeholder Trips
 
 Create trips before traveling:
+
 1. Add trip with future dates
 2. Link dives as you log them
 3. Easy organization
@@ -203,6 +220,7 @@ Create trips before traveling:
 ### Pre-Trip Info
 
 Use notes for:
+
 - Flight information
 - Accommodation details
 - Emergency contacts

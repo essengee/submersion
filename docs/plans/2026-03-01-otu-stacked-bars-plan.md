@@ -13,6 +13,7 @@
 ### Task 1: Write widget tests for the new OTU stacked bars
 
 **Files:**
+
 - Create: `test/features/dive_log/presentation/widgets/compact_o2_toxicity_panel_test.dart`
 
 **Step 1: Write failing tests for daily and weekly OTU bar rendering**
@@ -146,8 +147,7 @@ void main() {
     });
   });
 }
-```
-
+```text
 **Step 2: Run tests to verify they fail**
 
 Run: `flutter test test/features/dive_log/presentation/widgets/compact_o2_toxicity_panel_test.dart`
@@ -158,6 +158,7 @@ Expected: FAIL -- tests look for "Daily" header label, "85 / 300 OTU", etc. whic
 ### Task 2: Replace `_buildOtuBreakdown` with `_buildOtuProgress` and add `_buildStackedOtuBar`
 
 **Files:**
+
 - Modify: `lib/features/dive_log/presentation/widgets/o2_toxicity_card.dart:469-506` (build method, line ~486)
 - Modify: `lib/features/dive_log/presentation/widgets/o2_toxicity_card.dart:715-886` (remove old methods, add new ones)
 
@@ -168,18 +169,17 @@ In `CompactO2ToxicityPanel.build()`, change:
 ```dart
         // OTU breakdown (This Dive, Daily, Weekly)
         _buildOtuBreakdown(context, colorScheme, textTheme),
-```
-
+```yaml
 to:
 
 ```dart
         // OTU progress bars (Daily + Weekly)
         _buildOtuProgress(context, colorScheme, textTheme),
-```
-
+```text
 **Step 2: Remove the old `_buildOtuBreakdown` and `_buildOtuMetric` methods**
 
 Delete the following methods from `CompactO2ToxicityPanel`:
+
 - `_buildOtuBreakdown` (lines 715-780)
 - `_buildOtuMetric` (lines 852-886)
 
@@ -244,8 +244,7 @@ Add this method to `CompactO2ToxicityPanel`, placed after `_buildStackedCnsBar`:
       ],
     );
   }
-```
-
+```text
 **Step 4: Add the `_buildOtuBarSection` method**
 
 This wraps a single bar with header/footer rows:
@@ -334,8 +333,7 @@ This wraps a single bar with header/footer rows:
       ),
     );
   }
-```
-
+```text
 **Step 5: Add the `_buildStackedOtuBar` method**
 
 This renders the 4-layer stacked bar, mirroring `_buildStackedCnsBar`:
@@ -408,8 +406,7 @@ This renders the 4-layer stacked bar, mirroring `_buildStackedCnsBar`:
       ),
     );
   }
-```
-
+```text
 **Step 6: Run tests to verify they pass**
 
 Run: `flutter test test/features/dive_log/presentation/widgets/compact_o2_toxicity_panel_test.dart`
@@ -441,6 +438,7 @@ shows 4 layers: background, total, cursor overlay, and prior segment."
 ### Task 3: Verify visual rendering and edge cases
 
 **Files:**
+
 - No new files
 
 **Step 1: Run the app and navigate to a dive with O2 exposure data**
@@ -451,6 +449,7 @@ Navigate to a dive detail page with nitrox profile data (ppO2 > 0.5).
 **Step 2: Verify daily bar rendering**
 
 Expected:
+
 - "Oxygen Tolerance Units" section header visible
 - "Daily" label on left, "X / 300 OTU" on right (colored by threshold)
 - Stacked bar: blueGrey prior segment + colored total bar + background remaining
@@ -459,6 +458,7 @@ Expected:
 **Step 3: Verify weekly bar rendering**
 
 Expected:
+
 - "Weekly" label on left, "X / 850 OTU" on right (colored by threshold)
 - Stacked bar with prior segment = weekly total minus this dive
 - Footer: "Prior: X OTU" on left, "+Y this dive" on right
@@ -466,6 +466,7 @@ Expected:
 **Step 4: Verify cursor interaction**
 
 Scrub the dive profile chart cursor. Expected:
+
 - Daily header changes to "cursor / total / 300 OTU" format
 - Weekly header changes to "cursor / total / 850 OTU" format
 - Primary-colored overlay appears on both bars showing OTU at cursor point
@@ -473,6 +474,7 @@ Scrub the dive profile chart cursor. Expected:
 **Step 5: Verify edge case -- first dive of day (no prior)**
 
 Navigate to a dive that is the first of its day. Expected:
+
 - No blueGrey prior segment on daily bar
 - Footer shows "Start: 0 OTU"
 
@@ -481,6 +483,7 @@ Navigate to a dive that is the first of its day. Expected:
 ### Task 4: Run analysis and format check
 
 **Files:**
+
 - No new files
 
 **Step 1: Run dart format**

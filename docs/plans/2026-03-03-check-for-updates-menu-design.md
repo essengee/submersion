@@ -12,7 +12,7 @@ A method channel (`app.submersion/updates`) bridges native menu actions to the
 existing Dart update system. Both platforms invoke `checkForUpdateInteractively`
 through this channel.
 
-```
+```text
 Native Menu Action
     |
     v

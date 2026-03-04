@@ -9,6 +9,7 @@
 ## Overview
 
 Add two new export formats to Submersion:
+
 1. **Excel Export** - Multi-sheet workbook with dives, sites, equipment, and statistics
 2. **KML Export** - Google Earth placemarks for dive sites with dive history
 
@@ -24,7 +25,7 @@ Use `excel: ^4.0.6` (pure Dart, cross-platform compatible).
 
 ### Workbook Structure
 
-```
+```text
 submersion_export_YYYY-MM-DD.xlsx
 ├── Sheet 1: Dives
 ├── Sheet 2: Sites
@@ -35,6 +36,7 @@ submersion_export_YYYY-MM-DD.xlsx
 ### Sheets 1-3: Data Sheets
 
 Mirror existing CSV export column structure exactly:
+
 - Header row in row 1
 - Data starts row 2
 - All values converted to user's preferred units (from AppSettings)
@@ -87,11 +89,11 @@ Standard KML 2.2 XML format compatible with Google Earth.
     </Placemark>
   </Document>
 </kml>
-```
-
+```typescript
 ### Placemark Description Content
 
 HTML-formatted bubble with:
+
 - Site name (h3)
 - Location (country/region)
 - Depth range (min-max)
@@ -155,6 +157,7 @@ Future<String> exportToKml({
 ### Unit Preferences
 
 Both exports respect active diver's settings:
+
 - Depths in meters or feet
 - Temperatures in Celsius or Fahrenheit
 - Pressures in bar or PSI

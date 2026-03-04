@@ -17,37 +17,38 @@
 Remove `_deleteTagIfUnused()`, `deleteUnusedTags()`, and all calls to them so tags persist until explicitly deleted.
 
 **Files:**
+
 - Modify: `lib/features/tags/data/repositories/tag_repository.dart`
 
 **Step 1: Remove auto-cleanup call from `removeTagFromDive()`**
 
 In `removeTagFromDive()` (around line 393), delete:
+
 ```dart
       // Clean up the tag if it's no longer used
       await _deleteTagIfUnused(tagId);
-```
-
+```text
 **Step 2: Remove auto-cleanup call from `setTagsForDive()`**
 
 In `setTagsForDive()`, delete the variables tracking removed tags (lines 261-265) and the cleanup loop (lines 313-316):
 
 Remove from the top of the method:
+
 ```dart
       // Get existing tag IDs before deletion to check for cleanup later
       final existingTags = await getTagsForDive(diveId);
       final existingTagIds = existingTags.map((t) => t.id).toSet();
       final newTagIds = tags.map((t) => t.id).toSet();
       final removedTagIds = existingTagIds.difference(newTagIds);
-```
-
+```dart
 Remove from the bottom of the method (before the final log line):
+
 ```dart
       // Clean up any tags that are no longer used
       for (final tagId in removedTagIds) {
         await _deleteTagIfUnused(tagId);
       }
-```
-
+```text
 **Step 3: Delete the cleanup methods**
 
 Delete the entire `_deleteTagIfUnused()` method (lines 407-418).
@@ -57,12 +58,12 @@ Delete the entire `deleteUnusedTags()` method (lines 434-447).
 Delete the entire `_getTagUsageCount()` method (lines 421-431) — we will re-add it as public in the next task.
 
 Delete the section header comment:
+
 ```dart
   // ============================================================================
   // Cleanup
   // ============================================================================
-```
-
+```text
 **Step 4: Run tests**
 
 Run: `flutter test`
@@ -77,13 +78,13 @@ git commit -m "refactor(tags): remove auto-cleanup of unused tags
 Tags now persist until explicitly deleted by the user from the
 tag management page. Removes _deleteTagIfUnused(), deleteUnusedTags(),
 and their call sites in removeTagFromDive() and setTagsForDive()."
-```
-
+```text
 ---
 
 ## Task 2: Add `getTagUsageCount()` and `mergeTags()` to Repository
 
 **Files:**
+
 - Modify: `lib/features/tags/data/repositories/tag_repository.dart`
 
 **Step 1: Add public `getTagUsageCount()`**
@@ -124,8 +125,7 @@ Add this method to the Statistics section (after `getTagStatistics()`):
       rethrow;
     }
   }
-```
-
+```text
 **Step 2: Add `mergeTags()` method**
 
 Add this method after the statistics section, in a new Merge section:
@@ -233,8 +233,7 @@ Add this method after the statistics section, in a new Merge section:
       rethrow;
     }
   }
-```
-
+```text
 **Step 3: Regenerate mocks**
 
 Run: `dart run build_runner build --delete-conflicting-outputs`
@@ -255,13 +254,13 @@ git commit -m "feat(tags): add mergeTags() and public getTagUsageCount()
 mergeTags() reassigns dive associations from source tags to a surviving
 tag, deduplicates, deletes sources, and syncs all affected records.
 getTagUsageCount() and getMergedDiveCount() are public for the UI."
-```
-
+```text
 ---
 
 ## Task 3: Add `mergeTags()` and `deleteTags()` to TagListNotifier
 
 **Files:**
+
 - Modify: `lib/features/tags/presentation/providers/tag_providers.dart`
 
 **Step 1: Add `mergeTags()` to `TagListNotifier`**
@@ -292,8 +291,7 @@ Add after the existing `deleteTag()` method:
     await _loadTags();
     _ref.invalidate(tagStatisticsProvider);
   }
-```
-
+```text
 **Step 2: Run tests**
 
 Run: `flutter test`
@@ -304,13 +302,13 @@ Expected: All tests pass.
 ```bash
 git add lib/features/tags/presentation/providers/tag_providers.dart
 git commit -m "feat(tags): add mergeTags() and deleteTags() to TagListNotifier"
-```
-
+```diff
 ---
 
 ## Task 4: Add l10n Strings
 
 **Files:**
+
 - Modify: `lib/l10n/arb/app_en.arb`
 
 **Step 1: Add new l10n keys**
@@ -343,8 +341,7 @@ Add these entries to `app_en.arb` in the tags section (near the existing `tags_*
   "tags_manage_mergeKeepFrom": "Or keep name from:",
   "tags_manage_mergeAffectedDives": "This will affect {count, plural, =0{0 dives} =1{1 dive} other{{count} dives}} total.",
   "tags_manage_mergeAction": "Merge",
-```
-
+```text
 Also add the `@` metadata entries for parameterized strings (following the existing pattern in the file).
 
 **Step 2: Run codegen**
@@ -357,13 +354,13 @@ Expected: `app_localizations_en.dart` regenerates with new getters.
 ```bash
 git add lib/l10n/
 git commit -m "feat(l10n): add tag management localization strings"
-```
-
+```text
 ---
 
 ## Task 5: Add `/tags` Route
 
 **Files:**
+
 - Modify: `lib/core/router/app_router.dart`
 
 **Step 1: Add import**
@@ -372,8 +369,7 @@ Add at the top of the file with the other feature imports:
 
 ```dart
 import 'package:submersion/features/tags/presentation/pages/tag_manage_page.dart';
-```
-
+```text
 **Step 2: Add route**
 
 Add the `/tags` route after the `/species` route block (around line 825):
@@ -385,8 +381,7 @@ Add the `/tags` route after the `/species` route block (around line 825):
             name: 'tagManage',
             builder: (context, state) => const TagManagePage(),
           ),
-```
-
+```text
 **Step 3: Add Tags row to settings manage section**
 
 In `lib/features/settings/presentation/pages/settings_page.dart`, inside `_ManageSectionContent`, add a new `ListTile` after the Species entry (line 1718):
@@ -402,8 +397,7 @@ In `lib/features/settings/presentation/pages/settings_page.dart`, inside `_Manag
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => context.push('/tags'),
                 ),
-```
-
+```text
 Note: `Icons.sell` is the tag/label icon in Material 3 — distinct from `Icons.label` used for dive types.
 
 **Step 4: Commit (will be combined with Task 6 after the page exists)**
@@ -415,6 +409,7 @@ Hold this commit until `TagManagePage` is created in Task 6.
 ## Task 6: Create Tag Management Page — Default Mode
 
 **Files:**
+
 - Create: `lib/features/tags/presentation/pages/tag_manage_page.dart`
 
 **Step 1: Create the page file**
@@ -474,8 +469,7 @@ class _TagManagePageState extends ConsumerState<TagManagePage> {
 
   // ... (methods detailed in subsequent steps)
 }
-```
-
+```text
 **Step 2: Implement `_buildDefaultAppBar()`**
 
 ```dart
@@ -488,8 +482,7 @@ class _TagManagePageState extends ConsumerState<TagManagePage> {
       ),
     );
   }
-```
-
+```text
 **Step 3: Implement `_buildSearchBar()`**
 
 Follow the same pattern as `SpeciesManagePage._buildSearchBar()`:
@@ -515,8 +508,7 @@ Follow the same pattern as `SpeciesManagePage._buildSearchBar()`:
       ),
     );
   }
-```
-
+```text
 **Step 4: Implement `_buildTagList()`**
 
 ```dart
@@ -575,8 +567,7 @@ Follow the same pattern as `SpeciesManagePage._buildSearchBar()`:
       },
     );
   }
-```
-
+```text
 **Step 5: Implement selection mode helpers**
 
 ```dart
@@ -609,8 +600,7 @@ Follow the same pattern as `SpeciesManagePage._buildSearchBar()`:
       }
     });
   }
-```
-
+```text
 **Step 6: Implement `_showCreateDialog()` and `_showEditDialog()`**
 
 Reuse the same dialog pattern from the existing `TagManagementDialog._editTag()` in `tag_input_widget.dart`. The create dialog is the same but with empty initial values. Use l10n keys from Task 4.
@@ -619,6 +609,7 @@ Reuse the same dialog pattern from the existing `TagManagementDialog._editTag()`
 
 Run: `flutter run -d macos`
 Navigate to Settings > Manage > Tags. Verify:
+
 - Tag list renders with colors and dive counts
 - Search filters the list
 - Tap opens edit dialog
@@ -635,13 +626,13 @@ git commit -m "feat(tags): add tag management page with CRUD and search
 New TagManagePage at /tags with list view showing tag names, colors,
 and usage counts. Tap to edit, FAB to create, long-press for selection
 mode. Accessible from Settings > Manage > Tags."
-```
-
+```text
 ---
 
 ## Task 7: Add Selection Mode with Delete
 
 **Files:**
+
 - Modify: `lib/features/tags/presentation/pages/tag_manage_page.dart`
 
 **Step 1: Implement `_buildSelectionAppBar()`**
@@ -674,8 +665,7 @@ mode. Accessible from Settings > Manage > Tags."
       ],
     );
   }
-```
-
+```text
 **Step 2: Implement `_confirmDelete()`**
 
 ```dart
@@ -752,11 +742,11 @@ mode. Accessible from Settings > Manage > Tags."
       }
     }
   }
-```
-
+```sql
 **Step 3: Run the app and test selection mode**
 
 Run: `flutter run -d macos`
+
 - Long-press a tag to enter selection mode
 - Verify app bar shows count, merge icon (disabled with 1), delete icon
 - Tap delete on 1 tag -> confirmation shows dive count -> deletes
@@ -770,13 +760,13 @@ git commit -m "feat(tags): add selection mode with single and bulk delete
 
 Long-press enters selection mode with checkmarks. Delete action shows
 confirmation with affected dive count for single or bulk deletion."
-```
-
+```text
 ---
 
 ## Task 8: Create Merge Bottom Sheet
 
 **Files:**
+
 - Create: `lib/features/tags/presentation/widgets/tag_merge_sheet.dart`
 - Modify: `lib/features/tags/presentation/pages/tag_manage_page.dart`
 
@@ -972,8 +962,7 @@ class _TagMergeSheetState extends ConsumerState<TagMergeSheet> {
     );
   }
 }
-```
-
+```text
 **Step 2: Wire up `_showMergeSheet()` in `tag_manage_page.dart`**
 
 Add this method to `_TagManagePageState`:
@@ -999,16 +988,16 @@ Add this method to `_TagManagePageState`:
       _exitSelectionMode();
     }
   }
-```
-
+```typescript
 Add the import at the top:
+
 ```dart
 import 'package:submersion/features/tags/presentation/widgets/tag_merge_sheet.dart';
-```
-
+```sql
 **Step 3: Run the app and test merge flow**
 
 Run: `flutter run -d macos`
+
 - Select 2+ tags -> tap merge icon
 - Verify bottom sheet shows names, radio buttons, color picker, affected count
 - Pick a name and merge -> tags combine
@@ -1023,13 +1012,13 @@ git commit -m "feat(tags): add merge bottom sheet for combining tags
 Select 2+ tags and merge into one. Bottom sheet lets user pick name
 (from existing or custom), choose color, shows affected dive count.
 All dive associations deduplicated during merge."
-```
-
+```text
 ---
 
 ## Task 9: Remove Orphaned TagManagementDialog
 
 **Files:**
+
 - Modify: `lib/features/tags/presentation/widgets/tag_input_widget.dart`
 
 **Step 1: Delete `TagManagementDialog`**
@@ -1049,13 +1038,13 @@ git commit -m "refactor(tags): remove orphaned TagManagementDialog
 
 Replaced by the full TagManagePage. The dialog was defined but never
 used anywhere in the app."
-```
-
+```text
 ---
 
 ## Task 10: Write Repository Unit Tests
 
 **Files:**
+
 - Create: `test/features/tags/data/repositories/tag_repository_test.dart`
 
 **Step 1: Write test file**
@@ -1071,6 +1060,7 @@ Create `test/features/tags/data/repositories/tag_repository_test.dart` with test
 7. `setTagsForDive()` does NOT delete removed tags (no auto-cleanup)
 
 Use an in-memory Drift database for these tests (same pattern as other repository tests in the project). Each test should:
+
 - Set up tags and dive_tags in the database
 - Call the repository method
 - Assert the expected database state
@@ -1085,13 +1075,13 @@ Expected: Tests should pass since implementation already exists from Tasks 1-2.
 ```bash
 git add test/features/tags/data/repositories/tag_repository_test.dart
 git commit -m "test(tags): add repository tests for merge, delete, and no auto-cleanup"
-```
-
+```dart
 ---
 
 ## Task 11: Write Widget Tests for Tag Management Page
 
 **Files:**
+
 - Create: `test/features/tags/presentation/pages/tag_manage_page_test.dart`
 
 **Step 1: Write test file**
@@ -1119,13 +1109,13 @@ Expected: All pass.
 ```bash
 git add test/features/tags/presentation/pages/tag_manage_page_test.dart
 git commit -m "test(tags): add widget tests for TagManagePage"
-```
-
+```dart
 ---
 
 ## Task 12: Write Widget Tests for Merge Sheet
 
 **Files:**
+
 - Create: `test/features/tags/presentation/widgets/tag_merge_sheet_test.dart`
 
 **Step 1: Write test file**
@@ -1148,8 +1138,7 @@ Expected: All pass.
 ```bash
 git add test/features/tags/presentation/widgets/tag_merge_sheet_test.dart
 git commit -m "test(tags): add widget tests for TagMergeSheet"
-```
-
+```sql
 ---
 
 ## Task 13: Format, Analyze, and Final Verification
@@ -1174,6 +1163,7 @@ Expected: All tests pass.
 
 Run: `flutter run -d macos`
 Test the full flow:
+
 1. Settings > Manage > Tags
 2. Create a new tag
 3. Edit its name and color

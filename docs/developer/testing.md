@@ -13,7 +13,7 @@ Submersion has comprehensive test coverage including unit, widget, integration, 
 
 ## Test Structure
 
-```
+```dart
 test/
 ├── unit/                          # Unit tests
 ├── widget/                        # Widget tests
@@ -40,8 +40,7 @@ test/
 
 ```bash
 flutter test
-```
-
+```text
 ### Specific Test Suite
 
 ```bash
@@ -56,23 +55,20 @@ flutter test test/integration/
 
 # Performance tests
 flutter test test/performance/
-```
-
+```text
 ### With Coverage
 
 ```bash
 flutter test --coverage
 genhtml coverage/lcov.info -o coverage/html
 open coverage/html/index.html
-```
-
+```text
 ### Performance Tests
 
 ```bash
 # Performance tests have extended timeouts
 flutter test test/performance/ --reporter expanded
-```
-
+```text
 ## Unit Tests
 
 ### Repository Tests
@@ -80,35 +76,42 @@ flutter test test/performance/ --reporter expanded
 Each repository has comprehensive tests:
 
 **Dive Repository** (`dive_repository_test.dart`)
+
 - CRUD operations for dives
 - Query filtering and sorting
 - Dive numbering logic
 - Surface interval calculations
 
 **Site Repository** (`site_repository_test.dart`)
+
 - Site management
 - GPS coordinate handling
 - Dive count aggregation
 
 **Equipment Repository** (`equipment_repository_test.dart`)
+
 - Equipment CRUD operations
 - Service tracking
 - Status management
 
 **Trip Repository** (`trip_repository_test.dart`)
+
 - Trip creation and management
 - Date range validation
 - Dive associations
 
 **Buddy Repository** (`buddy_repository_test.dart`)
+
 - Buddy management
 - Contact information handling
 
 **Dive Center Repository** (`dive_center_repository_test.dart`)
+
 - Dive center CRUD operations
 - Location data management
 
 **Certification Repository** (`certification_repository_test.dart`)
+
 - Certification tracking
 - Expiration date handling
 
@@ -150,24 +153,26 @@ group('DiveRepository', () {
     expect(dives.first.dateTime.isAfter(dives.last.dateTime), true);
   });
 });
-```
-
+```dart
 ## Widget Tests
 
 ### UI Component Tests
 
 **Settings Page** (`settings_page_test.dart`)
+
 - Unit selection and conversion
 - Theme switching
 - Data management options
 
 **Records Page** (`records_page_test.dart`)
+
 - Deepest dive display
 - Longest dive display
 - Temperature extremes
 - Provider mocking
 
 **Trip Pages** (`trip_list_page_test.dart`, etc.)
+
 - Trip list rendering
 - Trip detail display
 - Trip creation and editing forms
@@ -198,8 +203,7 @@ testWidgets('displays dive statistics', (tester) async {
   expect(find.text('75h'), findsOneWidget);
   expect(find.text('40.0m'), findsOneWidget);
 });
-```
-
+```text
 ## Integration Tests
 
 Integration tests verify complete user workflows:
@@ -207,6 +211,7 @@ Integration tests verify complete user workflows:
 ### Dive Logging Workflow
 
 Tests the complete process of logging a dive:
+
 1. Create prerequisite data (sites, centers, buddies, equipment)
 2. Log a dive with all associated data
 3. Verify data relationships
@@ -214,6 +219,7 @@ Tests the complete process of logging a dive:
 5. Verify cascading effects
 
 **Key Scenarios:**
+
 - Complete dive logging with all metadata
 - Multiple dives at the same site
 - Complex gas mixes and multiple tanks
@@ -223,6 +229,7 @@ Tests the complete process of logging a dive:
 ### Trip Management Workflow
 
 Tests trip creation and dive associations:
+
 1. Create trips with date ranges
 2. Log multiple dives for a trip
 3. Verify dive-trip relationships
@@ -230,6 +237,7 @@ Tests trip creation and dive associations:
 5. Handle trip updates and deletions
 
 **Key Scenarios:**
+
 - Trip with 10+ dives across multiple sites
 - Trip statistics aggregation
 - Update trip while maintaining dive associations
@@ -257,33 +265,39 @@ Performance tests ensure the app scales with large datasets.
 ### Test Scenarios
 
 **1. Large Dataset Creation**
+
 - Create 50 sites
 - Create 1000 dives with varying attributes
 - Measure creation time
 - Measure retrieval time
 
 **2. Query Performance**
+
 - Search by dive number
 - Site dive count aggregation
 - Recent dives retrieval
 - Statistics calculation
 
 **3. Pagination Performance**
+
 - Create 2000 dives
 - Test paginated retrieval (50 items per page)
 - Verify consistent performance across pages
 
 **4. Equipment Usage Tracking**
+
 - Create 20 equipment items
 - Log 500 dives with equipment associations
 - Measure equipment query performance
 
 **5. Complex Statistics**
+
 - Create 1500 dives with diverse attributes
 - Calculate comprehensive statistics
 - Test multiple aggregations simultaneously
 
 **6. Concurrent Operations Stress Test**
+
 - Perform multiple operations simultaneously
 - Verify data integrity
 - Measure total operation time
@@ -320,8 +334,7 @@ class TestDatabase {
     await database.close();
   }
 }
-```
-
+```text
 ### Usage
 
 ```dart
@@ -336,9 +349,9 @@ setUp(() async {
 tearDown(() async {
   await testDb.dispose();
 });
-```
-
+```dart
 Features:
+
 - Creates an in-memory Drift database
 - Automatically tears down after tests
 - Provides isolated test environments
@@ -360,8 +373,7 @@ testWidgets('shows dives', (tester) async {
     ),
   );
 });
-```
-
+```text
 ### Mock Repository
 
 ```dart
@@ -385,16 +397,19 @@ class MockDiveRepository extends Mock implements DiveRepository {
 ## Troubleshooting
 
 ### Tests Fail Randomly
+
 - Ensure proper async/await usage
 - Check for race conditions
 - Verify test database cleanup
 
 ### Performance Tests Timeout
+
 - Increase timeout in test configuration
 - Run on more powerful hardware
 - Check for memory leaks
 
 ### Import Errors
+
 - Run `flutter pub get`
 - Verify all dependencies are installed
 - Check pubspec.yaml
@@ -402,6 +417,7 @@ class MockDiveRepository extends Mock implements DiveRepository {
 ## Contributing Tests
 
 When adding new features:
+
 1. Write unit tests for new repositories/services
 2. Add widget tests for new UI components
 3. Update integration tests if workflow changes
@@ -418,4 +434,3 @@ When adding new features:
 | Performance Tests | All operations with large datasets |
 
 **Current Status:** All goals met
-

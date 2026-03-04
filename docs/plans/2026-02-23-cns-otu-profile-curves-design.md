@@ -35,6 +35,7 @@ Both methods are called in `analyze()` after the ppO2 curve is computed.
 ### ProfileAnalysis
 
 Add fields:
+
 - `List<double>? cnsCurve`
 - `List<double>? otuCurve`
 - `bool get hasCnsData => cnsCurve != null && cnsCurve!.isNotEmpty`
@@ -45,16 +46,19 @@ Add fields:
 ### DiveProfileChart
 
 Add parameters:
+
 - `List<double>? cnsCurve`
 - `List<double>? otuCurve`
 
 Add rendering methods:
+
 - `_buildCnsLine(double chartMaxDepth)`: Maps 0-200% to depth axis. Color: `Color(0xFFE65100)` (Orange 900). Dashed line `[6, 3]`.
 - `_buildOtuLine(double chartMaxDepth)`: Maps 0-300 OTU to depth axis. Color: `Color(0xFF6D4C41)` (Brown 600). Dashed line `[4, 4]`.
 
 ### ProfileLegendState
 
 Add fields (default false):
+
 - `bool showCns`
 - `bool showOtu`
 
@@ -68,6 +72,7 @@ entry needed until user demand warrants persistent defaults).
 ### ProfileLegendConfig
 
 Add fields:
+
 - `bool hasCnsData`
 - `bool hasOtuData`
 
@@ -81,6 +86,7 @@ popover menu (alongside NDL, GF%, Surface GF, TTS).
 ### ProfileRightAxisMetric
 
 Add enum values:
+
 - `cns` (displayName: 'CNS%', shortName: 'CNS', color: Color(0xFFE65100), unitSuffix: '%', category: decompression)
 - `otu` (displayName: 'OTU', shortName: 'OTU', color: Color(0xFF6D4C41), unitSuffix: 'OTU', category: decompression)
 
@@ -94,12 +100,14 @@ invocations (inline card and fullscreen dialog).
 ## Tooltip
 
 When CNS/OTU are enabled, show their values in the touch tooltip:
+
 - CNS: `"CNS: 12.3%"`
 - OTU: `"OTU: 45"`
 
 ## Localization
 
 Add to ARB files:
+
 - `diveLog_legend_label_cns` = "CNS%"
 - `diveLog_legend_label_otu` = "OTU"
 

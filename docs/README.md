@@ -20,41 +20,49 @@
 ## Key Features
 
 ### Dive Logging
+
 Log every detail of your dives with 40+ data fields. Track depth, duration, temperature, visibility, conditions, and more. Rate your dives, mark favorites, and organize with tags and trips.
 
 [Learn more about dive logging &rarr;](guide/dive-logging.md)
 
 ### Dive Computer Integration
+
 Download dives directly from 300+ dive computer models. Supports Shearwater, Suunto, Mares, Aqualung, and many more via Bluetooth and USB.
 
 [Connect your dive computer &rarr;](guide/dive-computer.md)
 
 ### Profile Analysis
+
 Interactive depth profiles with zoom, pan, and touch markers. Visualize temperature, pressure, and heart rate overlays. Color-coded ascent rate warnings keep you safe.
 
 [Explore profile analysis &rarr;](features/profile-analysis.md)
 
 ### Decompression Planning
+
 Full Buhlmann ZH-L16C algorithm with gradient factor support. Real-time NDL, ceiling, and tissue loading calculations. CNS% and OTU oxygen toxicity tracking.
 
 [Learn about deco features &rarr;](features/decompression.md)
 
 ### Equipment Management
+
 Track all your gear with service reminders and maintenance history. Create equipment sets for quick selection. Never miss a regulator service again.
 
 [Manage your gear &rarr;](guide/equipment.md)
 
 ### Statistics & Analytics
+
 Eleven specialized dashboards for deep insights into your diving. Track personal records, gas consumption, dive patterns, buddy stats, and more.
 
 [View statistics features &rarr;](guide/statistics.md)
 
 ### Sites & Maps
+
 Build your personal dive site database with GPS coordinates and interactive maps. Weather and tide integration helps you plan the perfect dive.
 
 [Explore dive sites &rarr;](guide/dive-sites.md)
 
 ### Import & Export
+
 Full support for UDDF, CSV, and PDF export. Import from other dive log apps. Complete database backup and restore.
 
 [Import & export data &rarr;](guide/import-export.md)
@@ -82,8 +90,7 @@ dart run build_runner build --delete-conflicting-outputs
 
 # Run
 flutter run -d macos
-```
-
+```text
 #### **iOS**
 
 ```bash
@@ -98,8 +105,7 @@ open ios/Runner.xcworkspace
 
 # Or run directly
 flutter run -d ios
-```
-
+```text
 #### **Android**
 
 ```bash
@@ -111,8 +117,7 @@ dart run build_runner build --delete-conflicting-outputs
 
 # Run
 flutter run -d android
-```
-
+```text
 #### **Windows**
 
 ```bash
@@ -124,8 +129,7 @@ dart run build_runner build --delete-conflicting-outputs
 
 # Run
 flutter run -d windows
-```
-
+```text
 #### **Linux**
 
 ```bash
@@ -143,30 +147,32 @@ flutter run -d linux
 
 [Full installation guide &rarr;](guide/installation.md)
 
-
 ## Create global tide grid
 
 To Add Real Data
 The Python script at scripts/tide/extract_fes_constituents.py extracts constituents from the FES2014 ocean tide model:
 
-
 # 1. Install PyFES via conda (NOT available on pip)
+
 conda create -n tide python=3.11
 conda activate tide
 conda install -c conda-forge pyfes
 pip install numpy
 
 # 2. Get FES2014 data from AVISO (requires registration)
-# https://www.aviso.altimetry.fr/en/data/products/auxiliary-products/global-tide-fes.html
+
+# <https://www.aviso.altimetry.fr/en/data/products/auxiliary-products/global-tide-fes.html>
 
 scripts/tide/generate_fes_config.py assets/data/fes2022b/ocean_tide_extrapolated
 
 # 3. Extract for your dive sites
+
 python scripts/tide/extract_fes_constituents.py \
     --sites assets/data/dive_sites.json \
     --output assets/data/tide/
 
 # 4. Optionally generate global grid for any-location support
+
 python scripts/tide/extract_fes_constituents.py \
     --grid --resolution 0.25 \
     --config assets/data/fes2022b/ocean_tide_extrapolated/ocean_tide.yaml \

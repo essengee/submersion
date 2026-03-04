@@ -5,6 +5,7 @@ Submersion implements the Buhlmann ZH-L16C decompression algorithm with gradient
 ## Overview
 
 The decompression module provides:
+
 - Real-time tissue loading calculations
 - NDL (No-Decompression Limit) display
 - Ceiling depth calculations
@@ -24,6 +25,7 @@ The Buhlmann algorithm models how nitrogen (and helium) dissolve into and releas
 ### 16 Compartments
 
 Your body is modeled as 16 tissue compartments, each with different:
+
 - **Half-time** - How fast gas loads/unloads
 - **M-value** - Maximum tolerable pressure
 
@@ -104,6 +106,7 @@ NDL is the time you can remain at current depth without requiring mandatory deco
 ### Calculating NDL
 
 Submersion calculates NDL using:
+
 - Current depth
 - Current gas mix
 - Current tissue loading
@@ -126,6 +129,7 @@ The ceiling is the shallowest depth you can safely ascend to.
 ### Ceiling Visualization
 
 On the profile chart:
+
 - Shaded area shows ceiling
 - Ascending above ceiling = violation
 - Ceiling rises as you off-gas
@@ -135,6 +139,7 @@ On the profile chart:
 ### Stop Calculation
 
 When deco is required:
+
 1. First stop at ceiling depth
 2. Clear ceiling by off-gassing
 3. Ascend to next stop
@@ -143,12 +148,14 @@ When deco is required:
 ### Stop Depths
 
 Standard stop depths:
+
 - Every 3 meters (10 feet)
 - Last stop typically at 3m (10ft) or 6m (20ft)
 
 ### TTS (Time to Surface)
 
 Total time including:
+
 - Current depth
 - All deco stops
 - Ascent time
@@ -159,6 +166,7 @@ Total time including:
 ### Ceiling Curve
 
 The profile shows ceiling throughout the dive:
+
 - Dashed line = ceiling depth
 - Solid fill = ceiling zone
 - Red = ceiling violation
@@ -177,6 +185,7 @@ The profile shows ceiling throughout the dive:
 ### Multi-Gas
 
 Deco calculations account for:
+
 - Gas switches
 - Different mixes at different depths
 - Optimal switch depths
@@ -186,6 +195,7 @@ Deco calculations account for:
 ### Helium
 
 For trimix dives:
+
 - Helium half-times considered
 - Faster on-gassing than N2
 - Different M-values
@@ -193,6 +203,7 @@ For trimix dives:
 ### CCR
 
 For rebreather dives:
+
 - ppO2 setpoint tracking
 - Loop gas calculations
 - Bailout scenarios
@@ -207,6 +218,7 @@ For rebreather dives:
 - Cold, exertion, and dehydration affect DCS risk
 - Always use personal dive computer during dives
 - Submersion calculations are for analysis, not real-time planning
+
 </div>
 
 ## Further Reading

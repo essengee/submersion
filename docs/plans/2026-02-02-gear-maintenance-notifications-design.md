@@ -24,11 +24,11 @@ Implement local push notifications to remind users when their dive equipment is 
 flutter_local_notifications: ^18.0.1  # Local notification scheduling
 workmanager: ^0.5.2                   # Background task execution
 timezone: ^0.10.0                     # Required for scheduled notifications
-```
-
+```text
 ### File Structure
 
 ```
+
 lib/
 ├── core/
 │   └── services/
@@ -44,8 +44,8 @@ lib/
 │       └── presentation/
 │           └── providers/
 │               └── notification_providers.dart    # Riverpod providers
-```
 
+```text
 ### Data Flow
 
 1. App launch -> `NotificationService.initialize()`
@@ -64,16 +64,15 @@ lib/
 notificationsEnabled          BOOLEAN DEFAULT true
 serviceReminderDays           TEXT    -- JSON array: "[7, 14, 30]"
 reminderTime                  TEXT    -- "09:00" (local time to send reminders)
-```
-
+```text
 **Extend `equipment` table:**
 
 ```sql
 customReminderEnabled         BOOLEAN DEFAULT NULL  -- NULL = use global
 customReminderDays            TEXT    DEFAULT NULL  -- JSON array override
-```
-
+```text
 When `customReminderEnabled` is:
+
 - `NULL`: Use global settings
 - `true`: Use `customReminderDays`
 - `false`: Notifications disabled for this item
@@ -89,13 +88,13 @@ CREATE TABLE scheduled_notifications (
   notificationId    INTEGER NOT NULL,  -- Platform notification ID
   createdAt         INTEGER NOT NULL
 );
-```
-
+```text
 ## Notification Scheduling
 
 ### Algorithm
 
 ```
+
 1. Query all active equipment with nextServiceDue dates
 2. For each equipment item:
    a. Determine reminder days (custom override or global default)
@@ -106,11 +105,12 @@ CREATE TABLE scheduled_notifications (
       - Schedule notification with payload: { equipmentId, reminderDays }
       - Record in scheduled_notifications table
 3. Clean up: Cancel notifications for equipment no longer needing service
-```
 
+```text
 ### Trigger Points
 
 Notifications get rescheduled when:
+
 - App launches (primary mechanism)
 - Background refresh runs (backup)
 - User changes notification settings
@@ -125,6 +125,7 @@ Using `workmanager` package:
 - **Android**: WorkManager with periodic work request (minimum 15 minute intervals)
 
 Background task responsibilities:
+
 1. Re-check equipment service dates (in case data synced from another device)
 2. Schedule any missing notifications
 3. Cancel notifications for already-serviced equipment
@@ -134,22 +135,24 @@ Background task responsibilities:
 ### Settings Page Addition
 
 ```
+
 Notifications
 ├── Service Reminders              [Toggle: ON/OFF]
 ├── Reminder Schedule              [Multi-select: 7, 14, 30 days]
 └── Reminder Time                  [Time picker: 9:00 AM]
-```
 
+```text
 ### Equipment Edit Page Addition
 
 ```
+
 Notifications (Optional)
 ├── Use Custom Reminders           [Toggle: OFF by default]
 │   └── (when ON, shows:)
 │       └── Reminder Schedule      [Multi-select: 7, 14, 30 days]
 ├── Disable Reminders              [Toggle: OFF]
-```
 
+```text
 ### Notification Content
 
 - **Title**: `Service Due: {Equipment Name}`
@@ -171,8 +174,7 @@ Notifications (Optional)
   <string>fetch</string>
   <string>processing</string>
 </array>
-```
-
+```text
 ### Android (AndroidManifest.xml)
 
 ```xml
@@ -182,7 +184,8 @@ Notifications (Optional)
 
 ### Permission Flow
 
-```
+```text
+
 User enables "Service Reminders" toggle
     |
 Check notification permission status
@@ -191,36 +194,42 @@ If not granted -> Show explanation dialog -> Request permission
     |
 If granted -> Schedule notifications
 If denied -> Show settings deep-link to enable manually
+
 ```
 
 ## Implementation Phases
 
 ### Phase 1: Foundation
+
 1. Add package dependencies
 2. Create `NotificationService` with platform initialization
 3. Add database migrations for new columns and table
 4. Create `NotificationSettings` entity and extend `AppSettings`
 
 ### Phase 2: Core Scheduling
-5. Create `NotificationRepository` with schedule/cancel logic
-6. Implement equipment query for items needing notifications
-7. Build scheduling algorithm (respecting global + per-item settings)
-8. Add notification payload handling for deep-linking
+
+1. Create `NotificationRepository` with schedule/cancel logic
+2. Implement equipment query for items needing notifications
+3. Build scheduling algorithm (respecting global + per-item settings)
+4. Add notification payload handling for deep-linking
 
 ### Phase 3: Background Refresh
-9. Configure `workmanager` for iOS and Android
-10. Implement background task to refresh notification schedule
-11. Handle boot-completed receiver (Android)
+
+1. Configure `workmanager` for iOS and Android
+2. Implement background task to refresh notification schedule
+3. Handle boot-completed receiver (Android)
 
 ### Phase 4: User Interface
-12. Add notification settings section to Settings page
-13. Add custom reminder override UI to Equipment Edit page
-14. Implement permission request flow with explanation dialogs
+
+1. Add notification settings section to Settings page
+2. Add custom reminder override UI to Equipment Edit page
+3. Implement permission request flow with explanation dialogs
 
 ### Phase 5: Integration & Testing
-15. Wire up triggers (app launch, settings change, equipment update)
-16. Add unit tests for scheduling logic
-17. Manual testing on iOS and Android devices
+
+1. Wire up triggers (app launch, settings change, equipment update)
+2. Add unit tests for scheduling logic
+3. Manual testing on iOS and Android devices
 
 ## Estimated Scope
 

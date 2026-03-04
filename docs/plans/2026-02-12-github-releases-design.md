@@ -13,7 +13,7 @@ Tag push matching `v*` (e.g., `v1.0.0`, `v1.1.0-beta.1`).
 
 ## Architecture
 
-```
+```text
 Tag push (v1.2.0)
   -> [macOS job]    -> DMG (signed + notarized) + Mac App Store upload
   -> [Windows job]  -> ZIP
@@ -52,6 +52,7 @@ All platform jobs run in parallel on GitHub-hosted runners. The release job runs
 Two builds in a single job:
 
 **Build 1 - GitHub DMG:**
+
 1. `flutter build macos --release`
 2. Codesign `.app` with Developer ID Application certificate
 3. Create `.dmg` via `create-dmg`
@@ -60,6 +61,7 @@ Two builds in a single job:
 6. Upload DMG artifact
 
 **Build 2 - Mac App Store:**
+
 1. Fastlane `sync_signing` (Match for macOS)
 2. Fastlane `beta` or `release` lane (builds, signs with Mac App Store identity, uploads to TestFlight/App Store)
 
@@ -98,6 +100,7 @@ Uses existing `macos/Runner/Release.entitlements` for both builds (sandboxing al
 ### Create Release
 
 Runs after all 5 build jobs complete:
+
 1. Download all artifacts
 2. Determine pre-release vs full release from tag
 3. Create GitHub Release via `softprops/action-gh-release`

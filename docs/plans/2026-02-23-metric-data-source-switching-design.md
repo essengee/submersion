@@ -15,8 +15,7 @@ enum MetricDataSource {
   computer,   // Prefer dive-computer-reported data
   calculated, // Always use app-calculated data
 }
-```
-
+```text
 Placed in `lib/core/constants/profile_metrics.dart` alongside existing metric enums.
 
 ## Data Model
@@ -30,8 +29,7 @@ final MetricDataSource ndlSource;
 final MetricDataSource ceilingSource;
 final MetricDataSource ttsSource;
 final MetricDataSource cnsSource;
-```
-
+```text
 Default: `MetricDataSource.calculated` (preserves current behavior).
 
 ### AppSettings
@@ -43,8 +41,7 @@ final MetricDataSource defaultNdlSource;
 final MetricDataSource defaultCeilingSource;
 final MetricDataSource defaultTtsSource;
 final MetricDataSource defaultCnsSource;
-```
-
+```text
 ### Database Migration (v42)
 
 Four new integer columns on `DiverSettings`:
@@ -54,16 +51,14 @@ ALTER TABLE diver_settings ADD COLUMN default_ndl_source INTEGER NOT NULL DEFAUL
 ALTER TABLE diver_settings ADD COLUMN default_ceiling_source INTEGER NOT NULL DEFAULT 1;
 ALTER TABLE diver_settings ADD COLUMN default_tts_source INTEGER NOT NULL DEFAULT 1;
 ALTER TABLE diver_settings ADD COLUMN default_cns_source INTEGER NOT NULL DEFAULT 1;
-```
-
+```text
 Values: 0 = computer, 1 = calculated.
 
 Migrate existing CNS toggle:
 
 ```sql
 UPDATE diver_settings SET default_cns_source = 0 WHERE use_dive_computer_cns_data = 1;
-```
-
+```text
 The `use_dive_computer_cns_data` column is left in place (SQLite compat) but no longer read.
 
 ### Replaces useDiveComputerCnsData
@@ -83,8 +78,7 @@ The `useDiveComputerCnsData` boolean, `useDiveComputerCnsDataProvider`, `setUseD
   MetricDataSource ttsSource = MetricDataSource.calculated,
   MetricDataSource cnsSource = MetricDataSource.calculated,
 })
-```
-
+```text
 Per-metric logic: Only overlay computer data when `source == MetricDataSource.computer` AND the profile has that computer data. Falls back to calculated curve otherwise.
 
 ### MetricSourceInfo
@@ -98,8 +92,7 @@ typedef MetricSourceInfo = ({
   MetricDataSource ttsActual,
   MetricDataSource cnsActual,
 });
-```
-
+```text
 If `ndlSource == computer` but no computer NDL data exists, `ndlActual == calculated` (fallback).
 
 ### CNS Special Case
@@ -131,12 +124,13 @@ Metrics that never have computer data (SAC, ppO2, GF, etc.) show no source indic
 In the "More" popover menu, each applicable metric row gets a segmented control:
 
 ```
+
 [x] NDL          [DC | Calc]
 [x] Ceiling      [DC | Calc]
 [ ] TTS          [DC | Calc]
 [x] CNS          [DC | Calc]
-```
 
+```text
 Disabled/hidden when the dive has no computer data for that metric.
 
 ### ProfileLegend Notifier
@@ -148,8 +142,7 @@ void cycleNdlSource() { ... }
 void cycleCeilingSource() { ... }
 void cycleTtsSource() { ... }
 void cycleCnsSource() { ... }
-```
-
+```dart
 Initialization reads `settings.defaultNdlSource`, etc.
 
 ## Provider Layer
@@ -164,21 +157,20 @@ final ndlSource = legendState.ndlSource;
 final ceilingSource = legendState.ceilingSource;
 final ttsSource = legendState.ttsSource;
 final cnsSource = legendState.cnsSource;
-```
-
+```dart
 Passes them to `overlayComputerDecoData`.
 
 ### MetricSourceInfo Provider
 
 ```dart
 final metricSourceInfoProvider = StateProvider<MetricSourceInfo?>((ref) => null);
-```
-
+```text
 Written by `profileAnalysisProvider` as a side effect. Read by the legend widget for badge labels.
 
 ### Reactivity Chain
 
 ```
+
 User toggles source in legend
   -> ProfileLegendState updates
   -> profileAnalysisProvider re-evaluates (watches profileLegendProvider)
@@ -186,18 +178,20 @@ User toggles source in legend
   -> Chart updates with new curve data
   -> metricSourceInfoProvider updates
   -> Legend badge labels update
-```
 
+```text
 ## Settings UI
 
 The existing "Dive Computer Data" section (single CNS toggle) is replaced with "Data Source Preferences":
 
-```
+```text
+
 Data Source Preferences
   NDL Source          [Calculated v]
   Ceiling Source      [Calculated v]
   TTS Source          [Calculated v]
   CNS Source          [Calculated v]
+
 ```
 
 Subtitle: "When set to Dive Computer, the app uses data reported by the dive computer when available. Falls back to calculated values when computer data is not present."

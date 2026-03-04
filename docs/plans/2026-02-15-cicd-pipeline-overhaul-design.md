@@ -38,8 +38,7 @@ Create `.github/flutter-version.txt` containing the pinned version (e.g.,
 - name: Read Flutter version
   id: flutter-ver
   run: echo "version=$(cat .github/flutter-version.txt)" >> "$GITHUB_OUTPUT"
-```
-
+```text
 Then uses `${{ steps.flutter-ver.outputs.version }}` in the flutter-action step.
 This makes Flutter upgrades a single-file change.
 
@@ -52,14 +51,12 @@ Change `scripts/release/create_release.sh` line 151 from:
 
 ```bash
 flutter analyze --no-fatal-infos
-```
-
+```yaml
 to:
 
 ```bash
 flutter analyze --fatal-infos
-```
-
+```text
 This matches the CI behavior in ci.yaml.
 
 Files changed: `scripts/release/create_release.sh`.
@@ -80,8 +77,7 @@ for attempt in 1 2 3; do
   echo "Attempt $attempt failed, retrying in 30s..."
   sleep 30
 done
-```
-
+```text
 Files changed: `.github/workflows/release.yml`.
 
 #### 1.4 Fix appcast dependency mismatch
@@ -90,14 +86,12 @@ In release.yml, change the `generate-appcast` job needs from:
 
 ```yaml
 needs: [build-macos, build-windows, build-linux, build-android]
-```
-
+```yaml
 to:
 
 ```yaml
 needs: [build-macos, build-windows, build-linux, build-android, build-ios]
-```
-
+```text
 Files changed: `.github/workflows/release.yml`.
 
 ### Section 2: Release Friction (Gaps 5-7)
@@ -107,13 +101,16 @@ Files changed: `.github/workflows/release.yml`.
 Create `scripts/release/release.sh` as a porcelain wrapper over existing
 plumbing scripts:
 
-```
+```bash
+
 ./scripts/release/release.sh --patch              # bump + changelog + tag + push
 ./scripts/release/release.sh --minor --beta       # bump + changelog + beta tag + push
 ./scripts/release/release.sh --dry-run --patch    # show what would happen
+
 ```
 
 The script:
+
 1. Calls `bump_version.sh` with the specified bump type and `--commit`
 2. Generates a changelog entry via `generate_changelog.sh` (see 2.2)
 3. Amends the version bump commit to include the changelog update

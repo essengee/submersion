@@ -15,7 +15,7 @@ All diver profile management lives within settings navigation. The old `/divers`
 
 ## Navigation Structure
 
-```
+```text
 Settings tab
   Diver Profile tap -> /settings/diver-profile  [STAYS IN SETTINGS]
     Active Diver Card (avatar + name + Active badge)
@@ -57,6 +57,7 @@ Settings tab
 ### Sub-Pages (Section Editors)
 
 All follow the same pattern:
+
 - AppBar with back arrow + section title + "Save" text button
 - Grouped form fields in a Card
 - Dirty-check on back navigation (unsaved changes dialog)
@@ -82,7 +83,7 @@ All follow the same pattern:
 
 ## Files to Create
 
-```
+```text
 lib/features/settings/presentation/pages/
   diver_profile_hub_page.dart         # Main hub page
   personal_info_edit_page.dart        # Personal info editor

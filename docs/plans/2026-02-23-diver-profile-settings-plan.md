@@ -15,6 +15,7 @@
 ## Task 1: Add l10n Keys for New Profile Hub
 
 **Files:**
+
 - Modify: `lib/l10n/arb/app_en.arb`
 
 **Step 1: Add new localization strings**
@@ -52,8 +53,7 @@ Add these keys after the existing `settings_profile_*` block (around line 5213):
       "name": { "type": "String" }
     }
   }
-```
-
+```text
 **Step 2: Run code generation**
 
 Run: `dart run build_runner build --delete-conflicting-outputs`
@@ -69,8 +69,7 @@ Expected: No analysis issues
 ```bash
 git add lib/l10n/
 git commit -m "feat: add l10n keys for diver profile hub settings"
-```
-
+```text
 ---
 
 ## Task 2: Create DiverProfileHubPage
@@ -78,6 +77,7 @@ git commit -m "feat: add l10n keys for diver profile hub settings"
 This is the main hub page at `/settings/diver-profile`. It shows the active diver card and section tiles.
 
 **Files:**
+
 - Create: `lib/features/settings/presentation/pages/diver_profile_hub_page.dart`
 
 **Step 1: Write the hub page**
@@ -544,8 +544,7 @@ class DiverProfileHubPage extends ConsumerWidget {
     );
   }
 }
-```
-
+```text
 **Step 2: Verify it compiles**
 
 Run: `flutter analyze lib/features/settings/presentation/pages/diver_profile_hub_page.dart`
@@ -556,8 +555,7 @@ Expected: No analysis issues (may fail until l10n keys exist -- do Task 1 first)
 ```bash
 git add lib/features/settings/presentation/pages/diver_profile_hub_page.dart
 git commit -m "feat: add DiverProfileHubPage for settings-integrated profile management"
-```
-
+```text
 ---
 
 ## Task 3: Create PersonalInfoEditPage
@@ -565,6 +563,7 @@ git commit -m "feat: add DiverProfileHubPage for settings-integrated profile man
 Focused edit page for name, email, phone. Also handles "create new diver" mode.
 
 **Files:**
+
 - Create: `lib/features/settings/presentation/pages/personal_info_edit_page.dart`
 
 **Step 1: Write the page**
@@ -832,8 +831,7 @@ class _PersonalInfoEditPageState extends ConsumerState<PersonalInfoEditPage> {
     );
   }
 }
-```
-
+```text
 **Step 2: Verify it compiles**
 
 Run: `flutter analyze lib/features/settings/presentation/pages/personal_info_edit_page.dart`
@@ -844,13 +842,13 @@ Expected: No issues
 ```bash
 git add lib/features/settings/presentation/pages/personal_info_edit_page.dart
 git commit -m "feat: add PersonalInfoEditPage for profile section editing"
-```
-
+```text
 ---
 
 ## Task 4: Create EmergencyContactsEditPage
 
 **Files:**
+
 - Create: `lib/features/settings/presentation/pages/emergency_contacts_edit_page.dart`
 
 **Step 1: Write the page**
@@ -858,6 +856,7 @@ git commit -m "feat: add PersonalInfoEditPage for profile section editing"
 This page edits the primary and secondary emergency contacts. Uses the same pattern as PersonalInfoEditPage: load current diver, populate fields, save with `copyWith()`.
 
 Key fields per contact:
+
 - Contact Name (`TextEditingController`)
 - Contact Phone (`TextEditingController`)
 - Relationship (`TextEditingController`)
@@ -865,6 +864,7 @@ Key fields per contact:
 Save logic: `existingDiver.copyWith(emergencyContact: EmergencyContact(...), emergencyContact2: EmergencyContact(...))`
 
 Follow the exact same structure as `PersonalInfoEditPage`:
+
 - `ConsumerStatefulWidget`
 - 6 controllers (3 per contact)
 - `_populateFields` reads from `diver.emergencyContact` and `diver.emergencyContact2`
@@ -882,18 +882,19 @@ Expected: No issues
 ```bash
 git add lib/features/settings/presentation/pages/emergency_contacts_edit_page.dart
 git commit -m "feat: add EmergencyContactsEditPage for profile section editing"
-```
-
+```text
 ---
 
 ## Task 5: Create MedicalInfoEditPage
 
 **Files:**
+
 - Create: `lib/features/settings/presentation/pages/medical_info_edit_page.dart`
 
 **Step 1: Write the page**
 
 Fields:
+
 - Blood Type (`TextEditingController`)
 - Allergies (`TextEditingController`)
 - Medications (`TextEditingController`)
@@ -916,18 +917,19 @@ Expected: No issues
 ```bash
 git add lib/features/settings/presentation/pages/medical_info_edit_page.dart
 git commit -m "feat: add MedicalInfoEditPage for profile section editing"
-```
-
+```dart
 ---
 
 ## Task 6: Create InsuranceEditPage
 
 **Files:**
+
 - Create: `lib/features/settings/presentation/pages/insurance_edit_page.dart`
 
 **Step 1: Write the page**
 
 Fields:
+
 - Insurance Provider (`TextEditingController`)
 - Policy Number (`TextEditingController`)
 - Expiry Date (`DateTime?` with date picker -- reuse insurance expiry pattern from `diver_edit_page.dart:710-770`)
@@ -948,18 +950,19 @@ Expected: No issues
 ```bash
 git add lib/features/settings/presentation/pages/insurance_edit_page.dart
 git commit -m "feat: add InsuranceEditPage for profile section editing"
-```
-
+```text
 ---
 
 ## Task 7: Create NotesEditPage
 
 **Files:**
+
 - Create: `lib/features/settings/presentation/pages/notes_edit_page.dart`
 
 **Step 1: Write the page**
 
 Simplest sub-page. Single field:
+
 - Notes (`TextEditingController`, maxLines: 10)
 
 Save logic: `existingDiver.copyWith(notes: _notesController.text.trim())`
@@ -978,13 +981,13 @@ Expected: No issues
 ```bash
 git add lib/features/settings/presentation/pages/notes_edit_page.dart
 git commit -m "feat: add NotesEditPage for profile section editing"
-```
-
+```text
 ---
 
 ## Task 8: Add Routes to app_router.dart
 
 **Files:**
+
 - Modify: `lib/core/router/app_router.dart`
 
 **Step 1: Add imports at top of file (after line 63)**
@@ -996,8 +999,7 @@ import 'package:submersion/features/settings/presentation/pages/emergency_contac
 import 'package:submersion/features/settings/presentation/pages/medical_info_edit_page.dart';
 import 'package:submersion/features/settings/presentation/pages/insurance_edit_page.dart';
 import 'package:submersion/features/settings/presentation/pages/notes_edit_page.dart';
-```
-
+```text
 **Step 2: Add new routes inside the `/settings` route block (after line 731, before the closing `]` of settings routes)**
 
 ```dart
@@ -1040,8 +1042,7 @@ import 'package:submersion/features/settings/presentation/pages/notes_edit_page.
                   ),
                 ],
               ),
-```
-
+```text
 **Step 3: Verify compilation**
 
 Run: `flutter analyze lib/core/router/app_router.dart`
@@ -1052,8 +1053,7 @@ Expected: No issues
 ```bash
 git add lib/core/router/app_router.dart
 git commit -m "feat: add go_router routes for diver profile settings sub-pages"
-```
-
+```text
 ---
 
 ## Task 9: Wire Up Settings Navigation
@@ -1061,50 +1061,50 @@ git commit -m "feat: add go_router routes for diver profile settings sub-pages"
 Update the mobile settings tile to navigate to the new hub instead of /divers, and update the desktop detail builder to show the hub.
 
 **Files:**
+
 - Modify: `lib/features/settings/presentation/pages/settings_page.dart` (lines 220-221, 82, 157)
 
 **Step 1: Update mobile navigation (settings_page.dart:220-221)**
 
 Change:
+
 ```dart
       case 'profile':
         context.push('/divers');
         break;
-```
-
+```text
 To:
+
 ```dart
       case 'profile':
         context.push('/settings/diver-profile');
         break;
-```
-
+```text
 **Step 2: Update desktop detail builder (settings_page.dart:82)**
 
 Change:
+
 ```dart
       case 'profile':
         return _ProfileSectionContent(ref: ref);
-```
-
+```text
 To:
+
 ```dart
       case 'profile':
         return const DiverProfileHubPage();
-```
-
+```text
 And also update the same switch in `_buildContent` (settings_page.dart:157):
+
 ```dart
       case 'profile':
         return const DiverProfileHubPage();
-```
-
+```typescript
 **Step 3: Add import at top of settings_page.dart**
 
 ```dart
 import 'package:submersion/features/settings/presentation/pages/diver_profile_hub_page.dart';
-```
-
+```text
 **Step 4: Verify compilation**
 
 Run: `flutter analyze lib/features/settings/presentation/pages/settings_page.dart`
@@ -1115,13 +1115,13 @@ Expected: No issues (the old `_ProfileSectionContent` class will become unused -
 ```bash
 git add lib/features/settings/presentation/pages/settings_page.dart
 git commit -m "feat: wire settings diver profile navigation to new hub page"
-```
-
+```text
 ---
 
 ## Task 10: Clean Up Unused Code
 
 **Files:**
+
 - Modify: `lib/features/settings/presentation/pages/settings_page.dart`
 
 **Step 1: Remove the old `_ProfileSectionContent` class**
@@ -1138,8 +1138,7 @@ Expected: No issues
 ```bash
 git add lib/features/settings/presentation/pages/settings_page.dart
 git commit -m "refactor: remove old _ProfileSectionContent (replaced by DiverProfileHubPage)"
-```
-
+```text
 ---
 
 ## Task 11: Manual Integration Test

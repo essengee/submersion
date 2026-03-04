@@ -13,6 +13,7 @@
 ## Task 1: Add Localization Keys
 
 **Files:**
+
 - Modify: `lib/l10n/arb/app_en.arb` (near lines 1978-1986)
 - Modify: `lib/l10n/arb/app_ar.arb`, `app_de.arb`, `app_es.arb`, `app_fr.arb`, `app_he.arb`, `app_hu.arb`, `app_it.arb`, `app_nl.arb`, `app_pt.arb`
 
@@ -21,6 +22,7 @@
 Add these keys after the existing `diveLog_rangeStats_tooltip_close` entry in `app_en.arb`. Remove the old `diveLog_rangeStats_header_avg`, `diveLog_rangeStats_header_max`, `diveLog_rangeStats_header_min`, `diveLog_rangeStats_label_pressure` keys since they will no longer be used.
 
 New keys to add:
+
 ```json
 "diveLog_rangeStats_label_elapsed": "Elapsed",
 "diveLog_rangeStats_label_depthDelta": "Depth Delta",
@@ -36,8 +38,7 @@ New keys to add:
 "diveLog_rangeStats_label_sacRate": "SAC Rate",
 "diveLog_rangeStats_label_minHR": "Min HR",
 "diveLog_rangeStats_label_maxHR": "Max HR"
-```
-
+```text
 **Step 2: Add same keys (English values) to all other locale ARB files**
 
 For each of the 9 non-English locale files, add the same keys with English values as placeholders. Remove the same old keys as from English.
@@ -57,14 +58,16 @@ Expected: No errors.
 **Step 5: Commit**
 
 ```
-feat: add localization keys for enhanced range analysis
-```
 
+feat: add localization keys for enhanced range analysis
+
+```text
 ---
 
 ## Task 2: Expand _RangeStats Data Model and Calculation Logic
 
 **Files:**
+
 - Modify: `lib/features/dive_log/presentation/widgets/range_stats_panel.dart` (lines 259-365)
 
 **Step 1: Replace `_RangeStats` class (lines 332-365)**
@@ -117,8 +120,7 @@ class _RangeStats {
   bool get hasHeartRate => minHR != null;
   bool get hasTankVolume => tankVolume != null && tankVolume! > 0;
 }
-```
-
+```text
 **Step 2: Rewrite `_calculateRangeStats` method (lines 259-329)**
 
 The method now takes `List<DiveTank> tanks` as an additional parameter.
@@ -252,8 +254,7 @@ _RangeStats _calculateRangeStats(
     maxHR: maxHR,
   );
 }
-```
-
+```text
 **Step 3: Verify file compiles**
 
 Run: `flutter analyze lib/features/dive_log/presentation/widgets/range_stats_panel.dart`
@@ -263,33 +264,36 @@ Expected: Will have errors because the `build` method still calls old signatures
 **Step 4: Commit**
 
 ```
-refactor: expand _RangeStats model with derived dive metrics
-```
 
+refactor: expand _RangeStats model with derived dive metrics
+
+```dart
 ---
 
 ## Task 3: Rewrite Widget Constructor and UI Layout
 
 **Files:**
+
 - Modify: `lib/features/dive_log/presentation/widgets/range_stats_panel.dart` (lines 1-257)
 
 **Step 1: Update imports and constructor**
 
 Add to imports:
+
 ```dart
 import 'package:submersion/core/constants/units.dart';
-```
-
+```text
 Add two new required fields to `RangeStatsPanel`:
+
 ```dart
 /// The dive's tanks (for SAC calculation)
 final List<DiveTank> tanks;
 
 /// SAC unit preference from settings
 final SacUnit sacUnit;
-```
-
+```text
 Update constructor:
+
 ```dart
 const RangeStatsPanel({
   super.key,
@@ -300,30 +304,31 @@ const RangeStatsPanel({
   required this.sacUnit,
   this.onClose,
 });
-```
-
+```text
 **Step 2: Update `build` method call to `_calculateRangeStats`**
 
 Change line 45 from:
+
 ```dart
 final stats = _calculateRangeStats(rangeState);
-```
+```yaml
 to:
+
 ```dart
 final stats = _calculateRangeStats(rangeState, tanks);
-```
-
+```text
 **Step 3: Replace `_buildStatsTable` call with `_buildStatsGrid`**
 
 Change line 113 from:
+
 ```dart
 _buildStatsTable(context, stats),
-```
+```yaml
 to:
+
 ```dart
 _buildStatsGrid(context, stats),
-```
-
+```text
 **Step 4: Remove old `_buildStatsTable` and `_buildStatRow` methods (lines 120-257)**
 
 Replace them with the new grid builder and chip builder:
@@ -450,8 +455,7 @@ Widget _buildStatsGrid(BuildContext context, _RangeStats stats) {
     ],
   );
 }
-```
-
+```text
 **Step 5: Add `_buildStatChip` helper**
 
 ```dart
@@ -495,8 +499,7 @@ Widget _buildStatChip(
     ),
   );
 }
-```
-
+```text
 **Step 6: Add formatting helpers**
 
 ```dart
@@ -537,8 +540,7 @@ String _formatSacValue(_RangeStats stats) {
   }
   return '--';
 }
-```
-
+```text
 **Step 7: Verify file compiles**
 
 Run: `flutter analyze lib/features/dive_log/presentation/widgets/range_stats_panel.dart`
@@ -548,14 +550,16 @@ Expected: Errors about the call site in `dive_detail_page.dart` (missing `tanks`
 **Step 8: Commit**
 
 ```
-feat: rewrite range stats panel with unified grid layout
-```
 
+feat: rewrite range stats panel with unified grid layout
+
+```text
 ---
 
 ## Task 4: Update Dive Detail Page Call Site
 
 **Files:**
+
 - Modify: `lib/features/dive_log/presentation/pages/dive_detail_page.dart` (near lines 1045-1049)
 
 **Step 1: Pass `tanks` and `sacUnit` to `RangeStatsPanel`**
@@ -570,8 +574,7 @@ RangeStatsPanel(
   tanks: dive.tanks,
   sacUnit: ref.watch(sacUnitProvider),
 ),
-```
-
+```typescript
 The `sacUnitProvider` import should already be available via the existing `settings_providers.dart` import (line 25).
 
 **Step 2: Verify full build**
@@ -589,26 +592,30 @@ Expected: No changes (or formatting applied cleanly).
 **Step 4: Commit**
 
 ```
-feat: wire enhanced range analysis into dive detail page
-```
 
+feat: wire enhanced range analysis into dive detail page
+
+```text
 ---
 
 ## Task 5: Clean Up Unused L10n Keys
 
 **Files:**
+
 - Modify: All `app_*.arb` files (10 files)
 - Modify: `lib/l10n/arb/app_localizations.dart` and locale-specific files
 
 **Step 1: Remove unused keys from all ARB files**
 
 Remove these keys which are no longer referenced by the new grid layout:
+
 - `diveLog_rangeStats_header_avg`
 - `diveLog_rangeStats_header_max`
 - `diveLog_rangeStats_header_min`
 - `diveLog_rangeStats_label_pressure`
 
 Keep these keys which ARE still used:
+
 - `diveLog_rangeStats_label_depth` (still used? No - replaced by minDepth/maxDepth/avgDepth. REMOVE.)
 - `diveLog_rangeStats_label_temp` (still used? No - replaced by minTemp/maxTemp. REMOVE.)
 - `diveLog_rangeStats_label_heartRate` (still used? No - replaced by minHR/maxHR. REMOVE.)
@@ -616,6 +623,7 @@ Keep these keys which ARE still used:
 - `diveLog_rangeStats_tooltip_close` (YES - still used in close button)
 
 So remove a total of 7 keys from all 10 ARB files:
+
 1. `diveLog_rangeStats_header_avg`
 2. `diveLog_rangeStats_header_max`
 3. `diveLog_rangeStats_header_min`
@@ -637,9 +645,10 @@ Expected: No errors. No references to removed keys anywhere.
 **Step 4: Commit**
 
 ```
-chore: remove unused range stats localization keys
-```
 
+chore: remove unused range stats localization keys
+
+```diff
 ---
 
 ## Task 6: Run Tests and Format
@@ -670,8 +679,10 @@ Expected: No issues.
 
 **Step 5: Commit (if any test fixes)**
 
-```
+```text
+
 fix: update range stats panel tests for new constructor
+
 ```
 
 ---

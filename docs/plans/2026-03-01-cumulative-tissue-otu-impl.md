@@ -17,6 +17,7 @@
 The `processProfile()` method currently calls `reset()` at line 526 of `buhlmann_algorithm.dart`, which overwrites any pre-loaded compartments. The caller should control initialization instead.
 
 **Files:**
+
 - Modify: `lib/core/deco/buhlmann_algorithm.dart:516-564`
 - Modify: `lib/core/deco/buhlmann_algorithm.dart:566-603` (getCeilingCurve/getNdlCurve)
 - Test: `test/core/deco/buhlmann_algorithm_test.dart`
@@ -115,8 +116,7 @@ group('cumulative tissue loading', () {
     }
   });
 });
-```
-
+```text
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/core/deco/buhlmann_algorithm_test.dart --name "processProfile should use pre-loaded compartments"`
@@ -127,18 +127,20 @@ Expected: FAIL — processProfile calls reset() internally, discarding pre-loade
 In `lib/core/deco/buhlmann_algorithm.dart`, modify `processProfile()` (line 516-564): remove the `reset()` call at line 526.
 
 Change line 526 from:
+
 ```dart
     reset();
     final results = <DecoStatus>[];
-```
+```yaml
 to:
+
 ```dart
     final results = <DecoStatus>[];
-```
-
+```dart
 Also update `getCeilingCurve()` (line 569-583) and `getNdlCurve()` (line 589-603) to call `reset()` before `processProfile()` so these convenience methods maintain their existing behavior:
 
 In `getCeilingCurve()`, add `reset();` before `final statuses = processProfile(...)`:
+
 ```dart
   List<double> getCeilingCurve({
     required List<double> depths,
@@ -148,9 +150,9 @@ In `getCeilingCurve()`, add `reset();` before `final statuses = processProfile(.
   }) {
     reset();
     final statuses = processProfile(
-```
-
+```text
 In `getNdlCurve()`, same change:
+
 ```dart
   List<int> getNdlCurve({
     required List<double> depths,
@@ -160,8 +162,7 @@ In `getNdlCurve()`, same change:
   }) {
     reset();
     final statuses = processProfile(
-```
-
+```text
 **Step 4: Run tests to verify they pass**
 
 Run: `flutter test test/core/deco/buhlmann_algorithm_test.dart`
@@ -172,8 +173,7 @@ Expected: ALL PASS
 ```bash
 git add lib/core/deco/buhlmann_algorithm.dart test/core/deco/buhlmann_algorithm_test.dart
 git commit -m "feat: remove reset() from processProfile to support cumulative tissue loading"
-```
-
+```text
 ---
 
 ### Task 2: O2Exposure — Add otuStart and otuDaily fields
@@ -181,6 +181,7 @@ git commit -m "feat: remove reset() from processProfile to support cumulative ti
 Add `otuStart` and `otuDaily` fields to support cumulative OTU tracking across same-day dives.
 
 **Files:**
+
 - Modify: `lib/core/deco/entities/o2_exposure.dart:9-106`
 - Test: `test/core/deco/o2_exposure_test.dart` (create new)
 
@@ -231,8 +232,7 @@ void main() {
     });
   });
 }
-```
-
+```text
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/core/deco/o2_exposure_test.dart`
@@ -243,12 +243,13 @@ Expected: FAIL — `otuStart`, `otuDaily`, `otuDailyPercentOfLimit` don't exist
 In `lib/core/deco/entities/o2_exposure.dart`, add to the class:
 
 After the `otu` field (line 17), add:
+
 ```dart
   /// OTU accumulated from earlier dives on the same calendar day
   final double otuStart;
-```
-
+```text
 Add computed properties after `otuPercentOfDaily` (line 60):
+
 ```dart
   /// Total OTU for the day (prior dives + this dive)
   double get otuDaily => otuStart + otu;
@@ -258,9 +259,9 @@ Add computed properties after `otuPercentOfDaily` (line 60):
 
   /// Daily OTU as percentage of daily limit (using cumulative daily total)
   double get otuDailyPercentOfLimit => (otuDaily / dailyOtuLimit) * 100;
-```
-
+```text
 Update the constructor (line 31-39) to include `otuStart`:
+
 ```dart
   const O2Exposure({
     this.cnsStart = 0.0,
@@ -272,9 +273,9 @@ Update the constructor (line 31-39) to include `otuStart`:
     this.timeAboveWarning = 0,
     this.timeAboveCritical = 0,
   });
-```
-
+```text
 Update `copyWith` (line 76-94) to include `otuStart`:
+
 ```dart
   O2Exposure copyWith({
     double? cnsStart,
@@ -297,9 +298,9 @@ Update `copyWith` (line 76-94) to include `otuStart`:
       timeAboveCritical: timeAboveCritical ?? this.timeAboveCritical,
     );
   }
-```
-
+```text
 Update `props` (line 97-105) to include `otuStart`:
+
 ```dart
   @override
   List<Object?> get props => [
@@ -312,14 +313,13 @@ Update `props` (line 97-105) to include `otuStart`:
     timeAboveWarning,
     timeAboveCritical,
   ];
-```
-
+```text
 Also update the existing `otuPercentOfDaily` getter (line 60) to use single-dive OTU (keep as-is for backward compatibility — it's the per-dive percentage):
+
 ```dart
   /// This dive's OTU as percentage of daily limit
   double get otuPercentOfDaily => (otu / dailyOtuLimit) * 100;
-```
-
+```text
 **Step 4: Run tests to verify they pass**
 
 Run: `flutter test test/core/deco/o2_exposure_test.dart`
@@ -334,8 +334,7 @@ Expected: ALL PASS
 ```bash
 git add lib/core/deco/entities/o2_exposure.dart test/core/deco/o2_exposure_test.dart
 git commit -m "feat: add otuStart and otuDaily fields to O2Exposure for cumulative tracking"
-```
-
+```text
 ---
 
 ### Task 3: ProfileAnalysisService — Add startCompartments and startOtu params
@@ -343,6 +342,7 @@ git commit -m "feat: add otuStart and otuDaily fields to O2Exposure for cumulati
 Wire the new parameters into the service's `analyze()` method.
 
 **Files:**
+
 - Modify: `lib/features/dive_log/data/services/profile_analysis_service.dart:492-534`
 - Test: `test/features/dive_log/data/services/profile_analysis_service_test.dart` (add tests)
 
@@ -469,8 +469,7 @@ void main() {
     });
   });
 }
-```
-
+```text
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/features/dive_log/data/services/profile_analysis_service_test.dart`
@@ -481,18 +480,19 @@ Expected: FAIL — `startCompartments` and `startOtu` parameters don't exist
 In `lib/features/dive_log/data/services/profile_analysis_service.dart`, modify `analyze()`:
 
 Add parameters after `scrVo2` (line 506):
+
 ```dart
     double scrVo2 = ScrCalculator.defaultVo2,
     List<TissueCompartment>? startCompartments,
     double startOtu = 0.0,
-```
-
+```typescript
 Add import for `TissueCompartment` at top of file (if not already imported — it's available via `buhlmann_algorithm.dart` imports):
+
 ```dart
 import 'package:submersion/core/deco/entities/tissue_compartment.dart';
-```
-
+```text
 Replace lines 524-526 (the reset + processProfile call):
+
 ```dart
     // Calculate decompression data
     if (startCompartments != null) {
@@ -501,13 +501,13 @@ Replace lines 524-526 (the reset + processProfile call):
       _buhlmannAlgorithm.reset();
     }
     final decoStatuses = _buhlmannAlgorithm.processProfile(
-```
-
+```text
 In the O2Exposure construction (two places: OC at line 581-587, and CCR/SCR at line 589-596), add `startOtu` as `otuStart`:
 
 For OC path (line 582-587), update the `calculateDiveExposure` call result. Since `calculateDiveExposure` doesn't know about `otuStart`, apply it after:
 
 Replace the O2Exposure section (lines 580-596) with:
+
 ```dart
     // Calculate O2 exposure using the ppO2 curve
     final O2Exposure rawO2Exposure;
@@ -532,8 +532,7 @@ Replace the O2Exposure section (lines 580-596) with:
     final o2Exposure = startOtu > 0
         ? rawO2Exposure.copyWith(otuStart: startOtu)
         : rawO2Exposure;
-```
-
+```text
 **Step 4: Run tests to verify they pass**
 
 Run: `flutter test test/features/dive_log/data/services/profile_analysis_service_test.dart`
@@ -548,8 +547,7 @@ Expected: ALL PASS
 ```bash
 git add lib/features/dive_log/data/services/profile_analysis_service.dart test/features/dive_log/data/services/profile_analysis_service_test.dart
 git commit -m "feat: add startCompartments and startOtu params to ProfileAnalysisService.analyze"
-```
-
+```dart
 ---
 
 ### Task 4: Profile Analysis Provider — Add residual tissue state computation
@@ -557,6 +555,7 @@ git commit -m "feat: add startCompartments and startOtu params to ProfileAnalysi
 Add `_computeResidualTissueState()` that mirrors the existing `_computeResidualCns()` pattern, with a 48-hour cutoff.
 
 **Files:**
+
 - Modify: `lib/features/dive_log/presentation/providers/profile_analysis_provider.dart:420-466`
 - Test: `test/features/dive_log/presentation/providers/profile_analysis_provider_test.dart` (add tests)
 
@@ -684,8 +683,7 @@ void main() {
     });
   });
 }
-```
-
+```text
 **Step 2: Run test to verify it passes (these test core math, not the provider)**
 
 Run: `flutter test test/features/dive_log/presentation/providers/cumulative_tissue_test.dart`
@@ -754,33 +752,33 @@ Future<List<TissueCompartment>?> _computeResidualTissueState(
     return null;
   }
 }
-```
-
+```typescript
 Add the required import at the top of the file (if not already present):
+
 ```dart
 import 'package:submersion/core/deco/buhlmann_algorithm.dart';
 import 'package:submersion/core/deco/constants/buhlmann_coefficients.dart';
 import 'package:submersion/core/deco/entities/tissue_compartment.dart';
-```
-
+```text
 **Step 4: Wire into profileAnalysisProvider**
 
 In the same file, in `profileAnalysisProvider` (around line 353-380), add the residual tissue state computation alongside the existing `startCns` computation.
 
 After the `startCns` line (line 354-356):
+
 ```dart
       final startCns = computerCns != null
           ? computerCns.cnsStart
           : await _computeResidualCns(ref, diveId);
-```
-
+```text
 Add:
+
 ```dart
       // Compute residual tissue state from previous dives (48h cutoff)
       final startCompartments = await _computeResidualTissueState(ref, diveId);
-```
-
+```text
 Then pass it to `service.analyze()` (line 364-380). Add `startCompartments: startCompartments,` after `startCns: startCns,`:
+
 ```dart
       final analysis = service.analyze(
         diveId: diveId,
@@ -792,8 +790,7 @@ Then pass it to `service.analyze()` (line 364-380). Add `startCompartments: star
         startCompartments: startCompartments,
         pressures: pressures,
         // ... rest unchanged
-```
-
+```text
 **Step 5: Run tests**
 
 Run: `flutter test`
@@ -804,8 +801,7 @@ Expected: ALL PASS
 ```bash
 git add lib/features/dive_log/presentation/providers/profile_analysis_provider.dart test/features/dive_log/presentation/providers/cumulative_tissue_test.dart
 git commit -m "feat: add recursive residual tissue state computation for cumulative NDL"
-```
-
+```dart
 ---
 
 ### Task 5: Profile Analysis Provider — Add residual OTU computation
@@ -813,6 +809,7 @@ git commit -m "feat: add recursive residual tissue state computation for cumulat
 Add `_computeResidualOtu()` that sums OTU from earlier same-day dives (non-recursive).
 
 **Files:**
+
 - Modify: `lib/features/dive_log/presentation/providers/profile_analysis_provider.dart`
 - Test: `test/features/dive_log/presentation/providers/cumulative_otu_test.dart` (create new)
 
@@ -851,8 +848,7 @@ void main() {
     });
   });
 }
-```
-
+```text
 **Step 2: Run test to verify it passes (tests entity math, not provider)**
 
 Run: `flutter test test/features/dive_log/presentation/providers/cumulative_otu_test.dart`
@@ -909,17 +905,17 @@ Future<double> _computeResidualOtu(Ref ref, String diveId) async {
     return 0.0;
   }
 }
-```
-
+```text
 **Step 4: Wire into profileAnalysisProvider**
 
 In `profileAnalysisProvider`, after `startCompartments`:
+
 ```dart
       // Compute cumulative OTU from earlier same-day dives
       final startOtu = await _computeResidualOtu(ref, diveId);
-```
-
+```text
 Pass to `service.analyze()`:
+
 ```dart
       final analysis = service.analyze(
         diveId: diveId,
@@ -932,8 +928,7 @@ Pass to `service.analyze()`:
         startOtu: startOtu,
         pressures: pressures,
         // ... rest unchanged
-```
-
+```text
 **Step 5: Run tests**
 
 Run: `flutter test`
@@ -944,8 +939,7 @@ Expected: ALL PASS
 ```bash
 git add lib/features/dive_log/presentation/providers/profile_analysis_provider.dart test/features/dive_log/presentation/providers/cumulative_otu_test.dart
 git commit -m "feat: add cumulative OTU computation from same-day dives"
-```
-
+```dart
 ---
 
 ### Task 6: Weekly OTU Provider
@@ -953,6 +947,7 @@ git commit -m "feat: add cumulative OTU computation from same-day dives"
 Add a provider for weekly OTU rolling total (7-day window, 850 OTU limit).
 
 **Files:**
+
 - Modify: `lib/features/dive_log/presentation/providers/profile_analysis_provider.dart`
 - Test: `test/features/dive_log/presentation/providers/cumulative_otu_test.dart` (extend)
 
@@ -967,8 +962,7 @@ Add to `cumulative_otu_test.dart`:
 test('weekly OTU limit should be 850', () {
   expect(O2Exposure.weeklyOtuLimit, equals(850.0));
 });
-```
-
+```text
 **Step 2: Implement weekly OTU provider**
 
 In `lib/features/dive_log/presentation/providers/profile_analysis_provider.dart`, add:
@@ -1014,8 +1008,7 @@ final weeklyOtuProvider = FutureProvider.family<double, String>((
     return 0.0;
   }
 });
-```
-
+```text
 **Step 3: Run tests**
 
 Run: `flutter test`
@@ -1026,8 +1019,7 @@ Expected: ALL PASS
 ```bash
 git add lib/features/dive_log/presentation/providers/profile_analysis_provider.dart
 git commit -m "feat: add weeklyOtuProvider for 7-day rolling OTU total"
-```
-
+```text
 ---
 
 ### Task 7: O2ToxicityCard — Display cumulative OTU
@@ -1035,6 +1027,7 @@ git commit -m "feat: add weeklyOtuProvider for 7-day rolling OTU total"
 Update the O2 toxicity card to show daily OTU total and weekly OTU total.
 
 **Files:**
+
 - Modify: `lib/features/dive_log/presentation/widgets/o2_toxicity_card.dart:184-249`
 - No new tests (UI widget — tested via existing widget test or manual verification)
 
@@ -1137,8 +1130,7 @@ Replace the `_buildOtuDisplay` method body. The key change: use `otuDailyPercent
       ),
     );
   }
-```
-
+```text
 **Step 2: Run tests and verify build**
 
 Run: `flutter test`
@@ -1150,8 +1142,7 @@ Expected: ALL PASS, no lint warnings
 ```bash
 git add lib/features/dive_log/presentation/widgets/o2_toxicity_card.dart
 git commit -m "feat: display cumulative daily OTU in O2ToxicityCard"
-```
-
+```text
 ---
 
 ### Task 8: Integration Tests — Multi-dive scenario
@@ -1159,6 +1150,7 @@ git commit -m "feat: display cumulative daily OTU in O2ToxicityCard"
 Verify end-to-end that tissue loading and OTU accumulate correctly across a multi-dive day.
 
 **Files:**
+
 - Test: `test/core/deco/cumulative_integration_test.dart` (create new)
 
 **Step 1: Write integration tests**
@@ -1311,8 +1303,7 @@ void main() {
     });
   });
 }
-```
-
+```text
 **Step 2: Run integration tests**
 
 Run: `flutter test test/core/deco/cumulative_integration_test.dart`
@@ -1328,8 +1319,7 @@ Expected: ALL PASS
 ```bash
 git add test/core/deco/cumulative_integration_test.dart
 git commit -m "test: add integration tests for cumulative tissue loading and OTU"
-```
-
+```dart
 ---
 
 ### Task 9: Format, analyze, and final verification

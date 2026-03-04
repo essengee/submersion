@@ -26,7 +26,7 @@ Welcome to the Submersion developer documentation. This section covers architect
 
 ## Project Structure
 
-```
+```text
 lib/
 ├── main.dart              # Entry point
 ├── app.dart               # Root widget
@@ -68,20 +68,20 @@ dart run build_runner build --delete-conflicting-outputs
 
 # Run
 flutter run -d macos
-```
-
+```text
 ### Code Generation
 
 After changing schemas or annotations:
+
 ```bash
 dart run build_runner build --delete-conflicting-outputs
-```
-
+```text
 ## Architecture Overview
 
 ### Layered Architecture
 
 ```
+
 ┌─────────────────────────────────────┐
 │      Presentation Layer            │
 │  Pages, Widgets, Providers          │
@@ -96,12 +96,14 @@ dart run build_runner build --delete-conflicting-outputs
 │         Data Layer                  │
 │  Repositories, Database, APIs       │
 └─────────────────────────────────────┘
-```
 
+```text
 ### Feature Module Structure
 
 Each feature follows this pattern:
+
 ```
+
 feature_name/
 ├── data/
 │   ├── models/
@@ -112,8 +114,8 @@ feature_name/
     ├── pages/
     ├── widgets/
     └── providers/
-```
 
+```dart
 ## Key Patterns
 
 ### Riverpod State Management
@@ -134,8 +136,7 @@ final diveListNotifierProvider =
     StateNotifierProvider<DiveListNotifier, AsyncValue<List<Dive>>>(
   (ref) => DiveListNotifier(ref.watch(diveRepositoryProvider), ref),
 );
-```
-
+```text
 ### Database Access
 
 ```dart
@@ -162,6 +163,7 @@ class DiveRepository {
 ## Contributing
 
 See the [Contributing Guide](contributing/) for:
+
 - [Code Style](contributing/code-style.md)
 - [Pull Requests](contributing/pull-requests.md)
 - [Roadmap](contributing/roadmap.md)

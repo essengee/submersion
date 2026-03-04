@@ -10,7 +10,7 @@ Hybrid: `auto_updater` package (Sparkle 2 + WinSparkle) for macOS and Windows, c
 
 ## Architecture
 
-```
+```dart
 +----------------------------------------------------+
 |                  Submersion App                     |
 |                                                     |
@@ -47,11 +47,13 @@ Hybrid: `auto_updater` package (Sparkle 2 + WinSparkle) for macOS and Windows, c
 ### Appcast.xml (Sparkle/WinSparkle)
 
 Hosted as a file attached to each GitHub Release. The feed URL:
-```
+
+```text
 https://github.com/{owner}/{repo}/releases/latest/download/appcast.xml
 ```
 
 Structure:
+
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
@@ -75,14 +77,16 @@ Structure:
     </item>
   </channel>
 </rss>
-```
-
+```text
 ### GitHub Releases API (Linux/Android)
 
 No feed file needed. The custom engine calls:
+
 ```
-GET https://api.github.com/repos/{owner}/{repo}/releases/latest
-```
+
+GET <https://api.github.com/repos/{owner}/{repo}/releases/latest>
+
+```text
 Parses `tag_name` for version, `assets[]` for download URLs matching the platform suffix (`-Linux.tar.gz`, `-Android.apk`).
 
 ## CI/CD Changes
@@ -107,10 +111,12 @@ Generates `checksums-sha256.txt` with SHA-256 hashes of all artifacts. Attached 
 ### Build flag for all platform jobs
 
 Each `flutter build` command gets:
-```
---dart-define=UPDATE_CHANNEL=github
+
 ```
 
+--dart-define=UPDATE_CHANNEL=github
+
+```text
 ### New Secrets
 
 | Secret | Used by | How to obtain |
@@ -135,6 +141,7 @@ Compile-time flag `UPDATE_CHANNEL` determines whether auto-update is active:
 | Linux Snap/Flatpak | Snap Store (future) | `snapstore` | No |
 
 Dart-side:
+
 ```dart
 enum UpdateChannel { github, appstore, playstore, msstore, snapstore }
 
@@ -143,13 +150,13 @@ class UpdateChannelConfig {
   static UpdateChannel get current => UpdateChannel.values.byName(_raw);
   static bool get isAutoUpdateEnabled => current == UpdateChannel.github;
 }
-```
-
+```text
 Default is `github`, so local dev builds and all non-store binaries get auto-update by default. Store builds are explicitly opted out at compile time.
 
 ## Dart Code Structure
 
 ```
+
 lib/features/auto_update/
   domain/
     entities/
@@ -167,8 +174,8 @@ lib/features/auto_update/
     widgets/
       update_banner.dart           # Persistent banner when update ready
       update_dialog.dart           # Dialog with release notes + progress
-```
 
+```text
 ### UpdateStatus (sealed class)
 
 ```dart
@@ -210,6 +217,7 @@ class UpdateError extends UpdateStatus {
 ### Update Banner
 
 Slim Material 3 banner at the top of the main scaffold when update is in `ReadyToInstall` state:
+
 - Text: "[version] available. Restart to update."
 - Action button: "Restart Now"
 - Dismissible per session (stored in memory, not persisted)
@@ -217,6 +225,7 @@ Slim Material 3 banner at the top of the main scaffold when update is in `ReadyT
 ### Settings Page
 
 Settings > About section:
+
 - "Check for Updates" button with last check time and current version
 - Toggle: "Automatic updates" (enabled by default). When disabled, the app still checks but only shows the banner -- no background download.
 

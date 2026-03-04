@@ -43,6 +43,7 @@ Toggle different data overlays:
 ### Temperature
 
 Shows water temperature throughout the dive:
+
 - Blue shading for cold water
 - Warmer colors for warmer water
 - Temperature scale on right axis
@@ -50,6 +51,7 @@ Shows water temperature throughout the dive:
 ### Tank Pressure
 
 If your dive computer has air integration:
+
 - Pressure curve over time
 - SAC calculation
 - Consumption rate visualization
@@ -57,6 +59,7 @@ If your dive computer has air integration:
 ### Heart Rate
 
 If your computer records heart rate:
+
 - BPM throughout the dive
 - Peak and average values
 
@@ -83,6 +86,7 @@ For dives requiring decompression:
 ### Ceiling Curve
 
 A shaded area shows your deco ceiling:
+
 - Red shading = above ceiling (violation)
 - Normal shading = ceiling depth
 - Extends down as tissue loading increases
@@ -90,6 +94,7 @@ A shaded area shows your deco ceiling:
 ### NDL Display
 
 For no-deco portions:
+
 - NDL countdown visible
 - Transitions to ceiling when exceeded
 
@@ -116,6 +121,7 @@ If you dive with multiple computers:
 ### Profile Selector
 
 A dropdown lets you switch between profiles:
+
 - Each computer's data shown separately
 - Compare profiles side by side
 - One profile marked as "primary" for stats
@@ -123,11 +129,13 @@ A dropdown lets you switch between profiles:
 ### Primary Profile
 
 The primary profile is used for:
+
 - Statistics calculations
 - SAC rate
 - NDL/ceiling data
 
 To change primary:
+
 1. Open dive detail
 2. Tap profile selector
 3. Tap **Set as Primary** on desired profile
@@ -137,6 +145,7 @@ To change primary:
 ### Sample Rate
 
 Computers record data at different intervals:
+
 - High-end: Every 1-2 seconds
 - Mid-range: Every 4-10 seconds
 - Basic: Every 20-30 seconds
@@ -172,6 +181,7 @@ Submersion calculates additional data:
 ### Profile to Image
 
 Save profile chart as image:
+
 1. Open dive detail
 2. Go to profile
 3. Tap share icon
@@ -180,6 +190,7 @@ Save profile chart as image:
 ### Profile Data
 
 Export raw profile data:
+
 1. Export dive as UDDF
 2. Profile samples included
 3. Import into other software

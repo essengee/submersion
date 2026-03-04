@@ -13,6 +13,7 @@
 ## Task 1: Create MapListSelectionState and Provider
 
 **Files:**
+
 - Create: `lib/shared/providers/map_list_selection_provider.dart`
 - Test: `test/shared/providers/map_list_selection_provider_test.dart`
 
@@ -109,8 +110,7 @@ void main() {
     });
   });
 }
-```
-
+```text
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/shared/providers/map_list_selection_provider_test.dart`
@@ -170,8 +170,7 @@ final mapListSelectionProvider = StateNotifierProvider.family<
     MapListSelectionNotifier, MapListSelectionState, String>(
   (ref, sectionKey) => MapListSelectionNotifier(),
 );
-```
-
+```text
 **Step 4: Run test to verify it passes**
 
 Run: `flutter test test/shared/providers/map_list_selection_provider_test.dart`
@@ -182,13 +181,13 @@ Expected: PASS
 ```bash
 git add lib/shared/providers/map_list_selection_provider.dart test/shared/providers/map_list_selection_provider_test.dart
 git commit -m "feat: add MapListSelectionProvider for split-pane state management"
-```
-
+```text
 ---
 
 ## Task 2: Create MapInfoCard Widget
 
 **Files:**
+
 - Create: `lib/shared/widgets/map_list_layout/map_info_card.dart`
 - Test: `test/shared/widgets/map_list_layout/map_info_card_test.dart`
 
@@ -293,8 +292,7 @@ void main() {
     expect(card.shape, isA<RoundedRectangleBorder>());
   });
 }
-```
-
+```text
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/shared/widgets/map_list_layout/map_info_card_test.dart`
@@ -394,8 +392,7 @@ class MapInfoCard extends StatelessWidget {
     );
   }
 }
-```
-
+```text
 **Step 4: Run test to verify it passes**
 
 Run: `flutter test test/shared/widgets/map_list_layout/map_info_card_test.dart`
@@ -406,13 +403,13 @@ Expected: PASS
 ```bash
 git add lib/shared/widgets/map_list_layout/map_info_card.dart test/shared/widgets/map_list_layout/map_info_card_test.dart
 git commit -m "feat: add MapInfoCard widget for map selection overlay"
-```
-
+```text
 ---
 
 ## Task 3: Create CollapsibleListPane Widget
 
 **Files:**
+
 - Create: `lib/shared/widgets/map_list_layout/collapsible_list_pane.dart`
 - Test: `test/shared/widgets/map_list_layout/collapsible_list_pane_test.dart`
 
@@ -508,8 +505,7 @@ void main() {
     expect(animatedContainer.constraints?.maxWidth, 500);
   });
 }
-```
-
+```text
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/shared/widgets/map_list_layout/collapsible_list_pane_test.dart`
@@ -594,8 +590,7 @@ class CollapsibleListPane extends StatelessWidget {
     );
   }
 }
-```
-
+```text
 **Step 4: Run test to verify it passes**
 
 Run: `flutter test test/shared/widgets/map_list_layout/collapsible_list_pane_test.dart`
@@ -606,13 +601,13 @@ Expected: PASS
 ```bash
 git add lib/shared/widgets/map_list_layout/collapsible_list_pane.dart test/shared/widgets/map_list_layout/collapsible_list_pane_test.dart
 git commit -m "feat: add CollapsibleListPane widget for animated collapse"
-```
-
+```text
 ---
 
 ## Task 4: Create MapListScaffold Widget
 
 **Files:**
+
 - Create: `lib/shared/widgets/map_list_layout/map_list_scaffold.dart`
 - Test: `test/shared/widgets/map_list_layout/map_list_scaffold_test.dart`
 
@@ -707,8 +702,7 @@ void main() {
     expect(find.byIcon(Icons.settings), findsOneWidget);
   });
 }
-```
-
+```text
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/shared/widgets/map_list_layout/map_list_scaffold_test.dart`
@@ -856,8 +850,7 @@ class MapListScaffold extends ConsumerWidget {
     );
   }
 }
-```
-
+```text
 **Step 4: Run test to verify it passes**
 
 Run: `flutter test test/shared/widgets/map_list_layout/map_list_scaffold_test.dart`
@@ -868,13 +861,13 @@ Expected: PASS
 ```bash
 git add lib/shared/widgets/map_list_layout/map_list_scaffold.dart test/shared/widgets/map_list_layout/map_list_scaffold_test.dart
 git commit -m "feat: add MapListScaffold for desktop split-pane map view"
-```
-
+```text
 ---
 
 ## Task 5: Add onItemTap callback to SiteListContent
 
 **Files:**
+
 - Modify: `lib/features/dive_sites/presentation/widgets/site_list_content.dart`
 
 **Step 1: Review current implementation**
@@ -893,8 +886,7 @@ Add new props and modify the tap handler:
 
   /// Whether the list is in map mode (tap to pan, not navigate).
   final bool isMapMode;
-```
-
+```text
 **Step 3: Update constructor (around line 24):**
 
 ```dart
@@ -907,8 +899,7 @@ Add new props and modify the tap handler:
     this.onItemTapForMap,
     this.isMapMode = false,
   });
-```
-
+```text
 **Step 4: Update _handleItemTap method (around line 103):**
 
 ```dart
@@ -936,8 +927,7 @@ Add new props and modify the tap handler:
       context.push('/sites/${site.id}');
     }
   }
-```
-
+```text
 **Step 5: Run existing tests**
 
 Run: `flutter test test/features/dive_sites/`
@@ -948,13 +938,13 @@ Expected: PASS (existing tests should still pass)
 ```bash
 git add lib/features/dive_sites/presentation/widgets/site_list_content.dart
 git commit -m "feat: add map mode tap handling to SiteListContent"
-```
-
+```text
 ---
 
 ## Task 6: Update SiteMapPage to use MapListScaffold
 
 **Files:**
+
 - Modify: `lib/features/dive_sites/presentation/pages/site_map_page.dart`
 
 **Step 1: Import new widgets**
@@ -966,8 +956,7 @@ import 'package:submersion/shared/widgets/map_list_layout/map_info_card.dart';
 import 'package:submersion/shared/widgets/map_list_layout/map_list_scaffold.dart';
 import 'package:submersion/shared/widgets/master_detail/responsive_breakpoints.dart';
 import 'package:submersion/features/dive_sites/presentation/widgets/site_list_content.dart';
-```
-
+```text
 **Step 2: Update build method to use MapListScaffold**
 
 Replace the current `build` method with one that uses `MapListScaffold` on desktop:
@@ -1052,8 +1041,7 @@ Replace the current `build` method with one that uses `MapListScaffold` on deskt
       ],
     );
   }
-```
-
+```text
 **Step 3: Add _buildMapInfoCard method**
 
 ```dart
@@ -1085,8 +1073,7 @@ Replace the current `build` method with one that uses `MapListScaffold` on deskt
       onDetailsTap: () => context.push('/sites/${site.id}'),
     );
   }
-```
-
+```text
 **Step 4: Add _animateToLocation method**
 
 ```dart
@@ -1096,8 +1083,7 @@ Replace the current `build` method with one that uses `MapListScaffold` on deskt
       _mapController.camera.zoom.clamp(10.0, 14.0),
     );
   }
-```
-
+```text
 **Step 5: Update _onMarkerTapped to use provider**
 
 ```dart
@@ -1114,17 +1100,16 @@ Replace the current `build` method with one that uses `MapListScaffold` on deskt
       );
     }
   }
-```
-
+```text
 **Step 6: Update _buildMap to use provider for selection**
 
 Update marker selection check:
+
 ```dart
 final selectionState = ref.watch(mapListSelectionProvider('sites'));
 // ...
 final isSelected = selectionState.selectedId == site.id;
-```
-
+```text
 **Step 7: Remove old _selectedSite state variable and _buildSiteInfoCard method**
 
 They are replaced by the provider and MapInfoCard.
@@ -1139,16 +1124,17 @@ Run: `flutter run -d macos` to test visually
 ```bash
 git add lib/features/dive_sites/presentation/pages/site_map_page.dart
 git commit -m "feat: integrate MapListScaffold into SiteMapPage"
-```
-
+```text
 ---
 
 ## Task 7: Update DiveCenterListContent for map mode
 
 **Files:**
+
 - Modify: `lib/features/dive_centers/presentation/widgets/dive_center_list_content.dart`
 
 Follow the same pattern as Task 5:
+
 - Add `onItemTapForMap` callback
 - Add `isMapMode` boolean
 - Update tap handler to call `onItemTapForMap` in map mode
@@ -1158,8 +1144,7 @@ Follow the same pattern as Task 5:
 ```dart
   final void Function(DiveCenter center)? onItemTapForMap;
   final bool isMapMode;
-```
-
+```text
 **Step 2: Update constructor**
 
 ```dart
@@ -1172,8 +1157,7 @@ Follow the same pattern as Task 5:
     this.onItemTapForMap,
     this.isMapMode = false,
   });
-```
-
+```text
 **Step 3: Update tap handler**
 
 ```dart
@@ -1199,20 +1183,19 @@ Follow the same pattern as Task 5:
       context.push('/dive-centers/${center.id}');
     }
   }
-```
-
+```text
 **Step 4: Commit**
 
 ```bash
 git add lib/features/dive_centers/presentation/widgets/dive_center_list_content.dart
 git commit -m "feat: add map mode tap handling to DiveCenterListContent"
-```
-
+```text
 ---
 
 ## Task 8: Update DiveCenterMapPage to use MapListScaffold
 
 **Files:**
+
 - Modify: `lib/features/dive_centers/presentation/pages/dive_center_map_page.dart`
 
 Follow the same pattern as Task 6:
@@ -1224,8 +1207,7 @@ import 'package:submersion/shared/providers/map_list_selection_provider.dart';
 import 'package:submersion/shared/widgets/map_list_layout/map_info_card.dart';
 import 'package:submersion/shared/widgets/map_list_layout/map_list_scaffold.dart';
 import 'package:submersion/features/dive_centers/presentation/widgets/dive_center_list_content.dart';
-```
-
+```text
 **Step 2: Update build method**
 
 Use `MapListScaffold` with `DiveCenterListContent` as `listPane`.
@@ -1241,38 +1223,39 @@ Create info card for dive centers showing name, location, rating.
 ```bash
 git add lib/features/dive_centers/presentation/pages/dive_center_map_page.dart
 git commit -m "feat: integrate MapListScaffold into DiveCenterMapPage"
-```
-
+```text
 ---
 
 ## Task 9: Update DiveListContent for map mode
 
 **Files:**
+
 - Modify: `lib/features/dive_log/presentation/widgets/dive_list_content.dart`
 
 Same pattern as Tasks 5 and 7.
 
 **Commit:**
+
 ```bash
 git add lib/features/dive_log/presentation/widgets/dive_list_content.dart
 git commit -m "feat: add map mode tap handling to DiveListContent"
-```
-
+```text
 ---
 
 ## Task 10: Update DiveActivityMapPage to use MapListScaffold
 
 **Files:**
+
 - Modify: `lib/features/maps/presentation/pages/dive_activity_map_page.dart`
 
 Same pattern as Tasks 6 and 8.
 
 **Commit:**
+
 ```bash
 git add lib/features/maps/presentation/pages/dive_activity_map_page.dart
 git commit -m "feat: integrate MapListScaffold into DiveActivityMapPage"
-```
-
+```diff
 ---
 
 ## Task 11: Format code and run full test suite
@@ -1296,8 +1279,7 @@ Ensure all tests pass.
 ```bash
 git add -A
 git commit -m "chore: format code and fix analyzer issues"
-```
-
+```dart
 ---
 
 ## Task 12: Manual testing and final commit
@@ -1307,6 +1289,7 @@ git commit -m "chore: format code and fix analyzer issues"
 Run: `flutter run -d macos`
 
 Test:
+
 - [ ] Sites map shows split pane on wide window
 - [ ] Collapse toggle works
 - [ ] Selecting list item pans map

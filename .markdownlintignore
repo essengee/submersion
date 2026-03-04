@@ -1,0 +1,13 @@
+ios/vendor/
+ios/Pods/
+ios/fastlane/
+macos/Pods/
+macos/fastlane/
+scripts/venv/
+third_party/
+.dart_tool/
+node_modules/
+windows/flutter/
+linux/flutter/
+macos/Flutter/
+packages/libdivecomputer_plugin/.dart_tool/

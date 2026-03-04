@@ -13,6 +13,7 @@
 ## Task 1: Trip Media Providers
 
 **Files:**
+
 - Create: `lib/features/trips/presentation/providers/trip_media_providers.dart`
 - Test: `test/features/trips/presentation/providers/trip_media_providers_test.dart`
 
@@ -67,8 +68,7 @@ void main() {
     });
   });
 }
-```
-
+```text
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/features/trips/presentation/providers/trip_media_providers_test.dart`
@@ -134,8 +134,7 @@ final flatMediaListForTripProvider = FutureProvider.family<
 
   return allMedia;
 });
-```
-
+```text
 **Step 4: Run test to verify it passes**
 
 Run: `flutter test test/features/trips/presentation/providers/trip_media_providers_test.dart`
@@ -146,13 +145,13 @@ Expected: PASS (3 tests)
 ```bash
 git add lib/features/trips/presentation/providers/trip_media_providers.dart test/features/trips/presentation/providers/trip_media_providers_test.dart
 git commit -m "feat(trips): add trip media providers for aggregated photo queries"
-```
-
+```text
 ---
 
 ## Task 2: Trip Photo Section Widget
 
 **Files:**
+
 - Create: `lib/features/trips/presentation/widgets/trip_photo_section.dart`
 - Test: `test/features/trips/presentation/widgets/trip_photo_section_test.dart`
 
@@ -199,8 +198,7 @@ void main() {
     });
   });
 }
-```
-
+```text
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/features/trips/presentation/widgets/trip_photo_section_test.dart`
@@ -485,8 +483,7 @@ class _MoreIndicator extends StatelessWidget {
     );
   }
 }
-```
-
+```text
 **Step 4: Run test to verify it passes**
 
 Run: `flutter test test/features/trips/presentation/widgets/trip_photo_section_test.dart`
@@ -497,13 +494,13 @@ Expected: PASS
 ```bash
 git add lib/features/trips/presentation/widgets/trip_photo_section.dart test/features/trips/presentation/widgets/trip_photo_section_test.dart
 git commit -m "feat(trips): add trip photo section widget with preview row"
-```
-
+```sql
 ---
 
 ## Task 3: Add Photo Section to Trip Detail Page
 
 **Files:**
+
 - Modify: `lib/features/trips/presentation/pages/trip_detail_page.dart`
 
 **Step 1: Read current file and identify insertion point**
@@ -513,11 +510,12 @@ Insert after notes section (~line 111), before dives section.
 **Step 2: Add import and widget**
 
 Add import at top:
+
 ```dart
 import 'package:submersion/features/trips/presentation/widgets/trip_photo_section.dart';
-```
-
+```text
 Add widget in `_TripDetailContent` build method, after notes section:
+
 ```dart
           // Notes
           if (trip.notes.isNotEmpty) ...[
@@ -534,17 +532,16 @@ Add widget in `_TripDetailContent` build method, after notes section:
 
           // Dives
           _buildDivesSection(context, ref, divesAsync),
-```
-
+```text
 Add placeholder scan dialog method to `_TripDetailContent`:
+
 ```dart
   void _showScanDialog(BuildContext context, WidgetRef ref, String tripId) {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Photo scanning coming soon')),
     );
   }
-```
-
+```text
 **Step 3: Run the app to verify**
 
 Run: `flutter run -d macos`
@@ -555,13 +552,13 @@ Navigate to a trip detail page and verify photo section appears.
 ```bash
 git add lib/features/trips/presentation/pages/trip_detail_page.dart
 git commit -m "feat(trips): integrate photo section into trip detail page"
-```
-
+```text
 ---
 
 ## Task 4: Trip Gallery Page
 
 **Files:**
+
 - Create: `lib/features/trips/presentation/pages/trip_gallery_page.dart`
 - Test: `test/features/trips/presentation/pages/trip_gallery_page_test.dart`
 
@@ -601,8 +598,7 @@ void main() {
     });
   });
 }
-```
-
+```text
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/features/trips/presentation/pages/trip_gallery_page_test.dart`
@@ -908,8 +904,7 @@ class _GridThumbnail extends ConsumerWidget {
     );
   }
 }
-```
-
+```text
 **Step 4: Run test to verify it passes**
 
 Run: `flutter test test/features/trips/presentation/pages/trip_gallery_page_test.dart`
@@ -920,13 +915,13 @@ Expected: PASS
 ```bash
 git add lib/features/trips/presentation/pages/trip_gallery_page.dart test/features/trips/presentation/pages/trip_gallery_page_test.dart
 git commit -m "feat(trips): add trip gallery page with photos grouped by dive"
-```
-
+```text
 ---
 
 ## Task 5: Trip Photo Viewer Page
 
 **Files:**
+
 - Create: `lib/features/media/presentation/pages/trip_photo_viewer_page.dart`
 
 **Step 1: Create trip-scoped photo viewer**
@@ -1423,28 +1418,26 @@ class _MetadataChip extends StatelessWidget {
     );
   }
 }
-```
-
+```text
 **Step 2: Commit**
 
 ```bash
 git add lib/features/media/presentation/pages/trip_photo_viewer_page.dart
 git commit -m "feat(media): add trip-scoped photo viewer with dive context overlays"
-```
-
+```text
 ---
 
 ## Task 6: Add Gallery Route
 
 **Files:**
+
 - Modify: `lib/core/router/app_router.dart`
 
 **Step 1: Add import**
 
 ```dart
 import 'package:submersion/features/trips/presentation/pages/trip_gallery_page.dart';
-```
-
+```text
 **Step 2: Add gallery route under trips**
 
 Find the trips routes section (~line 494) and add after the edit route:
@@ -1473,20 +1466,19 @@ Find the trips routes section (~line 494) and add after the edit route:
                   ),
                 ],
               ),
-```
-
+```text
 **Step 3: Commit**
 
 ```bash
 git add lib/core/router/app_router.dart
 git commit -m "feat(router): add trip gallery route"
-```
-
+```text
 ---
 
 ## Task 7: Trip Media Scanner Service
 
 **Files:**
+
 - Create: `lib/features/media/data/services/trip_media_scanner.dart`
 - Test: `test/features/media/data/services/trip_media_scanner_test.dart`
 
@@ -1553,8 +1545,7 @@ void main() {
     });
   });
 }
-```
-
+```text
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/features/media/data/services/trip_media_scanner_test.dart`
@@ -1723,8 +1714,7 @@ class TripMediaScanner {
     );
   }
 }
-```
-
+```text
 **Step 4: Run test to verify it passes**
 
 Run: `flutter test test/features/media/data/services/trip_media_scanner_test.dart`
@@ -1735,13 +1725,13 @@ Expected: PASS
 ```bash
 git add lib/features/media/data/services/trip_media_scanner.dart test/features/media/data/services/trip_media_scanner_test.dart
 git commit -m "feat(media): add trip media scanner service for timestamp matching"
-```
-
+```text
 ---
 
 ## Task 8: Scan Results Dialog
 
 **Files:**
+
 - Create: `lib/features/media/presentation/widgets/scan_results_dialog.dart`
 
 **Step 1: Create the dialog widget**
@@ -2007,20 +1997,19 @@ class _ScanResultsDialogState extends State<ScanResultsDialog> {
     );
   }
 }
-```
-
+```text
 **Step 2: Commit**
 
 ```bash
 git add lib/features/media/presentation/widgets/scan_results_dialog.dart
 git commit -m "feat(media): add scan results dialog for photo linking confirmation"
-```
-
+```text
 ---
 
 ## Task 9: Wire Up Scan Functionality
 
 **Files:**
+
 - Modify: `lib/features/trips/presentation/pages/trip_detail_page.dart`
 - Modify: `lib/features/trips/presentation/widgets/trip_photo_section.dart`
 - Modify: `lib/features/trips/presentation/pages/trip_gallery_page.dart`
@@ -2028,15 +2017,16 @@ git commit -m "feat(media): add scan results dialog for photo linking confirmati
 **Step 1: Update trip_detail_page.dart with actual scan logic**
 
 Add imports:
+
 ```dart
 import 'package:submersion/features/media/data/repositories/media_repository.dart';
 import 'package:submersion/features/media/data/services/media_import_service.dart';
 import 'package:submersion/features/media/data/services/trip_media_scanner.dart';
 import 'package:submersion/features/media/presentation/widgets/scan_results_dialog.dart';
 import 'package:submersion/features/trips/presentation/providers/trip_media_providers.dart';
-```
-
+```text
 Replace the placeholder `_showScanDialog` method with:
+
 ```dart
   Future<void> _showScanDialog(
     BuildContext context,
@@ -2172,13 +2162,12 @@ Replace the placeholder `_showScanDialog` method with:
       }
     }
   }
-```
-
+```typescript
 Also add the import for AssetEntity:
+
 ```dart
 import 'package:photo_manager/photo_manager.dart';
-```
-
+```text
 **Step 2: Copy scan logic to gallery page**
 
 Add the same imports and methods to `trip_gallery_page.dart`, adapting for the widget context.
@@ -2193,8 +2182,7 @@ Test the full scan → link flow.
 ```bash
 git add lib/features/trips/presentation/pages/trip_detail_page.dart lib/features/trips/presentation/pages/trip_gallery_page.dart
 git commit -m "feat(trips): wire up photo scan and link functionality"
-```
-
+```diff
 ---
 
 ## Task 10: Final Testing and Polish

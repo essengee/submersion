@@ -58,8 +58,7 @@ The existing 8-phase HSV algorithm, unchanged. For users familiar with Subsurfac
 
 ```dart
 typedef TissueColorFn = Color Function(double percentage);
-```
-
+```dart
 Three implementations: `thermalColor()`, `divergingColor()`, `subsurfaceHeatColor()` (existing). The active function is selected by preference and passed to all visualization widgets.
 
 ---
@@ -83,6 +82,7 @@ Time-series chart showing tissue loading curves for all 16 compartments as layer
 - **Expanded (180px):** All 16 compartments as individual translucent filled curves. Faster compartments (1-4) drawn on top. M-value threshold line at 100% loading. Leading compartment gets a thicker/opaque stroke.
 
 Key behaviors:
+
 - Y-axis: 0-120% loading
 - X-axis: time (matches dive profile)
 - Rising curves = ongassing, falling = offgassing
@@ -97,6 +97,7 @@ Key behaviors:
 - **Expanded (192px):** Each sparkline ~12px tall with M-value reference line at 100%. Compartment numbers visible on left margin. Hovering highlights that compartment and shows tooltip.
 
 Key behaviors:
+
 - Each sparkline Y-axis: 0-120% loading
 - Leading compartment gets bolder stroke
 - Tap/drag: same crosshair sync
@@ -106,6 +107,7 @@ Key behaviors:
 ### Part 3: Widget Architecture
 
 ```
+
 CompactTissueLoadingCard (existing, modified)
 +-- Header Row
 |   +-- "Tissue Loading" title
@@ -118,8 +120,8 @@ CompactTissueLoadingCard (existing, modified)
 |   +-- TissueSparklines (new widget)
 +-- Legend (adapts to color scheme)
 +-- Compartment Detail Panel (existing, unchanged)
-```
 
+```dart
 #### New Files
 
 | Widget | File | Responsibility |
@@ -147,8 +149,7 @@ Both follow the same pattern as `TissueHeatMapStrip`: accept `decoStatuses`, `se
 ```dart
 enum TissueColorScheme { thermal, diverging, classic }
 enum TissueVizMode { heatMap, stackedArea, sparklines }
-```
-
+```dart
 #### Storage
 
 Stored via the existing diver preferences system as Riverpod providers. Persisted to the database.
@@ -188,8 +189,10 @@ All visualization modes (heat map, area, sparklines) use the same legend since t
 
 ### Part 6: Header Layout
 
-```
+```text
+
 [Tissue Loading]  [grid|area|lines]  [palette-icon]  [chevron]
+
 ```
 
 - **Mode toggle:** 3 small icon buttons (outlined inactive, filled active). Icons: grid, area chart, sparkline

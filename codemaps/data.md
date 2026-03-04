@@ -9,7 +9,8 @@ SQLite database via Drift ORM. Schema at `lib/core/database/database.dart`.
 ## Core Tables
 
 ### Divers (Multi-profile)
-```
+
+```text
 divers
 ├── id (PK)
 ├── name, email, phone
@@ -32,7 +33,8 @@ diver_settings (1:1 with divers)
 ```
 
 ### Dive Log
-```
+
+```text
 dives
 ├── id (PK), diverId (FK)
 ├── diveNumber, diveDateTime, entryTime, exitTime
@@ -72,7 +74,8 @@ dive_tanks
 ```
 
 ### Locations
-```
+
+```text
 dive_sites
 ├── id (PK), diverId (FK)
 ├── name, description
@@ -90,7 +93,8 @@ dive_centers
 ```
 
 ### Equipment
-```
+
+```text
 equipment
 ├── id (PK), diverId (FK)
 ├── name, type, brand, model
@@ -117,7 +121,8 @@ dive_equipment (junction)
 ```
 
 ### Social
-```
+
+```text
 buddies
 ├── id (PK), diverId (FK)
 ├── name, email, phone
@@ -137,7 +142,8 @@ certifications
 ```
 
 ### Organization
-```
+
+```text
 trips
 ├── id (PK), diverId (FK)
 ├── name, startDate, endDate
@@ -156,7 +162,8 @@ dive_types (custom types)
 ```
 
 ### Marine Life
-```
+
+```text
 species (catalog)
 ├── id (PK)
 ├── commonName, scientificName
@@ -168,7 +175,8 @@ sightings
 ```
 
 ### Advanced Features
-```
+
+```text
 dive_weights (multiple per dive)
 ├── id (PK), diveId (FK)
 ├── weightType, amountKg, notes
@@ -206,7 +214,8 @@ tide_records
 ```
 
 ### Sync Infrastructure
-```
+
+```text
 sync_metadata (global state)
 ├── id (PK='global')
 ├── lastSyncTimestamp, deviceId

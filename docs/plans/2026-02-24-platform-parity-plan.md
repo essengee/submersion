@@ -35,6 +35,7 @@ Streams A-D have zero file overlap and can be dispatched to separate agents.
 ### Task A1: Create the shared Swift package structure
 
 **Files:**
+
 - Create: `darwin/Package.swift`
 - Create: `darwin/Sources/LibDCDarwin/.gitkeep` (placeholder until files move)
 
@@ -65,8 +66,7 @@ let package = Package(
         ),
     ]
 )
-```
-
+```typescript
 Note: The exact Swift package setup for bridging C headers may require a `module.modulemap` or an umbrella header depending on how the podspec integrates it. The implementor should verify the C header import path works by building. An alternative is to keep the C header import in the podspec's `SWIFT_INCLUDE_PATHS` and use a bridging header, which is the current pattern.
 
 **Step 2: Verify directory structure**
@@ -74,20 +74,19 @@ Note: The exact Swift package setup for bridging C headers may require a `module
 ```bash
 ls packages/libdivecomputer_plugin/darwin/
 ls packages/libdivecomputer_plugin/darwin/Sources/LibDCDarwin/
-```
-
+```text
 **Step 3: Commit**
 
 ```bash
 git add packages/libdivecomputer_plugin/darwin/
 git commit -m "feat(plugin): scaffold shared Swift package for iOS/macOS"
-```
-
+```diff
 ---
 
 ### Task A2: Move shared Swift files into the darwin package
 
 **Files:**
+
 - Move: `macos/Classes/DiveComputerHostApiImpl.swift` -> `darwin/Sources/LibDCDarwin/DiveComputerHostApiImpl.swift`
 - Move: `macos/Classes/BleScanner.swift` -> `darwin/Sources/LibDCDarwin/BleScanner.swift`
 - Move: `macos/Classes/BleIoStream.swift` -> `darwin/Sources/LibDCDarwin/BleIoStream.swift`
@@ -108,11 +107,11 @@ mv macos/Classes/BleIoStream.swift darwin/Sources/LibDCDarwin/
 rm ios/Classes/DiveComputerHostApiImpl.swift
 rm ios/Classes/BleScanner.swift
 rm ios/Classes/BleIoStream.swift
-```
-
+```typescript
 **Step 2: Add conditional import to DiveComputerHostApiImpl.swift**
 
 Replace the first line:
+
 ```swift
 // OLD:
 import FlutterMacOS
@@ -123,8 +122,7 @@ import Flutter
 #elseif os(macOS)
 import FlutterMacOS
 #endif
-```
-
+```typescript
 Similarly update `BleScanner.swift` and `BleIoStream.swift` if they import FlutterMacOS.
 
 **Step 3: Update the error message string**
@@ -141,8 +139,7 @@ message: "Transport \(transport) not yet supported on iOS"
 #elseif os(macOS)
 message: "Transport \(transport) not yet supported on macOS"
 #endif
-```
-
+```text
 **Step 4: Create thin entry points**
 
 Create `macos/Classes/LibdivecomputerPlugin.swift` if it doesn't already exist (it likely does as the plugin registration file). Ensure it references the shared code. The key is that `DiveComputerHostApiImpl` is now in the darwin package.
@@ -154,32 +151,30 @@ Create `ios/Classes/LibdivecomputerPlugin.swift` similarly.
 Both `libdivecomputer_plugin.podspec` (macOS) and the iOS podspec need to include the `darwin/Sources/LibDCDarwin/*.swift` files in their source_files.
 
 Example podspec change:
+
 ```ruby
 s.source_files = 'macos/Classes/**/*.{swift,c,h}',
                  'darwin/Sources/LibDCDarwin/**/*.swift'
-```
-
+```text
 And for iOS:
+
 ```ruby
 s.source_files = 'ios/Classes/**/*.{swift,c,h}',
                  'darwin/Sources/LibDCDarwin/**/*.swift'
-```
-
+```text
 **Step 6: Build and verify on macOS**
 
 ```bash
 cd ../..  # back to project root
 flutter build macos --debug 2>&1 | tail -20
-```
-
+```text
 Expected: Builds successfully.
 
 **Step 7: Build and verify on iOS simulator**
 
 ```bash
 flutter build ios --simulator --debug 2>&1 | tail -20
-```
-
+```text
 Expected: Builds successfully. iOS now has full 14-field sample mapping, 25 event types, and deco model/GF.
 
 **Step 8: Commit**
@@ -189,13 +184,13 @@ git add -A packages/libdivecomputer_plugin/darwin/ \
         packages/libdivecomputer_plugin/macos/ \
         packages/libdivecomputer_plugin/ios/
 git commit -m "feat(plugin): extract shared Swift package, iOS gains full parity"
-```
-
+```diff
 ---
 
 ### Task A3: Add serial/USB transport to macOS/iOS via shared Swift package
 
 **Files:**
+
 - Create: `darwin/Sources/LibDCDarwin/SerialScanner.swift`
 - Create: `darwin/Sources/LibDCDarwin/SerialIoStream.swift`
 - Modify: `darwin/Sources/LibDCDarwin/DiveComputerHostApiImpl.swift`
@@ -268,8 +263,7 @@ class SerialScanner {
         }
     }
 }
-```
-
+```text
 Note: IOKit serial access on iOS is limited. Most iOS dive computer connections will be BLE. Serial support primarily benefits macOS (USB-serial adapters).
 
 **Step 2: Create SerialIoStream.swift**
@@ -369,8 +363,7 @@ class SerialIoStream {
         return Int32(LIBDC_STATUS_SUCCESS)
     }
 }
-```
-
+```typescript
 Note: The `libdc_io_callbacks_t` closure approach requires `@convention(c)` compatibility -- the closures above capture no context (they use `userdata` pointer instead), which is correct for C function pointers.
 
 **Step 3: Wire serial transport into DiveComputerHostApiImpl.swift**
@@ -387,8 +380,7 @@ case .serial:
         self?.flutterApi.onDiscoveryComplete { _ in }
     }
     scanner.start()
-```
-
+```text
 In `startDownload()`, detect serial transport and use SerialIoStream instead of BleIoStream:
 
 ```swift
@@ -402,22 +394,19 @@ if device.transport == .serial {
     var ioCallbacks = serialStream.makeCallbacks()
     // ... proceed with libdc_download_run using ioCallbacks
 }
-```
-
+```text
 **Step 4: Build and verify**
 
 ```bash
 flutter build macos --debug 2>&1 | tail -20
-```
-
+```text
 **Step 5: Commit**
 
 ```bash
 git add packages/libdivecomputer_plugin/darwin/Sources/LibDCDarwin/Serial*.swift
 git add packages/libdivecomputer_plugin/darwin/Sources/LibDCDarwin/DiveComputerHostApiImpl.swift
 git commit -m "feat(plugin): add serial/USB transport for macOS/iOS"
-```
-
+```diff
 ---
 
 ## Stream B: Android JNI + Kotlin Parity
@@ -425,6 +414,7 @@ git commit -m "feat(plugin): add serial/USB transport for macOS/iOS"
 ### Task B1: Expand nativeGetDiveSample to return all 14 fields
 
 **Files:**
+
 - Modify: `android/src/main/cpp/libdc_jni.cpp:449-467`
 
 **Step 1: Update the JNI function**
@@ -464,20 +454,19 @@ Java_com_submersion_libdivecomputer_LibdcWrapper_nativeGetDiveSample(
     env->SetDoubleArrayRegion(result, 0, 14, values);
     return result;
 }
-```
-
+```text
 **Step 2: Commit**
 
 ```bash
 git add packages/libdivecomputer_plugin/android/src/main/cpp/libdc_jni.cpp
 git commit -m "feat(android): expand nativeGetDiveSample to all 14 fields"
-```
-
+```diff
 ---
 
 ### Task B2: Add JNI functions for events and deco model
 
 **Files:**
+
 - Modify: `android/src/main/cpp/libdc_jni.cpp` (append after line 514)
 
 **Step 1: Add event accessors**
@@ -513,8 +502,7 @@ Java_com_submersion_libdivecomputer_LibdcWrapper_nativeGetDiveEvent(
     env->SetLongArrayRegion(result, 0, 4, values);
     return result;
 }
-```
-
+```text
 **Step 2: Add deco model accessor**
 
 ```cpp
@@ -537,20 +525,19 @@ Java_com_submersion_libdivecomputer_LibdcWrapper_nativeGetDiveDecoModel(
     env->SetIntArrayRegion(result, 0, 4, values);
     return result;
 }
-```
-
+```text
 **Step 3: Commit**
 
 ```bash
 git add packages/libdivecomputer_plugin/android/src/main/cpp/libdc_jni.cpp
 git commit -m "feat(android): add JNI accessors for events and deco model"
-```
-
+```diff
 ---
 
 ### Task B3: Update Kotlin declarations and mapping
 
 **Files:**
+
 - Modify: `android/src/main/kotlin/com/submersion/libdivecomputer/LibdcWrapper.kt`
 - Modify: `android/src/main/kotlin/com/submersion/libdivecomputer/DiveComputerHostApiImpl.kt`
 
@@ -565,8 +552,7 @@ external fun nativeGetDiveEvent(divePtr: Long, index: Int): LongArray?
 
 // Decompression model access
 external fun nativeGetDiveDecoModel(divePtr: Long): IntArray?
-```
-
+```text
 **Step 2: Update convertParsedDive() in DiveComputerHostApiImpl.kt**
 
 Replace the sample mapping (lines 221-231) with:
@@ -592,8 +578,7 @@ val samples = (0 until sampleCount).mapNotNull { i ->
         tts = if (s[13].toLong() == 0xFFFFFFFFL || s[13].toLong() == 0L) null else s[13].toLong()
     )
 }
-```
-
+```text
 **Step 3: Add event parsing after tank conversion (before the return statement)**
 
 ```kotlin
@@ -623,8 +608,7 @@ val decoAlgorithm = decoInfo?.let {
 val gfLow = decoInfo?.let { if (it[2] == 0) null else it[2].toLong() }
 val gfHigh = decoInfo?.let { if (it[3] == 0) null else it[3].toLong() }
 val decoConservatism = decoInfo?.let { if (it[1] == 0) null else it[1].toLong() }
-```
-
+```text
 **Step 4: Update the ParsedDive return to include new fields**
 
 Replace lines 272-285:
@@ -648,8 +632,7 @@ return ParsedDive(
     gfHigh = gfHigh,
     decoConservatism = decoConservatism
 )
-```
-
+```typescript
 **Step 5: Add mapEventType() function to DiveComputerHostApiImpl.kt**
 
 Add as a companion object function or private method:
@@ -683,22 +666,19 @@ private fun mapEventType(type: Int): String = when (type) {
     24 -> "gaschange2"
     else -> "unknown_$type"
 }
-```
-
+```text
 **Step 6: Build and verify**
 
 ```bash
 cd packages/libdivecomputer_plugin
 flutter build apk --debug 2>&1 | tail -20
-```
-
+```text
 **Step 7: Commit**
 
 ```bash
 git add packages/libdivecomputer_plugin/android/
 git commit -m "feat(android): full sample/event/deco parity with macOS"
-```
-
+```swift
 ---
 
 ## Stream C: Windows Full Implementation
@@ -706,6 +686,7 @@ git commit -m "feat(android): full sample/event/deco parity with macOS"
 ### Task C1: Create the dive converter (C struct to Pigeon C++ mapping)
 
 **Files:**
+
 - Create: `windows/dive_converter.h`
 - Create: `windows/dive_converter.cc`
 
@@ -732,8 +713,7 @@ std::string MapEventType(unsigned int type);
 }  // namespace libdivecomputer_plugin
 
 #endif  // DIVE_CONVERTER_H_
-```
-
+```text
 **Step 2: Create dive_converter.cc**
 
 ```cpp
@@ -864,8 +844,7 @@ ParsedDive ConvertParsedDive(const libdc_parsed_dive_t& dive) {
 }
 
 }  // namespace libdivecomputer_plugin
-```
-
+```text
 Note: The sample/tank/event/ParsedDive constructors above use placeholder comments because the exact Pigeon-generated C++ API varies. The implementor must read `dive_computer_api.g.h` to fill in the correct constructors. The mapping logic (which fields, which sentinels) is identical to the macOS Swift version.
 
 **Step 3: Update CMakeLists.txt**
@@ -881,31 +860,32 @@ add_library(${PLUGIN_NAME} SHARED
     ${WRAPPER_DIR}/libdc_wrapper.c
     ${WRAPPER_DIR}/libdc_download.c
 )
-```
-
+```text
 **Step 4: Commit**
 
 ```bash
 git add packages/libdivecomputer_plugin/windows/dive_converter.*
 git add packages/libdivecomputer_plugin/windows/CMakeLists.txt
 git commit -m "feat(windows): add dive converter for full sample/event/deco mapping"
-```
-
+```diff
 ---
 
 ### Task C2: Implement Windows BLE scanner (WinRT)
 
 **Files:**
+
 - Create: `windows/ble_scanner.h`
 - Create: `windows/ble_scanner.cc`
 
 This task implements BLE device discovery using Windows Runtime APIs.
 
 **Key WinRT types:**
+
 - `Windows::Devices::Bluetooth::Advertisement::BluetoothLEAdvertisementWatcher`
 - `Windows::Devices::Bluetooth::Advertisement::BluetoothLEAdvertisementReceivedEventArgs`
 
 **Architecture:**
+
 1. Create a `BleScanner` class wrapping the watcher
 2. On `Received` event, extract `LocalName` from advertisement
 3. Call `libdc_descriptor_match()` on the name
@@ -913,6 +893,7 @@ This task implements BLE device discovery using Windows Runtime APIs.
 5. On `Stopped` event, report completion
 
 **Implementation notes for the implementor:**
+
 - Requires `#include <winrt/Windows.Devices.Bluetooth.Advertisement.h>`
 - WinRT events are asynchronous; callbacks arrive on a thread pool thread
 - Use `flutter::TaskRunner` or `PostMessage` to marshal back to Flutter's platform thread
@@ -920,35 +901,37 @@ This task implements BLE device discovery using Windows Runtime APIs.
 - Include `<winrt/base.h>` and link against `WindowsApp.lib`
 
 **CMakeLists.txt additions:**
+
 ```cmake
 # Add C++/WinRT support
 set(CMAKE_CXX_STANDARD 20)
 target_compile_options(${PLUGIN_NAME} PRIVATE /await)
 target_link_libraries(${PLUGIN_NAME} PRIVATE flutter flutter_wrapper_plugin divecomputer WindowsApp.lib)
-```
-
+```text
 **Step: Implement, build on Windows CI, commit**
 
 ```bash
 git add packages/libdivecomputer_plugin/windows/ble_scanner.*
 git commit -m "feat(windows): implement BLE scanner via WinRT"
-```
-
+```dart
 ---
 
 ### Task C3: Implement Windows BLE I/O stream (WinRT GATT)
 
 **Files:**
+
 - Create: `windows/ble_io_stream.h`
 - Create: `windows/ble_io_stream.cc`
 
 **Key WinRT types:**
+
 - `Windows::Devices::Bluetooth::BluetoothLEDevice::FromBluetoothAddressAsync`
 - `Windows::Devices::Bluetooth::GenericAttributeProfile::GattDeviceService`
 - `Windows::Devices::Bluetooth::GenericAttributeProfile::GattCharacteristic`
 
 **Architecture:**
 Same semaphore-based synchronous bridge as macOS/iOS:
+
 1. Connect via BLE address
 2. Discover GATT services matching known dive computer UUIDs
 3. Subscribe to notifications on the RX characteristic
@@ -957,6 +940,7 @@ Same semaphore-based synchronous bridge as macOS/iOS:
 6. Implements `libdc_io_callbacks_t`
 
 **Implementation notes:**
+
 - Use `std::mutex` + `std::condition_variable` (Windows equivalent of Apple's semaphores)
 - WinRT async operations use `co_await` with C++/WinRT coroutines
 - The I/O callbacks are called from libdivecomputer's download thread (blocking)
@@ -967,25 +951,27 @@ Same semaphore-based synchronous bridge as macOS/iOS:
 ```bash
 git add packages/libdivecomputer_plugin/windows/ble_io_stream.*
 git commit -m "feat(windows): implement BLE I/O stream via WinRT GATT"
-```
-
+```diff
 ---
 
 ### Task C4: Implement Windows serial scanner and I/O stream
 
 **Files:**
+
 - Create: `windows/serial_scanner.h`
 - Create: `windows/serial_scanner.cc`
 - Create: `windows/serial_io_stream.h`
 - Create: `windows/serial_io_stream.cc`
 
 **Serial Scanner:**
+
 1. Use `SetupDiGetClassDevs(GUID_DEVINTERFACE_COMPORT, ...)` to list COM ports
 2. For each port, get the friendly name via `SetupDiGetDeviceRegistryProperty`
 3. Call `libdc_descriptor_match()` with the device name
 4. Report matched devices
 
 **Serial I/O Stream:**
+
 1. Open COM port via `CreateFile("\\\\.\\COMx", ...)`
 2. Configure via `SetCommState` (baud rate, 8N1)
 3. Set timeouts via `SetCommTimeouts`
@@ -999,13 +985,13 @@ git commit -m "feat(windows): implement BLE I/O stream via WinRT GATT"
 git add packages/libdivecomputer_plugin/windows/serial_scanner.* \
         packages/libdivecomputer_plugin/windows/serial_io_stream.*
 git commit -m "feat(windows): implement serial scanner and I/O stream"
-```
-
+```diff
 ---
 
 ### Task C5: Wire everything into Windows DiveComputerHostApiImpl
 
 **Files:**
+
 - Modify: `windows/dive_computer_host_api_impl.h`
 - Modify: `windows/dive_computer_host_api_impl.cc`
 - Modify: `windows/CMakeLists.txt`
@@ -1026,8 +1012,7 @@ std::unique_ptr<BleScanner> ble_scanner_;
 std::unique_ptr<SerialScanner> serial_scanner_;
 libdc_download_session_t* download_session_ = nullptr;
 std::thread download_thread_;
-```
-
+```text
 **Step 2: Implement StartDiscovery**
 
 Replace the stub with transport routing:
@@ -1060,8 +1045,7 @@ void DiveComputerHostApiImpl::StartDiscovery(
                           "Transport not yet supported on Windows"));
   }
 }
-```
-
+```text
 **Step 3: Implement StartDownload**
 
 Replace the stub. Route to BLE or serial I/O stream based on transport:
@@ -1100,8 +1084,7 @@ void DiveComputerHostApiImpl::StartDownload(
     download_session_ = nullptr;
   });
 }
-```
-
+```text
 **Step 4: Update CMakeLists.txt with all new source files**
 
 ```cmake
@@ -1117,15 +1100,13 @@ add_library(${PLUGIN_NAME} SHARED
     ${WRAPPER_DIR}/libdc_wrapper.c
     ${WRAPPER_DIR}/libdc_download.c
 )
-```
-
+```text
 **Step 5: Commit**
 
 ```bash
 git add packages/libdivecomputer_plugin/windows/
 git commit -m "feat(windows): wire BLE + serial into host API, full download flow"
-```
-
+```swift
 ---
 
 ## Stream D: Linux Full Implementation
@@ -1133,6 +1114,7 @@ git commit -m "feat(windows): wire BLE + serial into host API, full download flo
 ### Task D1: Create the dive converter (C struct to Pigeon GObject mapping)
 
 **Files:**
+
 - Create: `linux/dive_converter.h`
 - Create: `linux/dive_converter.c`
 
@@ -1157,13 +1139,13 @@ const char* map_event_type(unsigned int type);
 G_END_DECLS
 
 #endif  // DIVE_CONVERTER_H_
-```
-
+```typescript
 **Step 2: Create dive_converter.c**
 
 This follows the same pattern as the Windows converter but uses GObject/FlValue APIs.
 
 The mapping logic is identical:
+
 - Fingerprint hex encoding
 - DateTime to epoch via `timegm()`
 - 14 sample fields with NaN/UINT32_MAX sentinel checks
@@ -1172,6 +1154,7 @@ The mapping logic is identical:
 - TTS=0 filter
 
 Uses Pigeon-generated GObject constructors like:
+
 - `libdivecomputer_plugin_profile_sample_new(...)`
 - `libdivecomputer_plugin_dive_event_new(...)`
 - `libdivecomputer_plugin_parsed_dive_new(...)`
@@ -1183,17 +1166,18 @@ The implementor should read `dive_computer_api.g.h` to confirm the exact constru
 ```bash
 git add packages/libdivecomputer_plugin/linux/dive_converter.*
 git commit -m "feat(linux): add dive converter for full sample/event/deco mapping"
-```
-
+```diff
 ---
 
 ### Task D2: Implement Linux BLE scanner (BlueZ D-Bus)
 
 **Files:**
+
 - Create: `linux/ble_scanner.h`
 - Create: `linux/ble_scanner.c`
 
 **Architecture:**
+
 1. Get system D-Bus via `g_bus_get_sync(G_BUS_TYPE_SYSTEM, ...)`
 2. Find the BlueZ adapter object (typically `/org/bluez/hci0`)
 3. Set discovery filter: `org.bluez.Adapter1.SetDiscoveryFilter({"Transport": "le"})`
@@ -1204,11 +1188,13 @@ git commit -m "feat(linux): add dive converter for full sample/event/deco mappin
 8. Report matches via callback
 
 **Key GLib/D-Bus functions:**
+
 - `g_dbus_connection_call_sync()` for method calls
 - `g_dbus_connection_signal_subscribe()` for signals
 - `g_variant_new()` / `g_variant_get()` for D-Bus variant handling
 
 **Threading:**
+
 - BLE scanner runs on GLib main loop (GMainContext)
 - Callbacks naturally arrive on the main thread
 
@@ -1217,18 +1203,19 @@ git commit -m "feat(linux): add dive converter for full sample/event/deco mappin
 ```bash
 git add packages/libdivecomputer_plugin/linux/ble_scanner.*
 git commit -m "feat(linux): implement BLE scanner via BlueZ D-Bus"
-```
-
+```diff
 ---
 
 ### Task D3: Implement Linux BLE I/O stream (BlueZ D-Bus GATT)
 
 **Files:**
+
 - Create: `linux/ble_io_stream.h`
 - Create: `linux/ble_io_stream.c`
 
 **Architecture:**
 Same synchronous bridge pattern, but using GMutex/GCond instead of semaphores:
+
 1. Connect: `org.bluez.Device1.Connect`
 2. Discover GATT characteristics under the device object path
 3. Subscribe: `org.bluez.GattCharacteristic1.StartNotify`
@@ -1243,25 +1230,27 @@ Same synchronous bridge pattern, but using GMutex/GCond instead of semaphores:
 ```bash
 git add packages/libdivecomputer_plugin/linux/ble_io_stream.*
 git commit -m "feat(linux): implement BLE I/O stream via BlueZ D-Bus GATT"
-```
-
+```sql
 ---
 
 ### Task D4: Implement Linux serial scanner and I/O stream
 
 **Files:**
+
 - Create: `linux/serial_scanner.h`
 - Create: `linux/serial_scanner.c`
 - Create: `linux/serial_io_stream.h`
 - Create: `linux/serial_io_stream.c`
 
 **Serial Scanner:**
+
 1. Scan `/dev/ttyUSB*` and `/dev/ttyACM*` via `opendir`/`readdir` on `/dev/`
 2. For each matching device, read metadata from `/sys/class/tty/<name>/device/`
 3. Call `libdc_descriptor_match()` with device info
 4. Report matched devices
 
 **Serial I/O Stream:**
+
 1. Open device via `open("/dev/ttyUSBx", O_RDWR | O_NOCTTY)`
 2. Configure via `tcsetattr()` (baud, 8N1, raw mode)
 3. `read()`: Use `select()` or `poll()` for timeout, then `read()`
@@ -1274,13 +1263,13 @@ git commit -m "feat(linux): implement BLE I/O stream via BlueZ D-Bus GATT"
 git add packages/libdivecomputer_plugin/linux/serial_scanner.* \
         packages/libdivecomputer_plugin/linux/serial_io_stream.*
 git commit -m "feat(linux): implement serial scanner and I/O stream"
-```
-
+```diff
 ---
 
 ### Task D5: Wire everything into Linux DiveComputerHostApiImpl
 
 **Files:**
+
 - Modify: `linux/dive_computer_host_api_impl.cc`
 - Modify: `linux/dive_computer_host_api_impl.h`
 - Modify: `linux/CMakeLists.txt`
@@ -1304,8 +1293,7 @@ struct HostApiContext {
     libdc_download_session_t* session;
     GThread* download_thread;
 };
-```
-
+```text
 **Step 4: Update CMakeLists.txt**
 
 ```cmake
@@ -1328,15 +1316,13 @@ add_library(${PLUGIN_NAME} SHARED
 
 target_include_directories(${PLUGIN_NAME} PRIVATE ${GIO_INCLUDE_DIRS})
 target_link_libraries(${PLUGIN_NAME} PRIVATE flutter divecomputer ${GIO_LIBRARIES})
-```
-
+```text
 **Step 5: Commit**
 
 ```bash
 git add packages/libdivecomputer_plugin/linux/
 git commit -m "feat(linux): wire BLE + serial into host API, full download flow"
-```
-
+```diff
 ---
 
 ## Stream E: Testing Infrastructure + CI
@@ -1344,6 +1330,7 @@ git commit -m "feat(linux): wire BLE + serial into host API, full download flow"
 ### Task E1: Create shared C wrapper unit tests
 
 **Files:**
+
 - Create: `test/native/CMakeLists.txt`
 - Create: `test/native/test_dive_converter.c`
 
@@ -1369,8 +1356,7 @@ target_include_directories(test_dive_converter PRIVATE
 
 enable_testing()
 add_test(NAME test_dive_converter COMMAND test_dive_converter)
-```
-
+```text
 **Step 2: Create test_dive_converter.c**
 
 Test that sentinel values (NaN, UINT32_MAX) map correctly:
@@ -1458,8 +1444,7 @@ int main(void) {
     printf("\nAll tests passed.\n");
     return 0;
 }
-```
-
+```text
 **Step 3: Build and run tests**
 
 ```bash
@@ -1467,20 +1452,19 @@ cd packages/libdivecomputer_plugin
 cmake -B build/test test/native
 cmake --build build/test
 ctest --test-dir build/test --output-on-failure
-```
-
+```text
 **Step 4: Commit**
 
 ```bash
 git add packages/libdivecomputer_plugin/test/native/
 git commit -m "test: add C wrapper unit tests for sentinel mapping"
-```
-
+```diff
 ---
 
 ### Task E2: Add CI workflows
 
 **Files:**
+
 - Create or modify: `.github/workflows/native-plugin-tests.yml`
 
 **Step 1: Create CI workflow**
@@ -1556,8 +1540,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev ninja-build libglib2.0-dev
       - run: flutter build linux --debug
-```
-
+```text
 **Step 2: Commit**
 
 ```bash

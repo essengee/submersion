@@ -24,8 +24,7 @@ final diveRepositoryProvider = Provider<DiveRepository>((ref) {
 final siteRepositoryProvider = Provider<SiteRepository>((ref) {
   return SiteRepository();
 });
-```
-
+```text
 ## FutureProvider
 
 ### Simple List
@@ -36,8 +35,7 @@ final divesProvider = FutureProvider<List<domain.Dive>>((ref) async {
   final repository = ref.watch(diveRepositoryProvider);
   return repository.getAllDives(diverId: diverId);
 });
-```
-
+```dart
 ### Family Provider
 
 Parameterized queries:
@@ -52,8 +50,7 @@ final diveProvider = FutureProvider.family<domain.Dive?, String>(
 
 // Usage
 final dive = ref.watch(diveProvider('dive-123'));
-```
-
+```text
 ## StateNotifier Pattern
 
 ### Full Implementation
@@ -127,8 +124,7 @@ final diveListNotifierProvider =
     ref,
   ),
 );
-```
-
+```dart
 ## Multi-Diver Support
 
 ### Current Diver Provider
@@ -147,8 +143,7 @@ final validatedCurrentDiverIdProvider = FutureProvider<String?>((ref) async {
   final diver = await ref.watch(diverProvider(currentId).future);
   return diver != null ? currentId : null;
 });
-```
-
+```text
 ### Diver-Scoped Data
 
 All data providers filter by diver:
@@ -161,8 +156,7 @@ final divesProvider = FutureProvider<List<domain.Dive>>((ref) async {
   final repository = ref.watch(diveRepositoryProvider);
   return repository.getAllDives(diverId: diverId);
 });
-```
-
+```dart
 ## Provider Invalidation
 
 ### Strategic Invalidation
@@ -184,8 +178,7 @@ Future<void> updateDive(domain.Dive dive) async {
     _ref.invalidate(tripWithStatsProvider(dive.tripId!));
   }
 }
-```
-
+```text
 ### Refresh Pattern
 
 Force reload:
@@ -194,8 +187,7 @@ Force reload:
 ref.invalidate(divesProvider);
 // or
 ref.refresh(divesProvider);
-```
-
+```dart
 ## Consuming Providers
 
 ### In Widgets
@@ -216,8 +208,7 @@ class DiveListPage extends ConsumerWidget {
     );
   }
 }
-```
-
+```text
 ### Reading vs Watching
 
 ```dart
@@ -226,8 +217,7 @@ final dives = ref.watch(divesProvider);
 
 // Read: One-time read
 final repository = ref.read(diveRepositoryProvider);
-```
-
+```dart
 ## Filter Providers
 
 ### StateProvider for Filters
@@ -244,8 +234,7 @@ class DiveFilterState {
 
   // ...
 }
-```
-
+```dart
 ### Computed/Derived Provider
 
 ```dart
@@ -266,8 +255,7 @@ final filteredDivesProvider = Provider<AsyncValue<List<domain.Dive>>>((ref) {
     }).toList();
   });
 });
-```
-
+```sql
 ## Convenience Selectors
 
 ### Select Specific State
@@ -276,8 +264,7 @@ final filteredDivesProvider = Provider<AsyncValue<List<domain.Dive>>>((ref) {
 final depthUnitProvider = Provider<DepthUnit>((ref) {
   return ref.watch(settingsProvider.select((s) => s.depthUnit));
 });
-```
-
+```text
 Avoids rebuilds when other settings change.
 
 ## Async Operations
@@ -295,8 +282,7 @@ Future<void> saveAndNavigate(domain.Dive dive) async {
     state = AsyncError(e, st);
   }
 }
-```
-
+```text
 ### In UI
 
 ```dart
@@ -306,8 +292,7 @@ onPressed: () async {
     context.go('/dives');
   }
 }
-```
-
+```dart
 ## Testing Providers
 
 ### Override in Tests

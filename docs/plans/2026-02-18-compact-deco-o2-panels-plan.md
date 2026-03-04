@@ -15,6 +15,7 @@
 The current provider defaults both deco and O2 sections to `expanded: true`. Since compact is now the default view, flip these to `false`.
 
 **Files:**
+
 - Modify: `lib/features/dive_log/presentation/providers/dive_detail_ui_providers.dart:27-28`
 
 **Step 1: Change the defaults**
@@ -29,8 +30,7 @@ const CollapsibleSectionState({
   this.equipmentExpanded = true,
   this.tideExpanded = true,
 });
-```
-
+```text
 Also change the fallback values in `_loadState()` on lines 64 and 66:
 
 ```dart
@@ -38,8 +38,7 @@ decoExpanded:
     _prefs.getBool(DiveDetailUiKeys.decoSectionExpanded) ?? false,
 o2ToxicityExpanded:
     _prefs.getBool(DiveDetailUiKeys.o2ToxicitySectionExpanded) ?? false,
-```
-
+```text
 **Step 2: Verify the app still builds**
 
 Run: `flutter analyze lib/features/dive_log/presentation/providers/dive_detail_ui_providers.dart`
@@ -50,8 +49,7 @@ Expected: No issues found.
 ```bash
 git add lib/features/dive_log/presentation/providers/dive_detail_ui_providers.dart
 git commit -m "refactor: default deco and O2 sections to collapsed state"
-```
-
+```text
 ---
 
 ### Task 2: Create CompactDecoPanel Widget
@@ -59,6 +57,7 @@ git commit -m "refactor: default deco and O2 sections to collapsed state"
 Add a compact decompression status widget below the existing `DecoInfoPanel` class in the same file.
 
 **Files:**
+
 - Modify: `lib/features/dive_log/presentation/widgets/deco_info_panel.dart`
 
 **Step 1: Add CompactDecoPanel class**
@@ -345,8 +344,7 @@ class CompactDecoPanel extends StatelessWidget {
     return Colors.green;
   }
 }
-```
-
+```text
 **Step 2: Verify the file compiles**
 
 Run: `flutter analyze lib/features/dive_log/presentation/widgets/deco_info_panel.dart`
@@ -357,8 +355,7 @@ Expected: No issues found.
 ```bash
 git add lib/features/dive_log/presentation/widgets/deco_info_panel.dart
 git commit -m "feat: add CompactDecoPanel widget for condensed deco display"
-```
-
+```text
 ---
 
 ### Task 3: Create CompactO2ToxicityPanel Widget
@@ -366,6 +363,7 @@ git commit -m "feat: add CompactDecoPanel widget for condensed deco display"
 Add a compact oxygen toxicity widget below the existing `O2ToxicityCard` class in the same file.
 
 **Files:**
+
 - Modify: `lib/features/dive_log/presentation/widgets/o2_toxicity_card.dart`
 
 **Step 1: Add CompactO2ToxicityPanel class**
@@ -667,8 +665,7 @@ class CompactO2ToxicityPanel extends StatelessWidget {
     return Colors.green;
   }
 }
-```
-
+```text
 **Step 2: Verify the file compiles**
 
 Run: `flutter analyze lib/features/dive_log/presentation/widgets/o2_toxicity_card.dart`
@@ -679,8 +676,7 @@ Expected: No issues found.
 ```bash
 git add lib/features/dive_log/presentation/widgets/o2_toxicity_card.dart
 git commit -m "feat: add CompactO2ToxicityPanel widget for condensed O2 display"
-```
-
+```text
 ---
 
 ### Task 4: Replace Deco/O2 Sections in Dive Detail Page
@@ -688,6 +684,7 @@ git commit -m "feat: add CompactO2ToxicityPanel widget for condensed O2 display"
 Replace the separate `_buildDecoSection` and `_buildO2ToxicitySection` methods with a single `_buildDecoO2Panel` that uses responsive layout.
 
 **Files:**
+
 - Modify: `lib/features/dive_log/presentation/pages/dive_detail_page.dart`
 
 **Step 1: Replace the two section calls in `_buildContent`**
@@ -695,17 +692,17 @@ Replace the separate `_buildDecoSection` and `_buildO2ToxicitySection` methods w
 In `_buildContent` (around lines 203-206), replace the two separate section calls and the gap between them with a single call:
 
 Find this block:
+
 ```dart
               _buildDecoSection(context, ref, dive),
               const SizedBox(height: 24),
               _buildO2ToxicitySection(context, ref, dive),
-```
-
+```text
 Replace with:
+
 ```dart
               _buildDecoO2Panel(context, ref, dive),
-```
-
+```text
 **Step 2: Add the `_buildDecoO2Panel` method**
 
 Add this new method in the `_DiveDetailPageState` class (right before or after where `_buildDecoSection` used to be, around line 1035). This method handles the responsive layout logic:
@@ -1018,8 +1015,7 @@ Add this new method in the `_DiveDetailPageState` class (right before or after w
       ),
     );
   }
-```
-
+```text
 **Step 3: Delete the old `_buildDecoSection` and `_buildO2ToxicitySection` methods**
 
 Remove `_buildDecoSection` (lines ~1035-1160) and `_buildO2ToxicitySection` (lines ~1168-1294) entirely. The new `_buildDecoO2Panel` and its two helper methods replace them.
@@ -1034,8 +1030,7 @@ Expected: No issues found.
 ```bash
 git add lib/features/dive_log/presentation/pages/dive_detail_page.dart
 git commit -m "feat: replace deco/O2 sections with responsive compact panels"
-```
-
+```diff
 ---
 
 ### Task 5: Format, Analyze, and Test
@@ -1074,6 +1069,7 @@ git commit -m "chore: format compact deco/O2 panel code"
 Run: `flutter run -d macos`
 
 Verify:
+
 - Navigate to a dive with profile data
 - Profile chart, compact deco, and compact O2 are all visible without scrolling
 - Deco and O2 panels are side-by-side below the chart
@@ -1084,6 +1080,7 @@ Verify:
 **Step 2: Narrow the window to phone width (<800px)**
 
 Verify:
+
 - Compact panels stack vertically (not side-by-side)
 - All three sections still fit on screen
 - Expand/collapse still works in stacked mode

@@ -26,7 +26,7 @@ Add a per-diver setting to prefer dive-computer-reported CNS data when available
 
 ### Setting OFF (default / current behavior)
 
-```
+```text
 _computeResidualCns(diveId)
   -> getPreviousDive()
   -> recursively get previous dive's profileAnalysis
@@ -40,7 +40,7 @@ service.analyze(startCns: residual)
 
 ### Setting ON, dive HAS computer CNS
 
-```
+```text
 profileAnalysisProvider:
   -> skip _computeResidualCns() entirely
   -> service.analyze(startCns: 0.0)  // still need other analysis
@@ -51,13 +51,13 @@ profileAnalysisProvider:
 
 ### Setting ON, dive does NOT have computer CNS
 
-```
+```text
 Same as "Setting OFF" — full app calculation with recursive residual.
 ```
 
 ### Recursive walk with mixed data sources
 
-```
+```text
 Dive C (no computer CNS, setting ON)
   -> _computeResidualCns(C)
     -> getPreviousDive() = Dive B
@@ -78,8 +78,7 @@ New column on `DiverSettings`:
 ```sql
 ALTER TABLE diver_settings
   ADD COLUMN use_dive_computer_cns_data INTEGER NOT NULL DEFAULT 0;
-```
-
+```dart
 ### Settings Layer
 
 | File | Change |

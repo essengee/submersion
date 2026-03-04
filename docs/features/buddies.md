@@ -35,6 +35,7 @@ Build a contact list of your dive partners:
 ### Importing from Contacts
 
 Tap **Import from Contacts** to:
+
 1. Select a contact
 2. Pre-fill name, email, phone
 3. Add diving-specific info
@@ -75,6 +76,7 @@ Each buddy page shows:
 ### Social Statistics
 
 In the main Stats section, view:
+
 - **Top Buddies** - Most frequent partners
 - **Dives by Buddy** - Breakdown chart
 - **Solo Dives** - Percentage solo
@@ -140,6 +142,7 @@ Common certification progressions:
 ### Expiring Certifications
 
 Some certifications expire:
+
 - CPR/First Aid (typically 2 years)
 - Instructor status (annual renewal)
 - Some agency memberships
@@ -147,12 +150,14 @@ Some certifications expire:
 ### Expiry Warnings
 
 Submersion shows:
+
 - **Yellow badge** - Expiring within 60 days
 - **Red badge** - Expired
 
 ### Renewal Reminders
 
 Set up reminders:
+
 1. Open certification
 2. Note expiry date
 3. Submersion tracks automatically
@@ -185,6 +190,7 @@ Track dive operators you've dived with:
 ### Center Statistics
 
 Each center page shows:
+
 - Total dives with this center
 - Sites visited through them
 - Date range of dives
@@ -194,6 +200,7 @@ Each center page shows:
 ### Marking Training Dives
 
 For certification courses:
+
 1. Set dive type to "Training"
 2. Assign instructor as buddy
 3. Add course notes
@@ -201,6 +208,7 @@ For certification courses:
 ### Skill Tracking
 
 Track skills learned:
+
 - Use notes field for skills practiced
 - Link to certification earned
 - Reference training materials

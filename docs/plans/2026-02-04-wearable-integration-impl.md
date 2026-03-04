@@ -15,6 +15,7 @@
 ### Task 1.1: Add health package dependency
 
 **Files:**
+
 - Modify: `pubspec.yaml`
 
 **Step 1: Add the health package**
@@ -23,14 +24,12 @@ In `pubspec.yaml`, add under `dependencies:` (after the `# Platform Integration`
 
 ```yaml
   health: ^10.2.0  # Cross-platform health data (HealthKit, Health Connect)
-```
-
+```text
 **Step 2: Run flutter pub get**
 
 ```bash
 flutter pub get
-```
-
+```text
 Expected: Resolving dependencies... Got dependencies!
 
 **Step 3: Commit**
@@ -38,13 +37,13 @@ Expected: Resolving dependencies... Got dependencies!
 ```bash
 git add pubspec.yaml pubspec.lock
 git commit -m "feat(wearables): add health package for HealthKit integration"
-```
-
+```text
 ---
 
 ### Task 1.2: Create WearableDive entity
 
 **Files:**
+
 - Create: `lib/features/wearables/domain/entities/wearable_dive.dart`
 - Test: `test/features/wearables/domain/entities/wearable_dive_test.dart`
 
@@ -53,8 +52,7 @@ git commit -m "feat(wearables): add health package for HealthKit integration"
 ```bash
 mkdir -p lib/features/wearables/domain/entities
 mkdir -p test/features/wearables/domain/entities
-```
-
+```text
 **Step 2: Write the failing test**
 
 Create `test/features/wearables/domain/entities/wearable_dive_test.dart`:
@@ -108,14 +106,12 @@ void main() {
     });
   });
 }
-```
-
+```text
 **Step 3: Run test to verify it fails**
 
 ```bash
 flutter test test/features/wearables/domain/entities/wearable_dive_test.dart
-```
-
+```text
 Expected: Error - Target of URI doesn't exist: 'package:submersion/features/wearables/domain/entities/wearable_dive.dart'
 
 **Step 4: Write the implementation**
@@ -246,14 +242,12 @@ class WearableProfileSample extends Equatable {
   @override
   List<Object?> get props => [timeSeconds, depth, temperature, heartRate];
 }
-```
-
+```text
 **Step 5: Run test to verify it passes**
 
 ```bash
 flutter test test/features/wearables/domain/entities/wearable_dive_test.dart
-```
-
+```text
 Expected: All tests passed!
 
 **Step 6: Commit**
@@ -262,21 +256,20 @@ Expected: All tests passed!
 git add lib/features/wearables/domain/entities/wearable_dive.dart \
         test/features/wearables/domain/entities/wearable_dive_test.dart
 git commit -m "feat(wearables): add WearableDive and WearableProfileSample entities"
-```
-
+```text
 ---
 
 ### Task 1.3: Create WearableImportService interface
 
 **Files:**
+
 - Create: `lib/features/wearables/domain/services/wearable_import_service.dart`
 
 **Step 1: Create directory**
 
 ```bash
 mkdir -p lib/features/wearables/domain/services
-```
-
+```text
 **Step 2: Write the interface**
 
 Create `lib/features/wearables/domain/services/wearable_import_service.dart`:
@@ -327,20 +320,19 @@ abstract class WearableImportService {
   /// Get the wearable source type for this service.
   WearableSource get source;
 }
-```
-
+```text
 **Step 3: Commit**
 
 ```bash
 git add lib/features/wearables/domain/services/wearable_import_service.dart
 git commit -m "feat(wearables): add WearableImportService abstract interface"
-```
-
+```text
 ---
 
 ### Task 1.4: Create DiveMatcher for duplicate detection
 
 **Files:**
+
 - Create: `lib/features/wearables/domain/services/dive_matcher.dart`
 - Test: `test/features/wearables/domain/services/dive_matcher_test.dart`
 
@@ -458,14 +450,12 @@ void main() {
     });
   });
 }
-```
-
+```text
 **Step 2: Run test to verify it fails**
 
 ```bash
 flutter test test/features/wearables/domain/services/dive_matcher_test.dart
-```
-
+```text
 Expected: Error - Target of URI doesn't exist
 
 **Step 3: Write the implementation**
@@ -565,14 +555,12 @@ class DiveMatchResult {
   /// Whether this is a possible match worth showing to user
   bool get isPossible => score >= 0.5;
 }
-```
-
+```text
 **Step 4: Run test to verify it passes**
 
 ```bash
 flutter test test/features/wearables/domain/services/dive_matcher_test.dart
-```
-
+```text
 Expected: All tests passed!
 
 **Step 5: Commit**
@@ -581,13 +569,13 @@ Expected: All tests passed!
 git add lib/features/wearables/domain/services/dive_matcher.dart \
         test/features/wearables/domain/services/dive_matcher_test.dart
 git commit -m "feat(wearables): add DiveMatcher for duplicate detection"
-```
-
+```text
 ---
 
 ### Task 1.5: Add database columns for wearable tracking
 
 **Files:**
+
 - Modify: `lib/core/database/database.dart`
 
 **Step 1: Add wearable columns to Dives table**
@@ -600,8 +588,7 @@ In `lib/core/database/database.dart`, find the `Dives` table class and add these
       text().nullable()(); // 'apple_watch', 'garmin', 'suunto'
   TextColumn get wearableId =>
       text().nullable()(); // Source UUID for deduplication
-```
-
+```text
 **Step 2: Add heart rate source to DiveProfiles table**
 
 In the `DiveProfiles` table, add after the `ppO2` column (around line 200):
@@ -610,8 +597,7 @@ In the `DiveProfiles` table, add after the `ppO2` column (around line 200):
   // Wearable heart rate source tracking (v2.0)
   TextColumn get heartRateSource =>
       text().nullable()(); // 'dive_computer', 'wearable'
-```
-
+```text
 **Step 3: Update schema version**
 
 Find `schemaVersion` in the database class and increment it by 1.
@@ -627,20 +613,17 @@ if (from < NEW_VERSION) {
   await m.addColumn(dives, dives.wearableId);
   await m.addColumn(diveProfiles, diveProfiles.heartRateSource);
 }
-```
-
+```text
 **Step 5: Run code generation**
 
 ```bash
 dart run build_runner build --delete-conflicting-outputs
-```
-
+```text
 **Step 6: Run tests to verify nothing broke**
 
 ```bash
 flutter test
-```
-
+```text
 Expected: All tests pass
 
 **Step 7: Commit**
@@ -648,8 +631,7 @@ Expected: All tests pass
 ```bash
 git add lib/core/database/database.dart lib/core/database/database.g.dart
 git commit -m "feat(wearables): add database columns for wearable tracking"
-```
-
+```diff
 ---
 
 ## Phase 2: HealthKit Integration
@@ -657,6 +639,7 @@ git commit -m "feat(wearables): add database columns for wearable tracking"
 ### Task 2.1: Configure iOS/macOS HealthKit entitlements
 
 **Files:**
+
 - Modify: `ios/Runner/Info.plist`
 - Modify: `macos/Runner/Info.plist`
 - Modify: `ios/Runner/Runner.entitlements` (create if needed)
@@ -668,12 +651,11 @@ git commit -m "feat(wearables): add database columns for wearable tracking"
 In `ios/Runner/Info.plist`, add before the closing `</dict>`:
 
 ```xml
-	<key>NSHealthShareUsageDescription</key>
-	<string>Submersion imports your Apple Watch dive data including depth, temperature, and heart rate to create detailed dive logs.</string>
-	<key>NSHealthUpdateUsageDescription</key>
-	<string>Submersion can record dive activities to your Health app.</string>
-```
-
+ <key>NSHealthShareUsageDescription</key>
+ <string>Submersion imports your Apple Watch dive data including depth, temperature, and heart rate to create detailed dive logs.</string>
+ <key>NSHealthUpdateUsageDescription</key>
+ <string>Submersion can record dive activities to your Health app.</string>
+```text
 **Step 2: Add iOS entitlements**
 
 Create or modify `ios/Runner/Runner.entitlements`:
@@ -683,36 +665,33 @@ Create or modify `ios/Runner/Runner.entitlements`:
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>com.apple.developer.healthkit</key>
-	<true/>
-	<key>com.apple.developer.healthkit.access</key>
-	<array/>
+ <key>com.apple.developer.healthkit</key>
+ <true/>
+ <key>com.apple.developer.healthkit.access</key>
+ <array/>
 </dict>
 </plist>
-```
-
+```text
 **Step 3: Add macOS Info.plist entries**
 
 In `macos/Runner/Info.plist`, add before the closing `</dict>`:
 
 ```xml
-	<key>NSHealthShareUsageDescription</key>
-	<string>Submersion imports your Apple Watch dive data including depth, temperature, and heart rate to create detailed dive logs.</string>
-	<key>NSHealthUpdateUsageDescription</key>
-	<string>Submersion can record dive activities to your Health app.</string>
-```
-
+ <key>NSHealthShareUsageDescription</key>
+ <string>Submersion imports your Apple Watch dive data including depth, temperature, and heart rate to create detailed dive logs.</string>
+ <key>NSHealthUpdateUsageDescription</key>
+ <string>Submersion can record dive activities to your Health app.</string>
+```text
 **Step 4: Add macOS entitlements**
 
 In both `macos/Runner/Release.entitlements` and `macos/Runner/DebugProfile.entitlements`, add:
 
 ```xml
-	<key>com.apple.developer.healthkit</key>
-	<true/>
-	<key>com.apple.developer.healthkit.access</key>
-	<array/>
-```
-
+ <key>com.apple.developer.healthkit</key>
+ <true/>
+ <key>com.apple.developer.healthkit.access</key>
+ <array/>
+```text
 **Step 5: Commit**
 
 ```bash
@@ -720,13 +699,13 @@ git add ios/Runner/Info.plist ios/Runner/Runner.entitlements \
         macos/Runner/Info.plist macos/Runner/Release.entitlements \
         macos/Runner/DebugProfile.entitlements
 git commit -m "feat(wearables): add HealthKit entitlements for iOS/macOS"
-```
-
+```text
 ---
 
 ### Task 2.2: Implement HealthKitService
 
 **Files:**
+
 - Create: `lib/features/wearables/data/services/healthkit_service.dart`
 - Test: `test/features/wearables/data/services/healthkit_service_test.dart`
 
@@ -735,8 +714,7 @@ git commit -m "feat(wearables): add HealthKit entitlements for iOS/macOS"
 ```bash
 mkdir -p lib/features/wearables/data/services
 mkdir -p test/features/wearables/data/services
-```
-
+```text
 **Step 2: Write the test (mocked)**
 
 Create `test/features/wearables/data/services/healthkit_service_test.dart`:
@@ -771,14 +749,12 @@ void main() {
     });
   });
 }
-```
-
+```text
 **Step 3: Run test to verify it fails**
 
 ```bash
 flutter test test/features/wearables/data/services/healthkit_service_test.dart
-```
-
+```text
 **Step 4: Write the implementation**
 
 Create `lib/features/wearables/data/services/healthkit_service.dart`:
@@ -1035,22 +1011,19 @@ class HealthKitService implements WearableImportService {
     }
   }
 }
-```
-
+```text
 **Step 5: Run test to verify it passes**
 
 ```bash
 flutter test test/features/wearables/data/services/healthkit_service_test.dart
-```
-
+```text
 **Step 6: Commit**
 
 ```bash
 git add lib/features/wearables/data/services/healthkit_service.dart \
         test/features/wearables/data/services/healthkit_service_test.dart
 git commit -m "feat(wearables): implement HealthKitService for Apple Watch"
-```
-
+```dart
 ---
 
 ## Phase 3: Import Wizard UI
@@ -1058,14 +1031,14 @@ git commit -m "feat(wearables): implement HealthKitService for Apple Watch"
 ### Task 3.1: Create Riverpod providers for wearables
 
 **Files:**
+
 - Create: `lib/features/wearables/presentation/providers/wearable_providers.dart`
 
 **Step 1: Create directory**
 
 ```bash
 mkdir -p lib/features/wearables/presentation/providers
-```
-
+```text
 **Step 2: Write the providers**
 
 Create `lib/features/wearables/presentation/providers/wearable_providers.dart`:
@@ -1227,20 +1200,19 @@ final wearableImportProvider =
   final matcher = ref.watch(diveMatcherProvider);
   return WearableImportNotifier(service, matcher);
 });
-```
-
+```text
 **Step 3: Commit**
 
 ```bash
 git add lib/features/wearables/presentation/providers/wearable_providers.dart
 git commit -m "feat(wearables): add Riverpod providers for import wizard"
-```
-
+```text
 ---
 
 ### Task 3.2: Create WearableImportPage
 
 **Files:**
+
 - Create: `lib/features/wearables/presentation/pages/wearable_import_page.dart`
 - Create: `lib/features/wearables/presentation/widgets/wearable_dive_card.dart`
 
@@ -1249,8 +1221,7 @@ git commit -m "feat(wearables): add Riverpod providers for import wizard"
 ```bash
 mkdir -p lib/features/wearables/presentation/pages
 mkdir -p lib/features/wearables/presentation/widgets
-```
-
+```text
 **Step 2: Create the dive card widget**
 
 Create `lib/features/wearables/presentation/widgets/wearable_dive_card.dart`:
@@ -1411,8 +1382,7 @@ class WearableDiveCard extends StatelessWidget {
     );
   }
 }
-```
-
+```typescript
 **Step 3: Create the import page**
 
 Create `lib/features/wearables/presentation/pages/wearable_import_page.dart`:
@@ -1697,21 +1667,20 @@ class _WearableImportPageState extends ConsumerState<WearableImportPage> {
     );
   }
 }
-```
-
+```text
 **Step 4: Commit**
 
 ```bash
 git add lib/features/wearables/presentation/pages/wearable_import_page.dart \
         lib/features/wearables/presentation/widgets/wearable_dive_card.dart
 git commit -m "feat(wearables): add WearableImportPage with selection wizard"
-```
-
+```text
 ---
 
 ### Task 3.3: Add route to router
 
 **Files:**
+
 - Modify: `lib/core/router/router.dart`
 
 **Step 1: Add the import**
@@ -1720,8 +1689,7 @@ At the top of `lib/core/router/router.dart`, add:
 
 ```dart
 import 'package:submersion/features/wearables/presentation/pages/wearable_import_page.dart';
-```
-
+```text
 **Step 2: Add the route**
 
 Find where other feature routes are defined and add:
@@ -1732,20 +1700,19 @@ GoRoute(
   name: 'wearable-import',
   builder: (context, state) => const WearableImportPage(),
 ),
-```
-
+```text
 **Step 3: Commit**
 
 ```bash
 git add lib/core/router/router.dart
 git commit -m "feat(wearables): add route for wearable import page"
-```
-
+```text
 ---
 
 ### Task 3.4: Add entry point in Settings or Transfer page
 
 **Files:**
+
 - Modify: `lib/features/settings/presentation/pages/settings_page.dart` (or appropriate page)
 
 **Step 1: Add navigation button**
@@ -1760,8 +1727,7 @@ ListTile(
   trailing: const Icon(Icons.chevron_right),
   onTap: () => context.push('/wearables/import'),
 ),
-```
-
+```text
 **Step 2: Commit**
 
 ```bash
@@ -1776,22 +1742,26 @@ git commit -m "feat(wearables): add Apple Watch import entry in settings"
 The following tasks are outlined for Phase 4 implementation:
 
 ### Task 4.1: Implement WearableRepository for persisting imported dives
+
 - Create repository with methods to:
   - Check if a wearable dive was already imported (by sourceId)
   - Save imported dives with wearable metadata
   - Merge wearable data (HR, GPS) into existing dives
 
 ### Task 4.2: Implement merge logic
+
 - Add method to merge HR profile from wearable into existing dive
 - Add method to add GPS coordinates to dive site
 - Handle profile storage as secondary source
 
 ### Task 4.3: Complete duplicate handling UI
+
 - Show side-by-side comparison dialog
 - Implement merge/skip/import-as-new options
 - Add "Apply to All" batch handling
 
 ### Task 4.4: Add import summary with undo
+
 - Show detailed import results
 - Provide undo option for recent imports
 - Navigate to imported dives

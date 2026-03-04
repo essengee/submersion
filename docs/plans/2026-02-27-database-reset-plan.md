@@ -13,6 +13,7 @@
 ### Task 1: Add Localization Strings
 
 **Files:**
+
 - Modify: `lib/l10n/arb/app_en.arb`
 - Modify: `lib/l10n/arb/app_localizations.dart`
 - Modify: `lib/l10n/arb/app_localizations_en.dart`
@@ -33,8 +34,7 @@ Add these entries to `lib/l10n/arb/app_en.arb` in the `settings_storage_` sectio
   "settings_storage_resetDialog_resetFailed": "Reset failed: {error}",
   "settings_storage_resetComplete_title": "Database Reset",
   "settings_storage_resetComplete_description": "Your data has been cleared and a backup was saved. Tap continue to reload the app.",
-```
-
+```text
 **Step 2: Add the corresponding abstract getters to `app_localizations.dart`**
 
 Add the abstract getters in the appropriate alphabetical location within the `settings_storage_` section. Follow the existing pattern with `/// **'...'**` doc comments:
@@ -81,8 +81,7 @@ Add the abstract getters in the appropriate alphabetical location within the `se
   /// In en, this message translates to:
   /// **'Your data has been cleared and a backup was saved. Tap continue to reload the app.'**
   String get settings_storage_resetComplete_description;
-```
-
+```text
 **Step 3: Add the English implementations to `app_localizations_en.dart`**
 
 Add `@override` getters in the `settings_storage_` section:
@@ -122,8 +121,7 @@ Add `@override` getters in the `settings_storage_` section:
 
   @override
   String get settings_storage_resetComplete_description => 'Your data has been cleared and a backup was saved. Tap continue to reload the app.';
-```
-
+```text
 **Step 4: Verify**
 
 Run: `flutter analyze lib/l10n/`
@@ -134,13 +132,13 @@ Expected: No issues found
 ```bash
 git add lib/l10n/
 git commit -m "feat: add localization strings for database reset feature"
-```
-
+```text
 ---
 
 ### Task 2: Add `resetDatabase()` to DatabaseService
 
 **Files:**
+
 - Modify: `lib/core/services/database_service.dart` (add method after `restore()`, around line 192)
 
 **Step 1: Add the `resetDatabase()` method**
@@ -178,8 +176,7 @@ Add this method to `DatabaseService` after the existing `restore()` method:
     // Step 4: Reinitialize fresh database (Drift auto-creates tables)
     await reinitializeAtPath(dbPath);
   }
-```
-
+```text
 **Step 2: Verify**
 
 Run: `flutter analyze lib/core/services/database_service.dart`
@@ -190,13 +187,13 @@ Expected: No issues found
 ```bash
 git add lib/core/services/database_service.dart
 git commit -m "feat: add resetDatabase() method to DatabaseService"
-```
-
+```text
 ---
 
 ### Task 3: Create the Type-to-Confirm Reset Dialog
 
 **Files:**
+
 - Create: `lib/features/settings/presentation/widgets/reset_database_dialog.dart`
 
 **Step 1: Create the dialog widget**
@@ -303,8 +300,7 @@ class _ResetDatabaseDialogState extends State<ResetDatabaseDialog> {
     );
   }
 }
-```
-
+```text
 **Step 2: Verify**
 
 Run: `dart format lib/features/settings/presentation/widgets/reset_database_dialog.dart && flutter analyze lib/features/settings/presentation/widgets/reset_database_dialog.dart`
@@ -315,13 +311,13 @@ Expected: No issues found
 ```bash
 git add lib/features/settings/presentation/widgets/reset_database_dialog.dart
 git commit -m "feat: add type-to-confirm reset database dialog"
-```
-
+```text
 ---
 
 ### Task 4: Create the Reset Complete Page
 
 **Files:**
+
 - Create: `lib/features/settings/presentation/pages/reset_complete_page.dart`
 
 **Step 1: Create the completion page**
@@ -404,8 +400,7 @@ class ResetCompletePage extends StatelessWidget {
     );
   }
 }
-```
-
+```text
 **Step 2: Verify**
 
 Run: `dart format lib/features/settings/presentation/pages/reset_complete_page.dart && flutter analyze lib/features/settings/presentation/pages/reset_complete_page.dart`
@@ -416,13 +411,13 @@ Expected: No issues found
 ```bash
 git add lib/features/settings/presentation/pages/reset_complete_page.dart
 git commit -m "feat: add reset complete page (mirrors restore complete)"
-```
-
+```text
 ---
 
 ### Task 5: Add Danger Zone Section to StorageSettingsPage
 
 **Files:**
+
 - Modify: `lib/features/settings/presentation/pages/storage_settings_page.dart`
 
 **Step 1: Add imports**
@@ -438,8 +433,7 @@ import 'package:path/path.dart' as p;
 import 'package:submersion/core/services/database_service.dart';
 import 'package:submersion/features/settings/presentation/pages/reset_complete_page.dart';
 import 'package:submersion/features/settings/presentation/widgets/reset_database_dialog.dart';
-```
-
+```dart
 **Step 2: Add Danger Zone section to the ListView**
 
 In the `build()` method, add before `const SizedBox(height: 32)` (around line 139, just before the final spacing):
@@ -451,8 +445,7 @@ In the `build()` method, add before `const SizedBox(height: 32)` (around line 13
                   context.l10n.settings_storage_dangerZone,
                 ),
                 _buildResetDatabaseTile(context, theme),
-```
-
+```text
 **Step 3: Style the Danger Zone section header**
 
 The existing `_buildSectionHeader` uses `colorScheme.primary`. For Danger Zone, we need a red-styled variant. Add a new method:
@@ -470,8 +463,7 @@ The existing `_buildSectionHeader` uses `colorScheme.primary`. For Danger Zone, 
       ),
     );
   }
-```
-
+```text
 Then update the Danger Zone section to use it instead of `_buildSectionHeader`:
 
 ```dart
@@ -479,8 +471,7 @@ Then update the Danger Zone section to use it instead of `_buildSectionHeader`:
                   context,
                   context.l10n.settings_storage_dangerZone,
                 ),
-```
-
+```text
 **Step 4: Add the reset tile and handler**
 
 Add these methods to `_StorageSettingsPageState`:
@@ -528,8 +519,7 @@ Add these methods to `_StorageSettingsPageState`:
     if (!mounted) return;
     ResetCompletePage.show(context);
   }
-```
-
+```text
 **Step 5: Format and verify**
 
 Run: `dart format lib/features/settings/presentation/pages/storage_settings_page.dart && flutter analyze lib/features/settings/presentation/pages/storage_settings_page.dart`
@@ -540,8 +530,7 @@ Expected: No issues found
 ```bash
 git add lib/features/settings/presentation/pages/storage_settings_page.dart
 git commit -m "feat: add Danger Zone reset database option to storage settings"
-```
-
+```typescript
 ---
 
 ### Task 6: Manual Testing
@@ -553,6 +542,7 @@ Run: `flutter run -d macos`
 **Step 2: Navigate to Settings > Data > Database Storage**
 
 Verify:
+
 - Danger Zone section appears at the bottom with red header text
 - "Reset Database" tile has warning icon, red title, subtitle, chevron
 

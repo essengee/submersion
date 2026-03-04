@@ -8,7 +8,7 @@ On desktop/wide window mode (≥1100px), Map View in Dives/Sites/Dive Centers sh
 
 ### Desktop Split-Pane (≥1100px)
 
-```
+```text
 ┌──────────────────────────────────────────────────────────────┐
 │  AppBar: [Back] "Sites Map"           [Heat Map] [Collapse]  │
 ├─────────────────┬────────────────────────────────────────────┤
@@ -68,7 +68,7 @@ Unchanged — navigates to full-screen map page as it does today.
 
 ### New Widgets
 
-```
+```text
 lib/shared/widgets/map_list_layout/
 ├── map_list_scaffold.dart        # Main split-pane layout
 ├── map_info_card.dart            # Bottom info card overlay
@@ -92,8 +92,7 @@ MapListScaffold(
   isCollapsed: isCollapsed,
   onCollapseToggle: () => ...,
 )
-```
-
+```dart
 ### Modified Existing Widgets
 
 | Widget | Change |
@@ -120,13 +119,15 @@ final mapListSelectionProvider = StateNotifierProvider.family<
 
 ### Visual Layout
 
-```
+```text
+
 ┌─────────────────────────────────────────────────────────┐
 │  ┌──────┐                                               │
 │  │ IMG  │  Site Name                          [→]      │
 │  │ 48px │  Location • 15 dives • ★★★★☆               │
 │  └──────┘                                               │
 └─────────────────────────────────────────────────────────┘
+
 ```
 
 ### Content by Entity Type

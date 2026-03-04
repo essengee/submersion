@@ -48,8 +48,7 @@ class AppThemePreset {
   final ThemeData? lightTheme; // full themes only
   final ThemeData? darkTheme;  // full themes only
 }
-```
-
+```text
 ### Theme Resolution
 
 ```dart
@@ -59,8 +58,7 @@ ThemeData resolveTheme(AppThemePreset preset, Brightness brightness) {
   }
   return buildPaletteTheme(preset.seedColor!, brightness);
 }
-```
-
+```text
 `buildPaletteTheme()` wraps the current `AppTheme.light`/`AppTheme.dark` logic but accepts a dynamic seed color instead of hardcoded `AppColors.primary`.
 
 ## Persistence & State Management
@@ -71,8 +69,7 @@ Add one column to `DiverSettings`:
 
 ```dart
 TextColumn get themePreset => text().withDefault(const Constant('submersion'))();
-```
-
+```text
 Theme preset and theme mode remain independent columns/settings.
 
 ### Migration
@@ -90,8 +87,7 @@ AppThemePreset _parseThemePreset(String id) {
     orElse: () => appThemePresets.first, // fallback to Submersion
   );
 }
-```
-
+```text
 ### AppSettings
 
 Add `themePreset` field alongside existing `themeMode`:
@@ -101,16 +97,14 @@ class AppSettings {
   final ThemeMode themeMode;        // existing — unchanged
   final AppThemePreset themePreset; // new — defaults to 'submersion'
 }
-```
-
+```dart
 ### Providers
 
 ```dart
 final themePresetProvider = Provider<AppThemePreset>((ref) {
   return ref.watch(settingsProvider.select((s) => s.themePreset));
 });
-```
-
+```text
 ### MaterialApp Wiring
 
 ```dart
@@ -122,8 +116,7 @@ MaterialApp.router(
   darkTheme: resolveTheme(preset, Brightness.dark),
   themeMode: themeMode,
 )
-```
-
+```text
 Light/dark mode preference stays independent of theme choice.
 
 ### Sync
@@ -155,7 +148,8 @@ New keys: `settings_themes_title`, `settings_themes_color_palettes`, `settings_t
 
 ## File Organization
 
-```
+```text
+
 lib/core/theme/
   app_theme.dart               MODIFY — extract buildPaletteTheme()
   app_colors.dart              UNCHANGED
@@ -189,6 +183,7 @@ lib/app.dart                   MODIFY — wire themePresetProvider
 
 l10n/
   app_en.arb                   MODIFY — theme name + gallery keys
+
 ```
 
 Semantic colors in `app_colors.dart` (depth, temperature, gas mix, chart colors) stay fixed across all themes.
@@ -196,6 +191,7 @@ Semantic colors in `app_colors.dart` (depth, temperature, gas mix, chart colors)
 ## Testing
 
 ### Unit Tests
+
 - AppThemePreset validation (palette has seedColor, full has ThemeData)
 - resolveTheme() returns correct ThemeData for each preset + brightness
 - buildPaletteTheme() generates valid ThemeData
@@ -203,11 +199,13 @@ Semantic colors in `app_colors.dart` (depth, temperature, gas mix, chart colors)
 - SettingsNotifier.setThemePreset() updates state and persists
 
 ### Integration Tests
+
 - Database migration — existing rows get 'submersion' default
 - Round-trip persistence — set/reload/verify
 - Sync serialization round-trip
 
 ### Widget Tests
+
 - ThemeGalleryPage renders all presets in correct sections
 - Tapping a card calls setThemePreset
 - Active theme shows checkmark

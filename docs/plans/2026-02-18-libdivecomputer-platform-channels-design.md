@@ -128,8 +128,7 @@ abstract class DiveComputerFlutterApi {
   void onDownloadComplete(int totalDives);
   void onError(DiveComputerError error);
 }
-```
-
+```text
 ### Design Decisions
 
 - All measurements in metric. Dart side handles unit conversion for display.
@@ -141,6 +140,7 @@ abstract class DiveComputerFlutterApi {
 ## Plugin Package Structure
 
 ```
+
 packages/libdivecomputer_plugin/
   pubspec.yaml
   pigeons/
@@ -186,8 +186,8 @@ packages/libdivecomputer_plugin/
   test/
     libdivecomputer_plugin_test.dart
     mock_dive_computer_api.dart
-```
 
+```dart
 ## Native Wrapper Architecture
 
 ### Desktop (macOS, Linux, Windows)
@@ -283,6 +283,7 @@ Custom `dc_iostream_t` bridging native async BLE to libdivecomputer's synchronou
 ### New Data Flow
 
 ```
+
 Plugin: DiveComputerFlutterApi callbacks
     |
 DiveComputerService (plugin package)
@@ -299,8 +300,8 @@ ParsedDive -> Dive mapping (DiveComputerRepository)
 DiveImportService (duplicate detection)
     |
 DiveRepository -> Drift database
-```
 
+```text
 ## Dependency Changes
 
 ### Removed
@@ -308,12 +309,12 @@ DiveRepository -> Drift database
 ```yaml
 flutter_blue_plus: ^2.1.0
 dive_computer: ^0.1.0-dev.2
+```text
 ```
 
-```
 third_party/flutter_blue_plus_winrt/   # directory deleted
-```
 
+```text
 ### Added
 
 ```yaml
@@ -325,9 +326,11 @@ dev_dependencies:
   pigeon: ^22.0.0
 ```
 
-```
+```text
+
 packages/libdivecomputer_plugin/
 packages/libdivecomputer_plugin/third_party/libdivecomputer/  # git submodule
+
 ```
 
 ### Platform Configuration

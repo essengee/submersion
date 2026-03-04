@@ -13,6 +13,7 @@ Implement wearable device integration for Submersion, starting with Apple Watch 
 ### Scope
 
 **In Scope (This Design):**
+
 - Apple Watch Ultra import via HealthKit
 - Full profile data (depth, temperature, heart rate)
 - GPS coordinates from workout routes
@@ -20,6 +21,7 @@ Implement wearable device integration for Submersion, starting with Apple Watch 
 - Duplicate detection and merge with existing dive computer dives
 
 **Future Scope (Not This Design):**
+
 - Garmin Connect API integration
 - Suunto app integration
 - Automatic background sync
@@ -30,7 +32,7 @@ Implement wearable device integration for Submersion, starting with Apple Watch 
 
 ### Directory Structure
 
-```
+```text
 lib/features/wearables/
 ├── domain/
 │   ├── entities/
@@ -107,8 +109,7 @@ class WearableProfileSample {
   final double? temperature;       // Celsius
   final int? heartRate;            // BPM
 }
-```
-
+```text
 ### Database Migrations
 
 ```sql
@@ -118,8 +119,7 @@ ALTER TABLE dives ADD COLUMN wearable_id TEXT;
 
 -- Heart rate source tracking
 ALTER TABLE dive_profiles ADD COLUMN heart_rate_source TEXT;
-```
-
+```diff
 ---
 
 ## HealthKit Integration
@@ -129,8 +129,7 @@ ALTER TABLE dive_profiles ADD COLUMN heart_rate_source TEXT;
 ```yaml
 dependencies:
   health: ^10.2.0
-```
-
+```text
 ### Service Interface
 
 ```dart
@@ -143,8 +142,7 @@ abstract class WearableImportService {
   });
   Future<List<WearableProfileSample>> fetchDiveProfile(String workoutId);
 }
-```
-
+```text
 ### iOS/macOS Configuration
 
 ```xml
@@ -154,8 +152,7 @@ abstract class WearableImportService {
 
 <key>NSHealthUpdateUsageDescription</key>
 <string>Submersion can record dive activities to your Health app.</string>
-```
-
+```sql
 ### HealthKit Data Types Required
 
 - `HKWorkoutActivityType.underwaterDiving`
@@ -225,8 +222,7 @@ class DiveMatcher {
   bool isProbableDuplicate(double score) => score >= 0.7;
   bool isPossibleDuplicate(double score) => score >= 0.5;
 }
-```
-
+```dart
 ### Merge Behavior
 
 | Data Field | Merge Behavior |
@@ -247,6 +243,7 @@ class DiveMatcher {
 ## Implementation Phases
 
 ### Phase 1: Core Infrastructure
+
 - [ ] Create `features/wearables/` directory structure
 - [ ] Add `health` package dependency
 - [ ] Implement `WearableImportService` interface
@@ -254,6 +251,7 @@ class DiveMatcher {
 - [ ] Create `WearableDive` and `WearableProfileSample` entities
 
 ### Phase 2: HealthKit Integration
+
 - [ ] Implement `HealthKitService` with permission handling
 - [ ] iOS/macOS Info.plist configuration
 - [ ] Fetch underwater diving workouts
@@ -261,6 +259,7 @@ class DiveMatcher {
 - [ ] Extract GPS from workout routes
 
 ### Phase 3: Import Wizard UI
+
 - [ ] `WearableImportPage` with 3-step wizard
 - [ ] Dive selection list with date range filter
 - [ ] `DiveMatcher` for duplicate detection
@@ -268,12 +267,14 @@ class DiveMatcher {
 - [ ] Import summary screen
 
 ### Phase 4: Merge & Storage
+
 - [ ] Merge logic for combining wearable + dive computer data
 - [ ] Store watch profile as secondary source
 - [ ] HR profile integration with existing chart
 - [ ] GPS to dive site association
 
 ### Phase 5: Polish & Edge Cases
+
 - [ ] Platform graceful degradation (Android/Windows/Linux)
 - [ ] Empty state when no watch dives found
 - [ ] Error handling (permission denied, no data)
@@ -284,21 +285,25 @@ class DiveMatcher {
 ## Testing Strategy
 
 ### Unit Tests
+
 - `DiveMatcher` scoring algorithm
 - Profile sample parsing
 - Merge logic correctness
 
 ### Widget Tests
+
 - Import wizard navigation flow
 - Duplicate conflict dialog interactions
 - Platform availability checks
 
 ### Integration Tests
+
 - Full import flow with mock HealthKit data
 - Database migration verification
 - Merge operations
 
 ### Manual Testing
+
 - Real Apple Watch Ultra on iOS device
 - Permission flow verification
 - Edge cases (no dives, many dives, partial data)
@@ -306,6 +311,7 @@ class DiveMatcher {
 ### Test Structure
 
 ```
+
 test/features/wearables/
 ├── domain/
 │   ├── dive_matcher_test.dart
@@ -315,22 +321,25 @@ test/features/wearables/
 └── presentation/
     ├── wearable_import_page_test.dart
     └── merge_conflict_dialog_test.dart
-```
 
+```typescript
 ---
 
 ## Future Considerations
 
 ### Garmin Connect Integration
+
 - OAuth 2.0 authentication flow
 - Garmin Wellness API for dive activities
 - Similar import wizard with Garmin-specific data mapping
 
 ### Suunto Integration
+
 - Suunto app API or UDDF export parsing
 - Movescount legacy data support
 
 ### Automatic Background Sync
+
 - iOS background app refresh for periodic HealthKit checks
 - Notification when new watch dives detected
 - Settings toggle to enable/disable auto-sync
@@ -340,11 +349,13 @@ test/features/wearables/
 ## Dependencies
 
 ### New Package
+
 ```yaml
 health: ^10.2.0  # Cross-platform health data access
 ```
 
 ### Existing Packages Used
+
 - `flutter_riverpod` - State management
 - `drift` - Database migrations
 - `go_router` - Navigation to import wizard

@@ -57,8 +57,7 @@ Dive copyWith({String? id, DateTime? dateTime, ...})
 
 // Calculate bottom time from profile
 Duration? calculateBottomTimeFromProfile({double depthThresholdPercent = 0.85})
-```
-
+```text
 ---
 
 ### DiveTank
@@ -416,4 +415,3 @@ Species sighting on a dive.
 | `speciesName` | String | Species name |
 | `count` | int | Number seen |
 | `notes` | String | Sighting notes |
-

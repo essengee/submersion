@@ -15,23 +15,28 @@ Instructions for building and running Submersion on all supported platforms.
 ### Platform-Specific Requirements
 
 **macOS**
+
 - Xcode 15+ (for iOS/macOS builds)
 - CocoaPods (`sudo gem install cocoapods`)
 
 **Windows**
+
 - Visual Studio 2022+ with C++ workload
 - Windows 10 SDK
 
 **Linux**
+
 - GCC, CMake, Ninja
 - GTK 3.0+ development libraries
 - libsqlite3-dev
 
 **Android**
+
 - Android Studio with SDK
 - Android SDK 21+ (Lollipop)
 
 **iOS**
+
 - macOS only
 - Xcode 15+
 - Apple Developer account (for device testing)
@@ -51,11 +56,11 @@ dart run build_runner build --delete-conflicting-outputs
 
 # Run on connected device or emulator
 flutter run
-```
-
+```dart
 ## Code Generation
 
 Submersion uses code generation for:
+
 - **Drift** - Database schema and queries
 - **Freezed** - Immutable data classes
 - **Riverpod Generator** - Provider generation
@@ -64,19 +69,18 @@ Submersion uses code generation for:
 
 ```bash
 dart run build_runner build --delete-conflicting-outputs
-```
-
+```text
 ### Watch Mode
 
 For active development, run in watch mode:
 
 ```bash
 dart run build_runner watch --delete-conflicting-outputs
-```
-
+```dart
 ### When to Regenerate
 
 Regenerate code after:
+
 - Changing database schema (`database.dart`)
 - Modifying Freezed classes
 - Updating Riverpod providers with annotations
@@ -95,8 +99,7 @@ flutter run -d windows
 
 # Linux
 flutter run -d linux
-```
-
+```text
 ### Mobile
 
 ```bash
@@ -105,38 +108,33 @@ flutter run -d android
 
 # iOS (macOS only, device or simulator)
 flutter run -d ios
-```
-
+```text
 ### List Available Devices
 
 ```bash
 flutter devices
-```
-
+```text
 ## Building for Release
 
 ### macOS
 
 ```bash
 flutter build macos --release
-```
-
+```text
 Output: `build/macos/Build/Products/Release/Submersion.app`
 
 ### Windows
 
 ```bash
 flutter build windows --release
-```
-
+```text
 Output: `build/windows/x64/runner/Release/`
 
 ### Linux
 
 ```bash
 flutter build linux --release
-```
-
+```text
 Output: `build/linux/x64/release/bundle/`
 
 ### Android
@@ -147,9 +145,9 @@ flutter build apk --release
 
 # App Bundle (for Play Store)
 flutter build appbundle --release
-```
-
+```text
 Output:
+
 - APK: `build/app/outputs/flutter-apk/app-release.apk`
 - Bundle: `build/app/outputs/bundle/release/app-release.aab`
 
@@ -157,8 +155,7 @@ Output:
 
 ```bash
 flutter build ios --release
-```
-
+```text
 Then open in Xcode for archive and distribution.
 
 ## Development Commands
@@ -167,14 +164,12 @@ Then open in Xcode for archive and distribution.
 
 ```bash
 flutter analyze
-```
-
+```text
 ### Format Code
 
 ```bash
 dart format lib/
-```
-
+```text
 ### Run Tests
 
 ```bash
@@ -186,16 +181,14 @@ flutter test --coverage
 
 # Specific test file
 flutter test test/features/dive_log/dive_repository_test.dart
-```
-
+```text
 ### Clean Build
 
 ```bash
 flutter clean
 flutter pub get
 dart run build_runner build --delete-conflicting-outputs
-```
-
+```typescript
 ## Dependencies
 
 ### Core Dependencies
@@ -256,6 +249,7 @@ dart run build_runner build --delete-conflicting-outputs
 ## Project Structure
 
 ```
+
 submersion/
 ├── lib/
 │   ├── main.dart              # Entry point
@@ -272,8 +266,8 @@ submersion/
 ├── windows/                   # Windows config
 ├── linux/                     # Linux config
 └── pubspec.yaml               # Dependencies
-```
 
+```text
 ## Environment Variables
 
 No environment variables required for basic development.
@@ -290,8 +284,7 @@ flutter clean
 flutter pub get
 dart run build_runner clean
 dart run build_runner build --delete-conflicting-outputs
-```
-
+```text
 ### Build Fails on macOS
 
 ```bash
@@ -301,8 +294,7 @@ pod install
 cd ..
 flutter clean
 flutter pub get
-```
-
+```text
 ### Android SDK Issues
 
 Ensure ANDROID_HOME is set:
@@ -310,8 +302,7 @@ Ensure ANDROID_HOME is set:
 ```bash
 export ANDROID_HOME=$HOME/Android/Sdk
 export PATH=$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools
-```
-
+```sql
 ### iOS Signing Issues
 
 1. Open `ios/Runner.xcworkspace` in Xcode
@@ -322,6 +313,7 @@ export PATH=$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools
 ### Windows Build Issues
 
 Ensure Visual Studio C++ workload is installed:
+
 1. Open Visual Studio Installer
 2. Modify your installation
 3. Add "Desktop development with C++"
@@ -331,6 +323,7 @@ Ensure Visual Studio C++ workload is installed:
 ### VS Code
 
 Recommended extensions:
+
 - Flutter
 - Dart
 - Drift (for syntax highlighting)
@@ -338,12 +331,14 @@ Recommended extensions:
 ### Android Studio / IntelliJ
 
 Install plugins:
+
 - Flutter
 - Dart
 
 ## Continuous Integration
 
 The project is CI-ready with:
+
 - No external dependencies for tests
 - In-memory database for testing
 - Deterministic test data
@@ -385,4 +380,3 @@ Before releasing:
 10. [ ] Verify macOS build appears in TestFlight
 
 For beta releases, use tags like `v1.0.0-beta.1` (creates a pre-release).
-

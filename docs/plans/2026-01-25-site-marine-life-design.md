@@ -7,6 +7,7 @@
 ## Overview
 
 Add the ability to see what marine life is commonly found at each dive site. This includes both:
+
 1. **Derived sightings** - Automatically aggregated from actual dive logs at the site
 2. **Expected species** - Manually curated list of species you expect to see
 
@@ -26,8 +27,7 @@ CREATE TABLE site_species (
 );
 
 CREATE INDEX idx_site_species_site ON site_species(site_id);
-```
-
+```text
 ### New Domain Entity: `SiteSpeciesSummary`
 
 Represents aggregated sighting data for a species at a site.
@@ -40,8 +40,7 @@ class SiteSpeciesSummary {
   final int sightingCount;  // Total times spotted across all dives at site
   final int diveCount;      // Number of dives where spotted
 }
-```
-
+```text
 ## Repository Methods
 
 Add to `SpeciesRepository`:
@@ -55,8 +54,7 @@ Future<List<Species>> getExpectedSpeciesForSite(String siteId);
 Future<void> addExpectedSpecies(String siteId, String speciesId, {String? notes});
 Future<void> removeExpectedSpecies(String siteId, String speciesId);
 Future<void> removeAllExpectedSpeciesForSite(String siteId);
-```
-
+```text
 ### SQL Query for Derived Sightings
 
 ```sql
@@ -72,8 +70,7 @@ JOIN dives d ON s.dive_id = d.id
 WHERE d.site_id = ?
 GROUP BY sp.id
 ORDER BY sighting_count DESC, sp.common_name ASC
-```
-
+```dart
 ## Riverpod Providers
 
 ```dart
@@ -94,6 +91,7 @@ final siteExpectedSpeciesNotifierProvider = AsyncNotifierProvider.family<...>
 Displays on the Site Detail Page after the Depth Range section.
 
 **Structure**:
+
 - Section header: "Marine Life" with fish icon
 - Two subsections:
   - "Spotted Here" - chips with species name + count badge
@@ -102,6 +100,7 @@ Displays on the Site Detail Page after the Depth Range section.
 - Tapping chip shows species details in bottom sheet
 
 **Empty States**:
+
 - "No marine life spotted yet" when no sightings
 - "No expected species added" when manual list empty
 - Combined: "Log a dive here or add expected species"
@@ -111,6 +110,7 @@ Displays on the Site Detail Page after the Depth Range section.
 Modal for adding/removing expected species.
 
 **Features**:
+
 - Search box for filtering species
 - Category tabs or grouped list
 - Checkboxes for multi-select
@@ -120,6 +120,7 @@ Modal for adding/removing expected species.
 ### 3. Site Edit Page Integration
 
 Add "Expected Marine Life" section to site edit form:
+
 - Uses same `SpeciesPickerDialog`
 - Shows selected species as chips with remove button
 - "Add Species" button to open picker
@@ -152,6 +153,7 @@ Add "Expected Marine Life" section to site edit form:
 ## Sync Considerations
 
 The `site_species` table needs sync support:
+
 - Add to sync entity types
 - Track in `sync_records` table
 - Include in deletion log

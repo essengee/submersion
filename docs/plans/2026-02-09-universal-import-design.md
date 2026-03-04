@@ -25,7 +25,7 @@ A unified import wizard that replaces the current separate import flows (UDDF, C
 
 ### Pipeline
 
-```
+```sql
 File Selection -> Format Detection -> Source Confirmation ->
 Field Mapping (CSV only) -> Review & Select -> Import -> Summary
 ```
@@ -50,6 +50,7 @@ The `FormatDetector` reads the first few KB of a file and runs a chain of detect
 ### Detection Chain
 
 **1. Binary / Magic Bytes:**
+
 - FIT (Garmin): `0x2E464954` magic -> 1.0 confidence
 - SQLite: `SQLite format 3\000` header -> then inspect tables:
   - Shearwater Cloud DB: `dive_log`, `dive_log_record` tables (0.95)
@@ -58,6 +59,7 @@ The `FormatDetector` reads the first few KB of a file and runs a chain of detect
   - Unknown SQLite: "unrecognized database" (0.3)
 
 **2. XML Inspection (~4KB peek):**
+
 - `<uddf>` root -> UDDF (0.95)
 - `<divelog program="subsurface">` -> Subsurface XML (0.98)
 - `<DivingLog>` root -> Diving Log XML (0.95)
@@ -67,6 +69,7 @@ The `FormatDetector` reads the first few KB of a file and runs a chain of detect
 
 **3. CSV Header Analysis:**
 Score against known app signatures:
+
 - MacDive: `"Dive No"`, `"Max. Depth"`, `"Bottom Temp"`
 - Diving Log: `"Divelog"` prefix columns
 - DiveMate: `"DiveMate"` in headers or characteristic columns
@@ -100,8 +103,7 @@ class DetectionResult {
   final Map<String, String>? suggestedMapping;  // CSV: detected column -> field
   final List<String> warnings;
 }
-```
-
+```diff
 ---
 
 ## Parser Layer
@@ -113,8 +115,7 @@ abstract class ImportParser {
   Future<ImportPayload> parse(Uint8List fileBytes, {ImportOptions? options});
   List<ImportFormat> get supportedFormats;
 }
-```
-
+```typescript
 ### Unified Import Payload
 
 All parsers produce the same structure, mapping directly to the entity type tabs in the review UI:
@@ -130,8 +131,7 @@ enum ImportEntityType {
   dives, sites, trips, equipment, equipmentSets,
   buddies, diveCenters, certifications, courses, tags, diveTypes
 }
-```
-
+```typescript
 This mirrors the existing `UddfEntityType` enum -- we generalize it to `ImportEntityType` shared across all formats.
 
 ### Parser Implementations (v1.5)
@@ -177,8 +177,7 @@ class ColumnMapping {
   final ValueTransform? transform;
   final String? defaultValue;
 }
-```
-
+```sql
 ### Value Transforms
 
 | Transform | Input Example | Output | When Applied |
@@ -219,6 +218,7 @@ The review step is the **same UI for all import formats**, generalized from the 
 ### Duplicate Detection
 
 Reuses the existing `UddfDuplicateChecker` scoring logic:
+
 - **Dives**: fuzzy match on date/time (within 1 hour), max depth (within 10%), duration (within 10%)
 - **Sites**: name matching (normalized)
 - **Equipment, Buddies, etc.**: name + type matching
@@ -283,6 +283,7 @@ Step indicator shows 4 dots for non-CSV (Select, Review, Import, Done) or 5 dots
 ### Partial Import Recovery
 
 Each item is imported in its own transaction. If import fails mid-way:
+
 - Already-imported items are committed
 - Summary shows "N of M imported, 1 failed, K remaining"
 - "Retry remaining" option available
@@ -295,6 +296,7 @@ Each item is imported in its own transaction. If import fails mid-way:
 ### New Files
 
 ```
+
 lib/features/universal_import/
   data/
     services/
@@ -335,7 +337,8 @@ lib/features/universal_import/
       batch_tag_field.dart              # Editable import tag
   providers/
     universal_import_providers.dart     # Riverpod providers + state notifier
-```
+
+```text
 
 ### Files to Modify
 

@@ -15,6 +15,7 @@
 Add the two new enums (`TissueColorScheme`, `TissueVizMode`) and the two new color functions (`thermalColor`, `divergingColor`) alongside the existing `subsurfaceHeatColor`.
 
 **Files:**
+
 - Create: `lib/features/dive_log/presentation/widgets/tissue_color_schemes.dart`
 - Modify: `lib/features/dive_log/presentation/widgets/tissue_heat_map.dart:381,306` (use `TissueColorFn` instead of hard-coded call)
 
@@ -145,9 +146,9 @@ TissueColorFn colorFnForScheme(TissueColorScheme scheme) {
       return _classicFallback;
   }
 }
-```
-
+```dart
 Note: The `colorFnForScheme` function needs access to `subsurfaceHeatColor` from `tissue_heat_map.dart`. To avoid circular imports, either:
+
 - Move `subsurfaceHeatColor` into `tissue_color_schemes.dart`, or
 - Have `colorFnForScheme` live elsewhere, or
 - Pass the classic function in at the call site.
@@ -161,6 +162,7 @@ Cut lines 445-512 from `tissue_heat_map.dart` (`subsurfaceHeatColor` function) a
 Note: `_subsurfacePercentage` (lines 428-443) is a private function used only by `_TissueHeatMapPainter`. It stays in `tissue_heat_map.dart`. It does NOT depend on `subsurfaceHeatColor` — it calculates a percentage that is then passed to whatever color function is active.
 
 Update `tissue_heat_map.dart`:
+
 - Add `import 'tissue_color_schemes.dart';` at the top (after existing imports)
 - Remove the `subsurfaceHeatColor` function (lines 445-512)
 - The two call sites (line 306 in legend, line 381 in painter) will be updated in Task 3 to use the configurable color function
@@ -173,14 +175,15 @@ Expected: No analysis issues
 **Step 4: Commit**
 
 ```
+
 feat: add tissue color scheme enums and color functions
 
 Introduces TissueColorScheme (thermal, diverging, classic) and
 TissueVizMode (heatMap, stackedArea, sparklines) enums with
 thermalColor() and divergingColor() functions. Moves existing
 subsurfaceHeatColor() into the new tissue_color_schemes.dart file.
-```
 
+```sql
 ---
 
 ### Task 2: Add Settings Persistence
@@ -188,6 +191,7 @@ subsurfaceHeatColor() into the new tissue_color_schemes.dart file.
 Wire the new enums into the settings pipeline: database column, AppSettings field, repository read/write, notifier setter, and convenience provider.
 
 **Files:**
+
 - Modify: `lib/core/database/database.dart:581-582` (add two columns after `cardColorGradientEnd`)
 - Modify: `lib/features/settings/presentation/providers/settings_providers.dart:56-282` (AppSettings fields + constructor + copyWith)
 - Modify: `lib/features/settings/presentation/providers/settings_providers.dart:570-670` (SettingsNotifier setters)
@@ -206,8 +210,7 @@ TextColumn get tissueColorScheme =>
     text().withDefault(const Constant('thermal'))();
 TextColumn get tissueVizMode =>
     text().withDefault(const Constant('heatMap'))();
-```
-
+```text
 **Step 2: Bump schema version and add migration**
 
 In `database.dart`, change `schemaVersion` from `44` to `45` (line 1117).
@@ -223,44 +226,43 @@ if (from < 45) {
     "ALTER TABLE diver_settings ADD COLUMN tissue_viz_mode TEXT NOT NULL DEFAULT 'heatMap'",
   );
 }
-```
-
+```text
 **Step 3: Add fields to AppSettings**
 
 In `settings_providers.dart`, add to the `AppSettings` class:
 
 1. Fields (after `cardColorGradientEnd` field, around line 139):
+
 ```dart
 /// Color scheme for tissue loading heat map
 final TissueColorScheme tissueColorScheme;
 
 /// Visualization mode for tissue loading display
 final TissueVizMode tissueVizMode;
-```
+```text
+1. Constructor defaults (after `cardColorGradientEnd` in constructor, around line 254):
 
-2. Constructor defaults (after `cardColorGradientEnd` in constructor, around line 254):
 ```dart
 this.tissueColorScheme = TissueColorScheme.thermal,
 this.tissueVizMode = TissueVizMode.heatMap,
-```
+```text
+1. `copyWith` parameters (after `clearCardColorGradientEnd` parameter, around line 356):
 
-3. `copyWith` parameters (after `clearCardColorGradientEnd` parameter, around line 356):
 ```dart
 TissueColorScheme? tissueColorScheme,
 TissueVizMode? tissueVizMode,
-```
+```text
+1. `copyWith` body (after `cardColorGradientEnd` assignment, around line 424):
 
-4. `copyWith` body (after `cardColorGradientEnd` assignment, around line 424):
 ```dart
 tissueColorScheme: tissueColorScheme ?? this.tissueColorScheme,
 tissueVizMode: tissueVizMode ?? this.tissueVizMode,
-```
+```typescript
+1. Add import at top of `settings_providers.dart`:
 
-5. Add import at top of `settings_providers.dart`:
 ```dart
 import 'package:submersion/features/dive_log/presentation/widgets/tissue_color_schemes.dart';
-```
-
+```text
 **Step 4: Add convenience providers**
 
 In `settings_providers.dart`, after the existing convenience providers (around line 974):
@@ -273,8 +275,7 @@ final tissueColorSchemeProvider = Provider<TissueColorScheme>((ref) {
 final tissueVizModeProvider = Provider<TissueVizMode>((ref) {
   return ref.watch(settingsProvider).tissueVizMode;
 });
-```
-
+```text
 **Step 5: Add setter methods to SettingsNotifier**
 
 In `settings_providers.dart`, in the `SettingsNotifier` class (after `setCardColorGradientEnd` or similar, around line 830):
@@ -289,8 +290,7 @@ Future<void> setTissueVizMode(TissueVizMode mode) async {
   state = state.copyWith(tissueVizMode: mode);
   await _saveSettings();
 }
-```
-
+```text
 **Step 6: Update repository - create method**
 
 In `diver_settings_repository.dart`, in `createSettingsForDiver`, add to the `DiverSettingsCompanion` (after `cardColorGradientEnd`, around line 88):
@@ -298,8 +298,7 @@ In `diver_settings_repository.dart`, in `createSettingsForDiver`, add to the `Di
 ```dart
 tissueColorScheme: Value(s.tissueColorScheme.name),
 tissueVizMode: Value(s.tissueVizMode.name),
-```
-
+```text
 **Step 7: Update repository - update method**
 
 In `diver_settings_repository.dart`, in `updateSettingsForDiver`, add to the `DiverSettingsCompanion` (after `cardColorGradientEnd`, around line 194):
@@ -307,8 +306,7 @@ In `diver_settings_repository.dart`, in `updateSettingsForDiver`, add to the `Di
 ```dart
 tissueColorScheme: Value(settings.tissueColorScheme.name),
 tissueVizMode: Value(settings.tissueVizMode.name),
-```
-
+```text
 **Step 8: Update repository - read mapping**
 
 In `diver_settings_repository.dart`, in `_mapRowToAppSettings`, add (after `cardColorGradientEnd`, around line 335):
@@ -316,8 +314,7 @@ In `diver_settings_repository.dart`, in `_mapRowToAppSettings`, add (after `card
 ```dart
 tissueColorScheme: TissueColorScheme.fromName(row.tissueColorScheme),
 tissueVizMode: TissueVizMode.fromName(row.tissueVizMode),
-```
-
+```text
 **Step 9: Run code generation**
 
 Run: `dart run build_runner build --delete-conflicting-outputs`
@@ -331,13 +328,14 @@ Expected: No analysis issues
 **Step 11: Commit**
 
 ```
+
 feat: add tissue color scheme and viz mode settings
 
 Adds tissueColorScheme (thermal/diverging/classic) and tissueVizMode
 (heatMap/stackedArea/sparklines) to DiverSettings table, AppSettings,
 repository, and providers. Schema version 44 -> 45.
-```
 
+```text
 ---
 
 ### Task 3: Refactor Heat Map to Accept Color Function
@@ -345,6 +343,7 @@ repository, and providers. Schema version 44 -> 45.
 Update `TissueHeatMapStrip`, `TissueHeatMapLegend`, and `_TissueHeatMapPainter` to accept a `TissueColorFn` parameter instead of hard-coding `subsurfaceHeatColor`. Also update `CompactTissueLoadingCard` to read the color scheme setting and pass the correct function.
 
 **Files:**
+
 - Modify: `lib/features/dive_log/presentation/widgets/tissue_heat_map.dart` (strip, legend, painter)
 - Modify: `lib/features/dive_log/presentation/widgets/compact_tissue_loading_card.dart` (pass color fn)
 
@@ -368,37 +367,37 @@ class TissueHeatMapLegend extends StatelessWidget {
     this.leftLabel = 'On-gassing',
     this.rightLabel = 'Off-gassing',
   });
-```
-
+```text
 Update the `build` method to use `colorFn` instead of `subsurfaceHeatColor`:
+
 ```dart
 colors.add(colorFn(pct));
-```
-
+```text
 Update the label `Text` widgets to use `leftLabel` and `rightLabel` instead of hard-coded strings.
 
 **Step 2: Add `colorFn` parameter to `TissueHeatMapStrip`**
 
 Add to constructor:
+
 ```dart
 final TissueColorFn colorFn;
-```
-
+```text
 Pass it through to `_TissueHeatMapPainter` in `build()`.
 
 **Step 3: Add `colorFn` to `_TissueHeatMapPainter`**
 
 Add field and constructor param:
+
 ```dart
 final TissueColorFn colorFn;
-```
-
+```text
 Update `paint()` line 381 to use it:
+
 ```dart
 paint.color = colorFn(percentage);  // was: subsurfaceHeatColor(percentage)
-```
-
+```text
 Update `shouldRepaint` to include `colorFn`:
+
 ```dart
 @override
 bool shouldRepaint(_TissueHeatMapPainter oldDelegate) {
@@ -406,14 +405,12 @@ bool shouldRepaint(_TissueHeatMapPainter oldDelegate) {
       oldDelegate.selectedIndex != selectedIndex ||
       oldDelegate.colorFn != colorFn;
 }
-```
-
+```typescript
 **Step 4: Add import to `tissue_heat_map.dart`**
 
 ```dart
 import 'package:submersion/features/dive_log/presentation/widgets/tissue_color_schemes.dart';
-```
-
+```typescript
 **Step 5: Update `CompactTissueLoadingCard` to pass color function**
 
 Convert `CompactTissueLoadingCard` from `StatefulWidget` to `ConsumerStatefulWidget` (so it can read providers).
@@ -421,15 +418,16 @@ Convert `CompactTissueLoadingCard` from `StatefulWidget` to `ConsumerStatefulWid
 In `compact_tissue_loading_card.dart`:
 
 1. Change the import and class declaration:
+
 ```dart
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:submersion/features/dive_log/presentation/widgets/tissue_color_schemes.dart';
 import 'package:submersion/features/settings/presentation/providers/settings_providers.dart';
-```
+```dart
+1. Change `StatefulWidget` to `ConsumerStatefulWidget`, `State<...>` to `ConsumerState<...>`.
 
-2. Change `StatefulWidget` to `ConsumerStatefulWidget`, `State<...>` to `ConsumerState<...>`.
+2. In `_buildHeatMapSection`, read the color scheme and pass the color function:
 
-3. In `_buildHeatMapSection`, read the color scheme and pass the color function:
 ```dart
 Widget _buildHeatMapSection(
   BuildContext context,
@@ -443,9 +441,9 @@ Widget _buildHeatMapSection(
   final leftLabel = tissueScheme == TissueColorScheme.thermal ? 'Safe' : 'On-gassing';
   final rightLabel = tissueScheme == TissueColorScheme.thermal ? 'Danger' : 'Off-gassing';
   // ... rest of method, passing colorFn to TissueHeatMapLegend and TissueHeatMapStrip
-```
+```text
+1. Update the `TissueHeatMapLegend` instantiation:
 
-4. Update the `TissueHeatMapLegend` instantiation:
 ```dart
 TissueHeatMapLegend(
   colorScheme: colorScheme,
@@ -454,9 +452,9 @@ TissueHeatMapLegend(
   leftLabel: leftLabel,
   rightLabel: rightLabel,
 ),
-```
+```text
+1. Update the `TissueHeatMapStrip` instantiation:
 
-5. Update the `TissueHeatMapStrip` instantiation:
 ```dart
 TissueHeatMapStrip(
   decoStatuses: widget.decoStatuses!,
@@ -466,8 +464,7 @@ TissueHeatMapStrip(
   onHoverIndexChanged: widget.onHeatMapHover,
   // ... rest unchanged
 ),
-```
-
+```text
 **Step 6: Update `TissueHeatMap` wrapper widget**
 
 The top-level `TissueHeatMap` widget (lines 16-87) also needs updating. Add a `colorFn` parameter with a default:
@@ -479,8 +476,7 @@ const TissueHeatMap({
   // ... existing params ...
   this.colorFn = thermalColor,
 });
-```
-
+```text
 Update its `build()` to pass `colorFn` to both `TissueHeatMapLegend` and `TissueHeatMapStrip`.
 
 **Step 7: Verify compilation**
@@ -496,14 +492,15 @@ Expected: All tests pass
 **Step 9: Commit**
 
 ```
+
 refactor: parameterize tissue heat map color function
 
 TissueHeatMapStrip, TissueHeatMapLegend, and the painter now accept
 a TissueColorFn parameter instead of hard-coding subsurfaceHeatColor.
 CompactTissueLoadingCard reads the tissueColorScheme setting and
 passes the appropriate color function.
-```
 
+```text
 ---
 
 ### Task 4: Add Expand/Collapse to Tissue Card
@@ -511,6 +508,7 @@ passes the appropriate color function.
 Add an expand/collapse toggle to the `CompactTissueLoadingCard` header. When expanded, the heat map strip grows taller.
 
 **Files:**
+
 - Modify: `lib/features/dive_log/presentation/widgets/compact_tissue_loading_card.dart`
 
 **Step 1: Add expanded state**
@@ -519,8 +517,7 @@ In `_CompactTissueLoadingCardState`, add:
 
 ```dart
 bool _isExpanded = false;
-```
-
+```text
 **Step 2: Add chevron button to header**
 
 In the header `Row` (line 68), after the M-value legend block, add a chevron icon button:
@@ -539,16 +536,14 @@ GestureDetector(
     ),
   ),
 ),
-```
-
+```text
 **Step 3: Animate heat map height**
 
 In `_buildHeatMapSection`, replace the hard-coded `height: 72` with:
 
 ```dart
 height: _isExpanded ? 144 : 72,
-```
-
+```text
 Wrap the `TissueHeatMapStrip` in an `AnimatedContainer`:
 
 ```dart
@@ -559,8 +554,7 @@ AnimatedContainer(
     // ... existing params, but remove height param since parent constrains it
   ),
 ),
-```
-
+```text
 Actually, `TissueHeatMapStrip` uses `SizedBox(height: widget.height)` internally. So pass the animated height directly:
 
 ```dart
@@ -571,13 +565,12 @@ TissueHeatMapStrip(
   colorFn: colorFn,
   // ... callbacks
 ),
-```
-
+```text
 Also update the `SizedBox(height: 44)` spacer between Fast/Slow labels to animate:
+
 ```dart
 SizedBox(height: _isExpanded ? 116 : 44),
-```
-
+```text
 **Step 4: Verify compilation and test**
 
 Run: `flutter analyze lib/features/dive_log/presentation/widgets/compact_tissue_loading_card.dart`
@@ -586,13 +579,14 @@ Expected: No analysis issues
 **Step 5: Commit**
 
 ```
+
 feat: add expand/collapse toggle to tissue loading card
 
 Adds a chevron button to the tissue card header. Tapping toggles the
 heat map strip between compact (72px) and expanded (144px) heights
 with animated transitions.
-```
 
+```text
 ---
 
 ### Task 5: Add Visualization Mode Toggle UI
@@ -600,6 +594,7 @@ with animated transitions.
 Add the 3-icon mode toggle to the card header, and wire it to the `tissueVizMode` setting. For now, only the heat map mode renders content — the other two modes show placeholder widgets.
 
 **Files:**
+
 - Modify: `lib/features/dive_log/presentation/widgets/compact_tissue_loading_card.dart`
 
 **Step 1: Read viz mode from settings**
@@ -608,8 +603,7 @@ In `_buildHeatMapSection` (or better, in `build()`), read the viz mode:
 
 ```dart
 final vizMode = ref.watch(tissueVizModeProvider);
-```
-
+```text
 **Step 2: Add mode toggle to header**
 
 In the header `Row`, between the subtitle and the Spacer, add a `SegmentedButton` or a row of `IconButton`s:
@@ -617,8 +611,7 @@ In the header `Row`, between the subtitle and the Spacer, add a `SegmentedButton
 ```dart
 const SizedBox(width: 8),
 _buildVizModeToggle(colorScheme, vizMode),
-```
-
+```text
 The toggle widget:
 
 ```dart
@@ -652,8 +645,7 @@ Widget _modeIcon(
     ),
   );
 }
-```
-
+```text
 **Step 3: Add color scheme selector**
 
 Add a palette icon that opens a popup menu:
@@ -673,8 +665,7 @@ PopupMenuButton<TissueColorScheme>(
     ref.read(settingsProvider.notifier).setTissueColorScheme(scheme);
   },
 ),
-```
-
+```text
 **Step 4: Switch visualization by mode**
 
 In `build()`, replace the `_buildHeatMapSection` call with a mode switch:
@@ -688,8 +679,7 @@ if (widget.decoStatuses != null && widget.decoStatuses!.isNotEmpty) ...[
   },
   const SizedBox(height: 6),
 ],
-```
-
+```text
 Add a temporary placeholder widget:
 
 ```dart
@@ -705,8 +695,7 @@ Widget _buildPlaceholder(String label, ColorScheme colorScheme) {
     child: Text(label, style: TextStyle(color: colorScheme.onSurfaceVariant)),
   );
 }
-```
-
+```text
 **Step 5: Verify compilation**
 
 Run: `flutter analyze lib/features/dive_log/presentation/widgets/compact_tissue_loading_card.dart`
@@ -715,13 +704,14 @@ Expected: No analysis issues
 **Step 6: Commit**
 
 ```
+
 feat: add viz mode toggle and color scheme selector to tissue card
 
 Header now shows a 3-icon mode toggle (grid, area, lines) and a
 palette popup menu for color scheme selection. Both are wired to
 persisted settings. Area chart and sparklines modes show placeholders.
-```
 
+```text
 ---
 
 ### Task 6: Build Stacked Area Chart Widget
@@ -729,6 +719,7 @@ persisted settings. Area chart and sparklines modes show placeholders.
 Create the `TissueAreaChart` widget — a CustomPainter-based stacked area chart showing tissue loading curves over time.
 
 **Files:**
+
 - Create: `lib/features/dive_log/presentation/widgets/tissue_area_chart.dart`
 - Modify: `lib/features/dive_log/presentation/widgets/compact_tissue_loading_card.dart` (replace placeholder)
 
@@ -770,14 +761,15 @@ class TissueAreaChart extends StatefulWidget {
   @override
   State<TissueAreaChart> createState() => _TissueAreaChartState();
 }
-```
-
+```typescript
 The state class should implement:
+
 - Touch/hover handling (same pattern as `TissueHeatMapStrip` using `GestureDetector` + `MouseRegion`)
 - Convert local position to time index: `timeIdx = (localPosition.dx / size.width * numTimePoints).floor()`
 - Fire `onHoverIndexChanged` and `onCompartmentHoverChanged`
 
 The painter (`_TissueAreaChartPainter`) should:
+
 1. Pre-compute percentage values per (time, compartment) using `_subsurfacePercentage` (copy the formula or import it)
 2. Draw a horizontal reference line at y=100% (M-value line) with `colorScheme.error`
 3. **Compact mode:** Draw only the leading compartment's percentage curve as a filled area
@@ -810,8 +802,7 @@ double subsurfacePercentage(TissueCompartment comp, double ambientPressure) {
     return 50.0 + gf * 50.0;
   }
 }
-```
-
+```typescript
 Then update `tissue_heat_map.dart` to import and use this shared version instead of the private `_subsurfacePercentage`.
 
 **Step 3: Wire into CompactTissueLoadingCard**
@@ -820,8 +811,7 @@ In `compact_tissue_loading_card.dart`, replace the `_buildPlaceholder('Area Char
 
 ```dart
 TissueVizMode.stackedArea => _buildAreaChartSection(context, colorScheme, textTheme),
-```
-
+```text
 Implement `_buildAreaChartSection`:
 
 ```dart
@@ -849,8 +839,7 @@ Widget _buildAreaChartSection(
     },
   );
 }
-```
-
+```text
 **Step 4: Verify compilation**
 
 Run: `flutter analyze lib/features/dive_log/presentation/widgets/tissue_area_chart.dart lib/features/dive_log/presentation/widgets/compact_tissue_loading_card.dart`
@@ -859,14 +848,15 @@ Expected: No analysis issues
 **Step 5: Commit**
 
 ```
+
 feat: add stacked area chart visualization for tissue loading
 
 New TissueAreaChart widget shows tissue loading curves over time.
 Compact mode shows leading compartment only. Expanded mode shows
 all 16 compartments as semi-transparent filled areas with M-value
 reference line. Shares subsurfacePercentage() with heat map.
-```
 
+```text
 ---
 
 ### Task 7: Build Sparklines Widget
@@ -874,6 +864,7 @@ reference line. Shares subsurfacePercentage() with heat map.
 Create the `TissueSparklines` widget — 16 individual mini-line-charts stacked vertically.
 
 **Files:**
+
 - Create: `lib/features/dive_log/presentation/widgets/tissue_sparklines.dart`
 - Modify: `lib/features/dive_log/presentation/widgets/compact_tissue_loading_card.dart` (replace placeholder)
 
@@ -915,9 +906,9 @@ class TissueSparklines extends StatefulWidget {
   @override
   State<TissueSparklines> createState() => _TissueSparlinesState();
 }
-```
-
+```text
 The painter (`_TissueSparklinesPainter`) should:
+
 1. Divide canvas height into 16 equal rows
 2. For each compartment row:
    - Draw a thin loading-percentage line across time
@@ -936,8 +927,7 @@ Replace the sparklines placeholder:
 
 ```dart
 TissueVizMode.sparklines => _buildSparklinesSection(context, colorScheme, textTheme),
-```
-
+```text
 Implement `_buildSparklinesSection` (same pattern as area chart section but with `TissueSparklines`).
 
 Height: `_isExpanded ? 192 : 72`.
@@ -949,13 +939,15 @@ Expected: No analysis issues
 
 **Step 4: Commit**
 
-```
+```text
+
 feat: add sparklines visualization for tissue loading
 
 New TissueSparklines widget shows 16 mini-line-charts stacked
 vertically. Compact mode shows thin colored lines per compartment.
 Expanded mode adds compartment labels and M-value reference lines.
 Leading compartment gets a bolder stroke.
+
 ```
 
 ---
@@ -979,6 +971,7 @@ Run: `dart format lib/features/dive_log/presentation/widgets/tissue_color_scheme
 **Step 4: Manual device testing**
 
 Test on iPhone:
+
 - Open a dive with profile data → scroll to Tissue Loading card
 - Default should show heat map with Thermal color scheme (blue → cyan → green → yellow → red)
 - Tap palette icon → switch to Diverging (blue → white → orange) → colors update immediately

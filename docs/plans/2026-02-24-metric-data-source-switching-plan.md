@@ -17,6 +17,7 @@
 ### What already exists (uncommitted on main)
 
 A "Computer CNS Preference" feature was just implemented. It added:
+
 - `useDiveComputerCnsData` boolean field to `AppSettings`, `DiverSettings` table (migration v41), and the repository
 - `useDiveComputerCnsDataProvider` convenience provider
 - `setUseDiveComputerCnsData` setter on `SettingsNotifier`
@@ -51,6 +52,7 @@ A "Computer CNS Preference" feature was just implemented. It added:
 ## Task 1: MetricDataSource Enum and MetricSourceInfo Type
 
 **Files:**
+
 - Modify: `lib/core/constants/profile_metrics.dart` (append after line 165)
 - Create: `test/core/constants/profile_metrics_test.dart`
 
@@ -114,8 +116,7 @@ void main() {
     });
   });
 }
-```
-
+```text
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/core/constants/profile_metrics_test.dart`
@@ -150,8 +151,7 @@ typedef MetricSourceInfo = ({
   MetricDataSource ttsActual,
   MetricDataSource cnsActual,
 });
-```
-
+```text
 **Step 4: Run test to verify it passes**
 
 Run: `flutter test test/core/constants/profile_metrics_test.dart`
@@ -166,13 +166,13 @@ git commit -m "feat: add MetricDataSource enum and MetricSourceInfo type
 Part of metric data source switching feature. Enum serializes to int
 for database storage. MetricSourceInfo record reports actual source
 used per metric after fallback resolution."
-```
-
+```typescript
 ---
 
 ## Task 2: Refactor overlayComputerDecoData for Per-Metric Sources
 
 **Files:**
+
 - Modify: `lib/features/dive_log/presentation/providers/profile_analysis_provider.dart:139-197` (the function)
 - Modify: `lib/features/dive_log/presentation/providers/profile_analysis_provider.dart:505` (diveProfileAnalysisProvider call)
 - Modify: `test/features/dive_log/presentation/providers/profile_analysis_provider_test.dart` (existing overlay tests)
@@ -187,12 +187,13 @@ The function now returns `(ProfileAnalysis, MetricSourceInfo)`. Every test that 
 For tests that currently DO overlay (they pass profiles with computer data), the new signature requires explicitly passing `MetricDataSource.computer` for each metric being tested. The old default was to overlay everything; the new default is `MetricDataSource.calculated` (overlay nothing).
 
 Example update pattern -- old:
+
 ```dart
 final result = overlayComputerDecoData(baseAnalysis, profileWithNdl);
 expect(result.ndlCurve[5], equals(12));
-```
-
+```text
 New:
+
 ```dart
 final (result, sourceInfo) = overlayComputerDecoData(
   baseAnalysis, profileWithNdl,
@@ -200,18 +201,19 @@ final (result, sourceInfo) = overlayComputerDecoData(
 );
 expect(result.ndlCurve[5], equals(12));
 expect(sourceInfo.ndlActual, MetricDataSource.computer);
-```
-
+```dart
 Update all 8 tests in the `overlayComputerDecoData` group:
 
 1. `returns original analysis when no computer data present` -- no source params needed (all default to calculated). Destructure result:
+
    ```dart
    final (result, sourceInfo) = overlayComputerDecoData(baseAnalysis, baseProfile);
    expect(result, same(baseAnalysis)); // No change
    expect(sourceInfo.ndlActual, MetricDataSource.calculated);
    ```
 
-2. `overlays computer NDL when available` -- add `ndlSource: MetricDataSource.computer`:
+1. `overlays computer NDL when available` -- add `ndlSource: MetricDataSource.computer`:
+
    ```dart
    final (result, sourceInfo) = overlayComputerDecoData(
      baseAnalysis, profileWithComputerNdl,
@@ -219,17 +221,17 @@ Update all 8 tests in the `overlayComputerDecoData` group:
    );
    ```
 
-3. `overlays computer ceiling when available` -- add `ceilingSource: MetricDataSource.computer`.
+2. `overlays computer ceiling when available` -- add `ceilingSource: MetricDataSource.computer`.
 
-4. `overlays computer TTS when available` -- add `ttsSource: MetricDataSource.computer`.
+3. `overlays computer TTS when available` -- add `ttsSource: MetricDataSource.computer`.
 
-5. `overlays computer CNS when available` -- add `cnsSource: MetricDataSource.computer`.
+4. `overlays computer CNS when available` -- add `cnsSource: MetricDataSource.computer`.
 
-6. `handles mixed computer data` -- add all 4 sources as `MetricDataSource.computer`.
+5. `handles mixed computer data` -- add all 4 sources as `MetricDataSource.computer`.
 
-7. `overlays multiple curves simultaneously` -- add relevant sources as `MetricDataSource.computer`.
+6. `overlays multiple curves simultaneously` -- add relevant sources as `MetricDataSource.computer`.
 
-8. `handles empty analysis curves gracefully` -- add all sources as `MetricDataSource.computer`.
+7. `handles empty analysis curves gracefully` -- add all sources as `MetricDataSource.computer`.
 
 Also add 2 new tests:
 
@@ -261,15 +263,14 @@ test('source=computer without data falls back to calculated', () {
   expect(result, same(baseAnalysis));
   expect(sourceInfo.ndlActual, MetricDataSource.calculated); // Fallback
 });
-```
-
+```typescript
 In `test/features/dive_log/domain/services/computer_cns_provider_integration_test.dart`, update the `overlayComputerDecoData - includeComputerCns parameter` group (line 48). Replace `includeComputerCns: false` with `cnsSource: MetricDataSource.calculated` and `includeComputerCns: true` with `cnsSource: MetricDataSource.computer`. Destructure all return values. Add import for `MetricDataSource`:
 
 ```dart
 import 'package:submersion/core/constants/profile_metrics.dart';
-```
-
+```text
 Update the 4 tests in that group:
+
 1. `cnsSource: calculated excludes CNS curve...` -- change `includeComputerCns: false` to `cnsSource: MetricDataSource.calculated`, add `ndlSource: MetricDataSource.computer, ceilingSource: MetricDataSource.computer, ttsSource: MetricDataSource.computer` (these were previously always overlaid).
 2. `cnsSource: computer overlays computer CNS curve` -- change `includeComputerCns: true` to `cnsSource: MetricDataSource.computer` plus other sources as `computer`.
 3. `defaults to calculated (new default behavior)` -- call with no params, expect NO overlay (this is a behavior change from old default of `true`).
@@ -364,18 +365,18 @@ Replace lines 139-197 of `lib/features/dive_log/presentation/providers/profile_a
 
   return (overlaid, sourceInfo);
 }
-```
-
+```typescript
 Add import at top of file:
+
 ```dart
 import 'package:submersion/core/constants/profile_metrics.dart';
-```
-
+```text
 **Step 4: Fix calling sites that break**
 
 Two callers within the same file need updating:
 
 **a) `profileAnalysisProvider` (line 345-349):** Temporarily keep working by destructuring (the full provider refactor happens in Task 6):
+
 ```dart
       // Overlay computer-reported deco data where available
       final (overlaid, _) = overlayComputerDecoData(
@@ -389,9 +390,9 @@ Two callers within the same file need updating:
         ceilingSource: MetricDataSource.computer,
         ttsSource: MetricDataSource.computer,
       );
-```
-
+```text
 **b) `diveProfileAnalysisProvider` (line 505):** This provider always overlays all computer data:
+
 ```dart
     // Overlay computer-reported deco data where available
     final (overlaid, _) = overlayComputerDecoData(
@@ -403,8 +404,7 @@ Two callers within the same file need updating:
       cnsSource: MetricDataSource.computer,
     );
     return overlaid;
-```
-
+```text
 **Step 5: Run tests to verify they pass**
 
 Run: `flutter test test/features/dive_log/presentation/providers/profile_analysis_provider_test.dart test/features/dive_log/domain/services/computer_cns_provider_integration_test.dart`
@@ -424,13 +424,13 @@ git commit -m "feat: refactor overlayComputerDecoData for per-metric source sele
 Replace single includeComputerCns bool with per-metric MetricDataSource
 params (ndl, ceiling, tts, cns). Function now returns (ProfileAnalysis,
 MetricSourceInfo) tuple reporting actual source used per metric."
-```
-
+```text
 ---
 
 ## Task 3: Database Migration v42
 
 **Files:**
+
 - Modify: `lib/core/database/database.dart:566-567` (table definition), `:1108` (schema version), `:1979-1983` (migration)
 
 **Step 1: Write the migration**
@@ -440,20 +440,20 @@ In `lib/core/database/database.dart`:
 **a) Replace `useDiveComputerCnsData` column with 4 source columns (around line 566-567):**
 
 Remove:
+
 ```dart
   BoolColumn get useDiveComputerCnsData =>
       boolean().withDefault(const Constant(false))();
-```
-
+```text
 Replace with:
+
 ```dart
   IntColumn get defaultNdlSource => integer().withDefault(const Constant(1))();
   IntColumn get defaultCeilingSource =>
       integer().withDefault(const Constant(1))();
   IntColumn get defaultTtsSource => integer().withDefault(const Constant(1))();
   IntColumn get defaultCnsSource => integer().withDefault(const Constant(1))();
-```
-
+```text
 (Values: 0 = computer, 1 = calculated. Default 1 = calculated.)
 
 **b) Bump schema version (line 1108):**
@@ -482,8 +482,7 @@ Change `int get schemaVersion => 41;` to `int get schemaVersion => 42;`
             'UPDATE diver_settings SET default_cns_source = 0 WHERE use_dive_computer_cns_data = 1',
           );
         }
-```
-
+```text
 **Step 2: Run build_runner to regenerate Drift code**
 
 Run: `dart run build_runner build --delete-conflicting-outputs`
@@ -503,13 +502,13 @@ git commit -m "feat: database migration v42 - per-metric data source columns
 Add default_ndl_source, default_ceiling_source, default_tts_source,
 default_cns_source columns to diver_settings. Migrate existing
 use_dive_computer_cns_data toggle to default_cns_source."
-```
-
+```text
 ---
 
 ## Task 4: AppSettings and Repository - New Source Fields
 
 **Files:**
+
 - Modify: `lib/features/settings/presentation/providers/settings_providers.dart`
 - Modify: `lib/features/settings/data/repositories/diver_settings_repository.dart`
 - Modify: `test/features/settings/presentation/pages/settings_page_test.dart` (mock)
@@ -522,12 +521,13 @@ In `lib/features/settings/presentation/providers/settings_providers.dart`:
 **a) Replace field (line 107-108):**
 
 Remove:
+
 ```dart
   /// Whether to use dive-computer-reported CNS data when available
   final bool useDiveComputerCnsData;
-```
-
+```text
 Replace with:
+
 ```dart
   /// Default data source for NDL metric (computer or calculated)
   final MetricDataSource defaultNdlSource;
@@ -540,65 +540,65 @@ Replace with:
 
   /// Default data source for CNS metric (computer or calculated)
   final MetricDataSource defaultCnsSource;
-```
-
+```typescript
 Add import at top:
+
 ```dart
 import 'package:submersion/core/constants/profile_metrics.dart';
-```
-
+```text
 **b) Update constructor defaults (line 225):**
 
 Remove:
+
 ```dart
     this.useDiveComputerCnsData = false,
-```
-
+```text
 Replace with:
+
 ```dart
     this.defaultNdlSource = MetricDataSource.calculated,
     this.defaultCeilingSource = MetricDataSource.calculated,
     this.defaultTtsSource = MetricDataSource.calculated,
     this.defaultCnsSource = MetricDataSource.calculated,
-```
-
+```text
 **c) Update copyWith (line 320 param, line 379-380 body):**
 
 Remove param: `bool? useDiveComputerCnsData,`
 
 Add params:
+
 ```dart
     MetricDataSource? defaultNdlSource,
     MetricDataSource? defaultCeilingSource,
     MetricDataSource? defaultTtsSource,
     MetricDataSource? defaultCnsSource,
-```
-
+```text
 Remove body line:
+
 ```dart
       useDiveComputerCnsData:
           useDiveComputerCnsData ?? this.useDiveComputerCnsData,
-```
-
+```text
 Add body lines:
+
 ```dart
       defaultNdlSource: defaultNdlSource ?? this.defaultNdlSource,
       defaultCeilingSource: defaultCeilingSource ?? this.defaultCeilingSource,
       defaultTtsSource: defaultTtsSource ?? this.defaultTtsSource,
       defaultCnsSource: defaultCnsSource ?? this.defaultCnsSource,
-```
-
+```text
 **d) Replace setter (lines 689-692):**
 
 Remove:
+
 ```dart
   Future<void> setUseDiveComputerCnsData(bool value) async {
     state = state.copyWith(useDiveComputerCnsData: value);
     await _saveSettings();
   }
-```
-
+```text
 Replace with:
+
 ```dart
   Future<void> setDefaultNdlSource(MetricDataSource value) async {
     state = state.copyWith(defaultNdlSource: value);
@@ -619,17 +619,16 @@ Replace with:
     state = state.copyWith(defaultCnsSource: value);
     await _saveSettings();
   }
-```
-
+```text
 **e) Replace convenience provider (lines 971-973):**
 
 Remove:
+
 ```dart
 final useDiveComputerCnsDataProvider = Provider<bool>((ref) {
   return ref.watch(settingsProvider.select((s) => s.useDiveComputerCnsData));
 });
-```
-
+```text
 (No replacement needed -- consumers will read from `ProfileLegendState` instead.)
 
 **Step 2: Update DiverSettingsRepository**
@@ -639,65 +638,66 @@ In `lib/features/settings/data/repositories/diver_settings_repository.dart`:
 **a) In `createSettingsForDiver` (line 77):**
 
 Remove:
+
 ```dart
               useDiveComputerCnsData: Value(s.useDiveComputerCnsData),
-```
-
+```text
 Replace with:
+
 ```dart
               defaultNdlSource: Value(s.defaultNdlSource.toInt()),
               defaultCeilingSource: Value(s.defaultCeilingSource.toInt()),
               defaultTtsSource: Value(s.defaultTtsSource.toInt()),
               defaultCnsSource: Value(s.defaultCnsSource.toInt()),
-```
-
+```text
 **b) In `updateSettingsForDiver` (line 177):**
 
 Remove:
+
 ```dart
           useDiveComputerCnsData: Value(settings.useDiveComputerCnsData),
-```
-
+```text
 Replace with:
+
 ```dart
           defaultNdlSource: Value(settings.defaultNdlSource.toInt()),
           defaultCeilingSource: Value(settings.defaultCeilingSource.toInt()),
           defaultTtsSource: Value(settings.defaultTtsSource.toInt()),
           defaultCnsSource: Value(settings.defaultCnsSource.toInt()),
-```
-
+```text
 **c) In `_mapRowToAppSettings` (line 313):**
 
 Remove:
+
 ```dart
       useDiveComputerCnsData: row.useDiveComputerCnsData,
-```
-
+```text
 Replace with:
+
 ```dart
       defaultNdlSource: MetricDataSource.fromInt(row.defaultNdlSource),
       defaultCeilingSource: MetricDataSource.fromInt(row.defaultCeilingSource),
       defaultTtsSource: MetricDataSource.fromInt(row.defaultTtsSource),
       defaultCnsSource: MetricDataSource.fromInt(row.defaultCnsSource),
-```
-
+```typescript
 Add import at top:
+
 ```dart
 import 'package:submersion/core/constants/profile_metrics.dart';
-```
-
+```text
 **Step 3: Update test mocks**
 
 In `test/features/settings/presentation/pages/settings_page_test.dart`, find the `_MockSettingsNotifier` class. Replace (around line 104-105):
 
 Remove:
+
 ```dart
   @override
   Future<void> setUseDiveComputerCnsData(bool value) async =>
       state = state.copyWith(useDiveComputerCnsData: value);
-```
-
+```text
 Replace with:
+
 ```dart
   @override
   Future<void> setDefaultNdlSource(MetricDataSource value) async =>
@@ -714,13 +714,12 @@ Replace with:
   @override
   Future<void> setDefaultCnsSource(MetricDataSource value) async =>
       state = state.copyWith(defaultCnsSource: value);
-```
-
+```text
 Add import:
+
 ```dart
 import 'package:submersion/core/constants/profile_metrics.dart';
-```
-
+```typescript
 Do the same in `test/features/statistics/presentation/pages/records_page_test.dart` (same pattern around line 105-106).
 
 **Step 4: Update profileAnalysisProvider to remove old provider reference**
@@ -728,27 +727,27 @@ Do the same in `test/features/statistics/presentation/pages/records_page_test.da
 In `lib/features/dive_log/presentation/providers/profile_analysis_provider.dart`:
 
 Remove the import of `useDiveComputerCnsDataProvider` usage. At line 310, change:
+
 ```dart
       final useComputerCns = ref.watch(useDiveComputerCnsDataProvider);
-```
-
+```text
 Temporarily replace with (this will be fully refactored in Task 6):
+
 ```dart
       final settings = ref.watch(settingsProvider);
       final useComputerCns = settings.defaultCnsSource == MetricDataSource.computer;
-```
-
+```text
 At line 394, change:
+
 ```dart
     final useComputerCns = ref.watch(useDiveComputerCnsDataProvider);
-```
-
+```text
 To:
+
 ```dart
     final settings = ref.watch(settingsProvider);
     final useComputerCns = settings.defaultCnsSource == MetricDataSource.computer;
-```
-
+```text
 **Step 5: Run build_runner**
 
 Run: `dart run build_runner build --delete-conflicting-outputs`
@@ -769,13 +768,13 @@ AppSettings now has defaultNdlSource, defaultCeilingSource,
 defaultTtsSource, defaultCnsSource (MetricDataSource enum). Old boolean
 field, provider, and setter removed. Repository updated for int
 serialization."
-```
-
+```text
 ---
 
 ## Task 5: ProfileLegendState - Source Fields and Cycle Methods
 
 **Files:**
+
 - Modify: `lib/features/dive_log/presentation/providers/profile_legend_provider.dart`
 
 **Step 1: Add source fields to ProfileLegendState**
@@ -783,10 +782,10 @@ serialization."
 In `lib/features/dive_log/presentation/providers/profile_legend_provider.dart`:
 
 Add import:
+
 ```dart
 import 'package:submersion/core/constants/profile_metrics.dart';
-```
-
+```text
 **a) Add 4 fields after `showOtu` (around line 43-44):**
 
 ```dart
@@ -794,8 +793,7 @@ import 'package:submersion/core/constants/profile_metrics.dart';
   final MetricDataSource ceilingSource;
   final MetricDataSource ttsSource;
   final MetricDataSource cnsSource;
-```
-
+```text
 **b) Add constructor defaults (after `this.showOtu = false`):**
 
 ```dart
@@ -803,8 +801,7 @@ import 'package:submersion/core/constants/profile_metrics.dart';
     this.ceilingSource = MetricDataSource.calculated,
     this.ttsSource = MetricDataSource.calculated,
     this.cnsSource = MetricDataSource.calculated,
-```
-
+```text
 **c) Add to `copyWith` -- parameter list:**
 
 ```dart
@@ -812,16 +809,15 @@ import 'package:submersion/core/constants/profile_metrics.dart';
     MetricDataSource? ceilingSource,
     MetricDataSource? ttsSource,
     MetricDataSource? cnsSource,
-```
-
+```text
 And body:
+
 ```dart
       ndlSource: ndlSource ?? this.ndlSource,
       ceilingSource: ceilingSource ?? this.ceilingSource,
       ttsSource: ttsSource ?? this.ttsSource,
       cnsSource: cnsSource ?? this.cnsSource,
-```
-
+```text
 **d) Add to `==` operator:**
 
 ```dart
@@ -829,8 +825,7 @@ And body:
         ceilingSource == other.ceilingSource &&
         ttsSource == other.ttsSource &&
         cnsSource == other.cnsSource &&
-```
-
+```text
 **e) Add to `hashCode`:**
 
 Add `ndlSource`, `ceilingSource`, `ttsSource`, `cnsSource` to the `Object.hashAll` list.
@@ -871,8 +866,7 @@ After the existing toggle methods (around line 366), add:
           : MetricDataSource.computer,
     );
   }
-```
-
+```text
 **Step 3: Initialize from settings defaults**
 
 In the `build()` method (around line 232-260), add to the `ProfileLegendState` constructor call:
@@ -882,8 +876,7 @@ In the `build()` method (around line 232-260), add to the `ProfileLegendState` c
       ceilingSource: settings.defaultCeilingSource,
       ttsSource: settings.defaultTtsSource,
       cnsSource: settings.defaultCnsSource,
-```
-
+```text
 **Step 4: Run tests**
 
 Run: `flutter test`
@@ -898,13 +891,13 @@ git commit -m "feat: add per-metric data source fields to ProfileLegendState
 Four new MetricDataSource fields (ndl, ceiling, tts, cns) with cycle
 methods. Initialized from AppSettings defaults. Supports per-dive
 session overrides via the cycle methods."
-```
-
+```text
 ---
 
 ## Task 6: profileAnalysisProvider Refactor and metricSourceInfoProvider
 
 **Files:**
+
 - Modify: `lib/features/dive_log/presentation/providers/profile_analysis_provider.dart`
 - Modify: `test/features/dive_log/domain/services/computer_cns_provider_integration_test.dart`
 
@@ -918,22 +911,22 @@ import 'package:submersion/features/dive_log/presentation/providers/profile_lege
 /// Reports which data source was actually used for each metric in the current profile.
 /// Updated as a side-effect of profileAnalysisProvider.
 final metricSourceInfoProvider = StateProvider<MetricSourceInfo?>((ref) => null);
-```
-
+```text
 **Step 2: Refactor profileAnalysisProvider to read from ProfileLegendState**
 
 In `profileAnalysisProvider` (around lines 309-349), replace the temporary code from Task 4:
 
 Remove:
+
 ```dart
       final settings = ref.watch(settingsProvider);
       final useComputerCns = settings.defaultCnsSource == MetricDataSource.computer;
       final computerCns = useComputerCns
           ? extractComputerCns(dive.profile)
           : null;
-```
-
+```text
 Replace with:
+
 ```dart
       // Read per-metric source preferences from legend state
       final legendState = ref.watch(profileLegendProvider);
@@ -946,11 +939,11 @@ Replace with:
       final computerCns = useComputerCns
           ? extractComputerCns(dive.profile)
           : null;
-```
-
+```text
 Update the overlay call (around line 345):
 
 Remove:
+
 ```dart
       final (overlaid, _) = overlayComputerDecoData(
         analysis,
@@ -962,9 +955,9 @@ Remove:
         ceilingSource: MetricDataSource.computer,
         ttsSource: MetricDataSource.computer,
       );
-```
-
+```text
 Replace with:
+
 ```dart
       final (overlaid, sourceInfo) = overlayComputerDecoData(
         analysis,
@@ -977,40 +970,40 @@ Replace with:
 
       // Publish actual source info for legend badge display
       ref.read(metricSourceInfoProvider.notifier).state = sourceInfo;
-```
-
+```text
 **Step 3: Update `_computeResidualCns` to read from legend state**
 
 Replace (around line 394):
 
 Remove:
+
 ```dart
     final settings = ref.watch(settingsProvider);
     final useComputerCns = settings.defaultCnsSource == MetricDataSource.computer;
-```
-
+```text
 Replace with:
+
 ```dart
     final legendState = ref.watch(profileLegendProvider);
     final useComputerCns = legendState.cnsSource == MetricDataSource.computer;
-```
-
+```dart
 **Step 4: Update integration tests**
 
 In `test/features/dive_log/domain/services/computer_cns_provider_integration_test.dart`, the "Provider decision logic integration" group (line 456+) currently references `includeComputerCns: true/false`. These tests call `overlayComputerDecoData` directly with the boolean. Update them to use the new enum-based params.
 
 In each test, replace:
+
 - `includeComputerCns: true` with `cnsSource: MetricDataSource.computer`
 - `includeComputerCns: false` with `cnsSource: MetricDataSource.calculated`
 - Destructure return values: `final (overlaid, sourceInfo) = overlayComputerDecoData(...)`
 
 For tests that always overlay NDL/ceiling/TTS (which was the old implicit behavior), explicitly pass:
+
 ```dart
 ndlSource: MetricDataSource.computer,
 ceilingSource: MetricDataSource.computer,
 ttsSource: MetricDataSource.computer,
-```
-
+```text
 **Step 5: Run tests**
 
 Run: `flutter test`
@@ -1026,13 +1019,13 @@ Provider now watches ProfileLegendState for per-metric source
 preferences instead of the old useDiveComputerCnsData boolean.
 Publishes MetricSourceInfo via metricSourceInfoProvider for legend
 badge display."
-```
-
+```text
 ---
 
 ## Task 7: Legend UI - Badge Labels and Source Controls
 
 **Files:**
+
 - Modify: `lib/features/dive_log/presentation/widgets/dive_profile_legend.dart`
 
 **Step 1: Add import**
@@ -1040,15 +1033,14 @@ badge display."
 ```dart
 import 'package:submersion/core/constants/profile_metrics.dart';
 import 'package:submersion/features/dive_log/presentation/providers/profile_analysis_provider.dart';
-```
-
+```text
 **Step 2: Update badge labels for source-capable metrics**
 
 In the `build()` method, read the source info:
+
 ```dart
     final sourceInfo = ref.watch(metricSourceInfoProvider);
-```
-
+```text
 Create a helper method in `_MoreOptionsButtonState` or as a top-level function:
 
 ```dart
@@ -1063,26 +1055,25 @@ Create a helper method in `_MoreOptionsButtonState` or as a top-level function:
     // User chose calculated -- no indicator needed
     return baseName;
   }
-```
-
+```text
 **Step 3: Update the NDL, ceiling, TTS, and CNS toggle menu items**
 
 For each of the 4 source-capable metrics in `_buildMenuItems()`, update the `label` parameter to use `_sourceLabel`. For example, the CNS entry (around line 645):
 
 Before:
+
 ```dart
           label: context.l10n.diveLog_legend_label_cns,
-```
-
+```text
 After:
+
 ```dart
           label: _sourceLabel(
             context.l10n.diveLog_legend_label_cns,
             legendState.cnsSource,
             sourceInfo?.cnsActual ?? MetricDataSource.calculated,
           ),
-```
-
+```text
 Apply the same pattern for NDL (find the NDL toggle in _buildMenuItems), ceiling, and TTS.
 
 **Step 4: Add source segmented controls below each applicable toggle**
@@ -1134,9 +1125,9 @@ After each source-capable metric toggle in `_buildMenuItems()`, add a source sel
       ),
     );
   }
-```
-
+```text
 After the NDL toggle item, add:
+
 ```dart
     // NDL source selector
     if (config.hasNdlData) {
@@ -1148,8 +1139,7 @@ After the NDL toggle item, add:
         hasComputerData: hasComputerNdl,
       ));
     }
-```
-
+```text
 **Note on `hasComputerData` for source selectors:** The `ProfileLegendConfig` already tracks `hasNdlData`, `hasCeilingCurve`, `hasTtsData`, `hasCnsData`. These indicate whether the *analysis* has data (either calculated or computer). To know if *computer* data specifically exists, we need to check the raw profile points. The simplest approach: add boolean fields to `ProfileLegendConfig`:
 
 ```dart
@@ -1157,8 +1147,7 @@ After the NDL toggle item, add:
   final bool hasComputerCeiling;
   final bool hasComputerTts;
   final bool hasComputerCns;
-```
-
+```text
 These should be set by the parent widget that creates the config (typically `DiveProfileChartContainer` or similar). Set them by checking `profile.any((p) => p.ndl != null)` etc. If the parent doesn't easily have access, use the `sourceInfo`: if `sourceInfo.ndlActual == MetricDataSource.computer` when `ndlSource == computer`, then computer data exists.
 
 A simpler alternative: only show the source selector when the corresponding `sourceInfo` indicates computer data was available (i.e., when `preferred == computer` and `actual == computer`, computer data exists; when `preferred == computer` and `actual == calculated`, it doesn't). This avoids needing to pass new config fields. Use the `metricSourceInfoProvider` to determine availability.
@@ -1181,13 +1170,13 @@ git commit -m "feat: legend badges show data source indicator (DC/Calc*)
 Metrics with computer source preference show '(DC)' in badge.
 Fallback to calculated shows '(Calc*)'. Source selector controls
 added to More menu for NDL, ceiling, TTS, CNS."
-```
-
+```text
 ---
 
 ## Task 8: Settings UI - Data Source Preferences
 
 **Files:**
+
 - Modify: `lib/features/settings/presentation/pages/settings_page.dart:779-795`
 - Modify: `lib/features/settings/presentation/pages/appearance_page.dart`
 
@@ -1196,6 +1185,7 @@ added to More menu for NDL, ceiling, TTS, CNS."
 In `lib/features/settings/presentation/pages/settings_page.dart`, replace the "Dive Computer Data" section (lines 779-795):
 
 Remove:
+
 ```dart
           _buildSectionHeader(context, 'Dive Computer Data'),
           const SizedBox(height: 8),
@@ -1214,9 +1204,9 @@ Remove:
               },
             ),
           ),
-```
-
+```text
 Replace with:
+
 ```dart
           _buildSectionHeader(context, 'Data Source Preferences'),
           const SizedBox(height: 4),
@@ -1275,8 +1265,7 @@ Replace with:
               ],
             ),
           ),
-```
-
+```text
 Add this helper method to `_DecompressionSectionContent`:
 
 ```dart
@@ -1309,13 +1298,12 @@ Add this helper method to `_DecompressionSectionContent`:
       ),
     );
   }
-```
-
+```text
 Add import:
+
 ```dart
 import 'package:submersion/core/constants/profile_metrics.dart';
-```
-
+```text
 **Step 2: Update appearance_page.dart**
 
 In `lib/features/settings/presentation/pages/appearance_page.dart`, add a "Data Source Preferences" subsection after the decompression metrics toggles (after the OTU toggle at line 311). Use the same dropdown pattern:
@@ -1371,8 +1359,7 @@ In `lib/features/settings/presentation/pages/appearance_page.dart`, add a "Data 
                 ],
               ),
             ),
-```
-
+```text
 Add the same `_buildSourceDropdownTile` helper method to the appearance page widget, and the `MetricDataSource` import.
 
 **Step 3: Run tests**
@@ -1394,13 +1381,13 @@ git commit -m "feat: Data Source Preferences UI in settings and appearance pages
 Replace single CNS toggle with per-metric dropdown selectors for NDL,
 ceiling, TTS, and CNS data source. Each can be set to Calculated or
 Dive Computer. Present in both decompression settings and appearance."
-```
-
+```text
 ---
 
 ## Task 9: Integration Test Updates
 
 **Files:**
+
 - Modify: `test/features/dive_log/domain/services/computer_cns_provider_integration_test.dart`
 
 **Step 1: Verify all existing tests still pass**
@@ -1536,8 +1523,7 @@ Add a new test group after the existing groups:
       expect(result.ceilingCurve, equals(baseAnalysis.ceilingCurve));
     });
   });
-```
-
+```text
 **Step 3: Run tests**
 
 Run: `flutter test test/features/dive_log/domain/services/computer_cns_provider_integration_test.dart`
@@ -1551,8 +1537,7 @@ git commit -m "test: add per-metric source selection integration tests
 
 Tests cover: all-computer, mixed sources, fallback on missing data,
 and all-calculated scenarios for overlayComputerDecoData."
-```
-
+```diff
 ---
 
 ## Task 10: Full Verification
@@ -1577,6 +1562,7 @@ Expected: 0 files changed (already formatted).
 Run: `flutter run -d macos`
 
 Verify:
+
 1. Open a dive with computer data (NDL/ceiling/TTS/CNS)
 2. Open the profile legend More menu -- see source selectors for applicable metrics
 3. Toggle NDL source to DC -- badge should show "NDL (DC)"
@@ -1612,6 +1598,7 @@ git commit -m "chore: final cleanup for metric data source switching"
 | Settings pages | "Data Source Preferences" section replaces single CNS toggle |
 
 ### Removed
+
 - `useDiveComputerCnsData` field, provider, setter
 - `useDiveComputerCnsDataProvider` convenience provider
 - `setUseDiveComputerCnsData` method

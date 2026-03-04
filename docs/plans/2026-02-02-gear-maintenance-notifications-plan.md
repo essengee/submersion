@@ -13,6 +13,7 @@
 ## Task 1: Add Package Dependencies
 
 **Files:**
+
 - Modify: `pubspec.yaml`
 
 **Step 1: Add dependencies**
@@ -24,8 +25,7 @@ Add to `dependencies` section of pubspec.yaml:
   flutter_local_notifications: ^18.0.1
   workmanager: ^0.5.2
   timezone: ^0.10.0
-```
-
+```text
 **Step 2: Run flutter pub get**
 
 Run: `flutter pub get`
@@ -36,13 +36,13 @@ Expected: Dependencies resolve successfully
 ```bash
 git add pubspec.yaml pubspec.lock
 git commit -m "feat: add notification dependencies"
-```
-
+```text
 ---
 
 ## Task 2: Database Migration - DiverSettings Columns
 
 **Files:**
+
 - Modify: `lib/core/database/database.dart`
 
 **Step 1: Add notification columns to DiverSettings table**
@@ -57,8 +57,7 @@ In the `DiverSettings` class (around line 487), add after the `showPressureThres
       text().withDefault(const Constant('[7, 14, 30]'))(); // JSON array
   TextColumn get reminderTime =>
       text().withDefault(const Constant('09:00'))(); // HH:mm format
-```
-
+```text
 **Step 2: Increment schema version**
 
 Change `schemaVersion => 25` to `schemaVersion => 26`
@@ -80,8 +79,7 @@ In the `onUpgrade` method, add after the `from < 25` block:
             "ALTER TABLE diver_settings ADD COLUMN reminder_time TEXT NOT NULL DEFAULT '09:00'",
           );
         }
-```
-
+```text
 **Step 4: Run build_runner**
 
 Run: `dart run build_runner build --delete-conflicting-outputs`
@@ -92,13 +90,13 @@ Expected: database.g.dart regenerates successfully
 ```bash
 git add lib/core/database/database.dart lib/core/database/database.g.dart
 git commit -m "feat: add notification columns to diver_settings (schema v26)"
-```
-
+```text
 ---
 
 ## Task 3: Database Migration - Equipment Columns
 
 **Files:**
+
 - Modify: `lib/core/database/database.dart`
 
 **Step 1: Add notification override columns to Equipment table**
@@ -111,8 +109,7 @@ In the `Equipment` class (around line 268), add after the `isActive` column:
       boolean().nullable()(); // NULL = use global, true = custom, false = disabled
   TextColumn get customReminderDays =>
       text().nullable()(); // JSON array override, e.g. "[7, 30]"
-```
-
+```text
 **Step 2: Increment schema version**
 
 Change `schemaVersion => 26` to `schemaVersion => 27`
@@ -131,8 +128,7 @@ In the `onUpgrade` method, add after the `from < 26` block:
             'ALTER TABLE equipment ADD COLUMN custom_reminder_days TEXT',
           );
         }
-```
-
+```text
 **Step 4: Run build_runner**
 
 Run: `dart run build_runner build --delete-conflicting-outputs`
@@ -143,13 +139,13 @@ Expected: database.g.dart regenerates successfully
 ```bash
 git add lib/core/database/database.dart lib/core/database/database.g.dart
 git commit -m "feat: add notification override columns to equipment (schema v27)"
-```
-
+```text
 ---
 
 ## Task 4: Database Migration - ScheduledNotifications Table
 
 **Files:**
+
 - Modify: `lib/core/database/database.dart`
 
 **Step 1: Create ScheduledNotifications table class**
@@ -170,8 +166,7 @@ class ScheduledNotifications extends Table {
   @override
   Set<Column> get primaryKey => {id};
 }
-```
-
+```text
 **Step 2: Add to tables list**
 
 In the `@DriftDatabase` annotation tables list, add `ScheduledNotifications` after `CachedRegions`:
@@ -181,8 +176,7 @@ In the `@DriftDatabase` annotation tables list, add `ScheduledNotifications` aft
     CachedRegions,
     // Notifications
     ScheduledNotifications,
-```
-
+```text
 **Step 3: Increment schema version**
 
 Change `schemaVersion => 27` to `schemaVersion => 28`
@@ -210,8 +204,7 @@ In the `onUpgrade` method, add after the `from < 27` block:
             ON scheduled_notifications(equipment_id)
           ''');
         }
-```
-
+```text
 **Step 5: Run build_runner**
 
 Run: `dart run build_runner build --delete-conflicting-outputs`
@@ -222,13 +215,13 @@ Expected: database.g.dart regenerates successfully
 ```bash
 git add lib/core/database/database.dart lib/core/database/database.g.dart
 git commit -m "feat: add scheduled_notifications table (schema v28)"
-```
-
+```text
 ---
 
 ## Task 5: Update EquipmentItem Entity
 
 **Files:**
+
 - Modify: `lib/features/equipment/domain/entities/equipment_item.dart`
 
 **Step 1: Add notification fields to EquipmentItem**
@@ -239,8 +232,7 @@ Add these fields after `isActive` in the class:
   // Notification overrides
   final bool? customReminderEnabled; // NULL = use global
   final List<int>? customReminderDays; // Override reminder days
-```
-
+```text
 **Step 2: Update constructor**
 
 Add to constructor parameters:
@@ -248,8 +240,7 @@ Add to constructor parameters:
 ```dart
     this.customReminderEnabled,
     this.customReminderDays,
-```
-
+```text
 **Step 3: Update copyWith method**
 
 Add to copyWith parameters:
@@ -257,15 +248,13 @@ Add to copyWith parameters:
 ```dart
     bool? customReminderEnabled,
     List<int>? customReminderDays,
-```
-
+```text
 Add to return statement:
 
 ```dart
       customReminderEnabled: customReminderEnabled ?? this.customReminderEnabled,
       customReminderDays: customReminderDays ?? this.customReminderDays,
-```
-
+```text
 **Step 4: Update props list**
 
 Add to props:
@@ -273,20 +262,19 @@ Add to props:
 ```dart
     customReminderEnabled,
     customReminderDays,
-```
-
+```text
 **Step 5: Commit**
 
 ```bash
 git add lib/features/equipment/domain/entities/equipment_item.dart
 git commit -m "feat: add notification override fields to EquipmentItem entity"
-```
-
+```text
 ---
 
 ## Task 6: Update Equipment Repository
 
 **Files:**
+
 - Modify: `lib/features/equipment/data/repositories/equipment_repository_impl.dart`
 
 **Step 1: Update _mapRowToEquipment method**
@@ -299,14 +287,12 @@ Add after `isActive: row.isActive,`:
           ? (jsonDecode(row.customReminderDays!) as List<dynamic>)
               .cast<int>()
           : null,
-```
-
+```typescript
 **Step 2: Add import for dart:convert at top**
 
 ```dart
 import 'dart:convert';
-```
-
+```text
 **Step 3: Update createEquipment method**
 
 Add to EquipmentCompanion after `isActive`:
@@ -318,8 +304,7 @@ Add to EquipmentCompanion after `isActive`:
                     ? jsonEncode(equipment.customReminderDays)
                     : null,
               ),
-```
-
+```text
 **Step 4: Update updateEquipment method**
 
 Add to EquipmentCompanion:
@@ -331,8 +316,7 @@ Add to EquipmentCompanion:
                 ? jsonEncode(equipment.customReminderDays)
                 : null,
           ),
-```
-
+```text
 **Step 5: Add method to get equipment needing service reminders**
 
 Add this method to the class:
@@ -359,8 +343,7 @@ Add this method to the class:
       rethrow;
     }
   }
-```
-
+```text
 **Step 6: Update searchEquipment to include new fields**
 
 In the `searchEquipment` method's result mapping, add:
@@ -376,20 +359,19 @@ In the `searchEquipment` method's result mapping, add:
                       as List<dynamic>)
                   .cast<int>()
               : null,
-```
-
+```text
 **Step 7: Commit**
 
 ```bash
 git add lib/features/equipment/data/repositories/equipment_repository_impl.dart
 git commit -m "feat: add notification fields to equipment repository"
-```
-
+```text
 ---
 
 ## Task 7: Create NotificationSettings Entity
 
 **Files:**
+
 - Create: `lib/features/notifications/domain/entities/notification_settings.dart`
 
 **Step 1: Create the file with content**
@@ -468,20 +450,19 @@ class NotificationSettings extends Equatable {
   @override
   List<Object?> get props => [enabled, reminderDays, reminderTime];
 }
-```
-
+```text
 **Step 2: Commit**
 
 ```bash
 git add lib/features/notifications/domain/entities/notification_settings.dart
 git commit -m "feat: create NotificationSettings entity"
-```
-
+```text
 ---
 
 ## Task 8: Update AppSettings and Repository
 
 **Files:**
+
 - Modify: `lib/features/settings/presentation/providers/settings_providers.dart`
 - Modify: `lib/features/settings/data/repositories/diver_settings_repository.dart`
 
@@ -494,8 +475,7 @@ In `settings_providers.dart`, add these fields to `AppSettings` class after `sho
   final bool notificationsEnabled;
   final List<int> serviceReminderDays;
   final TimeOfDay reminderTime;
-```
-
+```text
 **Step 2: Update AppSettings constructor**
 
 Add defaults:
@@ -504,8 +484,7 @@ Add defaults:
     this.notificationsEnabled = true,
     this.serviceReminderDays = const [7, 14, 30],
     this.reminderTime = const TimeOfDay(hour: 9, minute: 0),
-```
-
+```text
 **Step 3: Update AppSettings copyWith**
 
 Add parameters and mappings:
@@ -514,14 +493,12 @@ Add parameters and mappings:
     bool? notificationsEnabled,
     List<int>? serviceReminderDays,
     TimeOfDay? reminderTime,
-```
-
+```text
 ```dart
       notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
       serviceReminderDays: serviceReminderDays ?? this.serviceReminderDays,
       reminderTime: reminderTime ?? this.reminderTime,
-```
-
+```text
 **Step 4: Update DiverSettingsRepository._mapRowToAppSettings**
 
 In `diver_settings_repository.dart`, add:
@@ -530,8 +507,7 @@ In `diver_settings_repository.dart`, add:
       notificationsEnabled: row.notificationsEnabled,
       serviceReminderDays: _parseReminderDays(row.serviceReminderDays),
       reminderTime: _parseReminderTime(row.reminderTime),
-```
-
+```text
 **Step 5: Add parsing helper methods to DiverSettingsRepository**
 
 ```dart
@@ -565,8 +541,7 @@ In `diver_settings_repository.dart`, add:
 
   String _formatReminderTime(TimeOfDay time) =>
       '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
-```
-
+```text
 **Step 6: Update createSettingsForDiver**
 
 Add to DiverSettingsCompanion:
@@ -575,8 +550,7 @@ Add to DiverSettingsCompanion:
               notificationsEnabled: Value(s.notificationsEnabled),
               serviceReminderDays: Value(_formatReminderDays(s.serviceReminderDays)),
               reminderTime: Value(_formatReminderTime(s.reminderTime)),
-```
-
+```text
 **Step 7: Update updateSettingsForDiver**
 
 Add to DiverSettingsCompanion:
@@ -585,20 +559,19 @@ Add to DiverSettingsCompanion:
           notificationsEnabled: Value(settings.notificationsEnabled),
           serviceReminderDays: Value(_formatReminderDays(settings.serviceReminderDays)),
           reminderTime: Value(_formatReminderTime(settings.reminderTime)),
-```
-
+```text
 **Step 8: Commit**
 
 ```bash
 git add lib/features/settings/presentation/providers/settings_providers.dart lib/features/settings/data/repositories/diver_settings_repository.dart
 git commit -m "feat: add notification settings to AppSettings and repository"
-```
-
+```text
 ---
 
 ## Task 9: Add Settings Notifier Methods
 
 **Files:**
+
 - Modify: `lib/features/settings/presentation/providers/settings_providers.dart`
 
 **Step 1: Add setter methods to SettingsNotifier class**
@@ -637,8 +610,7 @@ Add after `setShowPressureThresholdMarkers`:
     }
     await setServiceReminderDays(current);
   }
-```
-
+```text
 **Step 2: Add convenience providers**
 
 Add after other convenience providers:
@@ -656,20 +628,19 @@ final serviceReminderDaysProvider = Provider<List<int>>((ref) {
 final reminderTimeProvider = Provider<TimeOfDay>((ref) {
   return ref.watch(settingsProvider.select((s) => s.reminderTime));
 });
-```
-
+```text
 **Step 3: Commit**
 
 ```bash
 git add lib/features/settings/presentation/providers/settings_providers.dart
 git commit -m "feat: add notification settings methods and providers"
-```
-
+```text
 ---
 
 ## Task 10: Create NotificationService
 
 **Files:**
+
 - Create: `lib/core/services/notification_service.dart`
 
 **Step 1: Create the notification service**
@@ -866,20 +837,19 @@ class NotificationService {
     return _plugin.pendingNotificationRequests();
   }
 }
-```
-
+```text
 **Step 2: Commit**
 
 ```bash
 git add lib/core/services/notification_service.dart
 git commit -m "feat: create NotificationService for local notifications"
-```
-
+```text
 ---
 
 ## Task 11: Create ScheduledNotificationRepository
 
 **Files:**
+
 - Create: `lib/features/notifications/data/repositories/scheduled_notification_repository.dart`
 
 **Step 1: Create the repository**
@@ -1021,20 +991,19 @@ class ScheduledNotificationRepository {
     }
   }
 }
-```
-
+```text
 **Step 2: Commit**
 
 ```bash
 git add lib/features/notifications/data/repositories/scheduled_notification_repository.dart
 git commit -m "feat: create ScheduledNotificationRepository"
-```
-
+```text
 ---
 
 ## Task 12: Create NotificationScheduler
 
 **Files:**
+
 - Create: `lib/features/notifications/data/services/notification_scheduler.dart`
 
 **Step 1: Create the scheduler service**
@@ -1210,20 +1179,19 @@ class NotificationScheduler {
     await _scheduleForEquipment(item: item, globalSettings: globalSettings);
   }
 }
-```
-
+```text
 **Step 2: Commit**
 
 ```bash
 git add lib/features/notifications/data/services/notification_scheduler.dart
 git commit -m "feat: create NotificationScheduler service"
-```
-
+```dart
 ---
 
 ## Task 13: Create Notification Providers
 
 **Files:**
+
 - Create: `lib/features/notifications/presentation/providers/notification_providers.dart`
 
 **Step 1: Create the providers file**
@@ -1275,20 +1243,19 @@ final notificationSchedulingProvider = FutureProvider<void>((ref) async {
 
   await scheduler.scheduleAll(settings: settings, diverId: diverId);
 });
-```
-
+```text
 **Step 2: Commit**
 
 ```bash
 git add lib/features/notifications/presentation/providers/notification_providers.dart
 git commit -m "feat: create notification providers"
-```
-
+```diff
 ---
 
 ## Task 14: iOS Platform Configuration
 
 **Files:**
+
 - Modify: `ios/Runner/Info.plist`
 - Modify: `ios/Runner/AppDelegate.swift`
 
@@ -1297,41 +1264,38 @@ git commit -m "feat: create notification providers"
 Add before the closing `</dict>` tag:
 
 ```xml
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>fetch</string>
-		<string>processing</string>
-	</array>
-```
-
+ <key>UIBackgroundModes</key>
+ <array>
+  <string>fetch</string>
+  <string>processing</string>
+ </array>
+```typescript
 **Step 2: Update AppDelegate.swift for workmanager**
 
 Add import at top:
 
 ```swift
 import workmanager
-```
-
+```text
 In `application(_:didFinishLaunchingWithOptions:)`, add after `GeneratedPluginRegistrant.register(with: self)`:
 
 ```swift
     WorkmanagerPlugin.setPluginRegistrantCallback { registry in
       GeneratedPluginRegistrant.register(with: registry)
     }
-```
-
+```text
 **Step 3: Commit**
 
 ```bash
 git add ios/Runner/Info.plist ios/Runner/AppDelegate.swift
 git commit -m "feat: configure iOS for background notifications"
-```
-
+```diff
 ---
 
 ## Task 15: Android Platform Configuration
 
 **Files:**
+
 - Modify: `android/app/src/main/AndroidManifest.xml`
 
 **Step 1: Add permissions**
@@ -1342,8 +1306,7 @@ Add inside the `<manifest>` tag before `<application>`:
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-```
-
+```text
 **Step 2: Add boot receiver**
 
 Add inside the `<application>` tag:
@@ -1356,20 +1319,19 @@ Add inside the `<application>` tag:
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
             </intent-filter>
         </receiver>
-```
-
+```text
 **Step 3: Commit**
 
 ```bash
 git add android/app/src/main/AndroidManifest.xml
 git commit -m "feat: configure Android for notifications and boot receiver"
-```
-
+```text
 ---
 
 ## Task 16: Add Notifications Settings Section to UI
 
 **Files:**
+
 - Modify: `lib/features/settings/presentation/pages/settings_page.dart`
 - Modify: `lib/features/settings/presentation/widgets/settings_list_content.dart`
 
@@ -1385,8 +1347,7 @@ In `settings_list_content.dart`, add to the `settingsSections` list after the ap
     icon: Icons.notifications_outlined,
     color: Colors.orange,
   ),
-```
-
+```text
 **Step 2: Add notifications case to _buildSectionContent in settings_page.dart**
 
 In the `_buildSectionContent` method switch statement, add:
@@ -1394,8 +1355,7 @@ In the `_buildSectionContent` method switch statement, add:
 ```dart
       case 'notifications':
         return _NotificationsSectionContent(ref: ref);
-```
-
+```text
 **Step 3: Add notifications case to _SettingsSectionDetailPage._buildContent**
 
 Add the same case:
@@ -1403,8 +1363,7 @@ Add the same case:
 ```dart
       case 'notifications':
         return _NotificationsSectionContent(ref: ref);
-```
-
+```text
 **Step 4: Create _NotificationsSectionContent widget**
 
 Add this widget class before the `_buildSectionHeader` helper:
@@ -1567,27 +1526,25 @@ class _NotificationsSectionContent extends ConsumerWidget {
     }
   }
 }
-```
-
+```typescript
 **Step 5: Add import for notification providers at top of settings_page.dart**
 
 ```dart
 import 'package:submersion/core/services/notification_service.dart';
 import 'package:submersion/features/notifications/presentation/providers/notification_providers.dart';
-```
-
+```text
 **Step 6: Commit**
 
 ```bash
 git add lib/features/settings/presentation/pages/settings_page.dart lib/features/settings/presentation/widgets/settings_list_content.dart
 git commit -m "feat: add notifications settings section to settings page"
-```
-
+```text
 ---
 
 ## Task 17: Add Notification Override UI to Equipment Edit
 
 **Files:**
+
 - Modify: `lib/features/equipment/presentation/pages/equipment_edit_page.dart`
 
 **Step 1: Add state variables for notification overrides**
@@ -1597,8 +1554,7 @@ Add after `bool _hasChanges = false;`:
 ```dart
   bool? _customReminderEnabled;
   List<int> _customReminderDays = [7, 14, 30];
-```
-
+```text
 **Step 2: Initialize from existing equipment**
 
 In `_initializeFromEquipment`, add:
@@ -1606,8 +1562,7 @@ In `_initializeFromEquipment`, add:
 ```dart
     _customReminderEnabled = equipment.customReminderEnabled;
     _customReminderDays = equipment.customReminderDays ?? const [7, 14, 30];
-```
-
+```text
 **Step 3: Add notification section to the form**
 
 After the Notes TextFormField section and before the Save Button conditional, add:
@@ -1617,8 +1572,7 @@ After the Notes TextFormField section and before the Save Button conditional, ad
 
           // Notification Overrides
           _buildNotificationSection(context),
-```
-
+```text
 **Step 4: Create _buildNotificationSection method**
 
 Add this method to the class:
@@ -1714,8 +1668,7 @@ Add this method to the class:
       ),
     );
   }
-```
-
+```text
 **Step 5: Update _saveEquipment to include notification fields**
 
 In the EquipmentItem constructor call, add:
@@ -1724,20 +1677,19 @@ In the EquipmentItem constructor call, add:
         customReminderEnabled: _customReminderEnabled,
         customReminderDays:
             _customReminderEnabled == true ? _customReminderDays : null,
-```
-
+```text
 **Step 6: Commit**
 
 ```bash
 git add lib/features/equipment/presentation/pages/equipment_edit_page.dart
 git commit -m "feat: add notification override UI to equipment edit page"
-```
-
+```text
 ---
 
 ## Task 18: Initialize Notifications on App Launch
 
 **Files:**
+
 - Modify: `lib/main.dart`
 
 **Step 1: Add notification initialization**
@@ -1747,26 +1699,24 @@ Find the main initialization section and add after database initialization:
 ```dart
   // Initialize notification service
   await NotificationService.instance.initialize();
-```
-
+```text
 **Step 2: Add import**
 
 ```dart
 import 'package:submersion/core/services/notification_service.dart';
-```
-
+```text
 **Step 3: Commit**
 
 ```bash
 git add lib/main.dart
 git commit -m "feat: initialize notification service on app launch"
-```
-
+```text
 ---
 
 ## Task 19: Setup Background Refresh with Workmanager
 
 **Files:**
+
 - Create: `lib/core/services/background_service.dart`
 - Modify: `lib/main.dart`
 
@@ -1857,8 +1807,7 @@ Future<void> initializeBackgroundService() async {
     ),
   );
 }
-```
-
+```text
 **Step 2: Update main.dart to initialize background service**
 
 After notification service initialization, add:
@@ -1866,26 +1815,24 @@ After notification service initialization, add:
 ```dart
   // Initialize background service for periodic notification refresh
   await initializeBackgroundService();
-```
-
+```text
 Add import:
 
 ```dart
 import 'package:submersion/core/services/background_service.dart';
-```
-
+```text
 **Step 3: Commit**
 
 ```bash
 git add lib/core/services/background_service.dart lib/main.dart
 git commit -m "feat: add background service for notification refresh"
-```
-
+```text
 ---
 
 ## Task 20: Schedule Notifications After Settings Load
 
 **Files:**
+
 - Modify: `lib/features/settings/presentation/providers/settings_providers.dart`
 
 **Step 1: Add notification scheduling after settings load**
@@ -1895,8 +1842,7 @@ In the `SettingsNotifier._loadSettings` method, add at the end of the try block 
 ```dart
       // Schedule notifications with the loaded settings
       _scheduleNotificationsIfNeeded();
-```
-
+```text
 **Step 2: Add the scheduling helper method**
 
 Add this method to SettingsNotifier:
@@ -1922,27 +1868,25 @@ Add this method to SettingsNotifier:
       }
     });
   }
-```
-
+```text
 **Step 3: Add imports**
 
 ```dart
 import 'package:submersion/features/notifications/data/services/notification_scheduler.dart';
 import 'package:submersion/core/services/logger_service.dart';
-```
-
+```text
 **Step 4: Commit**
 
 ```bash
 git add lib/features/settings/presentation/providers/settings_providers.dart
 git commit -m "feat: schedule notifications when settings are loaded"
-```
-
+```text
 ---
 
 ## Task 21: Handle Deep Linking from Notifications
 
 **Files:**
+
 - Modify: `lib/app/router.dart` (or wherever your go_router is configured)
 
 **Step 1: Add notification deep link handling**
@@ -1958,21 +1902,18 @@ In the router configuration, add a redirect handler that checks for pending noti
     }
     return null;
   },
-```
-
+```text
 **Step 2: Add import**
 
 ```dart
 import 'package:submersion/core/services/notification_service.dart';
-```
-
+```text
 **Step 3: Commit**
 
 ```bash
 git add lib/app/router.dart
 git commit -m "feat: handle deep linking from notification taps"
-```
-
+```diff
 ---
 
 ## Task 22: Run Tests and Format Code
@@ -1997,8 +1938,7 @@ Expected: All tests pass
 ```bash
 git add -A
 git commit -m "chore: format code and fix lint issues"
-```
-
+```sql
 ---
 
 ## Task 23: Final Integration Test
@@ -2036,6 +1976,7 @@ git commit -m "feat: complete gear maintenance notifications implementation"
 ## Summary
 
 This plan implements:
+
 - Local notifications for equipment service reminders on iOS and Android
 - Configurable reminder periods (7, 14, 30 days before due)
 - Global notification settings in diver preferences

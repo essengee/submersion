@@ -13,6 +13,7 @@
 ### Task 1: Add `_buildLinkedComputerRow` method
 
 **Files:**
+
 - Modify: `lib/features/dive_log/presentation/pages/dive_detail_page.dart:2907` (insert new method after `_buildDiveComputerStringRows`)
 
 **Step 1: Add the new method**
@@ -87,9 +88,9 @@ Insert this method immediately after `_buildDiveComputerStringRows` (after line 
       ),
     );
   }
-```
-
+```text
 **Notes for implementer:**
+
 - `DiveComputer` is the domain entity from `lib/features/dive_log/domain/entities/dive_computer.dart`. Check that it is already imported at the top of the file (it should be, since `computersForDiveProvider` already returns `List<DiveComputer>`).
 - `context.push` comes from `go_router`, already imported at line 9.
 - `context.l10n.diveLog_detail_label_diveComputer` is the existing localization key used for the "Dive Computer" label.
@@ -105,6 +106,7 @@ Expected: No formatting changes (code above is pre-formatted).
 ### Task 2: Update `_buildDiveComputerRows` to use the new method
 
 **Files:**
+
 - Modify: `lib/features/dive_log/presentation/pages/dive_detail_page.dart:2848-2871`
 
 **Step 1: Replace the `data` branch**
@@ -112,6 +114,7 @@ Expected: No formatting changes (code above is pre-formatted).
 Replace lines 2848-2871 (the `data:` callback inside `computersAsync.when`):
 
 **Before:**
+
 ```dart
       data: (computers) {
         if (computers.isNotEmpty) {
@@ -141,9 +144,9 @@ Replace lines 2848-2871 (the `data:` callback inside `computersAsync.when`):
         // Fall back to string fields on Dive entity
         return _buildDiveComputerStringRows(context, dive);
       },
-```
-
+```text
 **After:**
+
 ```dart
       data: (computers) {
         if (computers.isNotEmpty) {
@@ -152,8 +155,7 @@ Replace lines 2848-2871 (the `data:` callback inside `computersAsync.when`):
         // Fall back to string fields on Dive entity
         return _buildDiveComputerStringRows(context, dive);
       },
-```
-
+```text
 **Step 2: Run dart format**
 
 Run: `dart format lib/features/dive_log/presentation/pages/dive_detail_page.dart`
@@ -178,6 +180,7 @@ Expected: All existing tests pass. No test changes needed since this is a UI-onl
 Run: `flutter run -d macos`
 
 Verify these scenarios:
+
 1. Open a dive that was downloaded from a saved dive computer. The "Dive Computer" row should show the computer name, serial number subtitle, and a chevron. Tapping it should navigate to the Device Detail Page for that computer.
 2. Open a manually-entered dive that has `diveComputerModel` set but no linked `DiveComputer` record. The row should show as static text with no chevron (same as before).
 3. Open a dive with no computer info at all. No computer row should appear (same as before).

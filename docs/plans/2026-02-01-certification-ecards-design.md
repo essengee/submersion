@@ -14,12 +14,14 @@ Implement a digital certification wallet that displays dive certifications as be
 **Location:** Dashboard page, new widget card
 
 **Appearance:**
+
 - Compact card showing a mini-stack of top 2-3 certification cards (fanned slightly)
 - Highest-level cert shown prominently, others peeking behind
 - Badge showing total cert count (e.g., "5 Certifications")
 - Tap anywhere to open full wallet view
 
 **Behavior:**
+
 - Displays certs for the active diver profile
 - Shows expiry warning indicator if any cert is expiring within 90 days
 - Empty state: "Add your first certification" with + button
@@ -29,12 +31,14 @@ Implement a digital certification wallet that displays dive certifications as be
 **Route:** `/certifications/wallet`
 
 **Card Stack Layout:**
+
 - Cards displayed in a vertical stack, each card offset ~30px from the one above
 - Active/selected card pulls forward and centers with slight 3D tilt effect
 - Swipe up/down or tap to cycle through cards
 - Cards cast subtle shadows to enhance depth
 
 **Individual Card Design (Agency-Branded):**
+
 - Credit card aspect ratio (1.586:1, standard CR80)
 - Agency-specific background gradient/color:
   - PADI: Blue gradient (#004990 to #0066CC)
@@ -50,6 +54,7 @@ Implement a digital certification wallet that displays dive certifications as be
   - Subtle wave/bubble pattern as background texture
 
 **Card Interaction:**
+
 - Tap card: Flip animation to show back (or photo if uploaded)
 - Long-press: Context menu (Share, View Details, Edit)
 - Swipe left: Quick share action
@@ -59,12 +64,14 @@ Implement a digital certification wallet that displays dive certifications as be
 **Share Options (Bottom Sheet):**
 
 #### Option A: "Share as Card"
+
 - Renders the styled agency-branded card as a PNG image
 - Exactly what you see in the wallet (front or back based on current view)
 - Resolution: 1012 x 638 pixels (2x for retina, standard card ratio)
 - Uses Flutter's `RepaintBoundary` + `RenderRepaintBoundary.toImage()`
 
 #### Option B: "Share as Certificate"
+
 - Generates a formal certificate-style image
 - White background, centered layout
 - Content:
@@ -79,7 +86,7 @@ Implement a digital certification wallet that displays dive certifications as be
 
 ## File Structure
 
-```
+```text
 lib/features/certifications/
 ├── presentation/
 │   ├── pages/
@@ -97,20 +104,24 @@ lib/features/certifications/
 ## Implementation Phases
 
 ### Phase 1: Core Card Component
+
 - Add brand colors to `CertificationAgency` enum
 - Build `CertificationEcard` widget with agency-branded design
 - Implement flip animation for front/back
 
 ### Phase 2: Wallet View
+
 - Create `CertificationEcardStack` with gesture handling
 - Build `CertificationWalletPage` with full stack view
 - Add route to `app_router.dart`
 
 ### Phase 3: Dashboard Widget
+
 - Create `CertificationWalletCard` for dashboard
 - Add to dashboard page layout
 
 ### Phase 4: Export/Share
+
 - Build `CertificationCardRenderer` service
 - Create `CertificationShareSheet` bottom sheet
 - Implement both card and certificate export formats
@@ -118,7 +129,9 @@ lib/features/certifications/
 ## Technical Notes
 
 ### Agency Color Mapping
+
 Add to `CertificationAgency` enum in `enums.dart`:
+
 ```dart
 Color get primaryColor => switch (this) {
   CertificationAgency.padi => const Color(0xFF004990),
@@ -138,9 +151,11 @@ Color get secondaryColor => switch (this) {
 ```
 
 ### Dependencies
+
 - All packages already available (`share_plus`, existing Flutter rendering APIs)
 - No new dependencies needed
 
 ### Providers
+
 - Reuses existing `certificationListProvider`
 - Add `selectedWalletCardIndexProvider` for tracking active card

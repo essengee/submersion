@@ -16,6 +16,7 @@ extract that data from FES2014/FES2022 models using PyFES.
 PyFES is **not available on PyPI** - it must be installed via conda or built from source.
 
 **Option A - Conda (Recommended):**
+
 ```bash
 # Create a conda environment
 conda create -n tide python=3.11
@@ -26,25 +27,26 @@ conda install -c conda-forge pyfes
 
 # Install remaining dependencies
 pip install numpy
-```
-
+```text
 **Option B - Build from Source:**
+
 ```bash
 git clone https://github.com/CNES/aviso-fes.git
 cd aviso-fes
 pip install .
 pip install numpy
-```
-
+```text
 ### 2. Obtain FES Model Data
 
 FES2014 or FES2022 data is available from AVISO (free registration required):
-https://www.aviso.altimetry.fr/en/data/products/auxiliary-products/global-tide-fes.html
+<https://www.aviso.altimetry.fr/en/data/products/auxiliary-products/global-tide-fes.html>
 
 **FES2022 is recommended** - it's the newer model with improved accuracy.
 
 Download the ocean tide files and extract to a directory, e.g.:
+
 ```
+
 /usr/local/share/fes/fes2022/   # preferred
 /usr/local/share/fes/fes2014/   # also supported
 ├── ocean_tide.yaml
@@ -53,22 +55,22 @@ Download the ocean tide files and extract to a directory, e.g.:
 ├── K2.nc
 ├── M2.nc
 ├── ...
-```
 
+```text
 ### 3. Generate ocean_tide.yaml
 
 Generate ocean_tide.yaml for use later
+
 ```bash
 scripts/tide/generate_fes_config.py fes2022b/ocean_tide_extrapolated
-```
-
+```text
 ### 3. Configure FES Data Path
 
 Set the environment variable:
+
 ```bash
 export FES_DATA=/usr/local/share/fes
-```
-
+```text
 Or specify the config file directly with `--config`.
 
 ## Usage
@@ -80,9 +82,9 @@ python extract_fes_constituents.py \
     --sites ../../assets/data/dive_sites.json \
     --output ../../assets/data/tide/ \
     --metadata
-```
-
+```text
 This creates:
+
 - `constituents_sites.json` - Constituents for each dive site with coordinates
 - `metadata.json` - Model information and constituent list
 
@@ -94,8 +96,7 @@ python extract_fes_constituents.py --lat 37.7749 --lon -122.4194 -o tide_sf.json
 
 # Great Barrier Reef
 python extract_fes_constituents.py --lat -16.2864 --lon 145.6845 -o tide_gbr.json
-```
-
+```text
 ### Generate Global Grid
 
 For interpolation at any location:
@@ -115,8 +116,7 @@ python extract_fes_constituents.py --grid --resolution 0.25 \
 # 0.5-degree resolution (smaller - ~15 MB)
 python extract_fes_constituents.py --grid --resolution 0.5 \
     --output ../../assets/data/tide/constituents_grid.json
-```
-
+```text
 ## Output Format
 
 ### constituents_sites.json
@@ -140,8 +140,7 @@ python extract_fes_constituents.py --grid --resolution 0.5 \
     }
   ]
 }
-```
-
+```text
 ### constituents_grid.json
 
 ```json
@@ -188,18 +187,23 @@ M4, MS4
 ## Troubleshooting
 
 ### "No matching distribution found for pyfes"
+
 PyFES is NOT on PyPI. Use conda: `conda install -c conda-forge pyfes`
 
 ### "pyfes not installed"
+
 See installation instructions above. Conda is the recommended method.
 
 ### "FES config not found"
+
 Set `FES_DATA` environment variable or use `--config` to point to your FES installation.
 
 ### "No data at location"
+
 The location may be on land. FES only covers ocean areas.
 
 ### Large grid file size
+
 Use coarser resolution (0.5° instead of 0.25°) or compress with gzip.
 
 ## References

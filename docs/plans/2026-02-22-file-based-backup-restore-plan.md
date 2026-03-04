@@ -13,6 +13,7 @@
 ## Task 1: Add `backupLocation` to Domain Entity
 
 **Files:**
+
 - Modify: `lib/features/backup/domain/entities/backup_settings.dart`
 - Test: `test/features/backup/domain/entities/backup_record_test.dart` (existing file, add new group)
 
@@ -52,8 +53,7 @@ void main() {
     });
   });
 }
-```
-
+```dart
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/features/backup/domain/entities/backup_settings_test.dart -v`
@@ -79,13 +79,13 @@ Expected: PASS
 ```bash
 git add test/features/backup/domain/entities/backup_settings_test.dart lib/features/backup/domain/entities/backup_settings.dart
 git commit -m "feat(backup): add backupLocation field to BackupSettings"
-```
-
+```text
 ---
 
 ## Task 2: Add `backupLocation` Persistence to BackupPreferences
 
 **Files:**
+
 - Modify: `lib/features/backup/data/repositories/backup_preferences.dart`
 - Test: `test/features/backup/data/repositories/backup_preferences_test.dart`
 
@@ -113,8 +113,7 @@ Add to the existing `BackupPreferences settings` group in `test/features/backup/
       final settings = backupPreferences.getSettings();
       expect(settings.backupLocation, isNull);
     });
-```
-
+```dart
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/features/backup/data/repositories/backup_preferences_test.dart -v`
@@ -127,6 +126,7 @@ In `lib/features/backup/data/repositories/backup_preferences.dart`:
 - Add constant: `static const String _backupLocationKey = 'backup_location';`
 - Add to `getSettings()`: include `backupLocation: _prefs.getString(_backupLocationKey),` in the return
 - Add method:
+
 ```dart
   Future<void> setBackupLocation(String? path) async {
     if (path == null) {
@@ -135,8 +135,7 @@ In `lib/features/backup/data/repositories/backup_preferences.dart`:
       await _prefs.setString(_backupLocationKey, path);
     }
   }
-```
-
+```text
 **Step 4: Run test to verify it passes**
 
 Run: `flutter test test/features/backup/data/repositories/backup_preferences_test.dart -v`
@@ -147,13 +146,13 @@ Expected: PASS
 ```bash
 git add lib/features/backup/data/repositories/backup_preferences.dart test/features/backup/data/repositories/backup_preferences_test.dart
 git commit -m "feat(backup): add backupLocation persistence to BackupPreferences"
-```
-
+```text
 ---
 
 ## Task 3: Add `validateBackupFile` to BackupService
 
 **Files:**
+
 - Modify: `lib/features/backup/data/services/backup_service.dart`
 - Test: `test/features/backup/data/services/backup_service_test.dart`
 
@@ -194,8 +193,7 @@ Add a new group to `test/features/backup/data/services/backup_service_test.dart`
         }
       });
     });
-```
-
+```text
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/features/backup/data/services/backup_service_test.dart -v`
@@ -228,8 +226,7 @@ class BackupValidationResult {
       : isValid = false,
         sizeBytes = null;
 }
-```
-
+```text
 Add to the `BackupService` class (in the Backup section):
 
 ```dart
@@ -289,8 +286,7 @@ Add to the `BackupService` class (in the Backup section):
       );
     }
   }
-```
-
+```dart
 Note: You'll need to add `import 'package:drift/native.dart';` at the top of backup_service.dart.
 
 **Step 4: Run test to verify it passes**
@@ -303,13 +299,13 @@ Expected: PASS
 ```bash
 git add lib/features/backup/data/services/backup_service.dart test/features/backup/data/services/backup_service_test.dart
 git commit -m "feat(backup): add validateBackupFile with SQLite and table checks"
-```
-
+```text
 ---
 
 ## Task 4: Add `exportBackupToPath` to BackupService
 
 **Files:**
+
 - Modify: `lib/features/backup/data/services/backup_service.dart`
 - Test: `test/features/backup/data/services/backup_service_test.dart`
 
@@ -360,8 +356,7 @@ Add a new group to the test file:
         }
       });
     });
-```
-
+```text
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/features/backup/data/services/backup_service_test.dart -v`
@@ -404,8 +399,7 @@ Add to `BackupService` class:
     _log.info('Export completed: $filename');
     return record;
   }
-```
-
+```text
 **Step 4: Run test to verify it passes**
 
 Run: `flutter test test/features/backup/data/services/backup_service_test.dart -v`
@@ -416,13 +410,13 @@ Expected: PASS
 ```bash
 git add lib/features/backup/data/services/backup_service.dart test/features/backup/data/services/backup_service_test.dart
 git commit -m "feat(backup): add exportBackupToPath for user-chosen export location"
-```
-
+```text
 ---
 
 ## Task 5: Add `exportBackupToTemp` to BackupService
 
 **Files:**
+
 - Modify: `lib/features/backup/data/services/backup_service.dart`
 - Test: `test/features/backup/data/services/backup_service_test.dart`
 
@@ -456,8 +450,7 @@ git commit -m "feat(backup): add exportBackupToPath for user-chosen export locat
         expect(history, isEmpty);
       });
     });
-```
-
+```text
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/features/backup/data/services/backup_service_test.dart -v`
@@ -485,8 +478,7 @@ Add to `BackupService` class:
     _log.info('Temp export completed: $filename');
     return File(tempPath);
   }
-```
-
+```text
 **Step 4: Run test to verify it passes**
 
 Run: `flutter test test/features/backup/data/services/backup_service_test.dart -v`
@@ -497,13 +489,13 @@ Expected: PASS
 ```bash
 git add lib/features/backup/data/services/backup_service.dart test/features/backup/data/services/backup_service_test.dart
 git commit -m "feat(backup): add exportBackupToTemp for share sheet export"
-```
-
+```text
 ---
 
 ## Task 6: Add `restoreFromFile` to BackupService
 
 **Files:**
+
 - Modify: `lib/features/backup/data/services/backup_service.dart`
 - Test: `test/features/backup/data/services/backup_service_test.dart`
 
@@ -548,8 +540,7 @@ git commit -m "feat(backup): add exportBackupToTemp for share sheet export"
         }
       });
     });
-```
-
+```text
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/features/backup/data/services/backup_service_test.dart -v`
@@ -581,8 +572,7 @@ Add to `BackupService` class in the Restore section:
 
     _log.info('Restore from file completed: ${p.basename(filePath)}');
   }
-```
-
+```text
 **Step 4: Run test to verify it passes**
 
 Run: `flutter test test/features/backup/data/services/backup_service_test.dart -v`
@@ -593,13 +583,13 @@ Expected: PASS
 ```bash
 git add lib/features/backup/data/services/backup_service.dart test/features/backup/data/services/backup_service_test.dart
 git commit -m "feat(backup): add restoreFromFile for arbitrary file restore"
-```
-
+```text
 ---
 
 ## Task 7: Update `performBackup` to Use Configurable Location
 
 **Files:**
+
 - Modify: `lib/features/backup/data/services/backup_service.dart`
 - Test: `test/features/backup/data/services/backup_service_test.dart`
 
@@ -639,8 +629,7 @@ git commit -m "feat(backup): add restoreFromFile for arbitrary file restore"
         expect(fakeDb.lastBackupPath, contains('Backups'));
       });
     });
-```
-
+```text
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/features/backup/data/services/backup_service_test.dart -v`
@@ -651,14 +640,14 @@ Expected: FAIL -- `performBackup` still uses hardcoded path; `setBackupLocation`
 Modify `performBackup()` in `BackupService`:
 
 Replace the `localDir` assignment:
+
 ```dart
     // Old:
     final localDir = await getLocalBackupsDirectory();
 
     // New:
     final localDir = await getBackupsDirectory();
-```
-
+```text
 Add a new method `getBackupsDirectory()` that checks settings:
 
 ```dart
@@ -674,8 +663,7 @@ Add a new method `getBackupsDirectory()` that checks settings:
     }
     return getLocalBackupsDirectory();
   }
-```
-
+```text
 **Step 4: Run test to verify it passes**
 
 Run: `flutter test test/features/backup/data/services/backup_service_test.dart -v`
@@ -686,13 +674,13 @@ Expected: PASS
 ```bash
 git add lib/features/backup/data/services/backup_service.dart test/features/backup/data/services/backup_service_test.dart
 git commit -m "feat(backup): use configurable backup location in performBackup"
-```
-
+```text
 ---
 
 ## Task 8: Update `getBackupHistory` to Prune Stale Entries
 
 **Files:**
+
 - Modify: `lib/features/backup/data/services/backup_service.dart`
 - Test: `test/features/backup/data/services/backup_service_test.dart`
 
@@ -797,8 +785,7 @@ Note: `getBackupHistory()` is currently synchronous. It must become `async` to c
         expect(history, hasLength(1));
       });
     });
-```
-
+```text
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/features/backup/data/services/backup_service_test.dart -v`
@@ -840,8 +827,7 @@ Add to `BackupService` class (in the History & Management section):
     validRecords.sort((a, b) => b.timestamp.compareTo(a.timestamp));
     return validRecords;
   }
-```
-
+```text
 **Step 4: Run test to verify it passes**
 
 Run: `flutter test test/features/backup/data/services/backup_service_test.dart -v`
@@ -852,13 +838,13 @@ Expected: PASS
 ```bash
 git add lib/features/backup/data/services/backup_service.dart test/features/backup/data/services/backup_service_test.dart
 git commit -m "feat(backup): add getValidatedBackupHistory with stale entry pruning"
-```
-
+```dart
 ---
 
 ## Task 9: Add Provider Methods
 
 **Files:**
+
 - Modify: `lib/features/backup/presentation/providers/backup_providers.dart`
 
 **Step 1: Add `setBackupLocation` to `BackupSettingsNotifier`**
@@ -870,8 +856,7 @@ In the `BackupSettingsNotifier` class, add:
     await _prefs.setBackupLocation(path);
     state = state.copyWith(backupLocation: path);
   }
-```
-
+```text
 **Step 2: Add new operations to `BackupOperationNotifier`**
 
 Add these methods to the `BackupOperationNotifier` class:
@@ -966,26 +951,25 @@ Add these methods to the `BackupOperationNotifier` class:
       );
     }
   }
-```
-
+```text
 **Step 3: Update `backupHistoryProvider` to use validated history**
 
 Change:
+
 ```dart
 final backupHistoryProvider = FutureProvider<List<BackupRecord>>((ref) async {
   final service = ref.watch(backupServiceProvider);
   return service.getBackupHistory();
 });
-```
-
+```text
 To:
+
 ```dart
 final backupHistoryProvider = FutureProvider<List<BackupRecord>>((ref) async {
   final service = ref.watch(backupServiceProvider);
   return service.getValidatedBackupHistory();
 });
-```
-
+```dart
 **Step 4: Add `import 'dart:io';`** at the top of the file (needed for `File` return type).
 
 **Step 5: Run existing tests to verify no regressions**
@@ -998,13 +982,13 @@ Expected: PASS
 ```bash
 git add lib/features/backup/presentation/providers/backup_providers.dart
 git commit -m "feat(backup): add export/import/location methods to providers"
-```
-
+```diff
 ---
 
 ## Task 10: Add Localization Strings
 
 **Files:**
+
 - Modify: `lib/l10n/arb/app_en.arb`
 
 **Step 1: Add new backup strings to `app_en.arb`**
@@ -1028,8 +1012,7 @@ Add these strings in the backup section (after the existing `backup_` entries), 
   "backup_location_change": "Change",
   "backup_location_default": "Default location",
   "backup_section_auto": "Automatic Backups",
-```
-
+```text
 **Step 2: Run l10n generation**
 
 Run: `flutter gen-l10n` or rely on it being generated automatically.
@@ -1039,13 +1022,13 @@ Run: `flutter gen-l10n` or rely on it being generated automatically.
 ```bash
 git add lib/l10n/arb/app_en.arb
 git commit -m "feat(backup): add l10n strings for file-based backup/restore"
-```
-
+```text
 ---
 
 ## Task 11: Create Export Bottom Sheet Widget
 
 **Files:**
+
 - Create: `lib/features/backup/presentation/widgets/export_bottom_sheet.dart`
 
 **Step 1: Create the widget**
@@ -1148,20 +1131,19 @@ class ExportBottomSheet extends StatelessWidget {
     );
   }
 }
-```
-
+```text
 **Step 2: Commit**
 
 ```bash
 git add lib/features/backup/presentation/widgets/export_bottom_sheet.dart
 git commit -m "feat(backup): add ExportBottomSheet widget"
-```
-
+```text
 ---
 
 ## Task 12: Redesign BackupSettingsPage
 
 **Files:**
+
 - Modify: `lib/features/backup/presentation/pages/backup_settings_page.dart`
 
 This is the largest task. The page gets a full redesign. Key imports to add at top:
@@ -1173,8 +1155,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 import 'package:share_plus/share_plus.dart';
-```
-
+```dart
 **Step 1: Rewrite the page**
 
 Replace the entire `BackupSettingsPage` body with the 4-section layout:
@@ -1234,8 +1215,7 @@ Widget _buildActionCard({
     ),
   );
 }
-```
-
+```text
 For the auto-backup location tile:
 
 ```dart
@@ -1258,13 +1238,13 @@ ListTile(
     child: Text(context.l10n.backup_location_change),
   ),
 ),
-```
-
+```typescript
 **Step 2: Run the app to visually verify**
 
 Run: `flutter run -d macos`
 
 Navigate to Settings > Data > Backup. Verify:
+
 - Two action cards appear at top
 - History list shows below
 - Auto backup settings appear in collapsible section
@@ -1276,13 +1256,13 @@ Navigate to Settings > Data > Backup. Verify:
 ```bash
 git add lib/features/backup/presentation/pages/backup_settings_page.dart
 git commit -m "feat(backup): redesign BackupSettingsPage with file-based actions"
-```
-
+```dart
 ---
 
 ## Task 13: Update Existing Tests
 
 **Files:**
+
 - Modify: `test/features/settings/presentation/pages/settings_page_test.dart` (if it references backup page)
 
 **Step 1: Run all backup tests**
@@ -1290,6 +1270,7 @@ git commit -m "feat(backup): redesign BackupSettingsPage with file-based actions
 Run: `flutter test test/features/backup/ -v`
 
 Fix any compilation errors caused by:
+
 - `getBackupHistory()` now being async (if any test called it synchronously)
 - New required parameters
 

@@ -13,6 +13,7 @@
 ## Task 1: Add Agency Brand Colors to Enum
 
 **Files:**
+
 - Modify: `lib/core/constants/enums.dart:110-126`
 
 **Step 1: Add color imports and brand color getters**
@@ -21,8 +22,7 @@ At the top of `enums.dart`, ensure `dart:ui` is imported for `Color`:
 
 ```dart
 import 'dart:ui' show Color;
-```
-
+```text
 Then modify the `CertificationAgency` enum to add color getters:
 
 ```dart
@@ -76,8 +76,7 @@ enum CertificationAgency {
     CertificationAgency.other => const Color(0xFF26c6da),
   };
 }
-```
-
+```text
 **Step 2: Verify build succeeds**
 
 Run: `flutter analyze lib/core/constants/enums.dart`
@@ -88,13 +87,13 @@ Expected: No issues found
 ```bash
 git add lib/core/constants/enums.dart
 git commit -m "feat(certifications): add brand colors to CertificationAgency enum"
-```
-
+```text
 ---
 
 ## Task 2: Create the Single eCard Widget
 
 **Files:**
+
 - Create: `lib/features/certifications/presentation/widgets/certification_ecard.dart`
 
 **Step 1: Create the eCard widget file**
@@ -421,8 +420,7 @@ class _WavePatternPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
-```
-
+```text
 **Step 2: Verify build succeeds**
 
 Run: `flutter analyze lib/features/certifications/presentation/widgets/certification_ecard.dart`
@@ -433,13 +431,13 @@ Expected: No issues found
 ```bash
 git add lib/features/certifications/presentation/widgets/certification_ecard.dart
 git commit -m "feat(certifications): create CertificationEcard widget with agency branding"
-```
-
+```text
 ---
 
 ## Task 3: Create the Card Stack Widget
 
 **Files:**
+
 - Create: `lib/features/certifications/presentation/widgets/certification_ecard_stack.dart`
 
 **Step 1: Create the stack widget**
@@ -653,8 +651,7 @@ class _EmptyState extends StatelessWidget {
     );
   }
 }
-```
-
+```text
 **Step 2: Verify build succeeds**
 
 Run: `flutter analyze lib/features/certifications/presentation/widgets/certification_ecard_stack.dart`
@@ -665,13 +662,13 @@ Expected: No issues found
 ```bash
 git add lib/features/certifications/presentation/widgets/certification_ecard_stack.dart
 git commit -m "feat(certifications): create CertificationEcardStack with swipe navigation"
-```
-
+```text
 ---
 
 ## Task 4: Create the Wallet Page
 
 **Files:**
+
 - Create: `lib/features/certifications/presentation/pages/certification_wallet_page.dart`
 
 **Step 1: Create the wallet page**
@@ -809,8 +806,7 @@ class _CertificationWalletPageState
     );
   }
 }
-```
-
+```text
 **Step 2: Verify build succeeds**
 
 Run: `flutter analyze lib/features/certifications/presentation/pages/certification_wallet_page.dart`
@@ -821,13 +817,13 @@ Expected: No issues found (may show error for missing CertificationShareSheet - 
 ```bash
 git add lib/features/certifications/presentation/pages/certification_wallet_page.dart
 git commit -m "feat(certifications): create CertificationWalletPage with full-screen stack"
-```
-
+```text
 ---
 
 ## Task 5: Create Card Renderer Service
 
 **Files:**
+
 - Create: `lib/features/certifications/presentation/services/certification_card_renderer.dart`
 
 **Step 1: Create the renderer service**
@@ -1085,8 +1081,7 @@ class _DetailColumn extends StatelessWidget {
     );
   }
 }
-```
-
+```text
 **Step 2: Verify build succeeds**
 
 Run: `flutter analyze lib/features/certifications/presentation/services/certification_card_renderer.dart`
@@ -1097,13 +1092,13 @@ Expected: No issues found
 ```bash
 git add lib/features/certifications/presentation/services/certification_card_renderer.dart
 git commit -m "feat(certifications): create CertificationCardRenderer for image export"
-```
-
+```text
 ---
 
 ## Task 6: Create Share Sheet Widget
 
 **Files:**
+
 - Create: `lib/features/certifications/presentation/widgets/certification_share_sheet.dart`
 
 **Step 1: Create the share sheet**
@@ -1339,8 +1334,7 @@ class _ShareOption extends StatelessWidget {
     );
   }
 }
-```
-
+```text
 **Step 2: Verify build succeeds**
 
 Run: `flutter analyze lib/features/certifications/presentation/widgets/certification_share_sheet.dart`
@@ -1351,13 +1345,13 @@ Expected: No issues found
 ```bash
 git add lib/features/certifications/presentation/widgets/certification_share_sheet.dart
 git commit -m "feat(certifications): create CertificationShareSheet for export options"
-```
-
+```typescript
 ---
 
 ## Task 7: Add Wallet Route to Router
 
 **Files:**
+
 - Modify: `lib/core/router/app_router.dart:396-427`
 
 **Step 1: Add import for wallet page**
@@ -1366,8 +1360,7 @@ Near the top imports (around line 16), add:
 
 ```dart
 import 'package:submersion/features/certifications/presentation/pages/certification_wallet_page.dart';
-```
-
+```text
 **Step 2: Add wallet route**
 
 Inside the certifications GoRoute routes array (after line 404, before the `new` route), add:
@@ -1378,8 +1371,7 @@ Inside the certifications GoRoute routes array (after line 404, before the `new`
                 name: 'certificationWallet',
                 builder: (context, state) => const CertificationWalletPage(),
               ),
-```
-
+```text
 **Step 3: Verify build succeeds**
 
 Run: `flutter analyze lib/core/router/app_router.dart`
@@ -1390,13 +1382,13 @@ Expected: No issues found
 ```bash
 git add lib/core/router/app_router.dart
 git commit -m "feat(certifications): add wallet route to app router"
-```
-
+```text
 ---
 
 ## Task 8: Create Dashboard Wallet Widget
 
 **Files:**
+
 - Create: `lib/features/certifications/presentation/widgets/certification_wallet_card.dart`
 
 **Step 1: Create the dashboard widget**
@@ -1668,8 +1660,7 @@ class _LoadingCard extends StatelessWidget {
     );
   }
 }
-```
-
+```text
 **Step 2: Verify build succeeds**
 
 Run: `flutter analyze lib/features/certifications/presentation/widgets/certification_wallet_card.dart`
@@ -1680,13 +1671,13 @@ Expected: No issues found
 ```bash
 git add lib/features/certifications/presentation/widgets/certification_wallet_card.dart
 git commit -m "feat(certifications): create CertificationWalletCard dashboard widget"
-```
-
+```dart
 ---
 
 ## Task 9: Add Wallet Widget to Dashboard
 
 **Files:**
+
 - Modify: `lib/features/dashboard/presentation/pages/dashboard_page.dart`
 
 **Step 1: Add import**
@@ -1695,8 +1686,7 @@ After line 15 (existing imports), add:
 
 ```dart
 import 'package:submersion/features/certifications/presentation/widgets/certification_wallet_card.dart';
-```
-
+```text
 **Step 2: Add wallet card to dashboard layout**
 
 Inside the Column children (around line 55, after PersonalRecordsCard), add:
@@ -1705,22 +1695,19 @@ Inside the Column children (around line 55, after PersonalRecordsCard), add:
                 // Certification Wallet
                 const CertificationWalletCard(),
                 const SizedBox(height: 16),
-```
-
+```text
 **Step 3: Add invalidation for certifications refresh**
 
 In the `onRefresh` callback (around line 37), add:
 
 ```dart
             ref.invalidate(certificationListNotifierProvider);
-```
-
+```typescript
 You'll also need to add the import at the top:
 
 ```dart
 import 'package:submersion/features/certifications/presentation/providers/certification_providers.dart';
-```
-
+```text
 **Step 4: Verify build succeeds**
 
 Run: `flutter analyze lib/features/dashboard/presentation/pages/dashboard_page.dart`
@@ -1731,13 +1718,13 @@ Expected: No issues found
 ```bash
 git add lib/features/dashboard/presentation/pages/dashboard_page.dart
 git commit -m "feat(dashboard): add certification wallet card"
-```
-
+```text
 ---
 
 ## Task 10: Add Wallet Button to Certifications List Page
 
 **Files:**
+
 - Modify: `lib/features/certifications/presentation/pages/certification_list_page.dart`
 
 **Step 1: Read the file to find the AppBar actions**
@@ -1754,8 +1741,7 @@ IconButton(
   tooltip: 'Wallet View',
   onPressed: () => context.push('/certifications/wallet'),
 ),
-```
-
+```text
 **Step 3: Verify build succeeds**
 
 Run: `flutter analyze lib/features/certifications/presentation/pages/certification_list_page.dart`
@@ -1766,13 +1752,13 @@ Expected: No issues found
 ```bash
 git add lib/features/certifications/presentation/pages/certification_list_page.dart
 git commit -m "feat(certifications): add wallet button to list page"
-```
-
+```diff
 ---
 
 ## Task 11: Update REMAINING_TASKS.md
 
 **Files:**
+
 - Modify: `REMAINING_TASKS.md`
 
 **Step 1: Mark tasks as complete**
@@ -1788,8 +1774,7 @@ Find the eCards section and update:
 **Tasks:**
 - [x] Certification wallet view (card-style UI)
 - [x] Export cert card as image (shareable)
-```
-
+```text
 **Step 2: Commit**
 
 ```bash

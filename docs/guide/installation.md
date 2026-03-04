@@ -29,22 +29,19 @@ To build from source, you'll need:
 ```bash
 git clone https://github.com/submersion-app/submersion.git
 cd submersion
-```
-
+```text
 ### 2. Install Dependencies
 
 ```bash
 flutter pub get
-```
-
+```dart
 ### 3. Generate Code
 
 Submersion uses code generation for the database (Drift) and state management (Riverpod). Run:
 
 ```bash
 dart run build_runner build --delete-conflicting-outputs
-```
-
+```xml
 <div class="tip">
 <strong>Tip:</strong> During development, use <code>dart run build_runner watch</code> to automatically regenerate code when files change.
 </div>
@@ -57,39 +54,34 @@ dart run build_runner build --delete-conflicting-outputs
 
 ```bash
 flutter run -d macos
-```
-
+```text
 #### **iOS Simulator**
 
 ```bash
 flutter run -d ios
-```
-
+```text
 For a physical iOS device:
+
 ```bash
 open ios/Runner.xcworkspace
 # Configure signing in Xcode, then:
 flutter run -d ios
-```
-
+```text
 #### **Android**
 
 ```bash
 flutter run -d android
-```
-
+```text
 #### **Windows**
 
 ```bash
 flutter run -d windows
-```
-
+```text
 #### **Linux**
 
 ```bash
 flutter run -d linux
-```
-
+```text
 <!-- tabs:end -->
 
 ## Build for Release
@@ -98,8 +90,7 @@ flutter run -d linux
 
 ```bash
 flutter build ios --release
-```
-
+```text
 Then archive and distribute via Xcode.
 
 ### Android
@@ -110,26 +101,22 @@ flutter build apk --release
 
 # App Bundle (for Play Store)
 flutter build appbundle --release
-```
-
+```text
 ### macOS
 
 ```bash
 flutter build macos --release
-```
-
+```text
 ### Windows
 
 ```bash
 flutter build windows --release
-```
-
+```text
 ### Linux
 
 ```bash
 flutter build linux --release
-```
-
+```text
 ## Troubleshooting
 
 ### Code Generation Fails
@@ -140,8 +127,7 @@ If `build_runner` fails, try:
 flutter clean
 flutter pub get
 dart run build_runner build --delete-conflicting-outputs
-```
-
+```sql
 ### iOS Signing Issues
 
 1. Open `ios/Runner.xcworkspace` in Xcode
@@ -156,8 +142,7 @@ Make sure your Android SDK is properly configured:
 
 ```bash
 flutter doctor
-```
-
+```text
 Follow any recommendations to resolve issues.
 
 ### Missing Platform Dependencies

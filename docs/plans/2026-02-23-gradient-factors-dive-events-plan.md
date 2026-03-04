@@ -15,6 +15,7 @@
 ### Task 1: Extend `libdc_sample_t` with all sample fields
 
 **Files:**
+
 - Modify: `packages/libdivecomputer_plugin/macos/Classes/libdc_wrapper.h:115-121`
 
 **Step 1: Add new fields to libdc_sample_t**
@@ -40,8 +41,7 @@ typedef struct {
     double deco_depth;         // stop depth in meters (NAN if unavailable)
     unsigned int deco_tts;     // Time To Surface in seconds (UINT32_MAX if unavailable)
 } libdc_sample_t;
-```
-
+```swift
 **Step 2: Add event struct and decomodel fields to libdc_parsed_dive_t**
 
 Add a new event struct before `libdc_parsed_dive_t` (after line 134):
@@ -55,8 +55,7 @@ typedef struct {
     unsigned int flags;        // event-specific flags
     unsigned int value;        // event-specific value
 } libdc_event_t;
-```
-
+```text
 Extend `libdc_parsed_dive_t` (after line 163, before closing brace) with:
 
 ```c
@@ -70,8 +69,7 @@ Extend `libdc_parsed_dive_t` (after line 163, before closing brace) with:
     libdc_event_t *events;
     unsigned int event_count;
     unsigned int event_capacity;
-```
-
+```text
 **Step 3: Update libdc_parsed_dive_free declaration**
 
 No change needed - the existing declaration covers freeing. But ensure implementation frees events array.
@@ -81,13 +79,13 @@ No change needed - the existing declaration covers freeing. But ensure implement
 ```bash
 git add packages/libdivecomputer_plugin/macos/Classes/libdc_wrapper.h
 git commit -m "feat: extend C structs for full sample capture and deco model"
-```
-
+```diff
 ---
 
 ### Task 2: Update `sample_callback` to capture all sample types
 
 **Files:**
+
 - Modify: `packages/libdivecomputer_plugin/macos/Classes/libdc_download.c:89-164`
 
 **Step 1: Add push_event helper function**
@@ -123,8 +121,7 @@ static void push_event(libdc_parsed_dive_t *dive,
     evt->flags = flags;
     evt->value = value;
 }
-```
-
+```text
 **Step 2: Update sample_callback initialization in DC_SAMPLE_TIME case**
 
 Replace lines 142-150 with:
@@ -148,8 +145,7 @@ Replace lines 142-150 with:
         state->current_sample.deco_depth = NAN;
         state->current_sample.deco_tts = UINT32_MAX;
         break;
-```
-
+```text
 **Step 3: Add new DC_SAMPLE_* cases**
 
 Replace the `default: break;` (line 161) with:
@@ -185,20 +181,19 @@ Replace the `default: break;` (line 161) with:
         break;
     default:
         break;
-```
-
+```text
 **Step 4: Commit**
 
 ```bash
 git add packages/libdivecomputer_plugin/macos/Classes/libdc_download.c
 git commit -m "feat: capture all sample types and events in sample_callback"
-```
-
+```diff
 ---
 
 ### Task 3: Extract DC_FIELD_DECOMODEL in parse_dive
 
 **Files:**
+
 - Modify: `packages/libdivecomputer_plugin/macos/Classes/libdc_download.c:166-267`
 
 **Step 1: Add DECOMODEL extraction after DIVEMODE (after line 222)**
@@ -212,8 +207,7 @@ git commit -m "feat: capture all sample types and events in sample_callback"
         dive->gf_low = decomodel.params.gf.low;
         dive->gf_high = decomodel.params.gf.high;
     }
-```
-
+```text
 **Step 2: Initialize deco model fields in parse_dive (after line 171)**
 
 After `dive->max_temp = NAN;` add:
@@ -226,23 +220,20 @@ After `dive->max_temp = NAN;` add:
     dive->events = NULL;
     dive->event_count = 0;
     dive->event_capacity = 0;
-```
-
+```text
 **Step 3: Free events in dive_callback (line 287)**
 
 After `free(dive.samples);` add:
 
 ```c
     free(dive.events);
-```
-
+```text
 **Step 4: Commit**
 
 ```bash
 git add packages/libdivecomputer_plugin/macos/Classes/libdc_download.c
 git commit -m "feat: extract DC_FIELD_DECOMODEL (gradient factors) from dive computer"
-```
-
+```diff
 ---
 
 ## Phase 2: Swift Bridge - Map New C Fields to Pigeon Messages
@@ -250,6 +241,7 @@ git commit -m "feat: extract DC_FIELD_DECOMODEL (gradient factors) from dive com
 ### Task 4: Update convertParsedDive() in Swift
 
 **Files:**
+
 - Modify: `packages/libdivecomputer_plugin/macos/Classes/DiveComputerHostApiImpl.swift:292-388`
 
 **Step 1: Extend ProfileSample mapping (around line 318-331)**
@@ -274,8 +266,7 @@ let sample = ProfileSample(
     decoDepth: dive.samples[i].deco_depth.isNaN ? nil : dive.samples[i].deco_depth,
     tts: dive.samples[i].deco_tts == UInt32.max ? nil : Int64(dive.samples[i].deco_tts)
 )
-```
-
+```text
 **Step 2: Map events from C array (replace line 385 where events is always empty)**
 
 Replace the empty events list with:
@@ -296,8 +287,7 @@ for i in 0..<Int(dive.event_count) {
     )
     events.append(event)
 }
-```
-
+```typescript
 **Step 3: Add event type mapping helper**
 
 Add a helper function (before or after convertParsedDive):
@@ -334,8 +324,7 @@ private func mapEventType(_ type: UInt32) -> String {
     default: return "unknown_\(type)"
     }
 }
-```
-
+```text
 **Step 4: Map deco model fields on ParsedDive (near line 374-385)**
 
 Add deco model fields to the ParsedDive constructor call:
@@ -356,15 +345,13 @@ default: decoAlgorithm = nil
 // gfLow: dive.gf_low > 0 ? Int64(dive.gf_low) : nil,
 // gfHigh: dive.gf_high > 0 ? Int64(dive.gf_high) : nil,
 // conservatism: dive.deco_conservatism != 0 ? Int64(dive.deco_conservatism) : nil,
-```
-
+```text
 **Step 5: Commit**
 
 ```bash
 git add packages/libdivecomputer_plugin/macos/Classes/DiveComputerHostApiImpl.swift
 git commit -m "feat: map all C sample fields and events to Pigeon messages in Swift bridge"
-```
-
+```text
 ---
 
 ## Phase 3: Pigeon API - Extend Message Definitions
@@ -372,6 +359,7 @@ git commit -m "feat: map all C sample fields and events to Pigeon messages in Sw
 ### Task 5: Add new fields to Pigeon API definition
 
 **Files:**
+
 - Modify: `packages/libdivecomputer_plugin/pigeons/dive_computer_api.dart:53-130`
 
 **Step 1: Extend ProfileSample class (lines 53-68)**
@@ -414,8 +402,7 @@ class ProfileSample {
   final double? decoDepth;   // Stop depth in meters
   final int? tts;            // Time To Surface (seconds)
 }
-```
-
+```text
 **Step 2: Extend ParsedDive class (lines 103-130)**
 
 Add deco model fields after `diveMode`:
@@ -460,16 +447,16 @@ class ParsedDive {
   final int? gfHigh;            // Gradient Factor High (0-100), null if unknown
   final int? conservatism;      // Personal adjustment (-3 to +3 typical)
 }
-```
-
+```text
 **Step 3: Regenerate Pigeon code**
 
 Run:
+
 ```bash
 cd packages/libdivecomputer_plugin && dart run pigeon --input pigeons/dive_computer_api.dart
-```
-
+```text
 This regenerates:
+
 - `lib/src/generated/dive_computer_api.g.dart`
 - `macos/Classes/DiveComputerApi.g.swift`
 
@@ -484,8 +471,7 @@ git add packages/libdivecomputer_plugin/pigeons/dive_computer_api.dart
 git add packages/libdivecomputer_plugin/lib/src/generated/dive_computer_api.g.dart
 git add packages/libdivecomputer_plugin/macos/Classes/DiveComputerApi.g.swift
 git commit -m "feat: extend Pigeon API with deco model and full sample fields"
-```
-
+```text
 ---
 
 ## Phase 4: Dart Domain Layer - DownloadedDive and Mapper
@@ -493,6 +479,7 @@ git commit -m "feat: extend Pigeon API with deco model and full sample fields"
 ### Task 6: Add events list and deco model to DownloadedDive
 
 **Files:**
+
 - Modify: `lib/features/dive_computer/domain/entities/downloaded_dive.dart:85-254`
 
 **Step 1: Write test for DownloadedDive deco model fields**
@@ -571,8 +558,7 @@ void main() {
     });
   });
 }
-```
-
+```text
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/features/dive_computer/domain/entities/downloaded_dive_test.dart`
@@ -597,8 +583,7 @@ Add to `DownloadedDive` class (after `fingerprint` field, ~line 117):
 
   /// Events reported by the dive computer
   final List<DownloadedEvent> events;
-```
-
+```text
 Update constructor to include these (with defaults):
 
 ```dart
@@ -607,8 +592,7 @@ Update constructor to include these (with defaults):
     this.gfHigh,
     this.conservatism,
     this.events = const [],
-```
-
+```text
 **Step 4: Add DownloadedEvent class**
 
 Add after `GasSwitchEvent` class (~line 254):
@@ -628,8 +612,7 @@ class DownloadedEvent {
     this.value = 0,
   });
 }
-```
-
+```text
 **Step 5: Add deco fields to ProfileSample**
 
 The ProfileSample class already has `ppo2`, `cns`, `ndl`, `ceiling`, `ascentRate` fields (lines 161-173). Add missing fields:
@@ -641,8 +624,7 @@ The ProfileSample class already has `ppo2`, `cns`, `ndl`, `ceiling`, `ascentRate
   final int? decoTime;       // Seconds (NDL time or stop time remaining)
   final double? decoDepth;   // Stop depth in meters
   final int? tts;            // Time To Surface (seconds)
-```
-
+```text
 Update the constructor to include these fields.
 
 **Step 6: Run test to verify it passes**
@@ -656,13 +638,13 @@ Expected: PASS
 git add lib/features/dive_computer/domain/entities/downloaded_dive.dart
 git add test/features/dive_computer/domain/entities/downloaded_dive_test.dart
 git commit -m "feat: add deco model, events, and full sample fields to DownloadedDive"
-```
-
+```text
 ---
 
 ### Task 7: Update parsed_dive_mapper to map new fields
 
 **Files:**
+
 - Modify: `lib/features/dive_computer/data/services/parsed_dive_mapper.dart:5-41`
 - Test: `test/features/dive_computer/data/services/parsed_dive_mapper_test.dart`
 
@@ -764,8 +746,7 @@ void main() {
     });
   });
 }
-```
-
+```text
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/features/dive_computer/data/services/parsed_dive_mapper_test.dart`
@@ -852,8 +833,7 @@ DownloadedDive parsedDiveToDownloaded(pigeon.ParsedDive parsed) {
         .toList(),
   );
 }
-```
-
+```text
 **Step 4: Run test to verify it passes**
 
 Run: `flutter test test/features/dive_computer/data/services/parsed_dive_mapper_test.dart`
@@ -865,8 +845,7 @@ Expected: PASS
 git add lib/features/dive_computer/data/services/parsed_dive_mapper.dart
 git add test/features/dive_computer/data/services/parsed_dive_mapper_test.dart
 git commit -m "feat: map deco model, events, and full sample data in parsed_dive_mapper"
-```
-
+```text
 ---
 
 ## Phase 5: Database Schema - Add Missing Columns
@@ -874,6 +853,7 @@ git commit -m "feat: map deco model, events, and full sample data in parsed_dive
 ### Task 8: Add new columns to DiveProfiles and Dives tables
 
 **Files:**
+
 - Modify: `lib/core/database/database.dart:186-216` (DiveProfiles table)
 - Modify: `lib/core/database/database.dart:107-108` (Dives table)
 - Modify: `lib/core/database/database.dart:1093` (schemaVersion)
@@ -890,8 +870,7 @@ After `ppO2` (line 208), add:
   IntColumn get rbt => integer().nullable()(); // Remaining Bottom Time (seconds)
   TextColumn get decoType =>
       text().nullable()(); // 'ndl', 'safetystop', 'decostop', 'deepstop'
-```
-
+```text
 **Step 2: Add decoAlgorithm to Dives table**
 
 After `gradientFactorHigh` (line 108), add:
@@ -902,8 +881,7 @@ After `gradientFactorHigh` (line 108), add:
       text().nullable()(); // 'buhlmann', 'vpm', 'rgbm', 'dciem'
   IntColumn get decoConservatism =>
       integer().nullable()(); // Personal adjustment setting
-```
-
+```text
 **Step 3: Bump schema version**
 
 Change line 1093: `int get schemaVersion => 40;`
@@ -923,8 +901,7 @@ if (from < 40) {
   await m.addColumn(dives, dives.decoAlgorithm);
   await m.addColumn(dives, dives.decoConservatism);
 }
-```
-
+```text
 **Step 5: Regenerate Drift code**
 
 Run: `dart run build_runner build --delete-conflicting-outputs`
@@ -939,8 +916,7 @@ Expected: No errors
 ```bash
 git add lib/core/database/database.dart lib/core/database/database.g.dart
 git commit -m "feat: add deco model and computer-reported sample columns (schema v40)"
-```
-
+```text
 ---
 
 ## Phase 6: Import Pipeline - Persist New Fields
@@ -948,6 +924,7 @@ git commit -m "feat: add deco model and computer-reported sample columns (schema
 ### Task 9: Extend ProfilePointData with new fields
 
 **Files:**
+
 - Modify: `lib/features/dive_log/data/repositories/dive_computer_repository_impl.dart:1160-1178`
 
 **Step 1: Add new fields to ProfilePointData**
@@ -987,20 +964,19 @@ class ProfilePointData {
     this.decoType,
   });
 }
-```
-
+```text
 **Step 2: Commit**
 
 ```bash
 git add lib/features/dive_log/data/repositories/dive_computer_repository_impl.dart
 git commit -m "feat: extend ProfilePointData with computer-reported deco fields"
-```
-
+```text
 ---
 
 ### Task 10: Update importProfile() to persist new fields and GF
 
 **Files:**
+
 - Modify: `lib/features/dive_log/data/repositories/dive_computer_repository_impl.dart:689-932`
 
 **Step 1: Add deco model parameters to importProfile()**
@@ -1026,8 +1002,7 @@ Future<String> importProfile({
   // New: events from dive computer
   List<DownloadedEvent>? events,
 }) async
-```
-
+```text
 **Step 2: Set GF and deco model on new dive creation**
 
 In the DivesCompanion creation (around lines 740-760), add:
@@ -1038,8 +1013,7 @@ gradientFactorLow: gfLow != null ? Value(gfLow) : const Value.absent(),
 gradientFactorHigh: gfHigh != null ? Value(gfHigh) : const Value.absent(),
 decoAlgorithm: decoAlgorithm != null ? Value(decoAlgorithm) : const Value.absent(),
 decoConservatism: decoConservatism != null ? Value(decoConservatism) : const Value.absent(),
-```
-
+```sql
 **Step 3: Persist new profile point fields in batch insert**
 
 In the profile points batch insert (around lines 797-819), extend the DiveProfilesCompanion:
@@ -1065,8 +1039,7 @@ DiveProfilesCompanion(
   rbt: Value(point.rbt),
   decoType: Value(point.decoType),
 )
-```
-
+```sql
 **Step 4: Persist events to DiveProfileEvents table**
 
 After the profile points batch insert, add events batch insert:
@@ -1093,8 +1066,7 @@ if (events != null && events.isNotEmpty) {
     );
   });
 }
-```
-
+```typescript
 **Step 5: Add event type mapping helper**
 
 ```dart
@@ -1161,25 +1133,25 @@ double? _findDepthAtTimestamp(List<ProfilePointData> points, int timeSeconds) {
   }
   return closest?.depth;
 }
-```
-
+```text
 **Step 6: Commit**
 
 ```bash
 git add lib/features/dive_log/data/repositories/dive_computer_repository_impl.dart
 git commit -m "feat: persist GF, deco model, sample deco data, and events during import"
-```
-
+```typescript
 ---
 
 ### Task 11: Update callers of importProfile to pass new data
 
 **Files:**
+
 - Search for all callers of `importProfile()` and update them to pass GF, events, and new sample fields.
 
 **Step 1: Find callers**
 
 Search for `importProfile(` across the codebase. Typical callers are in:
+
 - `lib/features/dive_computer/data/services/dive_import_service.dart` or similar
 - The download notifier that orchestrates import after download
 
@@ -1208,8 +1180,7 @@ final points = downloadedDive.profile
           decoType: _mapDecoType(s.decoType),
         ))
     .toList();
-```
-
+```text
 Where `importProfile()` is called, add:
 
 ```dart
@@ -1221,8 +1192,7 @@ await repository.importProfile(
   decoConservatism: downloadedDive.conservatism,
   events: downloadedDive.events,
 );
-```
-
+```text
 Add decoType mapping helper:
 
 ```dart
@@ -1236,15 +1206,13 @@ String? _mapDecoType(int? decoType) {
     default: return null;
   }
 }
-```
-
+```text
 **Step 3: Commit**
 
 ```bash
 git add lib/features/dive_computer/
 git commit -m "feat: pass deco model, events, and full sample data through import pipeline"
-```
-
+```text
 ---
 
 ## Phase 7: Domain Entity + Repository Read
@@ -1252,6 +1220,7 @@ git commit -m "feat: pass deco model, events, and full sample data through impor
 ### Task 12: Extend DiveProfilePoint with new fields
 
 **Files:**
+
 - Modify: `lib/features/dive_log/domain/entities/dive.dart` (DiveProfilePoint class, ~line 643)
 
 **Step 1: Write test for DiveProfilePoint with deco fields**
@@ -1293,8 +1262,7 @@ void main() {
     });
   });
 }
-```
-
+```text
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/features/dive_log/domain/entities/dive_profile_point_test.dart`
@@ -1312,8 +1280,7 @@ Add after existing `ppO2` field:
   final int? rbt;          // Remaining Bottom Time (seconds), from computer
   final String? decoType;  // 'ndl', 'safetystop', 'decostop', 'deepstop'
   final double? ascentRate; // m/min, from computer or calculated
-```
-
+```text
 Update constructor, copyWith(), and Equatable props list.
 
 **Step 4: Run test to verify it passes**
@@ -1327,13 +1294,13 @@ Expected: PASS
 git add lib/features/dive_log/domain/entities/dive.dart
 git add test/features/dive_log/domain/entities/dive_profile_point_test.dart
 git commit -m "feat: add computer-reported deco fields to DiveProfilePoint"
-```
-
+```text
 ---
 
 ### Task 13: Add decoAlgorithm to Dive entity
 
 **Files:**
+
 - Modify: `lib/features/dive_log/domain/entities/dive.dart` (Dive class)
 
 **Step 1: Add decoAlgorithm and decoConservatism fields**
@@ -1343,8 +1310,7 @@ After `gradientFactorHigh` (~line 58), add:
 ```dart
   final String? decoAlgorithm;     // 'buhlmann', 'vpm', 'rgbm', 'dciem'
   final int? decoConservatism;     // Personal adjustment setting
-```
-
+```text
 Update constructor, copyWith(), and Equatable props.
 
 **Step 2: Commit**
@@ -1352,13 +1318,13 @@ Update constructor, copyWith(), and Equatable props.
 ```bash
 git add lib/features/dive_log/domain/entities/dive.dart
 git commit -m "feat: add decoAlgorithm and decoConservatism to Dive entity"
-```
-
+```text
 ---
 
 ### Task 14: Update repository to read new fields from database
 
 **Files:**
+
 - Modify: `lib/features/dive_log/data/repositories/dive_repository_impl.dart`
 
 **Step 1: Update all DiveProfilePoint constructors in repository**
@@ -1374,8 +1340,7 @@ domain.DiveProfilePoint(
   heartRate: p.heartRate,
   heartRateSource: p.heartRateSource,
 )
-```
-
+```text
 Update each to include the new fields:
 
 ```dart
@@ -1396,9 +1361,9 @@ domain.DiveProfilePoint(
   decoType: p.decoType,
   ascentRate: p.ascentRate,
 )
-```
-
+```text
 Locations to update (found via grep):
+
 - Line 223-230
 - Line 353-360
 - Line 433 (minimal, just timestamp+depth — leave as-is for performance)
@@ -1411,8 +1376,7 @@ Ensure `decoAlgorithm` and `decoConservatism` are mapped from the Dives row to t
 ```dart
 decoAlgorithm: row.decoAlgorithm,
 decoConservatism: row.decoConservatism,
-```
-
+```text
 **Step 3: Verify build passes**
 
 Run: `flutter analyze`
@@ -1423,8 +1387,7 @@ Expected: No errors
 ```bash
 git add lib/features/dive_log/data/repositories/dive_repository_impl.dart
 git commit -m "feat: read computer-reported deco data and deco model from database"
-```
-
+```text
 ---
 
 ## Phase 8: Profile Analysis - Use Computer GF and Prefer Computer Data
@@ -1432,6 +1395,7 @@ git commit -m "feat: read computer-reported deco data and deco model from databa
 ### Task 15: Use dive-specific GF in ProfileAnalysisService
 
 **Files:**
+
 - Modify: `lib/features/dive_log/data/services/profile_analysis_service.dart`
 - Modify: caller that creates ProfileAnalysisService (likely in a provider or the dive detail page)
 
@@ -1476,8 +1440,7 @@ void main() {
     });
   });
 }
-```
-
+```text
 **Step 2: Run test to verify it passes (GF is already parameterized)**
 
 Run: `flutter test test/features/dive_log/data/services/profile_analysis_gf_test.dart`
@@ -1500,26 +1463,26 @@ final analysisService = ProfileAnalysisService(
   gfLow: gfLow,
   gfHigh: gfHigh,
 );
-```
-
+```text
 **Step 4: Commit**
 
 ```bash
 git add lib/features/dive_log/ test/features/dive_log/
 git commit -m "feat: use dive-specific gradient factors in profile analysis"
-```
-
+```text
 ---
 
 ### Task 16: Prefer computer-reported deco data on chart
 
 **Files:**
+
 - Find the widget/provider that feeds data to `DiveProfileChart`
 - This is where `ProfileAnalysis` results are passed as chart curves
 
 **Step 1: Identify where chart data is assembled**
 
 Search for where `DiveProfileChart(` is constructed with curves. Likely in:
+
 - `lib/features/dive_log/presentation/pages/dive_detail_page.dart` or
 - `lib/features/dive_log/presentation/widgets/dive_profile_section.dart`
 
@@ -1543,8 +1506,7 @@ if (hasComputerDecoData) {
   ndlCurve = analysis?.ndlCurve;
   ceilingCurve = analysis?.ceilingCurve;
 }
-```
-
+```text
 Apply same pattern for TTS, CNS, ppO2 curves.
 
 **Step 3: Commit**
@@ -1552,8 +1514,7 @@ Apply same pattern for TTS, CNS, ppO2 curves.
 ```bash
 git add lib/features/dive_log/presentation/
 git commit -m "feat: prefer computer-reported deco data on dive profile chart"
-```
-
+```text
 ---
 
 ## Phase 9: Chart Event Display
@@ -1561,6 +1522,7 @@ git commit -m "feat: prefer computer-reported deco data on dive profile chart"
 ### Task 17: Implement event marker rendering on dive profile chart
 
 **Files:**
+
 - Modify: `lib/features/dive_log/presentation/widgets/dive_profile_chart.dart`
 
 **Step 1: Identify the _buildEventLines() method**
@@ -1615,8 +1577,7 @@ List<VerticalLine> _buildEventLines(ColorScheme colorScheme) {
     );
   }).toList();
 }
-```
-
+```text
 **Step 3: Update ExtraLinesData to use vertical lines (not horizontal)**
 
 Find the `extraLinesData` in the chart build method and change from horizontal to vertical:
@@ -1627,20 +1588,19 @@ extraLinesData: ExtraLinesData(
       ? _buildEventLines(colorScheme)
       : [],
 ),
-```
-
+```text
 **Step 4: Commit**
 
 ```bash
 git add lib/features/dive_log/presentation/widgets/dive_profile_chart.dart
 git commit -m "feat: render dive computer events as vertical markers on profile chart"
-```
-
+```text
 ---
 
 ### Task 18: Load events from database and pass to chart
 
 **Files:**
+
 - Modify: repository to load events for a dive
 - Modify: provider/widget that builds the chart to include events
 
@@ -1674,8 +1634,7 @@ Future<List<ProfileEvent>> getEventsForDive(String diveId) async {
     createdAt: DateTime.fromMillisecondsSinceEpoch(row.createdAt),
   )).toList();
 }
-```
-
+```text
 **Step 2: Wire events into the chart widget**
 
 In the dive detail page or profile section, load events and pass to chart:
@@ -1689,15 +1648,13 @@ DiveProfileChart(
   events: events,
   showEvents: true,
 )
-```
-
+```text
 **Step 3: Commit**
 
 ```bash
 git add lib/features/dive_log/
 git commit -m "feat: load dive computer events from database and display on chart"
-```
-
+```diff
 ---
 
 ## Phase 10: Verification and Cleanup
@@ -1732,6 +1689,7 @@ git commit -m "fix: resolve test failures and analyzer issues from GF/events fea
 **Step 1: Connect a dive computer and download dives**
 
 Verify:
+
 - Gradient factors appear in dive details
 - Events show as markers on the profile chart
 - NDL/ceiling curves from computer display correctly
@@ -1740,6 +1698,7 @@ Verify:
 **Step 2: Verify with a dive computer that reports GF (e.g., Shearwater)**
 
 Check that:
+
 - `decoAlgorithm` = "buhlmann"
 - `gfLow` and `gfHigh` are populated with the computer's settings
 - Profile analysis uses the computer's GF values
@@ -1749,6 +1708,7 @@ Check that:
 ## File Summary
 
 ### Files to Create
+
 | File | Purpose |
 |------|---------|
 | `test/features/dive_computer/domain/entities/downloaded_dive_test.dart` | Tests for extended DownloadedDive |
@@ -1757,6 +1717,7 @@ Check that:
 | `test/features/dive_log/data/services/profile_analysis_gf_test.dart` | Tests for GF override |
 
 ### Files to Modify
+
 | File | Changes |
 |------|---------|
 | `packages/.../libdc_wrapper.h` | Extend C structs |

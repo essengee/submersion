@@ -40,6 +40,7 @@ UDDF is the industry standard for dive data exchange, used by most dive logging 
 ### UDDF Compatibility
 
 Submersion supports UDDF 3.2, compatible with:
+
 - Subsurface
 - MacDive
 - DiveLog
@@ -87,6 +88,7 @@ Export dives to a spreadsheet:
 6. Export
 
 Exported CSV includes:
+
 - All standard dive fields
 - Tank information
 - Site details
@@ -108,6 +110,7 @@ Create printable logbook pages:
 ### Single Dive
 
 From any dive detail page:
+
 1. Tap the **share icon**
 2. Select **Export as PDF**
 3. Share or save the PDF
@@ -115,6 +118,7 @@ From any dive detail page:
 ### PDF Contents
 
 Each dive page includes:
+
 - Dive header (number, date, site)
 - Dive profile graph
 - Key statistics
@@ -179,6 +183,7 @@ Use backups before major changes or when moving between devices.
 ### From Dive Computer Software
 
 Most manufacturers support UDDF export:
+
 - **Shearwater Cloud** - Export UDDF
 - **Suunto DM5** - Export UDDF
 - **Mares Dive Organizer** - Export UDDF
@@ -186,6 +191,7 @@ Most manufacturers support UDDF export:
 ### From Spreadsheets
 
 If you have dives in Excel/Google Sheets:
+
 1. Save as CSV
 2. Use CSV import with column mapping
 
@@ -196,6 +202,7 @@ When importing, Submersion detects duplicates:
 ### Detection Criteria
 
 Dives are considered duplicates if they match:
+
 - Date/time (within 5 minutes)
 - Max depth (within 1m)
 - Duration (within 2 minutes)
@@ -203,6 +210,7 @@ Dives are considered duplicates if they match:
 ### Duplicate Options
 
 When duplicates are found:
+
 - **Skip** - Don't import duplicates
 - **Replace** - Overwrite existing
 - **Import Anyway** - Create duplicates
@@ -218,6 +226,7 @@ When duplicates are found:
 ### Before Major Changes
 
 Always backup before:
+
 - Device migration
 - App updates
 - Bulk imports
@@ -225,6 +234,7 @@ Always backup before:
 ### Sharing Dives
 
 To share individual dives:
+
 1. Open dive detail
 2. Tap share icon
 3. Choose format (PDF for non-divers, UDDF for divers)

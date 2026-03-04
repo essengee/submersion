@@ -7,11 +7,13 @@
 ## Problem
 
 iOS has a fully automated release pipeline:
+
 - `capture_screenshots.sh` boots simulators, runs Flutter integration tests, captures screenshots
 - iOS Fastfile has `screenshots`, `upload_screenshots`, `build`, `release`, and `full_release` lanes
 - One command (`full_release`) does everything
 
 macOS is missing this automation:
+
 - Screenshots use a separate AppleScript + cliclick approach (`capture_macos_screenshots.sh`)
 - macOS screenshots are not organized into `en-US/` for Fastlane upload
 - macOS Fastfile has only `build`, `beta`, and `release` lanes -- no screenshot support
@@ -55,14 +57,12 @@ flutter test integration_test/screenshots_test.dart \
   --dart-define=SCREENSHOT_DEVICE_NAME=macOS \
   --dart-define=SCREENSHOT_OUTPUT_DIR="$SCREENSHOTS_DIR" \
   --dart-define=UDDF_TEST_DATA_PATH="$UDDF_FILE"
-```
-
+```text
 Add macOS to the Fastlane organization step:
 
 ```bash
 organize_device "macOS"
-```
-
+```text
 This means `capture_screenshots.sh` captures iPhone + iPad + macOS in one run.
 
 ### 3. macOS Fastlane Lanes
@@ -93,20 +93,23 @@ Target: 2560x1600 pixels (via 1280x800 points on Retina). Single size only.
 ## End-to-End Flows
 
 **macOS full release (single command):**
+
 ```bash
 cd macos && bundle exec fastlane full_release
-```
+```text
 Captures macOS screenshots -> organizes + alpha-strips -> uploads screenshots -> builds pkg -> uploads pkg.
 
 **iOS full release (unchanged):**
+
 ```bash
 cd ios && bundle exec fastlane full_release
-```
-
+```text
 **All-platform screenshots (from project root):**
+
 ```bash
 ./scripts/release/capture_screenshots.sh
 ```
+
 Captures iPhone + iPad + macOS screenshots, organizes all into `screenshots/en-US/`.
 
 ## Risk

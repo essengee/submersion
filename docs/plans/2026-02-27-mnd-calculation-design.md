@@ -22,26 +22,27 @@ File: `lib/features/dive_log/domain/entities/dive.dart`
 
 ```dart
 double mnd({double endLimit = 30.0, bool o2Narcotic = true})
-```
-
+```text
 **O2 narcotic mode** (narcotic gas = everything except He):
 
 ```
+
 narcoticFraction = (100 - he) / 100
 targetPressure = (endLimit / 10) + 1
 maxPressure = targetPressure / narcoticFraction
 MND = (maxPressure - 1) * 10
-```
 
+```text
 **N2-only narcotic mode:**
 
 ```
+
 n2Fraction = n2 / 100
 targetPressure = (endLimit / 10) + 1
-maxPressure = targetPressure * 0.79 / n2Fraction
-MND = (maxPressure - 1) * 10
-```
+maxPressure = targetPressure *0.79 / n2Fraction
+MND = (maxPressure - 1)* 10
 
+```text
 If N2 is 0, MND is effectively infinite (return a large sentinel or double.infinity).
 
 This matches Subsurface's `gas_mnd()` from `core/dive.cpp`.
@@ -52,8 +53,7 @@ Add `o2Narcotic` parameter (default `true` for backward compatibility):
 
 ```dart
 double end(double depth, {bool o2Narcotic = true})
-```
-
+```text
 - O2 narcotic: `narcoticFraction = (100 - he) / 100`, compare against ambient
 - N2-only: `narcoticFraction = n2 / 100`, compare against air baseline (0.79)
 
@@ -61,11 +61,11 @@ double end(double depth, {bool o2Narcotic = true})
 
 ```dart
 static double heForMnd(double targetMnd, double o2, {bool o2Narcotic = true})
-```
-
+```text
 Inverse calculation: given a target MND and O2%, calculate the He% needed. Used by the bidirectional tank editor.
 
 Edge cases:
+
 - Calculated He < 0: clamp to 0
 - Calculated He > (100 - O2): unreachable, return (100 - O2) and signal warning
 
@@ -91,6 +91,7 @@ Map new fields in create, update, and read operations.
 ### Settings UI (`settings_page.dart` -- Decompression section)
 
 New "Narcosis" card with:
+
 - `SwitchListTile`: "O2 is narcotic" toggle with explanatory subtitle
 - `ListTile`: "END Limit" showing current value in diver's depth unit, tap to edit via slider dialog (range: 20-50m / 66-165ft)
 
@@ -101,6 +102,7 @@ File: `lib/features/dive_log/presentation/widgets/tank_editor.dart`
 ### MND display
 
 Extend `_buildModInfo` row to show MND alongside MOD:
+
 - Format: "MOD: 33m | MND: 51m"
 - Only shown when gas is not air (same condition as MOD)
 - If MND is infinite (no N2, no narcotic gas), display "--"
@@ -132,6 +134,7 @@ New 5th tab in `gas_calculators_page.dart`.
 **Input Card:** O2% slider, He% slider, END limit input, O2 narcotic toggle
 
 **Results Card:**
+
 - MND result with formatted depth (metric + imperial)
 - END at depth with depth input field
 

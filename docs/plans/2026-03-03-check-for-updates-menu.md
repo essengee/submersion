@@ -15,6 +15,7 @@
 Register a method channel listener that invokes the existing update check when called from native code.
 
 **Files:**
+
 - Create: `lib/features/auto_update/presentation/providers/update_menu_channel.dart`
 - Modify: `lib/app.dart:21-27` (register channel in initState)
 
@@ -41,17 +42,16 @@ void registerUpdateMenuChannel(WidgetRef ref) {
     }
   });
 }
-```
-
+```typescript
 **Step 2: Register the channel in SubmersionApp.initState**
 
 In `lib/app.dart`, add the import and call `registerUpdateMenuChannel(ref)` inside the existing `initState` method, after the `addPostFrameCallback` call:
 
 ```dart
 import 'package:submersion/features/auto_update/presentation/providers/update_menu_channel.dart';
-```
-
+```text
 In `initState`:
+
 ```dart
 @override
 void initState() {
@@ -62,8 +62,7 @@ void initState() {
     _maybeSyncOnLaunch();
   });
 }
-```
-
+```text
 **Step 3: Run analyze to verify**
 
 Run: `flutter analyze lib/features/auto_update/presentation/providers/update_menu_channel.dart lib/app.dart`
@@ -74,8 +73,7 @@ Expected: No issues found
 ```bash
 git add lib/features/auto_update/presentation/providers/update_menu_channel.dart lib/app.dart
 git commit -m "feat: add method channel handler for native update menu"
-```
-
+```sql
 ---
 
 ### Task 2: macOS MainMenu.xib - Add Menu Item
@@ -83,6 +81,7 @@ git commit -m "feat: add method channel handler for native update menu"
 Add the "Check for Updates..." menu item to the application menu in the XIB file.
 
 **Files:**
+
 - Modify: `macos/Runner/Base.lproj/MainMenu.xib:34-35`
 
 **Step 1: Add the menu item after "About APP_NAME"**
@@ -96,8 +95,7 @@ In `MainMenu.xib`, insert the following XML after the "About APP_NAME" `</menuIt
                                     <action selector="checkForUpdates:" target="Voe-Tx-rLC" id="dLw-3K-9bX"/>
                                 </connections>
                             </menuItem>
-```
-
+```typescript
 Note: The `target="Voe-Tx-rLC"` is the AppDelegate's existing XIB object ID. The `id` values are arbitrary unique strings.
 
 **Step 2: Verify XIB is valid XML**
@@ -110,8 +108,7 @@ Expected: `Valid`
 ```bash
 git add macos/Runner/Base.lproj/MainMenu.xib
 git commit -m "feat(macos): add 'Check for Updates' to application menu"
-```
-
+```diff
 ---
 
 ### Task 3: macOS AppDelegate - Add Action Handler
@@ -119,6 +116,7 @@ git commit -m "feat(macos): add 'Check for Updates' to application menu"
 Wire the menu item action to the Flutter method channel.
 
 **Files:**
+
 - Modify: `macos/Runner/AppDelegate.swift:1-36`
 
 **Step 1: Add the method channel and action**
@@ -170,8 +168,7 @@ class AppDelegate: FlutterAppDelegate {
     return true
   }
 }
-```
-
+```text
 **Step 2: Build macOS to verify compilation**
 
 Run: `flutter build macos --debug 2>&1 | tail -5`
@@ -182,8 +179,7 @@ Expected: Build succeeds
 ```bash
 git add macos/Runner/AppDelegate.swift
 git commit -m "feat(macos): wire 'Check for Updates' menu action to method channel"
-```
-
+```diff
 ---
 
 ### Task 4: Windows - Add System Menu Item
@@ -191,6 +187,7 @@ git commit -m "feat(macos): wire 'Check for Updates' menu action to method chann
 Append "Check for Updates..." to the window system menu and handle the command.
 
 **Files:**
+
 - Modify: `windows/runner/flutter_window.h:25-31`
 - Modify: `windows/runner/flutter_window.cpp:12-71`
 
@@ -201,8 +198,7 @@ Add after line 30 (`std::unique_ptr<flutter::FlutterViewController> flutter_cont
 ```cpp
   // Custom system menu command ID for "Check for Updates..."
   static constexpr UINT kCheckForUpdatesCmd = 0x0010;
-```
-
+```text
 **Step 2: Modify FlutterWindow::OnCreate() to add the system menu item**
 
 In `flutter_window.cpp`, add the following at the end of `OnCreate()`, just before `return true;` (after the `ForceRedraw` call):
@@ -215,8 +211,7 @@ In `flutter_window.cpp`, add the following at the end of `OnCreate()`, just befo
     AppendMenu(sys_menu, MF_STRING, kCheckForUpdatesCmd,
                L"Check for Updates...");
   }
-```
-
+```text
 **Step 3: Handle WM_SYSCOMMAND in MessageHandler**
 
 In `FlutterWindow::MessageHandler`, add a new case in the `switch (message)` block (after the `WM_FONTCHANGE` case, before the closing `}`):
@@ -235,15 +230,13 @@ In `FlutterWindow::MessageHandler`, add a new case in the `switch (message)` blo
         return 0;
       }
       break;
-```
-
+```text
 Also add at the top of `flutter_window.cpp` (with the other includes):
 
 ```cpp
 #include <flutter/method_channel.h>
 #include <flutter/standard_method_codec.h>
-```
-
+```text
 **Step 4: Build Windows to verify compilation (if on Windows, otherwise skip)**
 
 Run: `flutter build windows --debug 2>&1 | tail -5`
@@ -254,8 +247,7 @@ Expected: Build succeeds (skip if not on Windows)
 ```bash
 git add windows/runner/flutter_window.h windows/runner/flutter_window.cpp
 git commit -m "feat(windows): add 'Check for Updates' to system menu"
-```
-
+```text
 ---
 
 ### Task 5: Manual Testing & Format
@@ -279,6 +271,7 @@ Expected: All existing tests pass
 Run: `flutter run -d macos`
 
 Verify:
+
 - The "Submersion" app menu shows "Check for Updates..." between "About Submersion" and the separator
 - Clicking it triggers the Sparkle update check dialog (shows "checking..." then "up to date" or update prompt)
 

@@ -1,4 +1,5 @@
 # Submersion Feature Roadmap
+
 ## Comprehensive Development Plan
 
 > **Last Updated:** 2026-02-24
@@ -21,6 +22,7 @@
 | **v3.0** | 12-18 months | Community platform & AI features | 🔮 Future |
 
 ### Status Legend
+
 - ✅ **Implemented** - Feature is complete and working
 - 📋 **Planned** - Scheduled for upcoming phase
 - 🔮 **Future** - Long-term roadmap item
@@ -58,6 +60,7 @@
 | Liveaboard tracking | 📋 Planned | v2.0 | Specialized trip type |
 
 **v1.5 Tasks:**
+
 - [ ] Trip templates (liveaboard, resort week, local weekend)
 - [ ] Trip photo galleries (deferred with photos to v2.0)
 
@@ -79,6 +82,7 @@
 | Altitude | ✅ Implemented | v1.5 | For altitude dive calculations |
 
 **v1.5 Tasks:**
+
 - [x] Weather API integration (OpenWeatherMap) with historical data
 - [x] Tide information integration
 - [x] Auto-populate conditions from GPS + date/time
@@ -100,6 +104,7 @@
 | Smart collections based on tags | 📋 Planned | v2.0 | Saved filters |
 
 **v1.5 Tasks (Complete):**
+
 - [x] DiveCustomField entity with copyWith and Equatable
 - [x] `dive_custom_fields` table (schema v34) with cascade delete and indexes
 - [x] DiveCustomFieldRepository with batch loading, key suggestions, replace-all
@@ -141,6 +146,7 @@
 | Recursive CNS calculation | ✅ Implemented | v1.5 | CNS incorporates residual from previous dives |
 
 **v1.5 Tasks:**
+
 - [x] Profile event markers (ProfileEvent entity with type, timestamp, severity)
 - [x] Ascent rate calculation and color overlay (green <9m/min, yellow 9-12, red >12)
 - [x] NDL curve from Bühlmann implementation
@@ -182,12 +188,14 @@
 | Multi-transmitter support | 📋 Planned | v2.0 | Track multiple tank transmitters (sidemount) |
 
 **v1.5 Tasks:**
+
 - [x] DiveComputer entity (name, manufacturer, model, serial)
 - [x] Add `computerId` to dive_profiles table
 - [x] UI to select active profile when multiple exist (ProfileSelectorWidget)
 - [x] Primary profile indicator for statistics
 
 **v2.0 Tasks:**
+
 - [ ] Side-by-side profile comparison view
 - [ ] Buddy profile import (from shared UDDF)
 
@@ -203,6 +211,7 @@
 | Outlier detection | ✅ Implemented | v1.5 | Z-score on depth deltas + physical impossibility check |
 
 **v1.5 Tasks (Complete):**
+
 - [x] Profile outlier detection algorithm (sudden depth jumps)
 - [x] Smoothing algorithm (moving average)
 - [x] Manual profile editor with touch/mouse drawing
@@ -232,6 +241,7 @@
 | Wi-Fi / cloud devices | 📋 Planned | v2.0 | Garmin, Shearwater cloud API |
 
 **v1.5 Tasks (Critical Path):**
+
 - [x] Integrate libdivecomputer via FFI (Dart bindings to C library)
 - [x] Device detection and pairing UI (multi-step wizard)
 - [x] Bluetooth connection manager (scanning, pairing, reconnection)
@@ -262,6 +272,7 @@
 | Favorite devices | ✅ Implemented | v1.5 | Device list page with quick access |
 
 **v1.5 Tasks:**
+
 - [x] Create `dive_computers` table (name, manufacturer, model, connection_type, last_used)
 - [x] Device library with 300+ model definitions from libdivecomputer
 - [x] Auto-detection of device model via USB VID/PID or BT service UUID
@@ -280,12 +291,14 @@
 | Duplicate detection | ✅ Implemented | v1.5 | Fuzzy match on time+depth+duration |
 
 **v1.5 Tasks:**
+
 - [x] Store `last_download_timestamp` per dive computer
 - [x] Duplicate detection algorithm (fuzzy match on datetime + depth within tolerance)
 - [x] "New Dives" vs "All Dives" toggle in download wizard
 - [x] Conflict resolution (skip, replace, import as new)
 
 **v2.0 Tasks:**
+
 - [ ] Background BLE scanning and auto-download (mobile)
 - [ ] Notification when new dives detected
 
@@ -301,11 +314,13 @@
 | Remote configuration | 📋 Planned | v2.0 | Set gases, alarms, units |
 
 **v1.5 Tasks:**
+
 - [x] Add `computer_id` to dives table (which device imported this dive)
 - [x] Computer detail page showing all dives from that device
 - [x] Computer stats (total dives, deepest, longest, avg depth, temp range, date range)
 
 **v2.0 Tasks:**
+
 - [ ] Firmware update wizard (download firmware, flash via BLE)
 - [ ] Computer settings sync (read/write computer config)
 
@@ -336,6 +351,7 @@
 | Gas changes on profile | ✅ Implemented | v1.5 | Mark switch points |
 
 **v1.5 Tasks:**
+
 - [x] Gas switch events on profile (table: `gas_switches` with timestamp, tank_id)
 - [x] Profile segment coloring based on active gas
 - [x] Gas switch markers on profile chart
@@ -356,6 +372,7 @@
 | SAC per cylinder | 📋 Planned | v1.5 | For multi-tank dives |
 
 **v1.5 Tasks:**
+
 - [x] CNS% calculation per dive (accumulated O₂ exposure using NOAA tables)
 - [x] OTU calculation (Oxygen Tolerance Units with daily limit tracking)
 - [x] CNS/OTU display on dive detail page (O2ToxicityCard)
@@ -383,6 +400,7 @@
 | Setpoints, diluent, bailout | ✅ Implemented | v1.5 | CCR-specific fields |
 
 **v1.5 Tasks (Deco Algorithm Implementation):**
+
 - [x] Implement Bühlmann ZH-L16C algorithm in Dart
 - [x] Gradient Factors (GF Low/High) configuration in settings
 - [x] 16-compartment tissue loading calculation
@@ -395,6 +413,7 @@
 - [x] 141 unit tests for deco algorithms
 
 **v1.5 CCR/SCR Support (Complete):**
+
 - [x] Add `dive_mode` enum (OC, CCR, SCR) to dives table
 - [x] CCR-specific fields: setpoint(s), diluent, bailout gas
 - [x] Setpoint changes as profile events
@@ -423,6 +442,7 @@
 | Range plans | 📋 Planned | v2.0 | Multiple profiles with different depths/times |
 
 **v1.5 Tasks:**
+
 - [x] Dive Planner page with depth/time segment editor
 - [x] Add segments (depth, duration, gas mix)
 - [x] Real-time deco calculation as user edits plan
@@ -434,6 +454,7 @@
 - [x] Profile chart visualization of planned dive
 
 **v2.0 Tasks:**
+
 - [ ] Repetitive dive planner with tissue loading from previous dive
 - [ ] "Extend dive" tool (add 5 mins at depth, recalculate deco)
 - [ ] "Add safety" tool (extend safety stop, add deep stop)
@@ -454,6 +475,7 @@
 | Common marine life | ✅ Implemented | v1.5 | Link species to sites |
 
 **v1.5 Tasks:**
+
 - [x] Many-to-many relationship between sites and species (common sightings)
 - [x] Display "Commonly Seen" species list on site detail page
 
@@ -471,6 +493,7 @@
 | GPS from photo EXIF | 📋 Planned | v1.5 | Extract and suggest site |
 
 **v1.5 Tasks:**
+
 - [ ] EXIF parsing from photo attachments
 - [ ] If photo has GPS and dive doesn't, suggest using photo GPS
 - [ ] Bulk site creation from photo library
@@ -489,6 +512,7 @@
 | Site filtering | ✅ Implemented | v1.5 | Filter sites by country, region, difficulty, depth, rating |
 
 **v1.5 Tasks (Complete):**
+
 - [x] Offline map tile caching using flutter_map_tile_caching (FMTC)
 - [x] Download map region for offline use (bounding box region selector)
 - [x] Heat map visualization of dive activity (intensity = dive count)
@@ -506,6 +530,7 @@
 | Dive site reviews | 📋 Planned | v2.0 | User-generated content |
 
 **v2.0 Tasks:**
+
 - [ ] Integration with public dive site APIs (e.g., Open Dive Sites, PADI Travel)
 - [ ] Import site details from online sources
 - [ ] User reviews and ratings (requires backend)
@@ -546,6 +571,7 @@
 | Push notifications | ✅ Implemented | v1.5 | For overdue service |
 
 **v1.5 Tasks (Complete):**
+
 - [x] Local notifications for service due dates (NotificationScheduler service)
 - [x] Configurable reminder advance in settings (7 days, 14 days, 30 days before due)
 - [x] Per-equipment notification override on equipment edit page
@@ -556,6 +582,7 @@
 - [x] Desktop platforms gracefully skip notification services
 
 **v2.0 Tasks:**
+
 - [ ] Service log export to PDF (professional format with full history)
 
 ---
@@ -587,6 +614,7 @@
 | Share dives with buddy | ✅ Implemented | v1.5 | UDDF export via share sheet |
 
 **v1.5 Tasks (Complete):**
+
 - [x] Import buddies from contacts (mobile)
 - [x] Share dives with buddies (export UDDF, send via email/messaging)
 
@@ -602,6 +630,7 @@
 | Signatures in PDF export | ✅ Implemented | v1.5 | Display in exported dive logs |
 
 **v1.5 Tasks (Complete):**
+
 - [x] SignatureCaptureWidget (canvas drawing with save as PNG)
 - [x] SignatureStorageService (Media table with fileType='instructor_signature')
 - [x] SignatureDisplayWidget (preview, full-view dialog, badge)
@@ -638,6 +667,7 @@
 | Scanned card images | ✅ Implemented | v1.5 | Front/back photos stored as BLOB in database |
 
 **v1.5 Tasks (Complete):**
+
 - [x] Add photo_front and photo_back BLOB columns to certifications table
 - [x] ImagePicker integration for capturing/selecting card photos
 - [x] Display card photos on certification detail page with full-screen viewer
@@ -653,10 +683,12 @@
 | QR codes | 📋 Planned | v2.0 | Scannable verification |
 
 **v1.5 Tasks:**
+
 - [ ] Certification wallet view (card-style UI)
 - [ ] Export cert card as image (shareable)
 
 **v2.0 Tasks:**
+
 - [ ] Generate QR codes for certs (encode cert number, agency, level)
 - [ ] QR code verification (backend required)
 
@@ -675,6 +707,7 @@
 | Training log export | ✅ Implemented | v1.5 | PDF with instructor signatures |
 
 **v1.5 Tasks (Complete):**
+
 - [x] Course entity (name, agency, start_date, completion_date, instructor, cert_id)
 - [x] Course UI pages (list with filtering, detail, edit)
 - [x] CoursePicker widget for dive edit page
@@ -696,6 +729,7 @@
 | Medical documents | 📋 Planned | v2.0 | PDF storage |
 
 **v1.5 Tasks (Complete):**
+
 - [x] Add Medical/Personal section to Diver Edit page
 - [x] Two emergency contacts (primary + secondary) with name, phone, relationship
 - [x] Medical clearance expiry date with visual warnings (expired/expiring soon)
@@ -703,6 +737,7 @@
 - [x] Helper methods: `isMedicalClearanceExpired`, `isMedicalClearanceExpiringSoon`
 
 **v2.0 Tasks:**
+
 - [ ] Medical document storage (PDF of medical clearance)
 - [ ] Export profile with certs + medical for dive operations
 
@@ -720,6 +755,7 @@
 | Tides | ✅ Implemented | v1.5 | World Tides API integration |
 
 **v1.5 Tasks:**
+
 - [x] Tide API integration (World Tides)
 - [x] Display tide state at dive time
 - [x] Altitude field with warning if >300m (affects NDL)
@@ -743,6 +779,7 @@
 | Offline species ID | 📋 Planned | v2.0 | Works without internet connection |
 
 **v1.5 Tasks (Complete):**
+
 - [x] Add `taxonomy_class`, `is_built_in` columns to species table (schema v32)
 - [x] Expand species database from 36 to 511 species (JSON asset with scientific names, taxonomy, descriptions)
 - [x] Species seed service (JSON asset loader with static cache)
@@ -755,6 +792,7 @@
 - [x] 30 tests (repository CRUD, statistics queries, entity behavior)
 
 **v2.0 Tasks:**
+
 - [ ] Species photo library (local or remote images)
 - [ ] Species distribution map (heatmap of sightings)
 - [ ] "Life list" progress tracker (total species seen)
@@ -783,6 +821,7 @@
 | Depth/time overlay | ✅ Implemented | v1.5 | MiniDiveProfileOverlay on photo viewer |
 
 **v1.5 Tasks (Complete):**
+
 - [x] Photo picker in dive detail page (time range filtering based on dive times)
 - [x] Link photos to dives via Media table (many-to-many)
 - [x] Media storage strategy (reference to device photo library via platformAssetId)
@@ -800,6 +839,7 @@
 - [x] Migration to de-duplicate existing media records
 
 **v2.0 Tasks:**
+
 - [ ] Caption and datetime editing per photo
 - [ ] Export dive with photos (ZIP archive)
 - [ ] Bulk photo import with auto-match to dives
@@ -828,6 +868,7 @@
 | Saved filters ("Smart Logs") | 📋 Planned | v2.0 | Persistent filter sets |
 
 **v1.5 Tasks (Complete):**
+
 - [x] Expand filter UI with all available criteria (buddy name, equipment, gas mix O2%, rating, duration)
 - [x] "Advanced Search" page with collapsible sections for all filter options
 - [x] Bulk export (export selected dives to CSV/UDDF/PDF from selection mode)
@@ -835,6 +876,7 @@
 - [x] Repository bulk methods (`bulkUpdateTrip`, `bulkAddTags`, `bulkRemoveTags`)
 
 **v2.0 Tasks:**
+
 - [ ] Save filter configurations as "Smart Logs"
 - [ ] Smart Log management (name, description, icon)
 - [ ] Quick access to Smart Logs from home page
@@ -854,6 +896,7 @@
 | Dive type breakdown | ✅ Implemented | v1.5 | Pie chart by dive type |
 
 **v1.5 Tasks:**
+
 - [x] SAC trend line chart (average SAC per month over last 5 years)
 - [x] Temperature preference chart (water temp by month with min/avg/max)
 - [x] Dive frequency chart (dives per year bar chart)
@@ -866,6 +909,7 @@
 - [x] Cumulative dive count chart
 
 **v2.0 Tasks:**
+
 - [ ] Advanced analytics dashboard (customizable widgets)
 - [ ] Year-in-review summary (auto-generated at year end)
 
@@ -883,6 +927,7 @@
 | Custom report designer | 📋 Planned | v2.0 | Drag-drop fields |
 
 **v1.5 Tasks (Complete):**
+
 - [x] Display instructor and buddy signatures in PDF export
 - [x] Multiple PDF templates (Simple, Detailed, Professional, PADI-style, NAUI-style)
 - [x] Template selection in export dialog
@@ -890,6 +935,7 @@
 - [x] Include certification cards in PDF export
 
 **v2.0 Tasks:**
+
 - [ ] Custom report builder (select fields, layout, sorting)
 - [ ] Save custom report templates
 - [ ] Export to Excel/CSV with custom fields
@@ -906,6 +952,7 @@
 | Calculator navigation | ✅ Implemented | v1.5 | Cards for Deco, Gas, Weight calculators |
 
 **v1.5 Tasks:**
+
 - [x] Tools landing page at `/tools` with card-based navigation
 - [x] NavigationRail "Calculator" destination links to Tools page
 - [x] Consolidated "Tools" entry in More menu (mobile)
@@ -933,6 +980,7 @@
 | NDL, ceiling, tissue loading | ✅ Implemented | v1.5 | Visual display with 16-compartment chart |
 
 **v1.5 Tasks:**
+
 - [x] Deco Calculator page (separate from planner) - `lib/features/deco_calculator/`
 - [x] Sliders for depth (0-60m), time (0-120min), gas mix (O2/He with presets)
 - [x] Real-time display of: NDL, ceiling, TTS, tissue loading bar chart (16 compartments)
@@ -952,6 +1000,7 @@
 | Rock-bottom calculator | ✅ Implemented | v1.5 | Emergency gas reserve |
 
 **v1.5 Tasks:**
+
 - [x] Calculators page with tabs: MOD, Best Mix, Gas Consumption, Rock Bottom - `lib/features/gas_calculators/`
 - [x] MOD: Input O₂%, ppO₂ limit → Output MOD (with feet conversion)
 - [x] Best Mix: Input target depth, ppO₂ limit → Output ideal O₂% (with common mix suggestions)
@@ -968,6 +1017,7 @@
 | Altitude conversion | ✅ Implemented | v1.5 | Altitude dive tables with pressure calculator |
 
 **v1.5 Tasks:**
+
 - [ ] Surface Interval Tool: Input previous dive (depth, time, gas) + desired next dive → Output min surface interval
 - [ ] Display tissue loading chart showing saturation decreasing over time
 - [x] AltitudeCalculator with ISA barometric formula (pressure from altitude)
@@ -992,6 +1042,7 @@
 | Cloud sync UI | ✅ Implemented | v1.5 | Provider selection, sync status, conflicts |
 
 **v2.0 Tasks:**
+
 - [ ] Backend service for user accounts (Firebase, Supabase)
 - [ ] User authentication (email/password, OAuth)
 - [ ] Privacy policy and data handling docs
@@ -1010,6 +1061,7 @@
 | Web sync | 📋 Planned | v2.0 | Requires backend service |
 
 **v1.5 Tasks (Complete):**
+
 - [x] Drift schema with `last_modified_at`, `device_id`, `is_deleted` (SyncMetadata, SyncRecords, DeletionLog tables)
 - [x] Sync engine (bidirectional via cloud storage)
 - [x] Conflict detection and resolution UI
@@ -1017,6 +1069,7 @@
 - [x] Reset sync state option
 
 **v2.0 Tasks:**
+
 - [ ] Web platform sync (requires backend)
 - [ ] "Force push" and "force pull" options for troubleshooting
 
@@ -1032,6 +1085,7 @@
 | Custom folder sync | ✅ Implemented | v1.5 | Dropbox/OneDrive via folder selection |
 
 **v1.5 Tasks (Complete):**
+
 - [x] Automatic scheduled backups
 - [x] Backup history (keep last N backups with stale entry pruning)
 - [x] One-click restore from cloud backup
@@ -1052,6 +1106,7 @@
 | Deferred sync | 📋 Planned | v2.0 | Queue changes when offline |
 
 **v2.0 Tasks:**
+
 - [ ] Offline queue for pending sync operations
 - [ ] Auto-sync when connectivity restored
 - [ ] Sync conflict warnings and resolution
@@ -1075,10 +1130,12 @@
 | HTML export | 📋 Planned | v2.0 | Web-viewable logbook |
 
 **v1.5 Tasks:**
+
 - [x] Excel export with multiple sheets (dives, sites, equipment, statistics)
 - [x] KML export (placemark per dive site with description bubble)
 
 **v2.0 Tasks:**
+
 - [ ] ePub export (electronic book for showing experience digitally)
 - [ ] HTML export (static website with CSS, images, interactive map)
 - [ ] MySQL dump export (for migration to other systems)
@@ -1100,6 +1157,7 @@
 | Deepblu import | 📋 Planned | v2.0 | Import from Deepblu platform |
 
 **v1.5 Tasks (Complete):**
+
 - [x] Import wizard with app selection (Subsurface, MacDive, Diving Log, etc.)
 - [x] Per-app parser (detect format, map fields)
 - [x] Dry-run preview before importing
@@ -1108,6 +1166,7 @@
 - [x] 9 entity types supported (dives, sites, buddies, equipment, species, certifications, tanks, weights, tags)
 
 **v2.0 Tasks:**
+
 - [ ] divelogs.de API integration (upload/download dives)
 - [ ] Garmin Connect API (import dive activity FIT files)
 - [ ] Automatic conversion from Garmin Descent dive computers
@@ -1128,6 +1187,7 @@
 | Import validation | ✅ Implemented | v1.5 | Required fields, data types, dry-run preview |
 
 **v1.5 Tasks (Complete):**
+
 - [x] Smart format detection (analyze CSV headers, suggest mapping)
 - [x] Import templates for common apps (built-in column mappings for 12+ source apps)
 - [x] Import validation (check required fields, data types, row-level error reporting)
@@ -1148,6 +1208,7 @@
 | Shareable dive cards | 📋 Planned | v2.0 | Visual summary image for social |
 
 **v2.0 Tasks:**
+
 - [ ] "Share Dive" action with platform picker
 - [ ] Generate shareable image (profile chart, photo, depth/time/location text overlay)
 - [ ] Share as PNG or link (if cloud sync enabled)
@@ -1165,6 +1226,7 @@
 | Dive site reviews & ratings | 📋 Planned | v2.0 | Rate and review sites |
 
 **v2.0 Tasks:**
+
 - [ ] Community backend (user accounts, public profiles)
 - [ ] Public dive site database (user submissions)
 - [ ] Site photos, reviews, difficulty ratings
@@ -1185,6 +1247,7 @@
 | Digital instructor signatures | 📋 Planned | v2.0 | Instructors verify/sign training logs |
 
 **v2.0 Tasks:**
+
 - [ ] Diver profile page (public view with stats, certifications, dive count)
 - [ ] Follow/unfollow other divers
 - [ ] Activity feed (new dives, photos, certifications from followed divers)
@@ -1218,6 +1281,7 @@
 | Quick actions | 📋 Planned | v1.5 | iOS shortcuts, Android widgets |
 
 **v1.5 Tasks:**
+
 - [x] CardColorAttribute enum with gradient presets (depth, temperature, rating, CNS, OTU, ppO2, etc.)
 - [x] Generic attribute-based card coloring in dive list builders
 - [x] Card color settings UI (attribute dropdown + gradient preset picker)
@@ -1227,6 +1291,7 @@
 - [ ] Android home screen widgets (dive count, last dive, next service due)
 
 **v2.0 Tasks:**
+
 - [ ] Customizable dive list columns (user selects which fields to show)
 - [ ] Theme editor (custom colors, fonts)
 - [ ] Layout presets (Compact, Detailed, Photo-focused)
@@ -1241,6 +1306,7 @@
 | Account switching | ✅ Done | v1.5 | Shared devices |
 
 **v1.5 Tasks (Complete):**
+
 - [x] Diver entity (name, certs, profile)
 - [x] Add `diver_id` to dives table
 - [x] Diver switcher in settings or main nav
@@ -1264,6 +1330,7 @@
 | High contrast themes | 📋 Planned | v2.0 | Accessibility feature |
 
 **v1.5 Tasks (Complete):**
+
 - [x] Semantic labels on all interactive elements across 200+ files
 - [x] Tooltips on all IconButtons
 - [x] ExcludeSemantics on decorative elements (icons, dividers, charts)
@@ -1277,6 +1344,7 @@
 - [x] 83 unit/widget tests for accessibility infrastructure
 
 **v1.5 i18n Tasks (Complete):**
+
 - [x] flutter_localizations integration with gen-l10n codegen pipeline
 - [x] ARB files for 10 languages: English, Spanish, French, German, Italian, Dutch, Portuguese, Arabic, Hebrew, Hungarian
 - [x] 3,931 ARB keys extracted from ~233 presentation files
@@ -1288,6 +1356,7 @@
 - [x] Localization integration tests (locale switching, RTL direction, provider persistence)
 
 **v2.0 Tasks:**
+
 - [ ] Translation management workflow (POEditor, Crowdin)
 
 ---
@@ -1304,6 +1373,7 @@
 | Progress visualization | 📋 Planned | v2.0 | Journey timeline with milestones |
 
 **v2.0 Tasks:**
+
 - [ ] Achievement system with badge definitions
 - [ ] Milestone tracking (dive count, depths, locations, species)
 - [ ] Badge unlock notifications
@@ -1326,6 +1396,7 @@
 | Garmin Connect cloud API | 📋 Planned | v2.0 | Cloud sync (not file-based) |
 
 **v1.5 Tasks (Complete):**
+
 - [x] HealthKit permission and data reading (health package, UNDERWATER_DIVING activity)
 - [x] WearableDive / WearableProfileSample domain entities
 - [x] DiveMatcher fuzzy scoring (time 50%, depth 30%, duration 20%)
@@ -1340,6 +1411,7 @@
 - [x] UDDF import wizard (Transfer > Import from UDDF)
 
 **v2.0 Tasks:**
+
 - [ ] Garmin Connect cloud API integration
 - [ ] Automatic sync from connected wearables
 - [ ] Merge wearable data with dive computer data
@@ -1357,6 +1429,7 @@
 | No-fly countdown | ✅ Implemented | v1.5 | Based on deco status |
 
 **v2.0 Tasks:**
+
 - [ ] Pre/post dive well-being questionnaire
 - [ ] Correlation analysis (feeling vs dive parameters)
 - [ ] Breathing efficiency tips based on SAC trends
@@ -1385,6 +1458,7 @@
 | PADI eCard integration | 📋 Planned | v2.0 | Display PADI certs |
 
 **v2.0 Tasks:**
+
 - [ ] Shearwater Cloud API (import dives from cloud)
 - [ ] Garmin Connect API (import Descent dive activities)
 - [ ] PADI app integration (OAuth, fetch eCards)
@@ -1401,8 +1475,7 @@
 --                 dive_centers, dive_weights, tank_presets, trips
 -- v1.1 additions: tags, dive_tags, entry_time/exit_time on dives,
 --                 min_depth/max_depth/difficulty/hazards on sites
-```
-
+```text
 ## v1.5 Tables (Planned)
 
 ```sql
@@ -1410,8 +1483,7 @@
 -- gas_switches (dive_id, timestamp, tank_id)
 -- profile_events (dive_id, timestamp, event_type, description)
 -- CCR fields: dive_mode, tank_role
-```
-
+```text
 ## v1.5 Tables (Implemented)
 
 ```sql
@@ -1474,8 +1546,7 @@
 -- dive_profiles: setpoint, ppo2, cns, rbt, deco_type, tts (nullable columns)
 -- dive_computers: serial_number, firmware_version
 -- dives: deco_algorithm, gf_low, gf_high, deco_conservatism
-```
-
+```text
 ## v2.0 Tables (Planned)
 
 ```sql
@@ -1489,6 +1560,7 @@
 # Dependencies
 
 ## Current (v1.0/v1.1)
+
 - **Database:** drift, sqlite3
 - **Charts:** fl_chart
 - **Maps:** flutter_map, latlong2, flutter_map_marker_cluster
@@ -1497,6 +1569,7 @@
 - **Testing:** flutter_test, mockito
 
 ## v1.5 Requirements
+
 - **Dive Computers:** libdivecomputer (FFI), flutter_blue_plus, usb_serial
 - **Deco:** Custom Bühlmann implementation
 - **Cloud Sync:** googleapis (Google Drive), icloud_storage
@@ -1505,6 +1578,7 @@
 - **Wearables:** health (HealthKit/Google Health Connect)
 
 ## v2.0 Requirements
+
 - **Backend:** Firebase/Supabase SDK
 - **Auth:** firebase_auth or supabase_auth
 - **i18n:** flutter_localizations, intl
@@ -1514,6 +1588,7 @@
 # Release Criteria
 
 ## v1.0 ✅ Complete
+
 - [x] All critical features implemented
 - [x] 80%+ unit test coverage (165+ tests)
 - [x] 60%+ widget test coverage (48+ tests)
@@ -1522,6 +1597,7 @@
 - [ ] Documentation (user guide, FAQ)
 
 ## v1.1 ✅ Complete
+
 - [x] Entry/exit times, surface interval, dive numbering
 - [x] GPS integration, reverse geocoding
 - [x] Map marker clustering with color coding
@@ -1531,6 +1607,7 @@
 - [x] Integration and performance tests
 
 ## v1.5 (In Progress)
+
 - [x] Dive computer connectivity (libdivecomputer FFI, BLE, USB)
 - [x] 300+ dive computer models supported
 - [x] Manufacturer BLE protocols (Aqualung, Shearwater, Mares, Suunto)
@@ -1594,6 +1671,7 @@
 - [ ] Performance with 5000+ dives
 
 ## v2.0 (Planned)
+
 - [ ] Web platform with backend service
 - [x] 7+ language translations (10 languages: EN, ES, FR, DE, IT, NL, PT, AR, HE, HU)
 - [ ] Community features beta tested

@@ -13,6 +13,7 @@
 ## Task 1: Add SignatureType to Database Schema
 
 **Files:**
+
 - Modify: `lib/core/database/database.dart:372-410` (Media table)
 - Modify: `lib/core/database/database.dart:981` (schemaVersion)
 - Modify: `lib/core/database/database.dart:1438-1456` (migration)
@@ -24,16 +25,15 @@ In `lib/core/database/database.dart`, find the Media table (around line 372) and
 ```dart
   // Signature type (v22) - distinguishes instructor vs buddy signatures
   TextColumn get signatureType => text().nullable()(); // 'instructor' | 'buddy'
-```
-
+```text
 **Step 2: Bump schema version**
 
 Change line 981:
+
 ```dart
   @override
   int get schemaVersion => 22;
-```
-
+```text
 **Step 3: Add migration for version 22**
 
 After the `if (from < 21)` block (around line 1456), add:
@@ -45,8 +45,7 @@ After the `if (from < 21)` block (around line 1456), add:
             'ALTER TABLE media ADD COLUMN signature_type TEXT',
           );
         }
-```
-
+```text
 **Step 4: Run code generation**
 
 Run: `dart run build_runner build --delete-conflicting-outputs`
@@ -57,13 +56,13 @@ Expected: Generates updated `database.g.dart` with new column
 ```bash
 git add lib/core/database/database.dart lib/core/database/database.g.dart
 git commit -m "feat(db): add signatureType column for buddy signatures"
-```
-
+```text
 ---
 
 ## Task 2: Update Signature Entity
 
 **Files:**
+
 - Modify: `lib/features/signatures/domain/entities/signature.dart`
 
 **Step 1: Add SignatureType enum and update Signature class**
@@ -166,8 +165,7 @@ class Signature extends Equatable {
     role,
   ];
 }
-```
-
+```text
 **Step 2: Verify no compile errors**
 
 Run: `flutter analyze lib/features/signatures/domain/entities/signature.dart`
@@ -178,13 +176,13 @@ Expected: No issues found
 ```bash
 git add lib/features/signatures/domain/entities/signature.dart
 git commit -m "feat(signatures): add SignatureType enum and role field"
-```
-
+```text
 ---
 
 ## Task 3: Update SignatureStorageService for Buddy Signatures
 
 **Files:**
+
 - Modify: `lib/features/signatures/data/services/signature_storage_service.dart`
 - Create: `test/features/signatures/data/services/signature_storage_service_test.dart`
 
@@ -218,8 +216,7 @@ void main() {
     });
   });
 }
-```
-
+```dart
 **Step 2: Run test to verify it passes (testing the entity)**
 
 Run: `flutter test test/features/signatures/data/services/signature_storage_service_test.dart`
@@ -233,8 +230,7 @@ After line 24 (`static const String _signatureDir = 'signatures';`), add:
 
 ```dart
   static const String _buddySignatureFileType = 'buddy_signature';
-```
-
+```text
 After the `hasSignature` method (around line 201), add these new methods:
 
 ```dart
@@ -385,8 +381,7 @@ After the `hasSignature` method (around line 201), add these new methods:
       rethrow;
     }
   }
-```
-
+```text
 **Step 4: Update the _mapRowToSignature method**
 
 Replace the existing `_mapRowToSignature` method (around line 259):
@@ -404,8 +399,7 @@ Replace the existing `_mapRowToSignature` method (around line 259):
       role: null, // Role is inferred from DiveBuddies table when needed
     );
   }
-```
-
+```text
 **Step 5: Verify no compile errors**
 
 Run: `flutter analyze lib/features/signatures/data/services/signature_storage_service.dart`
@@ -416,13 +410,13 @@ Expected: No issues found
 ```bash
 git add lib/features/signatures/data/services/signature_storage_service.dart test/features/signatures/data/services/signature_storage_service_test.dart
 git commit -m "feat(signatures): add buddy signature storage methods"
-```
-
+```dart
 ---
 
 ## Task 4: Add Buddy Signature Providers
 
 **Files:**
+
 - Modify: `lib/features/signatures/presentation/providers/signature_providers.dart`
 
 **Step 1: Add buddy signature providers**
@@ -522,8 +516,7 @@ final buddySignatureSaveNotifierProvider =
         ref,
       ),
     );
-```
-
+```text
 **Step 2: Verify no compile errors**
 
 Run: `flutter analyze lib/features/signatures/presentation/providers/signature_providers.dart`
@@ -534,13 +527,13 @@ Expected: No issues found
 ```bash
 git add lib/features/signatures/presentation/providers/signature_providers.dart
 git commit -m "feat(signatures): add buddy signature providers"
-```
-
+```text
 ---
 
 ## Task 5: Create BuddySignatureCard Widget
 
 **Files:**
+
 - Create: `lib/features/signatures/presentation/widgets/buddy_signature_card.dart`
 
 **Step 1: Create the widget file**
@@ -670,8 +663,7 @@ class BuddySignatureCard extends StatelessWidget {
     );
   }
 }
-```
-
+```text
 **Step 2: Verify no compile errors**
 
 Run: `flutter analyze lib/features/signatures/presentation/widgets/buddy_signature_card.dart`
@@ -682,13 +674,13 @@ Expected: No issues found
 ```bash
 git add lib/features/signatures/presentation/widgets/buddy_signature_card.dart
 git commit -m "feat(signatures): create BuddySignatureCard widget"
-```
-
+```text
 ---
 
 ## Task 6: Create BuddySignatureRequestSheet Widget
 
 **Files:**
+
 - Create: `lib/features/signatures/presentation/widgets/buddy_signature_request_sheet.dart`
 
 **Step 1: Create the widget file**
@@ -1029,8 +1021,7 @@ Future<void> showBuddySignatureRequestSheet({
     ),
   );
 }
-```
-
+```text
 **Step 2: Verify no compile errors**
 
 Run: `flutter analyze lib/features/signatures/presentation/widgets/buddy_signature_request_sheet.dart`
@@ -1041,13 +1032,13 @@ Expected: No issues found
 ```bash
 git add lib/features/signatures/presentation/widgets/buddy_signature_request_sheet.dart
 git commit -m "feat(signatures): create BuddySignatureRequestSheet widget"
-```
-
+```text
 ---
 
 ## Task 7: Create BuddySignaturesSection Widget
 
 **Files:**
+
 - Create: `lib/features/signatures/presentation/widgets/buddy_signatures_section.dart`
 
 **Step 1: Create the widget file**
@@ -1215,8 +1206,7 @@ class BuddySignaturesSection extends ConsumerWidget {
     );
   }
 }
-```
-
+```text
 **Step 2: Verify no compile errors**
 
 Run: `flutter analyze lib/features/signatures/presentation/widgets/buddy_signatures_section.dart`
@@ -1227,13 +1217,13 @@ Expected: No issues found
 ```bash
 git add lib/features/signatures/presentation/widgets/buddy_signatures_section.dart
 git commit -m "feat(signatures): create BuddySignaturesSection widget"
-```
-
+```typescript
 ---
 
 ## Task 8: Add Signatures Section to Dive Detail Page
 
 **Files:**
+
 - Modify: `lib/features/dive_log/presentation/pages/dive_detail_page.dart`
 
 **Step 1: Add import for BuddySignaturesSection**
@@ -1242,8 +1232,7 @@ Add after line 55 (after existing signature imports):
 
 ```dart
 import 'package:submersion/features/signatures/presentation/widgets/buddy_signatures_section.dart';
-```
-
+```dart
 **Step 2: Add signatures section after buddies section**
 
 Find line 225-226 where `_buildBuddiesSection` is called. After `const SizedBox(height: 24),` that follows buddies, add:
@@ -1251,8 +1240,7 @@ Find line 225-226 where `_buildBuddiesSection` is called. After `const SizedBox(
 ```dart
             BuddySignaturesSection(diveId: diveId),
             const SizedBox(height: 24),
-```
-
+```text
 The section should look like:
 
 ```dart
@@ -1261,8 +1249,7 @@ The section should look like:
             BuddySignaturesSection(diveId: diveId),
             const SizedBox(height: 24),
             if (dive.tanks.isNotEmpty) ...[
-```
-
+```text
 **Step 3: Verify no compile errors**
 
 Run: `flutter analyze lib/features/dive_log/presentation/pages/dive_detail_page.dart`
@@ -1273,13 +1260,13 @@ Expected: No issues found
 ```bash
 git add lib/features/dive_log/presentation/pages/dive_detail_page.dart
 git commit -m "feat(dives): add buddy signatures section to dive detail"
-```
-
+```text
 ---
 
 ## Task 9: Add Signatures to PDF Export
 
 **Files:**
+
 - Modify: `lib/core/services/export_service.dart`
 
 **Step 1: Add signature imports**
@@ -1290,8 +1277,7 @@ Add at the top of the file with other imports:
 import 'dart:io';
 import 'package:submersion/features/signatures/data/services/signature_storage_service.dart';
 import 'package:submersion/features/signatures/domain/entities/signature.dart';
-```
-
+```text
 **Step 2: Update _buildDivePdf method signature**
 
 Find `_buildDivePdf` method (around line 534). Update its signature to accept signatures:
@@ -1303,16 +1289,14 @@ Find `_buildDivePdf` method (around line 534). Update its signature to accept si
     List<Sighting>? allSightings,
     Map<String, List<Signature>>? diveSignatures,
   }) async {
-```
-
+```text
 **Step 3: Update _buildPdfDiveEntry to include signatures**
 
 Find `_buildPdfDiveEntry` (around line 683). Update its signature:
 
 ```dart
   pw.Widget _buildPdfDiveEntry(Dive dive, {List<Signature>? signatures}) {
-```
-
+```text
 After the rating section (after line 749, after the `if (dive.rating != null...)` block), add:
 
 ```dart
@@ -1336,8 +1320,7 @@ After the rating section (after line 749, after the `if (dive.rating != null...)
                   .toList(),
             ),
           ],
-```
-
+```text
 **Step 4: Add _buildPdfSignatureBlock method**
 
 Add this method after `_buildPdfDiveEntry`:
@@ -1404,8 +1387,7 @@ Add this method after `_buildPdfDiveEntry`:
       ),
     );
   }
-```
-
+```text
 **Step 5: Update the dive pages loop to pass signatures**
 
 In `_buildDivePdf`, find the dive pages loop (around line 640). Update it:
@@ -1439,8 +1421,7 @@ In `_buildDivePdf`, find the dive pages loop (around line 640). Update it:
         ),
       );
     }
-```
-
+```typescript
 **Step 6: Update public export methods to load signatures**
 
 Update `generateDivePdfBytes` method:
@@ -1471,8 +1452,7 @@ Update `generateDivePdfBytes` method:
     final fileName = 'dive_logbook_${_dateFormat.format(DateTime.now())}.pdf';
     return (bytes: pdfBytes, fileName: fileName);
   }
-```
-
+```text
 **Step 7: Verify no compile errors**
 
 Run: `flutter analyze lib/core/services/export_service.dart`
@@ -1483,8 +1463,7 @@ Expected: No issues found
 ```bash
 git add lib/core/services/export_service.dart
 git commit -m "feat(export): display signatures in PDF dive exports"
-```
-
+```text
 ---
 
 ## Task 10: Run Full Test Suite and Format
@@ -1511,13 +1490,13 @@ git add -A
 git status
 # If there are changes:
 git commit -m "style: format buddy signatures feature files"
-```
-
+```diff
 ---
 
 ## Task 11: Update REMAINING_TASKS.md
 
 **Files:**
+
 - Modify: `REMAINING_TASKS.md`
 
 **Step 1: Mark tasks as complete**
@@ -1530,8 +1509,7 @@ Find the Digital Signatures section and update:
 **Completed:**
 - [x] Buddy signatures (student/observer sign-off)
 - [x] Display signatures in PDF export
-```
-
+```text
 **Step 2: Commit**
 
 ```bash

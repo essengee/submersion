@@ -18,7 +18,7 @@ Custom gallery browser for adding dive photos with intelligent date filtering. S
 
 ### File Structure
 
-```
+```text
 lib/features/media/
 ├── data/services/
 │   ├── photo_picker_service.dart         # Abstract interface
@@ -47,8 +47,7 @@ abstract class PhotoPickerService {
   /// Whether this platform supports date-filtered gallery browsing
   bool get supportsGalleryBrowsing;
 }
-```
-
+```text
 ### Platform Detection
 
 ```dart
@@ -58,13 +57,13 @@ final photoPickerServiceProvider = Provider<PhotoPickerService>((ref) {
   }
   return PhotoPickerServiceMobile();
 });
-```
-
+```text
 ## UI Design
 
 ### PhotoPickerPage (iOS/Android/macOS)
 
 ```
+
 ┌─────────────────────────────────────┐
 │ ← Select Photos            Done (3) │
 ├─────────────────────────────────────┤
@@ -80,9 +79,10 @@ final photoPickerServiceProvider = Provider<PhotoPickerService>((ref) {
 │ │thumb│ │video│ │thumb│ │thumb│    │
 │ └─────┘ └─────┘ └─────┘ └─────┘    │
 └─────────────────────────────────────┘
-```
 
+```text
 **Behaviors:**
+
 - 4-column grid with thumbnails
 - Tap to toggle selection (checkmark overlay)
 - Videos show play icon
@@ -139,11 +139,11 @@ Future<void> importSelectedPhotos(List<AssetInfo> selected, Dive dive) async {
     }
   }
 }
-```
-
+```text
 ## Permission Handling
 
 ```
+
 User taps "Add Photo"
         │
         ▼
@@ -162,8 +162,8 @@ browser        ┌─────┴─────┐
             Open       Show "Open
             gallery    Settings" prompt
             browser
-```
 
+```text
 ## Error Handling
 
 | Error | Handling |
@@ -176,12 +176,14 @@ browser        ┌─────┴─────┐
 ## Dependencies
 
 **Add to pubspec.yaml:**
+
 ```yaml
 dependencies:
   photo_manager: ^3.6.0
 ```
 
 **Platform configuration required:**
+
 - iOS: Add `NSPhotoLibraryUsageDescription` to Info.plist
 - Android: Add `READ_EXTERNAL_STORAGE` / `READ_MEDIA_IMAGES` permissions
 - macOS: Add `NSPhotoLibraryUsageDescription` to entitlements

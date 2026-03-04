@@ -17,6 +17,7 @@
 ## Task 1: PerfTimer Utility
 
 **Files:**
+
 - Create: `lib/core/performance/perf_timer.dart`
 - Test: `test/core/performance/perf_timer_test.dart`
 
@@ -78,8 +79,7 @@ void main() {
     });
   });
 }
-```
-
+```text
 ### Step 2: Run test to verify it fails
 
 Run: `flutter test test/core/performance/perf_timer_test.dart`
@@ -141,8 +141,7 @@ class PerfTimer {
   /// Clear all recorded results.
   static void reset() => _results.clear();
 }
-```
-
+```text
 ### Step 4: Run test to verify it passes
 
 Run: `flutter test test/core/performance/perf_timer_test.dart`
@@ -153,13 +152,13 @@ Expected: All 5 tests PASS.
 ```bash
 git add lib/core/performance/perf_timer.dart test/core/performance/perf_timer_test.dart
 git commit -m "feat: add PerfTimer utility for performance measurement"
-```
-
+```text
 ---
 
 ## Task 2: Instrument Repository Hot Paths
 
 **Files:**
+
 - Modify: `lib/features/dive_log/data/repositories/dive_repository_impl.dart`
 - Modify: `lib/features/dive_sites/data/repositories/site_repository_impl.dart`
 - Modify: `lib/features/dive_log/presentation/providers/dive_providers.dart`
@@ -200,8 +199,7 @@ Future<List<Dive>> getAllDives({String? diverId}) async {
     });
   } catch (e, stackTrace) { ... }
 }
-```
-
+```text
 ### Step 2: Add PerfTimer to SiteRepository
 
 Import and wrap these 3 methods in `site_repository_impl.dart`:
@@ -229,8 +227,7 @@ List<domain.Dive> _applySorting(
     return sorted;
   });
 }
-```
-
+```text
 In `site_providers.dart`, wrap `_applySiteSorting()`:
 
 ```dart
@@ -244,8 +241,7 @@ List<SiteWithDiveCount> _applySiteSorting(
     return sorted;
   });
 }
-```
-
+```text
 ### Step 4: Run full test suite
 
 Run: `flutter test`
@@ -259,13 +255,13 @@ git add lib/features/dive_log/data/repositories/dive_repository_impl.dart \
         lib/features/dive_log/presentation/providers/dive_providers.dart \
         lib/features/dive_sites/presentation/providers/site_providers.dart
 git commit -m "feat: instrument repository and provider hot paths with PerfTimer"
-```
-
+```text
 ---
 
 ## Task 3: Performance Data Generator
 
 **Files:**
+
 - Create: `test/helpers/performance_data_generator.dart`
 - Test: `test/helpers/performance_data_generator_test.dart`
 
@@ -361,8 +357,7 @@ void main() {
     });
   });
 }
-```
-
+```text
 ### Step 2: Run test to verify it fails
 
 Run: `flutter test test/helpers/performance_data_generator_test.dart`
@@ -462,8 +457,7 @@ class PerformanceDataGenerator {
     );
   }
 }
-```
-
+```sql
 **Dive generation logic (`_generateDives`):**
 
 - Iterates `_diveCount` times
@@ -492,8 +486,7 @@ for (var i = 0; i < companions.length; i += 500) {
   );
   await _db.batch((b) => b.insertAll(_db.diveProfiles, batch));
 }
-```
-
+```text
 ### Step 4: Run test to verify it passes
 
 Run: `flutter test test/helpers/performance_data_generator_test.dart`
@@ -505,13 +498,13 @@ Expected: All 6 tests PASS.
 git add test/helpers/performance_data_generator.dart \
         test/helpers/performance_data_generator_test.dart
 git commit -m "feat: add configurable performance data generator with light/realistic/heavy presets"
-```
-
+```text
 ---
 
 ## Task 4: Inline Smoke Tests
 
 **Files:**
+
 - Modify: `test/features/dive_log/data/repositories/dive_repository_test.dart`
 - Modify: `test/features/dive_sites/data/repositories/site_repository_test.dart`
 
@@ -558,8 +551,7 @@ group('Performance smoke tests (light preset)', () {
     expect(duration!.inMilliseconds, lessThan(50));
   });
 });
-```
-
+```text
 Note: The `@Tags` annotation goes on the `main()` function, not the group. Add it at the top of the file.
 
 ### Step 2: Add performance smoke group to site_repository_test.dart
@@ -598,8 +590,7 @@ group('Performance smoke tests (light preset)', () {
     expect(duration!.inMilliseconds, lessThan(50));
   });
 });
-```
-
+```text
 ### Step 3: Run smoke tests
 
 Run: `flutter test test/features/dive_log/data/repositories/dive_repository_test.dart`
@@ -617,13 +608,13 @@ Expected: All tests PASS. Smoke tests run with the regular suite.
 git add test/features/dive_log/data/repositories/dive_repository_test.dart \
         test/features/dive_sites/data/repositories/site_repository_test.dart
 git commit -m "test: add inline performance smoke tests for dive and site repositories"
-```
-
+```text
 ---
 
 ## Task 5: Heavy Benchmarks — Dive Repository
 
 **Files:**
+
 - Create: `test/performance/dive_repository_perf_test.dart`
 
 ### Step 1: Write the benchmark test file
@@ -744,8 +735,7 @@ void main() {
     });
   });
 }
-```
-
+```text
 ### Step 2: Run the benchmark
 
 Run: `flutter test test/performance/dive_repository_perf_test.dart`
@@ -756,13 +746,13 @@ Expected: All tests PASS. Note actual timings in output.
 ```bash
 git add test/performance/dive_repository_perf_test.dart
 git commit -m "test: add heavy dive repository performance benchmarks (5000 dives)"
-```
-
+```text
 ---
 
 ## Task 6: Heavy Benchmarks — Site Repository
 
 **Files:**
+
 - Create: `test/performance/site_repository_perf_test.dart`
 
 ### Step 1: Write the benchmark test file
@@ -830,8 +820,7 @@ void main() {
     });
   });
 }
-```
-
+```text
 ### Step 2: Run the benchmark
 
 Run: `flutter test test/performance/site_repository_perf_test.dart`
@@ -842,13 +831,13 @@ Expected: All tests PASS. Note actual timings.
 ```bash
 git add test/performance/site_repository_perf_test.dart
 git commit -m "test: add heavy site repository performance benchmarks (2000 sites)"
-```
-
+```text
 ---
 
 ## Task 7: Heavy Benchmarks — Profile Loading
 
 **Files:**
+
 - Create: `test/performance/profile_loading_perf_test.dart`
 
 ### Step 1: Write the benchmark test file
@@ -942,8 +931,7 @@ void main() {
     });
   });
 }
-```
-
+```text
 ### Step 2: Run the benchmark
 
 Run: `flutter test test/performance/profile_loading_perf_test.dart`
@@ -954,13 +942,13 @@ Expected: All tests PASS.
 ```bash
 git add test/performance/profile_loading_perf_test.dart
 git commit -m "test: add profile loading performance benchmarks"
-```
-
+```diff
 ---
 
 ## Task 8: Performance Test Runner Script
 
 **Files:**
+
 - Create: `scripts/run_perf_tests.sh`
 
 ### Step 1: Write the script
@@ -993,15 +981,13 @@ echo ""
 echo "========================================"
 echo "All benchmarks complete."
 echo "========================================"
-```
-
+```text
 ### Step 2: Make executable and test
 
 ```bash
 chmod +x scripts/run_perf_tests.sh
 ./scripts/run_perf_tests.sh
-```
-
+```text
 Expected: Summary output with timing results.
 
 ### Step 3: Commit
@@ -1009,8 +995,7 @@ Expected: Summary output with timing results.
 ```bash
 git add scripts/run_perf_tests.sh
 git commit -m "chore: add performance test runner script"
-```
-
+```diff
 ---
 
 ## Task 9: Analyze Results and Fix Bottlenecks
@@ -1021,8 +1006,7 @@ This task depends on actual benchmark results from Tasks 5-7. The engineer shoul
 
 ```bash
 ./scripts/run_perf_tests.sh 2>&1 | tee perf_results.txt
-```
-
+```text
 ### Step 2: Identify failures
 
 Review output for `[FAIL]` or timings exceeding thresholds.
@@ -1068,8 +1052,7 @@ Future<List<SiteWithDiveCount>> getSitesWithDiveCounts({
     rethrow;
   }
 }
-```
-
+```text
 Note: This requires adding a `_mapQueryRowToSite(QueryRow row)` helper that reads from the raw query row instead of a typed `DiveSite` row. Pattern:
 
 ```dart
@@ -1081,8 +1064,7 @@ domain.DiveSite _mapQueryRowToSite(QueryRow row) {
     // ... map all fields from raw column names
   );
 }
-```
-
+```text
 **If database indexes are needed:**
 
 Add indexes in `database.dart` on the relevant table classes. Drift supports indexes via `@TableIndex` annotations or in the `@DriftDatabase` schema. Alternatively, add a migration that creates indexes:
@@ -1093,26 +1075,24 @@ CREATE INDEX IF NOT EXISTS idx_dives_site_id ON dives(site_id);
 CREATE INDEX IF NOT EXISTS idx_dives_sort ON dives(entry_time, dive_date_time, dive_number);
 CREATE INDEX IF NOT EXISTS idx_dive_profiles_dive_id ON dive_profiles(dive_id);
 CREATE INDEX IF NOT EXISTS idx_dive_sites_diver_id ON dive_sites(diver_id);
-```
-
+```text
 ### Step 4: Re-run benchmarks to verify fixes
 
 ```bash
 ./scripts/run_perf_tests.sh
-```
-
+```text
 ### Step 5: Commit each fix separately
 
 ```bash
 git commit -m "perf: optimize getSitesWithDiveCounts with single JOIN query"
 git commit -m "perf: add database indexes for query performance"
-```
-
+```diff
 ---
 
 ## Task 10: Performance README
 
 **Files:**
+
 - Create: `test/performance/README.md`
 
 ### Step 1: Write documentation
@@ -1168,15 +1148,13 @@ flutter test test/performance/
 3. Use PerformanceDataGenerator for data setup
 4. Use PerfTimer.lastResult() for threshold assertions
 5. Print timing for the runner script to capture
-```
-
+```text
 ### Step 2: Commit
 
 ```bash
 git add test/performance/README.md
 git commit -m "docs: add performance testing README"
-```
-
+```diff
 ---
 
 ## Task 11: Final Verification
@@ -1185,28 +1163,24 @@ git commit -m "docs: add performance testing README"
 
 ```bash
 flutter test
-```
-
+```text
 Expected: All tests pass (original 1,120 + new performance tests).
 
 ### Step 2: Run dart format
 
 ```bash
 dart format lib/ test/
-```
-
+```text
 ### Step 3: Run flutter analyze
 
 ```bash
 flutter analyze
-```
-
+```text
 ### Step 4: Run performance benchmarks
 
 ```bash
 ./scripts/run_perf_tests.sh
-```
-
+```text
 ### Step 5: Final commit if any formatting changes
 
 ```bash

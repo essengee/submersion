@@ -15,6 +15,7 @@
 ## Task 1: Create CardColorAttribute enum and gradient constants
 
 **Files:**
+
 - Create: `lib/core/constants/card_color.dart`
 - Test: `test/core/constants/card_color_test.dart`
 
@@ -173,8 +174,7 @@ void main() {
     });
   });
 }
-```
-
+```text
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/core/constants/card_color_test.dart`
@@ -293,11 +293,11 @@ Color? normalizeAndLerp({
   final preset = cardColorPresets[presetName] ?? cardColorPresets['ocean']!;
   return (start: preset.startColor, end: preset.endColor);
 }
-```
-
+```dart
 **Step 4: Add otu and maxPpO2 to DiveSummary**
 
 Modify `lib/features/dive_log/domain/entities/dive_summary.dart`:
+
 - Add fields: `final double? otu;` and `final double? maxPpO2;`
 - Add to constructor parameters
 - Add to `copyWith` method
@@ -316,13 +316,13 @@ Expected: PASS
 ```bash
 git add lib/core/constants/card_color.dart test/core/constants/card_color_test.dart lib/features/dive_log/domain/entities/dive_summary.dart
 git commit -m "feat: add CardColorAttribute enum, gradient presets, and DiveSummary fields"
-```
-
+```text
 ---
 
 ## Task 2: Update AppSettings with new card color fields
 
 **Files:**
+
 - Modify: `lib/features/settings/presentation/providers/settings_providers.dart`
   - `AppSettings` class (fields, constructor, copyWith)
   - `SettingsNotifier` (new setters)
@@ -357,8 +357,7 @@ group('AppSettings backward compatibility', () {
     expect(settings.cardColorGradientEnd, isNull);
   });
 });
-```
-
+```dart
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/core/constants/card_color_test.dart`
@@ -371,6 +370,7 @@ In `lib/features/settings/presentation/providers/settings_providers.dart`:
 1. Add import: `import 'package:submersion/core/constants/card_color.dart';`
 
 2. Replace the `showDepthColoredDiveCards` field (line ~108) with:
+
 ```dart
   /// Which attribute to use for card background coloring
   final CardColorAttribute cardColorAttribute;
@@ -387,17 +387,17 @@ In `lib/features/settings/presentation/providers/settings_providers.dart`:
   /// Backward-compatible getter: true when any card coloring is active
   bool get showDepthColoredDiveCards =>
       cardColorAttribute != CardColorAttribute.none;
-```
+```text
+1. Update constructor defaults (replace `this.showDepthColoredDiveCards = false` around line ~203):
 
-3. Update constructor defaults (replace `this.showDepthColoredDiveCards = false` around line ~203):
 ```dart
     this.cardColorAttribute = CardColorAttribute.none,
     this.cardColorGradientPreset = 'ocean',
     this.cardColorGradientStart,
     this.cardColorGradientEnd,
-```
+```text
+1. Update `copyWith` -- replace the `showDepthColoredDiveCards` parameter (~line 291) with:
 
-4. Update `copyWith` -- replace the `showDepthColoredDiveCards` parameter (~line 291) with:
 ```dart
     CardColorAttribute? cardColorAttribute,
     String? cardColorGradientPreset,
@@ -405,8 +405,9 @@ In `lib/features/settings/presentation/providers/settings_providers.dart`:
     int? cardColorGradientEnd,
     bool clearCardColorGradientStart = false,
     bool clearCardColorGradientEnd = false,
-```
+```text
 And in the return body replace the `showDepthColoredDiveCards` line (~342):
+
 ```dart
       cardColorAttribute: cardColorAttribute ?? this.cardColorAttribute,
       cardColorGradientPreset:
@@ -417,9 +418,9 @@ And in the return body replace the `showDepthColoredDiveCards` line (~342):
       cardColorGradientEnd: clearCardColorGradientEnd
           ? null
           : (cardColorGradientEnd ?? this.cardColorGradientEnd),
-```
+```text
+1. Replace `setShowDepthColoredDiveCards` setter (~line 643) in SettingsNotifier with:
 
-5. Replace `setShowDepthColoredDiveCards` setter (~line 643) in SettingsNotifier with:
 ```dart
   Future<void> setCardColorAttribute(CardColorAttribute attribute) async {
     state = state.copyWith(cardColorAttribute: attribute);
@@ -443,9 +444,9 @@ And in the return body replace the `showDepthColoredDiveCards` line (~342):
     );
     await _saveSettings();
   }
-```
+```text
+1. Replace `showDepthColoredDiveCardsProvider` (~line 899) with:
 
-6. Replace `showDepthColoredDiveCardsProvider` (~line 899) with:
 ```dart
 final showDepthColoredDiveCardsProvider = Provider<bool>((ref) {
   return ref.watch(settingsProvider.select((s) => s.showDepthColoredDiveCards));
@@ -454,8 +455,7 @@ final showDepthColoredDiveCardsProvider = Provider<bool>((ref) {
 final cardColorAttributeProvider = Provider<CardColorAttribute>((ref) {
   return ref.watch(settingsProvider.select((s) => s.cardColorAttribute));
 });
-```
-
+```text
 **Step 4: Run test to verify it passes**
 
 Run: `flutter test test/core/constants/card_color_test.dart`
@@ -471,13 +471,13 @@ Expected: Some tests may reference `showDepthColoredDiveCards` as a constructor 
 ```bash
 git add lib/features/settings/presentation/providers/settings_providers.dart test/core/constants/card_color_test.dart
 git commit -m "feat: replace showDepthColoredDiveCards with cardColorAttribute settings"
-```
-
+```text
 ---
 
 ## Task 3: Database migration (schema v35)
 
 **Files:**
+
 - Modify: `lib/core/database/database.dart`
   - Add 4 new columns to `DiverSettings` table definition (~line 552-554)
   - Bump `schemaVersion` from 34 to 35 (line 1080)
@@ -495,8 +495,7 @@ After line 554 (`showDepthColoredDiveCards`), add:
       text().withDefault(const Constant('ocean'))();
   IntColumn get cardColorGradientStart => integer().nullable()();
   IntColumn get cardColorGradientEnd => integer().nullable()();
-```
-
+```text
 **Step 2: Bump schema version**
 
 Change line 1080 from `int get schemaVersion => 34;` to `int get schemaVersion => 35;`
@@ -525,8 +524,7 @@ After the `if (from < 34)` block (after the closing `}` around line 1818+), add:
             "UPDATE diver_settings SET card_color_attribute = 'depth' WHERE show_depth_colored_dive_cards = 1",
           );
         }
-```
-
+```text
 **Step 4: Run build_runner to regenerate Drift code**
 
 Run: `dart run build_runner build --delete-conflicting-outputs`
@@ -542,13 +540,13 @@ Expected: No errors (warnings OK).
 ```bash
 git add lib/core/database/database.dart lib/core/database/database.g.dart
 git commit -m "feat: add card color settings columns (schema v35)"
-```
-
+```text
 ---
 
 ## Task 4: Update DiverSettingsRepository to map new columns
 
 **Files:**
+
 - Modify: `lib/features/settings/data/repositories/diver_settings_repository.dart`
   - `createSettingsForDiver` (~lines 47-109)
   - `updateSettingsForDiver` (~lines 142-204)
@@ -557,47 +555,50 @@ git commit -m "feat: add card color settings columns (schema v35)"
 **Step 1: Update _mapRowToAppSettings**
 
 At line 298, replace:
+
 ```dart
       showDepthColoredDiveCards: row.showDepthColoredDiveCards,
-```
+```text
 With:
+
 ```dart
       cardColorAttribute: CardColorAttribute.fromName(row.cardColorAttribute),
       cardColorGradientPreset: row.cardColorGradientPreset,
       cardColorGradientStart: row.cardColorGradientStart,
       cardColorGradientEnd: row.cardColorGradientEnd,
-```
-
+```dart
 Add import at top: `import 'package:submersion/core/constants/card_color.dart';`
 
 **Step 2: Update createSettingsForDiver**
 
 At line 76, replace:
+
 ```dart
               showDepthColoredDiveCards: Value(s.showDepthColoredDiveCards),
-```
+```text
 With:
+
 ```dart
               cardColorAttribute: Value(s.cardColorAttribute.name),
               cardColorGradientPreset: Value(s.cardColorGradientPreset),
               cardColorGradientStart: Value(s.cardColorGradientStart),
               cardColorGradientEnd: Value(s.cardColorGradientEnd),
-```
-
+```text
 **Step 3: Update updateSettingsForDiver**
 
 At line 169, replace:
+
 ```dart
           showDepthColoredDiveCards: Value(settings.showDepthColoredDiveCards),
-```
+```text
 With:
+
 ```dart
           cardColorAttribute: Value(settings.cardColorAttribute.name),
           cardColorGradientPreset: Value(settings.cardColorGradientPreset),
           cardColorGradientStart: Value(settings.cardColorGradientStart),
           cardColorGradientEnd: Value(settings.cardColorGradientEnd),
-```
-
+```text
 **Step 4: Run tests**
 
 Run: `flutter test`
@@ -608,13 +609,13 @@ Expected: PASS (existing settings tests still work).
 ```bash
 git add lib/features/settings/data/repositories/diver_settings_repository.dart
 git commit -m "feat: map card color settings columns in DiverSettingsRepository"
-```
-
+```sql
 ---
 
 ## Task 5: Add OTU and maxPpO2 to paginated dive query
 
 **Files:**
+
 - Modify: `lib/features/dive_log/data/repositories/dive_repository_impl.dart` (~lines 994-1053)
 
 **Step 1: Update SQL SELECT**
@@ -624,8 +625,7 @@ In `getDiveSummaries`, modify the SQL string (~lines 994-1002). Add after `d.div
 ```dart
             'd.otu, '
             '(SELECT MAX(pp_o2) FROM dive_profiles dp WHERE dp.dive_id = d.id) AS max_pp_o2, '
-```
-
+```text
 **Step 2: Update DiveSummary construction**
 
 In the `rows.map` block (~lines 1030-1052), add before `sortTimestamp`:
@@ -633,14 +633,12 @@ In the `rows.map` block (~lines 1030-1052), add before `sortTimestamp`:
 ```dart
             otu: row.readNullable<double>('otu'),
             maxPpO2: row.readNullable<double>('max_pp_o2'),
-```
-
+```text
 Also add `_db.diveProfiles` to the `readsFrom` set (line 1015) so Drift watches the profiles table:
 
 ```dart
             readsFrom: {_db.dives, _db.diveSites, _db.diveProfiles},
-```
-
+```text
 **Step 3: Run tests**
 
 Run: `flutter test`
@@ -651,24 +649,26 @@ Expected: PASS.
 ```bash
 git add lib/features/dive_log/data/repositories/dive_repository_impl.dart
 git commit -m "feat: add OTU and max ppO2 to paginated dive summary query"
-```
-
+```text
 ---
 
 ## Task 6: Generalize DiveListTile coloring
 
 **Files:**
+
 - Modify: `lib/features/dive_log/presentation/pages/dive_list_page.dart`
   - `DiveListTile` class (~lines 330-650)
 
 **Step 1: Update DiveListTile parameters**
 
 Replace the depth-specific fields with generic ones. Change:
+
 ```dart
   final double? minDepthInList;
   final double? maxDepthInList;
-```
+```text
 To:
+
 ```dart
   /// The dive's value for the active color attribute
   final double? colorValue;
@@ -680,8 +680,7 @@ To:
   final Color? gradientStartColor;
   /// Gradient end color (high value)
   final Color? gradientEndColor;
-```
-
+```text
 Update the constructor to match.
 
 **Step 2: Replace _getDepthBackgroundColor**
@@ -698,35 +697,36 @@ Replace `_getDepthBackgroundColor` (~lines 387-408) with:
       endColor: gradientEndColor ?? const Color(0xFF0D1B2A),
     );
   }
-```
-
+```dart
 Add import: `import 'package:submersion/core/constants/card_color.dart';`
 
 **Step 3: Update build method references**
 
 In the `build` method (~line 429-443), replace:
+
 ```dart
     final showDepthColors = ref.watch(showDepthColoredDiveCardsProvider);
-```
+```text
 With:
+
 ```dart
     final colorAttribute = ref.watch(cardColorAttributeProvider);
     final showCardColors = colorAttribute != CardColorAttribute.none;
-```
-
+```text
 Replace:
+
 ```dart
     final depthColor = (showDepthColors && !shouldShowMap)
         ? _getDepthBackgroundColor(context)
         : null;
-```
+```text
 With:
+
 ```dart
     final attributeColor = (showCardColors && !shouldShowMap)
         ? _getAttributeBackgroundColor()
         : null;
-```
-
+```text
 And update `cardColor` assignment to use `attributeColor`.
 
 **Step 4: Run flutter analyze**
@@ -739,19 +739,20 @@ Expected: No errors.
 ```bash
 git add lib/features/dive_log/presentation/pages/dive_list_page.dart
 git commit -m "refactor: generalize DiveListTile coloring to support any attribute"
-```
-
+```text
 ---
 
 ## Task 7: Update DiveListContent and RecentDivesCard range computation
 
 **Files:**
+
 - Modify: `lib/features/dive_log/presentation/widgets/dive_list_content.dart` (~lines 1129-1196)
 - Modify: `lib/features/dashboard/presentation/widgets/recent_dives_card.dart` (~lines 52-85)
 
 **Step 1: Update DiveListContent._buildDiveList**
 
 Replace the depth-specific range calculation (lines 1136-1145):
+
 ```dart
     // Calculate depth range for relative depth coloring
     final depthsWithValues = dives
@@ -763,9 +764,9 @@ Replace the depth-specific range calculation (lines 1136-1145):
     final maxDepth = depthsWithValues.isNotEmpty
         ? depthsWithValues.reduce((a, b) => a > b ? a : b)
         : null;
-```
-
+```text
 With:
+
 ```dart
     // Calculate value range for card coloring based on active attribute
     final settings = ref.read(settingsProvider);
@@ -784,8 +785,7 @@ With:
       customStart: settings.cardColorGradientStart,
       customEnd: settings.cardColorGradientEnd,
     );
-```
-
+```dart
 Add import: `import 'package:submersion/core/constants/card_color.dart';`
 
 **Step 2: Update DiveListTile construction**
@@ -798,8 +798,7 @@ Replace the `minDepthInList`/`maxDepthInList` params in the DiveListTile constru
                   maxValueInList: maxValue,
                   gradientStartColor: gradientColors.start,
                   gradientEndColor: gradientColors.end,
-```
-
+```text
 **Step 3: Apply same changes to RecentDivesCard**
 
 Apply the identical range calculation pattern to `recent_dives_card.dart` (lines 52-61 and the DiveListTile constructor call).
@@ -814,13 +813,13 @@ Expected: PASS.
 ```bash
 git add lib/features/dive_log/presentation/widgets/dive_list_content.dart lib/features/dashboard/presentation/widgets/recent_dives_card.dart
 git commit -m "feat: use generic attribute-based card coloring in list builders"
-```
-
+```dart
 ---
 
 ## Task 8: Update Appearance page UI
 
 **Files:**
+
 - Modify: `lib/features/settings/presentation/pages/appearance_page.dart` (~lines 47-58)
 - Create: `lib/features/settings/presentation/widgets/gradient_preset_picker.dart`
 - Create: `lib/features/settings/presentation/widgets/custom_gradient_dialog.dart`
@@ -832,6 +831,7 @@ Create `lib/features/settings/presentation/widgets/gradient_preset_picker.dart`:
 A horizontal scrollable row of gradient swatch cards. Each card is ~60x40 showing a linear gradient. The selected preset has a checkmark overlay. The last card labeled "Custom" opens the custom gradient dialog.
 
 Props:
+
 - `String selectedPreset`
 - `int? customStart` / `int? customEnd`
 - `ValueChanged<String> onPresetSelected`
@@ -842,6 +842,7 @@ Props:
 Create `lib/features/settings/presentation/widgets/custom_gradient_dialog.dart`:
 
 A dialog with:
+
 - Two color wells (start + end) using Flutter's built-in color picker or a simple HSV picker
 - A live preview gradient bar
 - Cancel/Apply buttons
@@ -899,8 +900,7 @@ In `appearance_page.dart`, replace lines 47-58 (the depth coloring SwitchListTil
                 },
               ),
             ),
-```
-
+```text
 Add a helper method to the class:
 
 ```dart
@@ -923,8 +923,7 @@ Add a helper method to the class:
         context.l10n.settings_appearance_cardColorAttribute_maxPpO2,
     };
   }
-```
-
+```text
 **Step 4: Run flutter analyze**
 
 Run: `flutter analyze`
@@ -935,13 +934,13 @@ Expected: l10n keys will be missing. That's OK -- we add them in Task 9.
 ```bash
 git add lib/features/settings/presentation/pages/appearance_page.dart lib/features/settings/presentation/widgets/gradient_preset_picker.dart lib/features/settings/presentation/widgets/custom_gradient_dialog.dart
 git commit -m "feat: add card color attribute dropdown and gradient preset picker UI"
-```
-
+```diff
 ---
 
 ## Task 9: Add l10n keys to all 10 ARB files
 
 **Files:**
+
 - Modify: `lib/l10n/arb/app_en.arb` (English source)
 - Modify: `lib/l10n/arb/app_de.arb`, `app_es.arb`, `app_fr.arb`, `app_it.arb`, `app_pt.arb`, `app_nl.arb`, `app_hu.arb`, `app_ar.arb`, `app_he.arb`
 
@@ -966,8 +965,7 @@ Add near the existing `settings_appearance_depthColoredCards` keys:
   "settings_appearance_colorGradient_forest": "Forest",
   "settings_appearance_colorGradient_monochrome": "Monochrome",
   "settings_appearance_colorGradient_custom": "Custom",
-```
-
+```text
 **Step 2: Add translated keys to other 9 ARB files**
 
 Add equivalent translations for each locale. Technical terms (OTU, ppO2) stay the same across all locales. Gradient preset names (Ocean, Thermal, etc.) can be translated.
@@ -987,47 +985,49 @@ Expected: PASS (all l10n references resolve).
 ```bash
 git add lib/l10n/
 git commit -m "feat: add l10n keys for card color attribute and gradient settings"
-```
-
+```text
 ---
 
 ## Task 10: Update sync data serializer
 
 **Files:**
+
 - Modify: `lib/core/services/sync/sync_data_serializer.dart`
 
 **Step 1: Update serialization (export)**
 
 In the settings serialization map (~line 1365), replace:
+
 ```dart
     'showDepthColoredDiveCards': r.showDepthColoredDiveCards,
-```
+```text
 With:
+
 ```dart
     'showDepthColoredDiveCards': r.showDepthColoredDiveCards, // backward compat
     'cardColorAttribute': r.cardColorAttribute,
     'cardColorGradientPreset': r.cardColorGradientPreset,
     'cardColorGradientStart': r.cardColorGradientStart,
     'cardColorGradientEnd': r.cardColorGradientEnd,
-```
-
+```text
 Note: `r` here is a Drift row, so these need to reference the DB column names. Check the actual variable names used in the serializer.
 
 **Step 2: Update deserialization defaults (import)**
 
 In the defaults map (~line 1301), replace:
+
 ```dart
       'showDepthColoredDiveCards': false,
-```
+```text
 With:
+
 ```dart
       'showDepthColoredDiveCards': false, // backward compat for old exports
       'cardColorAttribute': 'none',
       'cardColorGradientPreset': 'ocean',
       'cardColorGradientStart': null,
       'cardColorGradientEnd': null,
-```
-
+```text
 Add backward-compat logic after the `...data` merge: if the new `cardColorAttribute` key is absent but old `showDepthColoredDiveCards` is true, set `cardColorAttribute` to `'depth'`.
 
 **Step 3: Run tests**
@@ -1040,13 +1040,13 @@ Expected: PASS.
 ```bash
 git add lib/core/services/sync/sync_data_serializer.dart
 git commit -m "feat: serialize card color settings in sync data"
-```
-
+```text
 ---
 
 ## Task 11: Update settings_page.dart (settings summary)
 
 **Files:**
+
 - Modify: `lib/features/settings/presentation/pages/settings_page.dart` (~lines 1094-1104)
 
 **Step 1: Update settings page preview**
@@ -1063,13 +1063,13 @@ Expected: PASS.
 ```bash
 git add lib/features/settings/presentation/pages/settings_page.dart
 git commit -m "refactor: update settings page to show card color attribute name"
-```
-
+```diff
 ---
 
 ## Task 12: Final integration test and cleanup
 
 **Files:**
+
 - Test: Run full suite
 
 **Step 1: Run all tests**

@@ -5,9 +5,10 @@
 ## Navigation Architecture
 
 ### Router Configuration
+
 `lib/core/router/app_router.dart`
 
-```
+```text
 GoRouter
 ├── /welcome (outside shell - no nav bar)
 └── ShellRoute (MainScaffold - persistent bottom nav)
@@ -32,7 +33,9 @@ GoRouter
 ```
 
 ### Bottom Navigation Tabs
+
 Defined in `lib/shared/widgets/main_scaffold.dart`:
+
 - Dashboard (home)
 - Planning (tools hub)
 - Dives (log)
@@ -44,7 +47,8 @@ Defined in `lib/shared/widgets/main_scaffold.dart`:
 ## Page Structure by Feature
 
 ### Dashboard
-```
+
+```text
 /dashboard
 └── DashboardPage
     ├── StatSummaryCard (total dives, depth, time)
@@ -52,7 +56,8 @@ Defined in `lib/shared/widgets/main_scaffold.dart`:
 ```
 
 ### Planning Hub
-```
+
+```text
 /planning
 ├── PlanningPage (mobile hub) / PlanningWelcome (wide screens)
 └── PlanningShell (master/detail on wide screens)
@@ -69,7 +74,8 @@ Defined in `lib/shared/widgets/main_scaffold.dart`:
 ```
 
 ### Dive Log
-```
+
+```text
 /dives
 ├── DiveListPage → DiveListContent
 │   └── Dive cards with profile previews
@@ -88,7 +94,8 @@ Defined in `lib/shared/widgets/main_scaffold.dart`:
 ```
 
 ### Dive Sites
-```
+
+```typescript
 /sites
 ├── SiteListPage → SiteListContent
 ├── /map → SiteMapPage
@@ -99,7 +106,8 @@ Defined in `lib/shared/widgets/main_scaffold.dart`:
 ```
 
 ### Equipment
-```
+
+```text
 /equipment
 ├── EquipmentListPage → EquipmentListContent
 │   └── EquipmentSummaryWidget
@@ -113,7 +121,8 @@ Defined in `lib/shared/widgets/main_scaffold.dart`:
 ```
 
 ### Social Features
-```
+
+```text
 /buddies
 ├── BuddyListPage → BuddyListContent
 │   └── BuddyPicker, BuddySummaryWidget
@@ -142,7 +151,8 @@ Defined in `lib/shared/widgets/main_scaffold.dart`:
 ```
 
 ### Trips
-```
+
+```text
 /trips
 ├── TripListPage → TripListContent
 │   └── TripPicker, TripSummaryWidget
@@ -152,7 +162,8 @@ Defined in `lib/shared/widgets/main_scaffold.dart`:
 ```
 
 ### Statistics
-```
+
+```text
 /statistics
 ├── StatisticsPage → StatisticsListContent
 │   └── StatSectionCard
@@ -170,7 +181,8 @@ Defined in `lib/shared/widgets/main_scaffold.dart`:
 ```
 
 ### Settings
-```
+
+```text
 /settings
 ├── SettingsPage (1.9k lines)
 ├── /cloud-sync → CloudSyncPage
@@ -186,7 +198,8 @@ Defined in `lib/shared/widgets/main_scaffold.dart`:
 ```
 
 ### Dive Computers
-```
+
+```text
 /dive-computers
 ├── DeviceListPage
 ├── /discover → DeviceDiscoveryPage
@@ -196,7 +209,8 @@ Defined in `lib/shared/widgets/main_scaffold.dart`:
 ```
 
 ### Transfer & Onboarding
-```
+
+```text
 /transfer → TransferPage → TransferListContent
 /welcome → WelcomePage (onboarding)
 ```
@@ -204,7 +218,8 @@ Defined in `lib/shared/widgets/main_scaffold.dart`:
 ## Shared Components
 
 ### Layout
-```
+
+```text
 lib/shared/widgets/
 ├── main_scaffold.dart          # Shell with bottom nav
 └── master_detail/
@@ -213,7 +228,9 @@ lib/shared/widgets/
 ```
 
 ### Provider Patterns
+
 `lib/shared/providers/selection_providers.dart`
+
 - Selection state for multi-select operations
 
 ## Key Widget Sizes (LOC)
@@ -230,11 +247,14 @@ lib/shared/widgets/
 ## Providers by Feature
 
 ### Core Providers
+
 `lib/core/providers/`
+
 - Re-exports flutter_riverpod
 - AsyncValue extensions for error handling
 
 ### Feature Providers (selection)
+
 | Feature | Provider File | Key Providers |
 |---------|---------------|---------------|
 | dive_log | dive_providers.dart | divesProvider, diveByIdProvider |
@@ -252,10 +272,12 @@ lib/shared/widgets/
 ## Theme System
 
 `lib/core/theme/`
+
 - `app_theme.dart` - Material 3 theme data
 - `app_colors.dart` - Color palette constants
 
 Features:
+
 - System/Light/Dark mode support
 - Per-diver theme preference
 - Depth-based dive card coloring (optional)

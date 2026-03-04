@@ -35,13 +35,13 @@ This follows the existing pattern of related detail tables (e.g., `dive_tanks`, 
 
 ```dart
 enum TripType { shore, liveaboard, resort, dayTrip }
-```
-
+```text
 Stored as text in the database. Defaults to `shore` for backward compatibility.
 
 ### Modified Table: `trips`
 
 Add column:
+
 - `trip_type` TEXT NOT NULL DEFAULT 'shore'
 
 Existing `liveaboard_name` and `resort_name` columns are kept for backward compatibility during migration, then deprecated in the domain entity.
@@ -89,6 +89,7 @@ Many:1 relationship with `trips` (via `trip_id`).
 ### New Domain Entities
 
 **LiveaboardDetails:**
+
 ```dart
 class LiveaboardDetails extends Equatable {
   final String id;
@@ -108,9 +109,9 @@ class LiveaboardDetails extends Equatable {
   final DateTime updatedAt;
   // ... copyWith, props
 }
-```
-
+```text
 **ItineraryDay:**
+
 ```dart
 enum DayType { diveDay, seaDay, portDay, embark, disembark }
 
@@ -128,9 +129,9 @@ class ItineraryDay extends Equatable {
   final DateTime updatedAt;
   // ... copyWith, props
 }
-```
-
+```text
 **Updated Trip Entity:**
+
 ```dart
 class Trip extends Equatable {
   // ... existing fields ...
@@ -139,8 +140,7 @@ class Trip extends Equatable {
   final List<ItineraryDay> itineraryDays;  // NEW (loaded when present)
   // liveaboardName and resortName deprecated but still present for compat
 }
-```
-
+```text
 ### Migration Strategy
 
 1. Add `trip_type` column to `trips` with default `'shore'`
@@ -159,9 +159,10 @@ class Trip extends Equatable {
 Material 3 `SegmentedButton` at the top of the trip form:
 
 ```
-[ Shore ] [ Liveaboard ] [ Resort ] [ Day Trip ]
-```
 
+[ Shore ] [ Liveaboard ] [ Resort ] [ Day Trip ]
+
+```typescript
 Type selection dynamically shows/hides form sections:
 
 | Type | Visible Sections |
@@ -174,6 +175,7 @@ Type selection dynamically shows/hides form sections:
 ### Liveaboard Form Sections
 
 **Vessel Details card:**
+
 - Vessel name (required when type is liveaboard)
 - Operator / charter company (optional)
 - Vessel type (dropdown: Catamaran, Motor Yacht, Sailing Yacht, Other)
@@ -181,6 +183,7 @@ Type selection dynamically shows/hides form sections:
 - Passenger capacity (number, optional)
 
 **Embark / Disembark card:**
+
 - Embark port name + optional GPS map picker
 - Disembark port name + optional GPS map picker
 - Dates auto-filled from trip start/end
@@ -190,9 +193,10 @@ Type selection dynamically shows/hides form sections:
 For liveaboard trips, the detail page uses a tab bar:
 
 ```
-[ Overview ] [ Itinerary ] [ Photos ] [ Dives ]
-```
 
+[ Overview ] [ Itinerary ] [ Photos ] [ Dives ]
+
+```typescript
 Non-liveaboard trips retain the current scrollable layout.
 
 ### Itinerary Tab
@@ -235,13 +239,15 @@ Liveaboard trips show expanded stats:
 
 Collapsible summary table below stats:
 
-```
+```text
+
 Day  Type       Dives  Bottom Time  Sites
 1    Embark     -      -            Hurghada
 2    Dive Day   3      142m         Abu Nuhas, Sha'ab El Erg
 3    Dive Day   4      186m         Thistlegorm, Ras Mohammed
 4    Sea Day    -      -            Transit
 ...
+
 ```
 
 ---

@@ -14,7 +14,7 @@ All three elements (profile chart, deco status, O2 toxicity) visible on screen a
 
 Deco and O2 panels render **side-by-side** in a Row below the chart:
 
-```
+```text
 [ Profile Chart Card              ]
 [ CompactDeco  |  CompactO2Tox   ]   ~180-200px tall
 ```
@@ -23,7 +23,7 @@ Deco and O2 panels render **side-by-side** in a Row below the chart:
 
 Deco and O2 panels stack vertically in **compact form**:
 
-```
+```text
 [ Profile Chart Card    ]
 [ CompactDeco           ]   ~150px tall
 [ CompactO2Tox          ]   ~150px tall
@@ -58,12 +58,13 @@ Condensed version of `O2ToxicityCard` (~150-180px tall):
 **Default state:** Compact panels always visible. No collapse-to-header-only mode.
 
 **Expand:** Tapping a compact panel expands it to the full detailed view inline. Uses existing Riverpod providers:
+
 - `decoSectionExpandedProvider` (false = compact, true = full)
 - `o2ToxicitySectionExpandedProvider` (false = compact, true = full)
 
 **Expanded layout:** When one panel expands, it takes full width. The other panel moves below it. The Row temporarily becomes a Column.
 
-```
+```text
 Compact (default):
 +----------------+ +----------------+
 | CompactDeco  > | | CompactO2    > |

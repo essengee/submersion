@@ -36,8 +36,7 @@ In the `build-windows` job, replace:
 - name: Create ZIP archive
   run: |
     Compress-Archive -Path "build\windows\x64\runner\Release\*" -DestinationPath "Submersion-${env:TAG_NAME}-Windows.zip"
-```
-
+```text
 With:
 
 ```yaml

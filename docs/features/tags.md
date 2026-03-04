@@ -7,6 +7,7 @@ Organize your dives with custom colored tags and dive type classifications.
 ### What Are Tags?
 
 Tags are custom labels you create to categorize dives:
+
 - Flexible organization
 - Color-coded for visibility
 - Multiple tags per dive
@@ -28,6 +29,7 @@ Tags are custom labels you create to categorize dives:
 ### Tag Colors
 
 20 preset colors available:
+
 - Red, Orange, Yellow, Green, Blue
 - Purple, Pink, Teal, Cyan, Lime
 - Amber, Deep Orange, Indigo, Brown, Gray
@@ -43,6 +45,7 @@ Tags are custom labels you create to categorize dives:
 ### Multiple Tags
 
 Dives can have any number of tags:
+
 - "Night Dive" + "Photography"
 - "Training" + "Navigation"
 - "Wreck" + "Deep" + "Sidemount"
@@ -88,6 +91,7 @@ Dives can have any number of tags:
 ### Combining Filters
 
 Combine with other filters:
+
 - Tags + Date range
 - Tags + Dive type
 - Tags + Location
@@ -147,6 +151,7 @@ Custom types appear alongside built-in types.
 ### Using Together
 
 Best practice:
+
 - **Dive Type** = Primary category (Wreck)
 - **Tags** = Additional aspects (Night, Photography, Deep)
 
@@ -155,6 +160,7 @@ Best practice:
 ### Type Breakdown
 
 Statistics show dives by type:
+
 - Pie chart of types
 - Count per type
 - Percentage breakdown
@@ -162,6 +168,7 @@ Statistics show dives by type:
 ### Type Trends
 
 Track type changes over time:
+
 - More tech diving lately?
 - Shift from shore to boat?
 - Training activity
@@ -171,6 +178,7 @@ Track type changes over time:
 ### Keep It Simple
 
 Start with few tags:
+
 - Add as needed
 - Don't over-categorize
 - Review periodically
@@ -178,6 +186,7 @@ Start with few tags:
 ### Consistent Use
 
 Be consistent:
+
 - Same tags for same purposes
 - Update old dives if needed
 - Train yourself to tag
@@ -185,6 +194,7 @@ Be consistent:
 ### Periodic Review
 
 Maintain your tags:
+
 - Delete unused tags
 - Merge similar tags
 - Update colors for visibility
@@ -215,6 +225,7 @@ Maintain your tags:
 ## Searching by Tags
 
 Use search to find tagged dives:
+
 - Type tag name in search
 - Results include matching dives
 - Combine with other search terms
@@ -224,6 +235,7 @@ Use search to find tagged dives:
 ### Tag Data
 
 Tags export with dives:
+
 - UDDF includes tag info
 - CSV can include tags
 - Imports create tags as needed
@@ -231,6 +243,7 @@ Tags export with dives:
 ### Cross-Device
 
 If using cloud sync:
+
 - Tags sync across devices
 - Color settings preserved
 - Per-diver tag sets

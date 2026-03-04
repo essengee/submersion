@@ -9,6 +9,7 @@
 ## Overview
 
 Add comprehensive accessibility support to Submersion covering two equal pillars:
+
 1. **Screen reader support** -- semantic labels on all interactive elements for VoiceOver (iOS/macOS) and TalkBack (Android)
 2. **Desktop keyboard navigation** -- global and page-specific shortcuts, focus traversal, and a shortcuts help overlay
 
@@ -38,7 +39,7 @@ Add comprehensive accessibility support to Submersion covering two equal pillars
 
 ### File Structure
 
-```
+```text
 lib/core/accessibility/
   shortcut_registry.dart        -- Central registry of all shortcuts
   app_shortcuts.dart            -- Global shortcut definitions
@@ -58,47 +59,47 @@ No wrapper widgets. Flutter's built-in widgets already support semantic properti
 ### Widget Type Annotations
 
 **Icon-only buttons** (~80+ instances):
+
 ```dart
 // Use tooltip which doubles as semantic label
 IconButton(icon: Icon(Icons.delete), tooltip: 'Delete dive', onPressed: _deleteDive)
-```
-
+```text
 **GestureDetector / InkWell taps** (~30 instances):
+
 ```dart
 Semantics(
   button: true,
   label: 'View dive site: Blue Hole',
   child: GestureDetector(onTap: ..., child: Card(...)),
 )
-```
-
+```text
 **Charts and graphs** (fl_chart profile charts, statistics):
+
 ```dart
 Semantics(
   label: 'Dive profile chart. Maximum depth 32 meters at 14 minutes. '
          'Total duration 48 minutes.',
   child: ProfileChart(...),
 )
-```
-
+```text
 **Images** (photo gallery, certification cards):
+
 ```dart
 Image.file(photo, semanticLabel: 'Dive photo from Blue Hole, 12m depth')
-```
-
+```text
 **State indicators** (badges, status icons, warnings):
+
 ```dart
 Semantics(
   label: 'Service status: overdue by 30 days',
   child: Icon(Icons.warning, color: Colors.red),
 )
-```
-
+```text
 **Decorative elements** (dividers, background patterns):
+
 ```dart
 Semantics(excludeSemantics: true, child: DecorativeDivider())
-```
-
+```text
 ### Principle
 
 Every interactive element gets a label. Every informational element gets a description. Every decorative element gets excluded.
@@ -124,8 +125,7 @@ class ShortcutRegistry {
   List<ShortcutEntry> get entries => List.unmodifiable(_entries);
   Map<String, List<ShortcutEntry>> get byCategory;
 }
-```
-
+```sql
 ### Global Shortcuts (at MaterialApp.router level)
 
 | Shortcut | Action | Category |
@@ -162,8 +162,7 @@ CallbackShortcuts(
   bindings: appShortcuts.globalBindings(context, ref),
   child: child,
 )
-```
-
+```text
 Page-specific shortcuts via `CallbackShortcuts` in each page:
 
 ```dart
@@ -172,8 +171,7 @@ CallbackShortcuts(
   bindings: { SingleActivator(LogicalKeyboardKey.keyE, meta: true): _export },
   child: FocusScope(autofocus: true, child: ...),
 )
-```
-
+```text
 Platform detection: use `meta` key on macOS, `control` key on Windows/Linux. Helper:
 
 ```dart
@@ -181,8 +179,7 @@ SingleActivator shortcut(LogicalKeyboardKey key) {
   final isMac = defaultTargetPlatform == TargetPlatform.macOS;
   return SingleActivator(key, meta: isMac, control: !isMac);
 }
-```
-
+```diff
 ---
 
 ## Pillar 3: Focus Management
@@ -196,16 +193,17 @@ FocusTraversalGroup(
   policy: OrderedTraversalPolicy(),
   child: Scaffold(...)
 )
-```
-
+```text
 ### Traversal Order (consistent pattern)
 
 Standard pages:
+
 1. App bar actions (back, title, action buttons)
 2. Primary content (list items, form fields, charts)
 3. Secondary actions (FAB, bottom bar actions)
 
 Master-detail layout (desktop):
+
 1. Sidebar / navigation rail
 2. Main content area
 3. Action buttons / FAB
@@ -228,8 +226,7 @@ Focus(
     );
   }),
 )
-```
-
+```text
 ### Autofocus Rules
 
 | Page Type | Autofocus Target |
@@ -249,8 +246,10 @@ When returning from detail to list, focus restores to the previously selected it
 
 Triggered by Cmd+/ (or Ctrl+/ on Windows/Linux):
 
-```
+```text
+
 +-------------------------------------------+
+
 |  Keyboard Shortcuts                    [X] |
 |-------------------------------------------|
 |  Navigation                                |
@@ -273,6 +272,7 @@ Triggered by Cmd+/ (or Ctrl+/ on Windows/Linux):
 |    Cmd+/          Show this dialog         |
 |    Escape         Close dialog             |
 +-------------------------------------------+
+
 ```
 
 - Reads from `ShortcutRegistry` (always in sync)
@@ -286,41 +286,49 @@ Triggered by Cmd+/ (or Ctrl+/ on Windows/Linux):
 All pages across the app (comprehensive pass):
 
 ### Core Navigation
+
 - Dashboard / Home page
 - Bottom navigation bar / Navigation rail
 - Shell route scaffold
 
 ### Dive Log
+
 - Dive list page (main list, selection mode, filters)
 - Dive detail page (all cards, actions, profile chart)
 - Dive edit page (all form fields, tank editor, gear selector)
 - Advanced search page (all filter controls)
 
 ### Dive Sites
+
 - Site list page
 - Site detail page (map, stats, marine life)
 - Site edit page
 
 ### Equipment
+
 - Equipment list page
 - Equipment detail page (service records, dive history)
 - Equipment edit page
 
 ### Statistics
+
 - All 9+ statistics sub-pages (charts, records)
 
 ### Transfer / Import
+
 - Transfer page (all sections)
 - Universal import wizard (all 6 steps)
 - Wearable import pages
 
 ### Settings
+
 - Settings page (all toggles, selections)
 - Diver profile pages
 - Species management
 - Dive types management
 
 ### Other Pages
+
 - Buddies (list, detail, edit)
 - Certifications (list, detail, edit)
 - Courses (list, detail, edit)
@@ -337,26 +345,29 @@ All pages across the app (comprehensive pass):
 
 ### Test Files
 
-```
+```text
+
 test/accessibility/
   semantic_labels_test.dart        -- Labels exist on all pages
   keyboard_shortcuts_test.dart     -- Global + page shortcuts work
   focus_traversal_test.dart        -- Tab order is correct
   shortcuts_help_dialog_test.dart  -- Help overlay renders correctly
+
 ```
 
 ### Test Types
 
 **1. Semantic label tests** -- verify interactive widgets have labels:
+
 ```dart
 testWidgets('dive list items have semantic labels', (tester) async {
   await tester.pumpWidget(buildApp());
   final semantics = tester.getSemantics(find.byType(DiveListTile).first);
   expect(semantics.label, contains('Dive'));
 });
-```
-
+```text
 **2. Keyboard navigation tests** -- verify shortcuts trigger actions:
+
 ```dart
 testWidgets('Cmd+N opens new dive page', (tester) async {
   await tester.pumpWidget(buildApp());
@@ -365,9 +376,9 @@ testWidgets('Cmd+N opens new dive page', (tester) async {
   await tester.sendKeyUpEvent(LogicalKeyboardKey.meta);
   expect(find.byType(DiveEditPage), findsOneWidget);
 });
-```
-
+```text
 **3. Focus traversal tests** -- verify tab order:
+
 ```dart
 testWidgets('tab order follows expected sequence', (tester) async {
   await tester.pumpWidget(buildApp());
@@ -390,6 +401,7 @@ testWidgets('tab order follows expected sequence', (tester) async {
 ## Dependencies
 
 No new packages required. Uses Flutter's built-in:
+
 - `Semantics`, `MergeSemantics`, `ExcludeSemantics`
 - `CallbackShortcuts`, `SingleActivator`, `LogicalKeyboardKey`
 - `FocusTraversalGroup`, `OrderedTraversalPolicy`, `FocusNode`

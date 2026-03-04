@@ -322,8 +322,7 @@ Ascent rate safety categories.
 ```dart
 // Get category from ascent rate in m/min
 AscentRateCategory.fromRate(10.5) // returns AscentRateCategory.warning
-```
-
+```text
 ---
 
 ## Wildlife Enums
@@ -361,8 +360,7 @@ if (dive.visibility == Visibility.excellent) { ... }
 for (final type in EquipmentType.values) {
   print(type.displayName);
 }
-```
-
+```text
 ### Parsing from String
 
 ```dart
@@ -371,8 +369,7 @@ DiveMode.fromCode('ccr') // DiveMode.ccr
 
 // Default fallback
 DiveMode.fromCode('unknown') // DiveMode.oc (default)
-```
-
+```text
 ### Using with Helpers
 
 ```dart
@@ -385,4 +382,3 @@ final category = AscentRateCategory.fromRate(rate);
 final event = ProfileEventType.gasSwitch;
 final icon = event.iconName; // "swap_horiz"
 ```
-

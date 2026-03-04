@@ -23,6 +23,7 @@ Make the dive computer row tappable when a linked `DiveComputer` record exists, 
 ### New method: `_buildLinkedComputerRow`
 
 Follows the existing `_buildTripRow` pattern:
+
 - `Semantics(button: true)` + `InkWell` wrapper
 - Primary text: `computer.displayName`
 - Subtitle: serial number (if present)

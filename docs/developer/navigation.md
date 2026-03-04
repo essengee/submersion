@@ -40,8 +40,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     ],
   );
 });
-```
-
+```text
 ## ShellRoute Pattern
 
 The ShellRoute wraps all main screens with persistent navigation:
@@ -53,11 +52,11 @@ ShellRoute(
     // All main routes here
   ],
 ),
-```
-
+```text
 ### MainScaffold
 
 The `MainScaffold` widget provides:
+
 - Bottom navigation bar (mobile)
 - Navigation rail (desktop)
 - Consistent layout across screens
@@ -80,12 +79,13 @@ The `MainScaffold` widget provides:
 Each primary route has nested routes for CRUD:
 
 ```
+
 /dives
 ├── /dives/new           → Create dive
 ├── /dives/:diveId       → View dive detail
 └── /dives/:diveId/edit  → Edit dive
-```
 
+```text
 ### Route Example
 
 ```dart
@@ -119,8 +119,7 @@ GoRoute(
     ),
   ],
 ),
-```
-
+```text
 ## All Routes Reference
 
 ### Dives
@@ -257,8 +256,7 @@ context.push('/dives/new');
 
 // Pop (go back)
 context.pop();
-```
-
+```text
 ### Passing Data
 
 ```dart
@@ -274,8 +272,7 @@ context.goNamed('newBuddy', extra: {
 // Receiving extra
 final extra = state.extra as Map<String, dynamic>?;
 final name = extra?['name'] as String?;
-```
-
+```text
 ### Result Handling
 
 For edit screens that need to return data:
@@ -289,8 +286,7 @@ final result = await context.push<Dive>('/dives/new');
 if (result != null) {
   // Handle saved dive
 }
-```
-
+```text
 ## NoTransitionPage
 
 Tab switches use `NoTransitionPage` to prevent animation:
@@ -299,8 +295,7 @@ Tab switches use `NoTransitionPage` to prevent animation:
 pageBuilder: (context, state) => const NoTransitionPage(
   child: DiveListPage(),
 ),
-```
-
+```text
 This provides instant transitions between main tabs, matching platform conventions.
 
 ## Route Guards
@@ -317,8 +312,7 @@ redirect: (context, state) async {
   }
   return null;
 },
-```
-
+```text
 ### Auth Guards (Future)
 
 When authentication is added:
@@ -333,8 +327,7 @@ redirect: (context, state) async {
   }
   return null;
 },
-```
-
+```text
 ## Deep Linking
 
 go_router supports deep linking out of the box:
@@ -374,4 +367,3 @@ testWidgets('navigates to dive detail', (tester) async {
 4. **Extra for complex data** - When path params aren't enough
 5. **Guard at router level** - Centralized auth/onboarding logic
 6. **Test navigation paths** - Ensure all routes work correctly
-

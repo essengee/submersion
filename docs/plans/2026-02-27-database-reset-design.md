@@ -23,7 +23,7 @@ Chosen over DROP-all-tables (fragile, must maintain table list) and empty-templa
 
 New "Danger Zone" section at the bottom of `StorageSettingsPage`, styled with red/error color scheme. Contains a single `ListTile`:
 
-```
+```text
 DANGER ZONE
 [warning icon] Reset Database
   Delete all data and start fresh
@@ -62,6 +62,7 @@ DANGER ZONE
 ### Service Layer
 
 `DatabaseService.resetDatabase()`:
+
 1. Resolve current DB path
 2. Call `backup()` to auto-save
 3. Call `close()` to release connection

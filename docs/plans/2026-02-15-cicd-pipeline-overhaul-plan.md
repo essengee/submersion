@@ -13,6 +13,7 @@
 ### Task 1: Pin Flutter version via shared config file
 
 **Files:**
+
 - Create: `.github/flutter-version.txt`
 - Modify: `.github/workflows/ci.yaml:13-14`
 - Modify: `.github/workflows/release.yml:22-23`
@@ -22,7 +23,7 @@
 
 Create `.github/flutter-version.txt` with a single line:
 
-```
+```text
 3.38.5
 ```
 
@@ -35,23 +36,20 @@ In `.github/workflows/ci.yaml`, replace lines 13-14:
 ```yaml
 env:
   FLUTTER_VERSION: '3.38.5'
-```
-
+```yaml
 with:
 
 ```yaml
 env:
   FLUTTER_VERSION_FILE: '.github/flutter-version.txt'
-```
-
+```text
 Then in every job (`analyze`, `test`, `build-ios`, `build-macos`, `build-android`, `build-linux`, `build-windows`), add a step immediately after `actions/checkout` and before `subosito/flutter-action`:
 
 ```yaml
       - name: Read Flutter version
         id: flutter-ver
         run: echo "version=$(cat ${{ env.FLUTTER_VERSION_FILE }})" >> "$GITHUB_OUTPUT"
-```
-
+```text
 And change every `flutter-version: ${{ env.FLUTTER_VERSION }}` to `flutter-version: ${{ steps.flutter-ver.outputs.version }}`.
 
 **Step 3: Update release.yml to read from version file**
@@ -61,15 +59,13 @@ In `.github/workflows/release.yml`, replace lines 22-23:
 ```yaml
 env:
   FLUTTER_VERSION: '3.x'
-```
-
+```yaml
 with:
 
 ```yaml
 env:
   FLUTTER_VERSION_FILE: '.github/flutter-version.txt'
-```
-
+```text
 Add the same "Read Flutter version" step after checkout in every job (`build-macos`, `build-windows`, `build-linux`, `build-android`, `build-ios`). Change every `flutter-version: ${{ env.FLUTTER_VERSION }}` to `flutter-version: ${{ steps.flutter-ver.outputs.version }}`.
 
 **Step 4: Update screenshots.yml to read from version file**
@@ -79,12 +75,12 @@ Same pattern in `.github/workflows/screenshots.yml`. Replace `FLUTTER_VERSION: '
 **Step 5: Verify YAML is valid**
 
 Run:
+
 ```bash
 python3 -c "import yaml; yaml.safe_load(open('.github/workflows/ci.yaml')); print('ci.yaml OK')"
 python3 -c "import yaml; yaml.safe_load(open('.github/workflows/release.yml')); print('release.yml OK')"
 python3 -c "import yaml; yaml.safe_load(open('.github/workflows/screenshots.yml')); print('screenshots.yml OK')"
-```
-
+```text
 Expected: All three print OK.
 
 **Step 6: Commit**
@@ -95,13 +91,13 @@ git commit -m "ci: pin Flutter version via shared config file
 
 All workflows now read Flutter version from .github/flutter-version.txt
 instead of hardcoding it. Eliminates version drift between CI and release."
-```
-
+```diff
 ---
 
 ### Task 2: Fix analyze strictness mismatch
 
 **Files:**
+
 - Modify: `scripts/release/create_release.sh:151`
 
 **Step 1: Fix the flag**
@@ -110,23 +106,21 @@ In `scripts/release/create_release.sh`, change line 151 from:
 
 ```bash
   if flutter analyze --no-fatal-infos > /dev/null 2>&1; then
-```
-
+```yaml
 to:
 
 ```bash
   if flutter analyze --fatal-infos > /dev/null 2>&1; then
-```
-
+```text
 This makes the release preflight match CI's `flutter analyze --fatal-infos` (ci.yaml line 49).
 
 **Step 2: Verify the script is still valid bash**
 
 Run:
+
 ```bash
 bash -n scripts/release/create_release.sh
-```
-
+```text
 Expected: No output (clean parse).
 
 **Step 3: Commit**
@@ -138,13 +132,13 @@ git commit -m "fix: match analyze strictness between CI and release preflight
 Release preflight now uses --fatal-infos to match ci.yaml behavior.
 Previously used --no-fatal-infos which could let infos-level issues
 slip through to release."
-```
-
+```diff
 ---
 
 ### Task 3: Add retry logic for flaky external calls in release.yml
 
 **Files:**
+
 - Modify: `.github/workflows/release.yml:132-144` (notarization)
 - Modify: `.github/workflows/release.yml:212-219` (macOS Fastlane upload)
 - Modify: `.github/workflows/release.yml:487-494` (iOS Fastlane upload)
@@ -172,16 +166,14 @@ In `.github/workflows/release.yml`, replace the "Notarize DMG" step body (lines 
             sleep 30
           done
           xcrun stapler staple "$DMG"
-```
-
+```text
 **Step 2: Add retry to macOS Fastlane upload**
 
 In the "Upload to App Store / TestFlight" step for macOS (line 219), change:
 
 ```yaml
         run: bundle exec fastlane "$FASTLANE_LANE"
-```
-
+```yaml
 to:
 
 ```yaml
@@ -197,8 +189,7 @@ to:
             echo "Fastlane attempt $attempt failed, retrying in 30s..."
             sleep 30
           done
-```
-
+```text
 **Step 3: Add retry to iOS Fastlane upload**
 
 Apply the same retry wrapper to the iOS "Build and upload iOS" step (line 494):
@@ -216,15 +207,14 @@ Apply the same retry wrapper to the iOS "Build and upload iOS" step (line 494):
             echo "Fastlane attempt $attempt failed, retrying in 30s..."
             sleep 30
           done
-```
-
+```text
 **Step 4: Verify YAML validity**
 
 Run:
+
 ```bash
 python3 -c "import yaml; yaml.safe_load(open('.github/workflows/release.yml')); print('OK')"
-```
-
+```text
 Expected: OK.
 
 **Step 5: Commit**
@@ -235,13 +225,13 @@ git commit -m "ci: add retry logic for notarization and Fastlane uploads
 
 Notarization retries 3x with 30s delay. Fastlane uploads retry 2x
 with 30s delay. Handles transient Apple/App Store Connect failures."
-```
-
+```diff
 ---
 
 ### Task 4: Fix appcast dependency mismatch
 
 **Files:**
+
 - Modify: `.github/workflows/release.yml:521`
 
 **Step 1: Add build-ios to appcast needs**
@@ -250,21 +240,19 @@ In `.github/workflows/release.yml`, change line 521 from:
 
 ```yaml
     needs: [build-macos, build-windows, build-linux, build-android]
-```
-
+```yaml
 to:
 
 ```yaml
     needs: [build-macos, build-windows, build-linux, build-android, build-ios]
-```
-
+```text
 **Step 2: Verify YAML validity**
 
 Run:
+
 ```bash
 python3 -c "import yaml; yaml.safe_load(open('.github/workflows/release.yml')); print('OK')"
-```
-
+```text
 Expected: OK.
 
 **Step 3: Commit**
@@ -276,13 +264,13 @@ git commit -m "fix: include build-ios in appcast job dependencies
 Appcast generation now waits for all 5 platform builds including iOS.
 Previously missing build-ios could let appcast generate even when
 the iOS build failed."
-```
-
+```diff
 ---
 
 ### Task 5: Create changelog generation script
 
 **Files:**
+
 - Create: `scripts/release/generate_changelog.sh`
 - Create: `CHANGELOG.md`
 
@@ -430,15 +418,14 @@ else
 fi
 
 echo "Updated $CHANGELOG with ${SEMVER} entry ($RANGE_DESC)"
-```
-
+```text
 **Step 2: Make it executable**
 
 Run:
+
 ```bash
 chmod +x scripts/release/generate_changelog.sh
-```
-
+```text
 **Step 3: Create initial CHANGELOG.md**
 
 Create `CHANGELOG.md`:
@@ -449,15 +436,14 @@ Create `CHANGELOG.md`:
 All notable changes to Submersion are documented in this file.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/).
-```
-
+```text
 **Step 4: Test the script**
 
 Run:
+
 ```bash
 ./scripts/release/generate_changelog.sh --dry-run
-```
-
+```text
 Expected: Prints grouped commits since last tag without modifying any files.
 
 **Step 5: Commit**
@@ -468,13 +454,13 @@ git commit -m "feat: add changelog generation from conventional commits
 
 New generate_changelog.sh parses git log, groups by commit type,
 and outputs markdown for CHANGELOG.md or GitHub Release notes."
-```
-
+```diff
 ---
 
 ### Task 6: Create unified release script
 
 **Files:**
+
 - Create: `scripts/release/release.sh`
 
 **Step 1: Create the script**
@@ -577,22 +563,21 @@ if [ "$DRY_RUN" = false ]; then
   echo "Monitor progress:"
   echo "  ./scripts/release/status.sh --watch"
 fi
-```
-
+```text
 **Step 2: Make it executable**
 
 Run:
+
 ```bash
 chmod +x scripts/release/release.sh
-```
-
+```text
 **Step 3: Test dry-run**
 
 Run:
+
 ```bash
 ./scripts/release/release.sh --patch --dry-run
-```
-
+```text
 Expected: Shows version bump preview, changelog preview, and tag creation preview without modifying anything.
 
 **Step 4: Commit**
@@ -604,13 +589,13 @@ git commit -m "feat: add unified release script
 Orchestrates bump_version.sh, generate_changelog.sh, and
 create_release.sh into a single command. Supports --dry-run,
 pre-release labels, and --skip-preflight."
-```
-
+```diff
 ---
 
 ### Task 7: Update release.yml to use changelog for release notes and add post-release validation
 
 **Files:**
+
 - Modify: `.github/workflows/release.yml:563-598` (create-release job)
 
 **Step 1: Add changelog-based release notes to create-release job**
@@ -660,8 +645,7 @@ In the `create-release` job, add a checkout step and changelog generation step b
             checksums-sha256.txt
           prerelease: ${{ steps.prerelease.outputs.prerelease }}
           body_path: release-notes.md
-```
-
+```text
 Note: `generate_release_notes: true` is replaced by `body_path: release-notes.md`.
 
 **Step 2: Add validate-release job**
@@ -751,15 +735,14 @@ Append this new job at the end of release.yml:
             echo "ERROR: appcast.xml is not valid XML"
             exit 1
           fi
-```
-
+```text
 **Step 3: Verify YAML validity**
 
 Run:
+
 ```bash
 python3 -c "import yaml; yaml.safe_load(open('.github/workflows/release.yml')); print('OK')"
-```
-
+```text
 Expected: OK.
 
 **Step 4: Commit**
@@ -771,13 +754,13 @@ git commit -m "ci: use changelog for release notes and add post-release validati
 Release notes now come from generate_changelog.sh instead of GitHub
 auto-generation. New validate-release job checks all assets are
 present, checksums verify, and appcast.xml is well-formed."
-```
-
+```diff
 ---
 
 ### Task 8: Add Dependabot configuration
 
 **Files:**
+
 - Create: `.github/dependabot.yml`
 
 **Step 1: Create Dependabot config**
@@ -818,8 +801,7 @@ updates:
       interval: "monthly"
     commit-message:
       prefix: "chore"
-```
-
+```text
 **Step 2: Commit**
 
 ```bash
@@ -828,13 +810,13 @@ git commit -m "ci: add Dependabot for GitHub Actions, pub, and Bundler
 
 Weekly updates for Actions and pub packages, monthly for Fastlane gems.
 Commit messages follow conventional commits format."
-```
-
+```diff
 ---
 
 ### Task 9: Add PR template
 
 **Files:**
+
 - Create: `.github/PULL_REQUEST_TEMPLATE.md`
 
 **Step 1: Create PR template**
@@ -861,20 +843,19 @@ Create `.github/PULL_REQUEST_TEMPLATE.md`:
 ## Screenshots
 
 <!-- If UI changes, add before/after screenshots. Delete this section if not applicable. -->
-```
-
+```text
 **Step 2: Commit**
 
 ```bash
 git add .github/PULL_REQUEST_TEMPLATE.md
 git commit -m "docs: add PR template with test plan checklist"
-```
-
+```diff
 ---
 
 ### Task 10: Enforce coverage threshold
 
 **Files:**
+
 - Modify: `.github/workflows/ci.yaml:91`
 - Create: `codecov.yml`
 
@@ -884,14 +865,12 @@ In `.github/workflows/ci.yaml`, change line 91 from:
 
 ```yaml
           fail_ci_if_error: false
-```
-
+```yaml
 to:
 
 ```yaml
           fail_ci_if_error: true
-```
-
+```text
 **Step 2: Create Codecov config**
 
 Create `codecov.yml` at the repo root:
@@ -915,16 +894,15 @@ ignore:
   - "**/*.freezed.dart"
   - "test/**"
   - "integration_test/**"
-```
-
+```text
 **Step 3: Verify YAML validity**
 
 Run:
+
 ```bash
 python3 -c "import yaml; yaml.safe_load(open('codecov.yml')); print('OK')"
 python3 -c "import yaml; yaml.safe_load(open('.github/workflows/ci.yaml')); print('OK')"
-```
-
+```text
 Expected: Both OK.
 
 **Step 4: Commit**
@@ -936,13 +914,13 @@ git commit -m "ci: enforce coverage threshold via Codecov
 Project target: 70% (ratchet up over time). Patch target: 80%
 (new code in PRs). Codecov now fails CI on upload errors.
 Ignores generated code and test files."
-```
-
+```diff
 ---
 
 ### Task 11: Add integration tests to CI
 
 **Files:**
+
 - Modify: `.github/workflows/ci.yaml` (add new job after `test`)
 
 **Step 1: Add integration-test job**
@@ -1000,15 +978,14 @@ In `.github/workflows/ci.yaml`, add this new job between the `test` job and `bui
           flutter test integration_test/ \
             -d macos \
             --dart-define=SCREENSHOT_MODE=false
-```
-
+```text
 **Step 2: Verify YAML validity**
 
 Run:
+
 ```bash
 python3 -c "import yaml; yaml.safe_load(open('.github/workflows/ci.yaml')); print('OK')"
-```
-
+```text
 Expected: OK.
 
 **Step 3: Commit**
@@ -1019,13 +996,13 @@ git commit -m "ci: add integration tests on macOS for pull requests
 
 Runs integration_test/ suite on macOS runner for PRs only.
 Screenshot mode disabled -- testing correctness, not capturing images."
-```
-
+```diff
 ---
 
 ### Task 12: Add performance regression detection workflow
 
 **Files:**
+
 - Create: `.github/workflows/performance.yml`
 
 **Step 1: Create the workflow**
@@ -1106,15 +1083,14 @@ jobs:
             test/performance/results/
           retention-days: 90
           if-no-files-found: ignore
-```
-
+```text
 **Step 2: Verify YAML validity**
 
 Run:
+
 ```bash
 python3 -c "import yaml; yaml.safe_load(open('.github/workflows/performance.yml')); print('OK')"
-```
-
+```text
 Expected: OK.
 
 **Step 3: Commit**
@@ -1126,8 +1102,7 @@ git commit -m "ci: add weekly performance benchmark workflow
 Runs performance-tagged tests every Monday 6am UTC on macOS.
 Also supports manual dispatch. Results uploaded as artifacts
 with 90-day retention."
-```
-
+```diff
 ---
 
 ### Task 13: Final verification and summary commit
@@ -1135,44 +1110,45 @@ with 90-day retention."
 **Step 1: Verify all workflows parse correctly**
 
 Run:
+
 ```bash
 for f in .github/workflows/*.y*ml; do
   python3 -c "import yaml; yaml.safe_load(open('$f')); print('OK: $f')"
 done
-```
-
+```text
 Expected: All files print OK.
 
 **Step 2: Verify all scripts are executable**
 
 Run:
+
 ```bash
 ls -la scripts/release/*.sh
-```
-
+```text
 Expected: All .sh files have execute permission.
 
 **Step 3: Run local test suite to confirm no breakage**
 
 Run:
+
 ```bash
 flutter test
-```
-
+```text
 Expected: All tests pass (no Dart code was changed).
 
 **Step 4: Verify dart format (no Dart changes expected, but confirm)**
 
 Run:
+
 ```bash
 dart format --set-exit-if-changed lib/ test/
-```
-
+```text
 Expected: No changes needed.
 
 **Step 5: Review full diff**
 
 Run:
+
 ```bash
 git log --oneline HEAD~12..HEAD
 ```

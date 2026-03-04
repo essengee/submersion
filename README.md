@@ -39,6 +39,7 @@ Submersion is built on these principles:
 ## Features
 
 ### Dive Logging
+
 - Comprehensive dive entry with depth, duration, temperatures, conditions
 - Automatic dive numbering with gap detection and renumbering
 - Entry/exit times with surface interval calculation
@@ -49,6 +50,7 @@ Submersion is built on these principles:
 - Free-text notes
 
 ### Dive Sites
+
 - Full site database with GPS coordinates
 - Interactive maps with clustering
 - Capture location from device GPS
@@ -57,6 +59,7 @@ Submersion is built on these principles:
 - Weather and tide data integration
 
 ### Dive Computer Integration
+
 - **300+ supported dive computers** via libdivecomputer
 - Bluetooth LE and USB connectivity
 - Manufacturer protocols: Shearwater, Suunto, Mares, Aqualung, and more
@@ -65,6 +68,7 @@ Submersion is built on these principles:
 - Multi-computer support with profile selection
 
 ### Profile Analysis
+
 - Interactive depth/temperature/pressure/SAC charts with zoom and pan
 - Touch markers showing various metrics
 - Ascent rate calculation with color-coded warnings
@@ -72,6 +76,7 @@ Submersion is built on these principles:
 - SAC/RMV overlay
 
 ### Decompression & Technical Diving
+
 - **Bühlmann ZH-L16C** algorithm with gradient factors
 - Real-time NDL, ceiling, and TTS calculations
 - 16-compartment tissue loading visualization
@@ -80,6 +85,7 @@ Submersion is built on these principles:
 - MOD/END/EAD calculations
 
 ### Equipment Management
+
 - Track all gear with serial numbers, purchase dates, service intervals
 - Service reminders with visual warnings
 - Equipment sets ("bags") for quick selection
@@ -87,18 +93,21 @@ Submersion is built on these principles:
 - Per-dive gear tracking
 
 ### Certifications & Training
+
 - Store all certifications with card numbers and dates
 - Agency support: PADI, SSI, NAUI, SDI/TDI, GUE, RAID, and more
 - Expiry tracking with warnings
 - Instructor and dive center records
 
 ### Statistics & Records
+
 - Total dives, bottom time, depth statistics
 - Breakdown by year, country, site, dive type
 - Personal records: deepest, longest, coldest, warmest
 - Depth distribution histograms
 
 ### Import & Export
+
 - **UDDF 3.2** — Universal Dive Data Format, the open standard
 - **CSV** — Spreadsheet-compatible with configurable columns
 - **PDF** — Printable logbook pages
@@ -125,8 +134,7 @@ dart run build_runner build --delete-conflicting-outputs
 
 # Run the app
 flutter run -d macos    # or: windows, linux, ios, android
-```
-
+```text
 ### Build for Release
 
 ```bash
@@ -144,8 +152,7 @@ flutter build windows
 
 # Linux
 flutter build linux
-```
-
+```text
 ### macOS: Building Without a Developer Certificate
 
 If you don't have an Apple Developer certificate, you can still build and run the app locally using ad-hoc signing. This creates a non-sandboxed build that works on any Mac.
@@ -153,9 +160,9 @@ If you don't have an Apple Developer certificate, you can still build and run th
 ```bash
 # Run the no-sandbox build script
 ./scripts/release/build_nosandbox_macos.sh
-```
-
+```sql
 This script:
+
 1. Builds the macOS app with Flutter
 2. Re-signs it with an ad-hoc signature (no Apple certificate required)
 3. Applies no-sandbox entitlements for full file system access
@@ -163,6 +170,7 @@ This script:
 The built app will be at `build/macos/Build/Products/Release/submersion.app`.
 
 **Running the app:** macOS Gatekeeper will block unsigned apps by default. To run:
+
 1. Right-click (or Control-click) on `submersion.app`
 2. Select "Open" from the context menu
 3. Click "Open" in the dialog that appears
@@ -178,8 +186,7 @@ Windows builds require no code signing for local use. You need [Visual Studio](h
 ```bash
 # Build the app
 flutter build windows --release
-```
-
+```text
 The built app will be at `build\windows\x64\runner\Release\`.
 
 > **Note:** Windows SmartScreen may show an "unrecognized app" warning for unsigned executables. Click "More info" then "Run anyway" to proceed.
@@ -196,8 +203,7 @@ sudo apt-get install -y \
   clang cmake ninja-build pkg-config \
   libgtk-3-dev liblzma-dev libstdc++-12-dev \
   libsqlite3-dev libsecret-1-dev
-```
-
+```text
 **Fedora:**
 
 ```bash
@@ -205,22 +211,19 @@ sudo dnf install -y \
   clang cmake ninja-build pkg-config \
   gtk3-devel xz-devel libstdc++-devel \
   sqlite-devel libsecret-devel
-```
-
+```text
 **Arch Linux:**
 
 ```bash
 sudo pacman -S --needed \
   clang cmake ninja pkg-config \
   gtk3 xz sqlite libsecret
-```
-
+```text
 Then build:
 
 ```bash
 flutter build linux --release
-```
-
+```text
 The built app will be at `build/linux/x64/release/bundle/`.
 
 ## Architecture
@@ -228,6 +231,7 @@ The built app will be at `build/linux/x64/release/bundle/`.
 Submersion follows clean architecture principles with clear separation of concerns:
 
 ```
+
 lib/
 ├── core/                 # Shared infrastructure
 │   ├── database/         # Drift ORM schema and migrations
@@ -243,9 +247,11 @@ lib/
 │   ├── statistics/       # Analytics & records
 │   └── ...               # Additional features
 └── shared/               # Reusable widgets
-```
+
+```text
 
 **Tech Stack:**
+
 - **Flutter** — Cross-platform UI framework
 - **Riverpod** — Reactive state management
 - **Drift** — Type-safe SQLite ORM with migrations

@@ -97,6 +97,7 @@ In Statistics, the Marine Life section shows:
 ### Species History
 
 For each species, view:
+
 - Total sightings count
 - Number of dives with sighting
 - First sighting date
@@ -108,6 +109,7 @@ For each species, view:
 ### What Lives Where
 
 Discover patterns:
+
 - Which species at which sites
 - Seasonal variations
 - Depth preferences
@@ -115,6 +117,7 @@ Discover patterns:
 ### Site Species List
 
 Each dive site shows:
+
 - Species seen there
 - Sighting frequency
 - Best depth for species
@@ -124,6 +127,7 @@ Each dive site shows:
 ### Species Photos
 
 Add reference photos:
+
 - Database photos for ID
 - Your photos for personal sightings
 - Before/after comparisons
@@ -137,6 +141,7 @@ Add reference photos:
 ### Recording Details
 
 Good sighting records include:
+
 - Accurate species ID
 - Behavior observed
 - Size estimate
@@ -146,6 +151,7 @@ Good sighting records include:
 ### Uncertain IDs
 
 If unsure of species:
+
 - Add to "Other" category
 - Note distinguishing features
 - Update later when identified
@@ -155,6 +161,7 @@ If unsure of species:
 ### Tracking Rare Species
 
 Flag notable sightings:
+
 - Endangered species
 - Unusual behavior
 - Out-of-range sightings
@@ -163,6 +170,7 @@ Flag notable sightings:
 ### Environmental Changes
 
 Track over time:
+
 - Species diversity changes
 - Coral health observations
 - Invasive species
@@ -173,6 +181,7 @@ Track over time:
 ### Sighting Data
 
 Export sighting data:
+
 - Included in UDDF export
 - Available in CSV export
 - For citizen science projects
@@ -180,6 +189,7 @@ Export sighting data:
 ### Contributing Data
 
 Consider sharing:
+
 - Reef monitoring programs
 - Shark sighting databases
 - Manta ray identification

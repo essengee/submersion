@@ -49,17 +49,19 @@ CREATE TABLE courses (
   created_at INTEGER NOT NULL,
   updated_at INTEGER NOT NULL
 );
-```
-
+```text
 ### Schema Changes
 
 **dives table:**
+
 - Add `course_id TEXT REFERENCES courses(id) ON DELETE SET NULL`
 
 **certifications table:**
+
 - Add `course_id TEXT REFERENCES courses(id) ON DELETE SET NULL`
 
 **media table:**
+
 - Add `signer_id TEXT` (buddy ID if known)
 - Add `signer_name TEXT` (always populated)
 
@@ -97,8 +99,7 @@ class Course extends Equatable {
 
   // Constructor, copyWith, props...
 }
-```
-
+```diff
 ---
 
 ## Repository Methods
@@ -126,14 +127,15 @@ class CourseRepository {
   Future<List<Dive>> getDivesForCourse(String courseId);
   Future<int> getDiveCountForCourse(String courseId);
 }
-```
-
+```dart
 ### Updated Repositories
 
 **DiveRepository:**
+
 - `getDivesForCourse(courseId)` - already covered by CourseRepository
 
 **CertificationRepository:**
+
 - `getCertificationForCourse(courseId)`
 
 ---
@@ -160,8 +162,7 @@ final courseDivesProvider = FutureProvider.family<List<Dive>, String>(...);
 
 // Mutable state for CRUD
 final courseNotifierProvider = StateNotifierProvider<CourseNotifier, AsyncValue<List<Course>>>(...);
-```
-
+```dart
 ---
 
 ## UI Components
@@ -227,7 +228,8 @@ final courseNotifierProvider = StateNotifierProvider<CourseNotifier, AsyncValue<
 
 ### New Files
 
-```
+```text
+
 lib/features/courses/
 ├── data/
 │   └── repositories/
@@ -257,17 +259,18 @@ lib/features/signatures/
     │   └── signature_display_widget.dart
     └── providers/
         └── signature_providers.dart
-```
 
 ### Modified Files
 
-```
+```text
+
 lib/core/database/database.dart
 lib/core/router/router.dart
 lib/features/dive_log/presentation/pages/dive_edit_page.dart
 lib/features/dive_log/presentation/pages/dive_detail_page.dart
 lib/features/certifications/domain/entities/certification.dart
 lib/features/certifications/presentation/pages/certification_detail_page.dart
+
 ```
 
 ---
@@ -275,6 +278,7 @@ lib/features/certifications/presentation/pages/certification_detail_page.dart
 ## Implementation Order
 
 ### Phase 1: Database & Domain Layer
+
 1. Add `courses` table to database.dart (schema v19)
 2. Add `courseId` FK to `dives` table
 3. Add `courseId` FK to `certifications` table
@@ -283,47 +287,56 @@ lib/features/certifications/presentation/pages/certification_detail_page.dart
 6. Create migration for existing databases
 
 ### Phase 2: Data Layer
-7. Create `CourseRepository` with CRUD + queries
-8. Update `DiveRepository` - course filtering
-9. Update `CertificationRepository` - course lookup
+
+1. Create `CourseRepository` with CRUD + queries
+2. Update `DiveRepository` - course filtering
+3. Update `CertificationRepository` - course lookup
 
 ### Phase 3: State Management
-10. Create course providers
+
+1. Create course providers
 
 ### Phase 4: UI - Course Management
-11. Course list page with filtering
-12. Course detail page
-13. Course edit page with instructor picker
+
+1. Course list page with filtering
+2. Course detail page
+3. Course edit page with instructor picker
 
 ### Phase 5: UI - Integration
-14. Add course picker to dive edit page
-15. Show course link on dive detail page
-16. Show course link on certification detail page
+
+1. Add course picker to dive edit page
+2. Show course link on dive detail page
+3. Show course link on certification detail page
 
 ### Phase 6: Signature Feature
-17. Signature capture widget
-18. Signature storage service
-19. "Sign Dive" action on dive detail
-20. Signature display on dive detail page
+
+1. Signature capture widget
+2. Signature storage service
+3. "Sign Dive" action on dive detail
+4. Signature display on dive detail page
 
 ### Phase 7: Export (Future)
-21. Training log PDF export with signatures
+
+1. Training log PDF export with signatures
 
 ---
 
 ## Testing Strategy
 
 ### Unit Tests
+
 - Course entity: copyWith, equality, computed properties
 - CourseRepository: CRUD operations, queries
 - Signature storage service: file operations
 
 ### Widget Tests
+
 - Course list filtering
 - Course picker behavior
 - Signature capture canvas interactions
 
 ### Integration Tests
+
 - Create course → add dives → complete → link cert
 - Sign dive → verify media record → display signature
 
@@ -332,6 +345,7 @@ lib/features/certifications/presentation/pages/certification_detail_page.dart
 ## Dependencies
 
 No new packages required. Uses existing:
+
 - `drift` for database
 - `flutter_riverpod` for state
 - `go_router` for navigation

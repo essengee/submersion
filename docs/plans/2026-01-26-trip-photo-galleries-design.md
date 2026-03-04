@@ -21,6 +21,7 @@ Add photo gallery functionality to trips, showing aggregated photos from all div
 ### New Providers (`trip_media_providers.dart`)
 
 **`mediaForTripProvider(tripId)`**
+
 - Returns `Map<Dive, List<MediaItem>>` preserving dive grouping
 - Process:
   1. Get all dive IDs for trip via `diveIdsForTripProvider`
@@ -29,12 +30,14 @@ Add photo gallery functionality to trips, showing aggregated photos from all div
 - Riverpod handles caching and invalidation
 
 **`mediaCountForTripProvider(tripId)`**
+
 - Returns total photo count across all dives in trip
 - Used for badges and headers
 
 ### New Service (`trip_media_scanner.dart`)
 
 **`TripMediaScanner.scanAndLinkPhotos(tripId)`**
+
 1. Get all dives for trip with start/end times
 2. Query device gallery for photos in trip date range (with 1-hour buffer)
 3. Match each photo to a dive by timestamp:
@@ -50,7 +53,7 @@ Add photo gallery functionality to trips, showing aggregated photos from all div
 
 Collapsible card on trip detail page.
 
-```
+```text
 +---------------------------------------------+
 | Photos (24)                    [Scan] [v]   |
 +---------------------------------------------+
@@ -70,7 +73,7 @@ Route: `/trips/:id/gallery`
 
 Scrollable list of dive sections with 4-column photo grids.
 
-```
+```text
 +---------------------------------------------+
 | <- Trip Photos                      [Scan]  |
 +---------------------------------------------+
@@ -102,7 +105,7 @@ Full-screen photo viewer for browsing all trip photos.
 
 Bottom sheet showing scan results before linking.
 
-```
+```text
 +---------------------------------------------+
 | Found 23 new photos                         |
 +---------------------------------------------+
@@ -126,7 +129,7 @@ Bottom sheet showing scan results before linking.
 
 ### New Files
 
-```
+```text
 lib/features/trips/presentation/
   widgets/
     trip_photo_section.dart
@@ -147,7 +150,7 @@ lib/features/media/data/services/
 
 ### Modified Files
 
-```
+```text
 lib/features/trips/presentation/pages/trip_detail_page.dart
   - Add TripPhotoSection widget
 

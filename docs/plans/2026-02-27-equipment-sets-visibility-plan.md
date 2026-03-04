@@ -13,6 +13,7 @@
 ## Task 1: Add Localization Strings
 
 **Files:**
+
 - Modify: `lib/l10n/arb/app_en.arb` (add new keys near existing `equipment_` keys)
 
 **Step 1: Add new l10n keys to app_en.arb**
@@ -23,8 +24,7 @@ Add these keys alphabetically within the `equipment_` section (near line 3753):
 "equipment_tab_equipment": "Equipment",
 "equipment_tab_sets": "Sets",
 "equipment_fab_addSet": "Add Set",
-```
-
+```text
 **Step 2: Run code generation**
 
 Run: `dart run build_runner build --delete-conflicting-outputs`
@@ -40,8 +40,7 @@ Expected: No errors.
 ```bash
 git add lib/l10n/
 git commit -m "feat: add l10n keys for equipment tab bar"
-```
-
+```text
 ---
 
 ## Task 2: Extract EquipmentSetListContent Widget
@@ -49,6 +48,7 @@ git commit -m "feat: add l10n keys for equipment tab bar"
 Extract the list/empty/error content from `EquipmentSetListPage` into a reusable `EquipmentSetListContent` widget (exactly as `EquipmentListContent` was extracted from `EquipmentListPage`).
 
 **Files:**
+
 - Create: `lib/features/equipment/presentation/widgets/equipment_set_list_content.dart`
 - Modify: `lib/features/equipment/presentation/pages/equipment_set_list_page.dart`
 
@@ -268,8 +268,7 @@ class EquipmentSetListContent extends ConsumerWidget {
     );
   }
 }
-```
-
+```text
 **Step 2: Update `EquipmentSetListPage` to use the extracted widget**
 
 Replace the body of `EquipmentSetListPage.build()` to delegate to `EquipmentSetListContent`:
@@ -299,8 +298,7 @@ class EquipmentSetListPage extends ConsumerWidget {
     );
   }
 }
-```
-
+```text
 **Step 3: Verify compilation**
 
 Run: `flutter analyze`
@@ -316,8 +314,7 @@ Expected: All existing tests pass (no behavioral changes).
 ```bash
 git add lib/features/equipment/presentation/widgets/equipment_set_list_content.dart lib/features/equipment/presentation/pages/equipment_set_list_page.dart
 git commit -m "refactor: extract EquipmentSetListContent widget from EquipmentSetListPage"
-```
-
+```dart
 ---
 
 ## Task 3: Convert EquipmentListPage to Tabbed Layout
@@ -325,11 +322,13 @@ git commit -m "refactor: extract EquipmentSetListContent widget from EquipmentSe
 This is the core change. Convert `EquipmentListPage` from `ConsumerWidget` to `ConsumerStatefulWidget` with `TabController`, add a `TabBar` to the `AppBar`, and use `TabBarView` to switch between equipment list and sets list.
 
 **Files:**
+
 - Modify: `lib/features/equipment/presentation/pages/equipment_list_page.dart`
 
 **Step 1: Rewrite `EquipmentListPage` with TabBar**
 
 The key structural changes:
+
 1. `ConsumerWidget` -> `ConsumerStatefulWidget` + `SingleTickerProviderStateMixin`
 2. Add `TabController` with 2 tabs
 3. Move `TabBar` into `AppBar.bottom`
@@ -479,9 +478,9 @@ class _EquipmentListPageState extends ConsumerState<EquipmentListPage>
     );
   }
 }
-```
-
+```text
 **Important implementation notes:**
+
 - The `EquipmentListContent` widget's `showAppBar: false` removes its internal AppBar since the parent now provides one with tabs.
 - The sort and search actions only show on the Equipment tab. The `EquipmentListContent` already has sort/search built into its internal compact AppBar; since `showAppBar: false` hides it, we need to handle this. The simplest approach: pass `showAppBar: false` but keep the filter chips visible in `EquipmentListContent`. Sort can be triggered from `EquipmentListContent`'s own internal filter row, or we can keep `showAppBar: true` and remove the `AppBar` actions from the parent. **Decision: Keep `EquipmentListContent(showAppBar: false)` and rely on its built-in filter chips row. Remove sort/search from the parent AppBar actions since `EquipmentListContent` already handles them in its filter row when `showAppBar: false`.** Actually, looking at the code more carefully:
   - When `showAppBar: false`, `EquipmentListContent` shows `_buildCompactAppBar` which includes the folder icon, sort button, and search button.
@@ -505,8 +504,7 @@ Expected: All existing tests pass.
 ```bash
 git add lib/features/equipment/presentation/pages/equipment_list_page.dart
 git commit -m "feat: add TabBar to equipment page with Equipment and Sets tabs"
-```
-
+```text
 ---
 
 ## Task 4: Wire Up Master-Detail for Both Tabs
@@ -514,6 +512,7 @@ git commit -m "feat: add TabBar to equipment page with Equipment and Sets tabs"
 Add full master-detail support so that on tablet/desktop, switching tabs changes both the master list and the detail pane.
 
 **Files:**
+
 - Modify: `lib/features/equipment/presentation/pages/equipment_list_page.dart` (the `_buildMasterDetailLayout` method)
 
 **Step 1: Implement `_buildMasterDetailLayout`**
@@ -608,8 +607,7 @@ Widget _buildMasterDetailLayout(BuildContext context) {
     ),
   );
 }
-```
-
+```text
 **Note:** The `EquipmentSetDetailPage` currently wraps itself in a `Scaffold`. For embedded master-detail usage, it may need an `embedded` parameter (similar to `EquipmentDetailPage`). If so, add a simple `embedded` flag that skips the outer `Scaffold`/`AppBar`. Evaluate at implementation time.
 
 **Step 2: Add a simple `_EquipmentSetSummaryWidget`**
@@ -657,8 +655,7 @@ class _EquipmentSetSummaryWidget extends ConsumerWidget {
     );
   }
 }
-```
-
+```text
 **Step 3: Verify compilation and test**
 
 Run: `flutter analyze && flutter test`
@@ -669,8 +666,7 @@ Expected: No errors, all tests pass.
 ```bash
 git add lib/features/equipment/presentation/pages/equipment_list_page.dart
 git commit -m "feat: add master-detail support for equipment sets tab"
-```
-
+```text
 ---
 
 ## Task 5: Remove Folder Icon from EquipmentListContent
@@ -678,30 +674,31 @@ git commit -m "feat: add master-detail support for equipment sets tab"
 The folder icon button in `EquipmentListContent` (both in its AppBar and compact AppBar) is no longer needed since Sets are now accessible via the tab.
 
 **Files:**
+
 - Modify: `lib/features/equipment/presentation/widgets/equipment_list_content.dart`
 
 **Step 1: Remove folder icon from `_buildCompactAppBar` (lines 215-219)**
 
 Remove these lines:
+
 ```dart
 IconButton(
   icon: const Icon(Icons.folder_outlined, size: 20),
   tooltip: context.l10n.equipment_list_setsTooltip,
   onPressed: () => context.push('/equipment/sets'),
 ),
-```
-
+```text
 **Step 2: Remove folder icon from the Scaffold AppBar actions (lines 163-167)**
 
 Remove these lines:
+
 ```dart
 IconButton(
   icon: const Icon(Icons.folder_outlined),
   tooltip: context.l10n.equipment_list_setsTooltip,
   onPressed: () => context.push('/equipment/sets'),
 ),
-```
-
+```text
 **Step 3: Verify compilation and test**
 
 Run: `flutter analyze && flutter test`
@@ -712,8 +709,7 @@ Expected: No errors, all tests pass.
 ```bash
 git add lib/features/equipment/presentation/widgets/equipment_list_content.dart
 git commit -m "refactor: remove equipment sets folder icon from equipment list"
-```
-
+```text
 ---
 
 ## Task 6: Update EquipmentSummaryWidget Quick Actions
@@ -721,19 +717,20 @@ git commit -m "refactor: remove equipment sets folder icon from equipment list"
 The `EquipmentSummaryWidget` (shown in master-detail detail pane) has a "Equipment Sets" quick action button that navigates to `/equipment/sets`. This should be removed since sets are now a tab.
 
 **Files:**
+
 - Modify: `lib/features/equipment/presentation/widgets/equipment_summary_widget.dart`
 
 **Step 1: Remove the "Equipment Sets" quick action button (lines 340-344)**
 
 Remove this `OutlinedButton.icon` from `_buildQuickActions`:
+
 ```dart
 OutlinedButton.icon(
   onPressed: () => context.push('/equipment/sets'),
   icon: const Icon(Icons.folder),
   label: Text(context.l10n.equipment_summary_equipmentSetsButton),
 ),
-```
-
+```text
 **Step 2: Verify compilation and test**
 
 Run: `flutter analyze && flutter test`
@@ -744,8 +741,7 @@ Expected: No errors, all tests pass.
 ```bash
 git add lib/features/equipment/presentation/widgets/equipment_summary_widget.dart
 git commit -m "refactor: remove equipment sets button from summary quick actions"
-```
-
+```text
 ---
 
 ## Task 7: Update Router to Redirect /equipment/sets
@@ -753,6 +749,7 @@ git commit -m "refactor: remove equipment sets button from summary quick actions
 The `/equipment/sets` route should redirect to the Equipment page with the Sets tab active (or be kept as-is for set CRUD sub-routes). Since `EquipmentSetListPage` is still a valid standalone page (used by the route), and the sub-routes `/equipment/sets/new`, `/equipment/sets/:setId`, and `/equipment/sets/:setId/edit` still need it as a parent, the simplest approach is to keep the routes as-is. The `EquipmentSetListPage` route still works for direct navigation from set detail "back" button.
 
 **Files:**
+
 - Modify: `lib/core/router/app_router.dart` (minimal change)
 
 **Step 1: Update `EquipmentSetDetailPage` delete navigation**
@@ -764,8 +761,7 @@ In `equipment_set_detail_page.dart`, line 253, the delete handler navigates to `
 context.go('/equipment/sets');
 // To:
 context.go('/equipment');
-```
-
+```text
 **Step 2: Verify compilation and test**
 
 Run: `flutter analyze && flutter test`
@@ -776,8 +772,7 @@ Expected: No errors, all tests pass.
 ```bash
 git add lib/features/equipment/presentation/pages/equipment_set_detail_page.dart
 git commit -m "fix: navigate to equipment page after set deletion"
-```
-
+```diff
 ---
 
 ## Task 8: Format, Analyze, and Final Verification
@@ -801,6 +796,7 @@ Expected: All tests pass.
 Run: `flutter run -d macos`
 
 Verify:
+
 - Equipment page shows TabBar with "Equipment" and "Sets" tabs
 - Equipment tab shows existing equipment list with filters, sort, search
 - Sets tab shows equipment sets list

@@ -30,6 +30,7 @@ This design covers two map visualization features for Submersion:
 ### Heat Maps
 
 **Dive Activity Heat Map (Dives Page):**
+
 - Canvas-based gradient heat map layer
 - Data from dives grouped by site location, weighted by dive count
 - Blue to Yellow to Red color gradient
@@ -37,6 +38,7 @@ This design covers two map visualization features for Submersion:
 - Toggle between List / Map / Activity views
 
 **Site Coverage Heat Map (Sites Page):**
+
 - Same heat map rendering engine
 - Data from all saved dive sites
 - Shows geographic distribution of known sites
@@ -48,7 +50,7 @@ This design covers two map visualization features for Submersion:
 
 ### Feature Structure
 
-```
+```text
 lib/features/maps/
 ├── data/
 │   ├── repositories/
@@ -92,8 +94,7 @@ CREATE TABLE cached_regions (
   created_at INTEGER NOT NULL,
   last_accessed_at INTEGER NOT NULL
 );
-```
-
+```dart
 ---
 
 ## Offline Maps Implementation
@@ -101,12 +102,14 @@ CREATE TABLE cached_regions (
 ### Hybrid Caching Strategy
 
 **Automatic Caching (Background):**
+
 - Tiles cached to local storage as user pans/zooms
 - Uses `path_provider` documents directory
 - LRU eviction when cache exceeds limit (default: 500MB)
 - Cache structure: `tiles/{source}/{z}/{x}/{y}.png`
 
 **Explicit Region Downloads:**
+
 - User draws bounding box on map
 - Selects zoom levels to download
 - Background download with progress tracking
@@ -115,6 +118,7 @@ CREATE TABLE cached_regions (
 ### Tile Provider
 
 Custom `CachedTileProvider` that:
+
 1. Checks local cache first
 2. Falls back to network if not cached
 3. Automatically caches fetched tiles
@@ -123,6 +127,7 @@ Custom `CachedTileProvider` that:
 ### Region Selector UI
 
 ```
+
 ┌─────────────────────────────────────┐
 │  Draw a rectangle to select area    │
 │  ┌─────────────────────┐            │
@@ -135,8 +140,8 @@ Custom `CachedTileProvider` that:
 │  Est. 847 tiles (~42 MB)            │
 │  [Cancel]  [Download Zoom 8-16 v]   │
 └─────────────────────────────────────┘
-```
 
+```text
 ### Storage Estimates
 
 - Zoom 10 (city level): ~50KB per tile
@@ -166,6 +171,7 @@ Custom `CachedTileProvider` that:
 ### Rendering
 
 Canvas-based `CustomPainter` approach:
+
 - Draws heat map on canvas as single layer
 - Renders over map tiles
 - Smooth gradients, performant with hundreds of points
@@ -183,6 +189,7 @@ Canvas-based `CustomPainter` approach:
 ### Dives Page
 
 ```
+
 ┌─────────────────────────────────────┐
 │  Dive Log                    [:]   │
 │  ┌───────┬───────┬──────────┐      │
@@ -191,11 +198,12 @@ Canvas-based `CustomPainter` approach:
 │         ^          ^               │
 │    Site markers   Heat map         │
 └─────────────────────────────────────┘
-```
 
+```text
 ### Sites Page
 
 ```
+
 ┌─────────────────────────────────────┐
 │  Dive Sites                  [:]   │
 │  ┌───────┬───────┬──────────┐      │
@@ -204,8 +212,8 @@ Canvas-based `CustomPainter` approach:
 │         ^          ^               │
 │   Site markers   Heat map          │
 └─────────────────────────────────────┘
-```
 
+```text
 ### Offline Maps Access
 
 - Settings > Storage > Offline Maps
@@ -225,8 +233,7 @@ Canvas-based `CustomPainter` approach:
 ```yaml
 dependencies:
   flutter_map_tile_caching: ^9.1.0  # Mature caching for flutter_map
-```
-
+```dart
 No additional packages needed for heat map (custom implementation).
 
 ---
@@ -245,8 +252,7 @@ final diveActivityHeatMapProvider = FutureProvider<List<HeatMapPoint>>((ref) asy
 final siteCoverageHeatMapProvider = FutureProvider<List<HeatMapPoint>>((ref) async {
   // Query all sites with coordinates
 });
-```
-
+```dart
 ### Offline Map Providers
 
 ```dart
@@ -271,24 +277,28 @@ final downloadProgressProvider = StateNotifierProvider<DownloadProgressNotifier,
 ## Implementation Phases
 
 ### Phase 1: Offline Maps Infrastructure
+
 1. Add flutter_map_tile_caching dependency
 2. Create CachedTileProvider
 3. Implement automatic background caching
 4. Update existing maps to use cached provider
 
 ### Phase 2: Region Downloads
+
 1. Add cached_regions table to database
 2. Create RegionSelector widget (bounding box)
 3. Implement RegionDownloadService
 4. Create OfflineMapsPage for management
 
 ### Phase 3: Heat Map Core
+
 1. Create HeatMapPoint entity
 2. Implement HeatMapLayer CustomPainter
 3. Create heat map providers (dive activity, site coverage)
 4. Add HeatMapControls widget
 
 ### Phase 4: Integration
+
 1. Add Activity view toggle to Dives page
 2. Add Coverage view toggle to Sites page
 3. Add offline download quick action to maps
@@ -299,17 +309,20 @@ final downloadProgressProvider = StateNotifierProvider<DownloadProgressNotifier,
 ## Testing Strategy
 
 ### Unit Tests
+
 - Heat map point aggregation logic
 - Color gradient interpolation
 - Tile count estimation for regions
 - Cache size calculations
 
 ### Widget Tests
+
 - RegionSelector interaction (draw, resize, confirm)
 - HeatMapControls state management
 - OfflineMapsPage list display
 
 ### Integration Tests
+
 - Download region flow (select > configure > download > verify)
 - Heat map toggle and display
 - Offline mode behavior

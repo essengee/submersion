@@ -17,7 +17,7 @@ Add photo/video support to Submersion as a **metadata enrichment layer**, not a 
 
 ## Architecture
 
-```
+```text
 +-------------------------------------------------------------+
 |                    Device Photo Library                      |
 |  (User manages photos here - Apple Photos, Google Photos)    |
@@ -98,8 +98,7 @@ CREATE TABLE media (
 
 CREATE INDEX idx_media_dive ON media(dive_id);
 CREATE INDEX idx_media_platform_asset ON media(platform_asset_id);
-```
-
+```text
 ### New Table: Media Enrichment
 
 ```sql
@@ -124,8 +123,7 @@ CREATE TABLE media_enrichment (
 
 CREATE INDEX idx_media_enrichment_media ON media_enrichment(media_id);
 CREATE INDEX idx_media_enrichment_dive ON media_enrichment(dive_id);
-```
-
+```text
 ### New Table: Media Species Tags
 
 ```sql
@@ -149,8 +147,7 @@ CREATE TABLE media_species (
 
 CREATE INDEX idx_media_species_media ON media_species(media_id);
 CREATE INDEX idx_media_species_species ON media_species(species_id);
-```
-
+```text
 ### New Table: Pending Photo Suggestions
 
 ```sql
@@ -207,10 +204,12 @@ CREATE INDEX idx_pending_suggestions_dive ON pending_photo_suggestions(dive_id);
 ### Flow 2: Background Scan Suggestions
 
 Triggers:
+
 - New dive logged (imported or manual)
 - App opened after 24+ hours
 
 Process:
+
 1. For each dive in last 30 days without photos
 2. Query photo library for matching timestamps
 3. Store matches in `pending_photo_suggestions`
@@ -255,6 +254,7 @@ Process:
 ### Cleanup Tool
 
 Settings > Storage > "Manage Photo References"
+
 - List orphaned photos grouped by dive
 - Bulk remove option
 - Warning about metadata loss

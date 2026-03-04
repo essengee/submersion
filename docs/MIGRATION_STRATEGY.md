@@ -18,7 +18,7 @@ Submersion uses **Drift** (formerly Moor) as the SQLite ORM for Flutter. Drift p
 
 ### Version Format
 
-```
+```text
 schemaVersion = N
 ```
 
@@ -29,8 +29,7 @@ Where N is an integer starting from 1 and incrementing with each migration.
 ```dart
 @override
 int get schemaVersion => 1;  // Initial release
-```
-
+```text
 ### Version History
 
 | Version | Date | Description |
@@ -44,13 +43,15 @@ int get schemaVersion => 1;  // Initial release
 ### Location
 
 Migrations are defined in:
+
 ```
+
 lib/core/database/migrations/
 ├── migration_v1_to_v2.dart
 ├── migration_v2_to_v3.dart
 └── ...
-```
 
+```text
 ### Migration Structure
 
 ```dart
@@ -72,8 +73,7 @@ Future<void> migrateV1ToV2(Migrator m, Schema2 schema) async {
     WHERE new_column IS NULL
   ''');
 }
-```
-
+```text
 ### Database Configuration
 
 ```dart
@@ -130,8 +130,7 @@ class AppDatabase extends _$AppDatabase {
     }
   }
 }
-```
-
+```text
 ## Common Migration Patterns
 
 ### 1. Adding a New Table
@@ -140,8 +139,7 @@ class AppDatabase extends _$AppDatabase {
 Future<void> migrateV1ToV2(Migrator m, Schema2 schema) async {
   await m.createTable(schema.certifications);
 }
-```
-
+```text
 ### 2. Adding a Column with Default Value
 
 ```dart
@@ -161,8 +159,7 @@ Future<void> migrateV2ToV3(Migrator m, Schema3 schema) async {
     )
   ''');
 }
-```
-
+```text
 ### 3. Renaming a Column
 
 SQLite doesn't support direct column renaming. Strategy:
@@ -190,8 +187,7 @@ Future<void> migrateV3ToV4(Migrator m, Schema4 schema) async {
     'CREATE INDEX idx_dives_date ON dives(date_time)'
   );
 }
-```
-
+```text
 ### 4. Changing Column Type
 
 Similar to renaming - recreate the table:
@@ -220,8 +216,7 @@ Future<void> migrateV4ToV5(Migrator m, Schema5 schema) async {
   // 4. Cleanup
   await m.database.customStatement('DROP TABLE dives_temp');
 }
-```
-
+```text
 ### 5. Adding an Index
 
 ```dart
@@ -230,8 +225,7 @@ Future<void> migrateV5ToV6(Migrator m, Schema6 schema) async {
     'CREATE INDEX IF NOT EXISTS idx_dives_site ON dives(site_id)'
   );
 }
-```
-
+```text
 ### 6. Removing a Table
 
 ```dart
@@ -243,8 +237,7 @@ Future<void> migrateV6ToV7(Migrator m, Schema7 schema) async {
 
   await m.database.customStatement('DROP TABLE old_table');
 }
-```
-
+```text
 ### 7. Adding Foreign Key Constraint
 
 SQLite doesn't support adding foreign keys to existing tables. Recreate:
@@ -278,8 +271,7 @@ Future<void> migrateV7ToV8(Migrator m, Schema8 schema) async {
   // 5. Re-enable foreign keys
   await m.database.customStatement('PRAGMA foreign_keys = ON');
 }
-```
-
+```text
 ## Data Migration from Other Apps
 
 ### Importing from Subsurface (XML/Git)
@@ -303,8 +295,7 @@ class SubsurfaceImporter {
     return dives;
   }
 }
-```
-
+```text
 ### Importing from UDDF
 
 ```dart
@@ -337,8 +328,7 @@ class UddfImporter {
     );
   }
 }
-```
-
+```text
 ## Testing Migrations
 
 ### Unit Tests
@@ -400,8 +390,7 @@ void main() {
     });
   });
 }
-```
-
+```text
 ### Integration Tests
 
 ```dart
@@ -417,8 +406,7 @@ void main() {
     // 4. Verify no errors
   });
 }
-```
-
+```text
 ## Backup Before Migration
 
 Always encourage users to backup before major updates:
@@ -456,8 +444,7 @@ class MigrationSafetyService {
     return backupPath;
   }
 }
-```
-
+```typescript
 ## Rollback Strategy
 
 Since we don't support downgrade migrations:
@@ -486,8 +473,7 @@ class BackupManager {
     }
   }
 }
-```
-
+```text
 ## Version Checking
 
 Display migration status to users:
@@ -521,8 +507,7 @@ class DatabaseVersionInfo {
     return notes;
   }
 }
-```
-
+```text
 ## Emergency Recovery
 
 If database becomes corrupted:

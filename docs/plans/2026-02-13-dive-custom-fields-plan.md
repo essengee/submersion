@@ -15,6 +15,7 @@
 ### Task 1: Domain Entity — DiveCustomField
 
 **Files:**
+
 - Create: `lib/features/dive_log/domain/entities/dive_custom_field.dart`
 - Test: `test/features/dive_log/domain/entities/dive_custom_field_test.dart`
 
@@ -72,8 +73,7 @@ void main() {
     });
   });
 }
-```
-
+```typescript
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/features/dive_log/domain/entities/dive_custom_field_test.dart`
@@ -116,8 +116,7 @@ class DiveCustomField extends Equatable {
   @override
   List<Object?> get props => [id, key, value, sortOrder];
 }
-```
-
+```text
 **Step 4: Run test to verify it passes**
 
 Run: `flutter test test/features/dive_log/domain/entities/dive_custom_field_test.dart`
@@ -126,14 +125,16 @@ Expected: PASS (4 tests)
 **Step 5: Commit**
 
 ```
-feat: add DiveCustomField domain entity
-```
 
+feat: add DiveCustomField domain entity
+
+```text
 ---
 
 ### Task 2: Add customFields to Dive Entity
 
 **Files:**
+
 - Modify: `lib/features/dive_log/domain/entities/dive.dart`
 - Test: `test/features/dive_log/domain/entities/dive_custom_field_test.dart` (extend)
 
@@ -180,8 +181,7 @@ group('Dive.customFields', () {
     expect(updated.customFields, isEmpty);
   });
 });
-```
-
+```dart
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/features/dive_log/domain/entities/dive_custom_field_test.dart`
@@ -206,14 +206,16 @@ Expected: PASS (7 tests)
 **Step 5: Commit**
 
 ```
-feat: add customFields list to Dive entity
-```
 
+feat: add customFields list to Dive entity
+
+```text
 ---
 
 ### Task 3: Database Table & Migration
 
 **Files:**
+
 - Modify: `lib/core/database/database.dart`
 
 **Step 1: Add the Drift table definition**
@@ -234,8 +236,7 @@ class DiveCustomFields extends Table {
   @override
   Set<Column> get primaryKey => {id};
 }
-```
-
+```text
 **Step 2: Register the table in @DriftDatabase**
 
 Add `DiveCustomFields,` to the `tables` list in the `@DriftDatabase` annotation (after `ScheduledNotifications`).
@@ -269,8 +270,7 @@ if (from < 34) {
     ON dive_custom_fields(field_key)
   ''');
 }
-```
-
+```text
 **Step 5: Run code generation**
 
 Run: `dart run build_runner build --delete-conflicting-outputs`
@@ -284,14 +284,16 @@ Expected: No issues
 **Step 7: Commit**
 
 ```
-feat: add dive_custom_fields table (schema v34)
-```
 
+feat: add dive_custom_fields table (schema v34)
+
+```text
 ---
 
 ### Task 4: DiveCustomField Repository
 
 **Files:**
+
 - Create: `lib/features/dive_log/data/repositories/dive_custom_field_repository.dart`
 - Test: `test/features/dive_log/data/repositories/dive_custom_field_repository_test.dart`
 
@@ -434,8 +436,7 @@ void main() {
     });
   });
 }
-```
-
+```typescript
 **Step 2: Run test to verify it fails**
 
 Run: `flutter test test/features/dive_log/data/repositories/dive_custom_field_repository_test.dart`
@@ -527,8 +528,7 @@ class DiveCustomFieldRepository {
     );
   }
 }
-```
-
+```text
 **Step 4: Run test to verify it passes**
 
 Run: `flutter test test/features/dive_log/data/repositories/dive_custom_field_repository_test.dart`
@@ -537,19 +537,22 @@ Expected: PASS (7 tests)
 **Step 5: Commit**
 
 ```
-feat: add DiveCustomFieldRepository with CRUD and batch loading
-```
 
+feat: add DiveCustomFieldRepository with CRUD and batch loading
+
+```dart
 ---
 
 ### Task 5: Integrate into DiveRepository
 
 **Files:**
+
 - Modify: `lib/features/dive_log/data/repositories/dive_repository_impl.dart`
 
 **Step 1: Add imports and field**
 
 At the top of `DiveRepository`, add:
+
 - Import: `import 'package:submersion/features/dive_log/domain/entities/dive_custom_field.dart';`
 - Import: `import 'package:submersion/features/dive_log/data/repositories/dive_custom_field_repository.dart';`
 - Field: `late final DiveCustomFieldRepository _customFieldRepository;`
@@ -568,50 +571,43 @@ Future<List<DiveCustomField>> _loadCustomFieldsForDive(String diveId) async {
     return [];
   }
 }
-```
-
+```text
 **Step 3: Add to _mapRowToDive (single dive detail loading)**
 
 In `_mapRowToDive`, after loading weights, add:
 
 ```dart
 final customFields = await _loadCustomFieldsForDive(row.id);
-```
-
+```text
 Then pass to the returned `Dive(...)`:
 
 ```dart
 customFields: customFields,
-```
-
+```text
 **Step 4: Add to getAllDives batch loading**
 
 In `getAllDives`, after the existing batch loads (tanks, equipment, tags, etc.), add:
 
 ```dart
 final customFieldsByDive = await _customFieldRepository.getFieldsForDiveIds(diveIds);
-```
-
+```text
 Then pass to `_mapRowToDiveWithPreloadedData`:
 
 ```dart
 customFields: customFieldsByDive[row.id] ?? [],
-```
-
+```text
 **Step 5: Update _mapRowToDiveWithPreloadedData signature**
 
 Add parameter:
 
 ```dart
 List<DiveCustomField> customFields = const [],
-```
-
+```text
 And include in the returned Dive:
 
 ```dart
 customFields: customFields,
-```
-
+```sql
 **Step 6: Add to createDive (save custom fields)**
 
 In `createDive`, inside the batch insert section (after weights), add:
@@ -632,8 +628,7 @@ for (final field in dive.customFields) {
     ),
   );
 }
-```
-
+```text
 **Step 7: Add to updateDive (replace custom fields)**
 
 In `updateDive`, after the weight delete-and-reinsert block, add the same pattern:
@@ -668,8 +663,7 @@ for (final field in dive.customFields) {
     localUpdatedAt: now,
   );
 }
-```
-
+```text
 **Step 8: Verify build**
 
 Run: `flutter analyze && flutter test`
@@ -678,23 +672,25 @@ Expected: No analysis issues, all existing tests pass
 **Step 9: Commit**
 
 ```
-feat: integrate custom fields into DiveRepository load/save
-```
 
+feat: integrate custom fields into DiveRepository load/save
+
+```dart
 ---
 
 ### Task 6: Riverpod Providers
 
 **Files:**
+
 - Modify: `lib/features/dive_log/presentation/providers/dive_providers.dart`
 
 **Step 1: Add the autocomplete provider**
 
 Add imports:
+
 ```dart
 import 'package:submersion/features/dive_log/data/repositories/dive_custom_field_repository.dart';
-```
-
+```text
 Add providers:
 
 ```dart
@@ -712,8 +708,7 @@ final customFieldKeySuggestionsProvider = FutureProvider.family<List<String>, St
   final repository = ref.watch(diveCustomFieldRepositoryProvider);
   return repository.getDistinctKeysForDiver(diverId);
 });
-```
-
+```text
 **Step 2: Verify build**
 
 Run: `flutter analyze`
@@ -722,14 +717,16 @@ Expected: No issues
 **Step 3: Commit**
 
 ```
-feat: add custom field Riverpod providers
-```
 
+feat: add custom field Riverpod providers
+
+```diff
 ---
 
 ### Task 7: Localization Keys
 
 **Files:**
+
 - Modify: `lib/l10n/app_en.arb` (and other locale files)
 
 **Step 1: Add English ARB keys**
@@ -747,8 +744,7 @@ Add the following keys to `app_en.arb`:
 "diveLog_detail_customFieldCount": "{count, plural, =1{1 field} other{{count} fields}}",
 "diveLog_search_customFieldKey": "Custom Field Key",
 "diveLog_search_customFieldValue": "Value contains..."
-```
-
+```text
 **Step 2: Add corresponding keys to other ARB files** (es, fr, de, it, nl, pt, ar, he, hu)
 
 Copy the keys with the English values as placeholders (to be translated later).
@@ -761,14 +757,16 @@ Expected: Generates updated localization delegates
 **Step 4: Commit**
 
 ```
-feat: add localization keys for custom fields
-```
 
+feat: add localization keys for custom fields
+
+```text
 ---
 
 ### Task 8: Dive Edit Page — Custom Fields Section
 
 **Files:**
+
 - Modify: `lib/features/dive_log/presentation/pages/dive_edit_page.dart`
 - Create: `lib/features/dive_log/presentation/widgets/custom_field_input_row.dart`
 
@@ -860,32 +858,28 @@ class CustomFieldInputRow extends StatelessWidget {
     );
   }
 }
-```
-
+```text
 **Step 2: Add state variable in dive_edit_page.dart**
 
 In `_DiveEditPageState`, add:
 
 ```dart
 List<DiveCustomField> _customFields = [];
-```
-
+```text
 **Step 3: Initialize in _loadDive**
 
 In `_loadDive()`, after loading other fields, add:
 
 ```dart
 _customFields = dive.customFields.toList();
-```
-
+```text
 **Step 4: Include in _saveDive**
 
 When constructing the dive for save, include:
 
 ```dart
 customFields: _customFields,
-```
-
+```text
 **Step 5: Add _buildCustomFieldsSection method**
 
 Add the method and call it at the bottom of the ListView, after the tags section:
@@ -949,8 +943,7 @@ Widget _buildCustomFieldsSection() {
     ),
   );
 }
-```
-
+```text
 **Step 6: Verify build and manual test**
 
 Run: `flutter analyze`
@@ -959,14 +952,16 @@ Then: `flutter run -d macos` and test adding/editing/saving custom fields on a d
 **Step 7: Commit**
 
 ```
-feat: add Custom Fields section to dive edit page
-```
 
+feat: add Custom Fields section to dive edit page
+
+```text
 ---
 
 ### Task 9: Dive Detail Page — Custom Fields Section
 
 **Files:**
+
 - Modify: `lib/features/dive_log/presentation/pages/dive_detail_page.dart`
 
 **Step 1: Add _buildCustomFieldsSection method**
@@ -1028,8 +1023,7 @@ Widget _buildCustomFieldsSection(BuildContext context, Dive dive) {
     ),
   );
 }
-```
-
+```text
 **Step 2: Add section to the build method**
 
 In `_buildContent`, after the tags section conditional block, add:
@@ -1039,8 +1033,7 @@ if (dive.customFields.isNotEmpty) ...[
   const SizedBox(height: 24),
   _buildCustomFieldsSection(context, dive),
 ],
-```
-
+```text
 **Step 3: Verify build and manual test**
 
 Run: `flutter analyze`
@@ -1049,14 +1042,16 @@ Then: `flutter run -d macos` and verify custom fields display on dive detail.
 **Step 4: Commit**
 
 ```
-feat: add Custom Fields section to dive detail page
-```
 
+feat: add Custom Fields section to dive detail page
+
+```text
 ---
 
 ### Task 10: Search Integration
 
 **Files:**
+
 - Modify: `lib/features/dive_log/data/repositories/dive_repository_impl.dart` (searchDives method)
 - Modify: `lib/features/dive_log/domain/models/dive_filter_state.dart`
 - Modify: `lib/features/dive_log/presentation/pages/dive_search_page.dart`
@@ -1070,8 +1065,7 @@ In `searchDives`, extend the WHERE clause to include custom fields via a subquer
 t.notes.contains(query) |
 t.buddy.contains(query) |
 t.diveMaster.contains(query)
-```
-
+```text
 Replace with a custom SQL approach or add an OR EXISTS subquery. The simplest way: after the initial query returns results, also query dive_custom_fields:
 
 ```dart
@@ -1086,15 +1080,13 @@ final customFieldDiveIds = customFieldMatches
     .toSet();
 
 // Merge with existing results (dedup by ID)
-```
-
+```text
 **Step 2: Add filter fields to DiveFilterState**
 
 ```dart
 final String? customFieldKey;
 final String? customFieldValue;
-```
-
+```text
 Add to constructor, copyWith, and clear logic.
 
 **Step 3: Add custom field filter to _buildFilterWhereClauses**
@@ -1113,8 +1105,7 @@ if (filter.customFieldKey != null && filter.customFieldKey!.isNotEmpty) {
     'WHERE cf.dive_id = d.id AND ${valueClauses.join(' AND ')})',
   );
 }
-```
-
+```text
 **Step 4: Add UI to dive_search_page.dart**
 
 Add a "Custom Field" filter section with a key dropdown and value text field. Place after the existing tag filter section.
@@ -1126,14 +1117,16 @@ Run: `flutter analyze`
 **Step 6: Commit**
 
 ```
-feat: integrate custom fields into search and filtering
-```
 
+feat: integrate custom fields into search and filtering
+
+```text
 ---
 
 ### Task 11: CSV Export
 
 **Files:**
+
 - Modify: `lib/core/services/export/csv/csv_export_service.dart`
 
 **Step 1: Extend generateDivesCsvContent**
@@ -1154,8 +1147,7 @@ final sortedCustomKeys = allCustomKeys.toList()..sort();
 for (final key in sortedCustomKeys) {
   headers.add('custom:$key');
 }
-```
-
+```text
 When building each row, append custom field values:
 
 ```dart
@@ -1163,8 +1155,7 @@ for (final key in sortedCustomKeys) {
   final field = dive.customFields.where((f) => f.key == key).firstOrNull;
   row.add(sanitizeCsvField(field?.value ?? ''));
 }
-```
-
+```text
 **Step 2: Verify build**
 
 Run: `flutter analyze`
@@ -1172,14 +1163,16 @@ Run: `flutter analyze`
 **Step 3: Commit**
 
 ```
-feat: include custom fields in CSV export
-```
 
+feat: include custom fields in CSV export
+
+```text
 ---
 
 ### Task 12: CSV Import
 
 **Files:**
+
 - Modify: `lib/core/services/export/csv/csv_import_service.dart`
 
 **Step 1: Detect custom: prefixed columns during import**
@@ -1195,8 +1188,7 @@ if (header.startsWith('custom:')) {
     customFields.add({'key': key, 'value': value});
   }
 }
-```
-
+```typescript
 **Step 2: Handle custom fields in the import wizard conversion**
 
 When converting imported CSV data to Dive entities, map the `customFields` list to `DiveCustomField` objects.
@@ -1208,14 +1200,16 @@ Run: `flutter analyze`
 **Step 4: Commit**
 
 ```
-feat: import custom fields from CSV with custom: prefix
-```
 
+feat: import custom fields from CSV with custom: prefix
+
+```text
 ---
 
 ### Task 13: UDDF Export
 
 **Files:**
+
 - Modify: `lib/core/services/export/uddf/uddf_export_service.dart`
 
 **Step 1: Add applicationdata element to dive export**
@@ -1236,8 +1230,7 @@ if (dive.customFields.isNotEmpty) {
     });
   });
 }
-```
-
+```text
 **Step 2: Verify build**
 
 Run: `flutter analyze`
@@ -1245,14 +1238,16 @@ Run: `flutter analyze`
 **Step 3: Commit**
 
 ```
-feat: include custom fields in UDDF export via applicationdata
-```
 
+feat: include custom fields in UDDF export via applicationdata
+
+```text
 ---
 
 ### Task 14: UDDF Import
 
 **Files:**
+
 - Modify: `lib/core/services/export/uddf/uddf_import_service.dart`
 
 **Step 1: Parse applicationdata in dive import**
@@ -1277,8 +1272,7 @@ if (appDataElement != null) {
     }
   }
 }
-```
-
+```text
 **Step 2: Verify build**
 
 Run: `flutter analyze`
@@ -1286,14 +1280,16 @@ Run: `flutter analyze`
 **Step 3: Commit**
 
 ```
-feat: import custom fields from UDDF applicationdata element
-```
 
+feat: import custom fields from UDDF applicationdata element
+
+```text
 ---
 
 ### Task 15: PDF Export
 
 **Files:**
+
 - Modify: `lib/core/services/export/pdf/pdf_export_service.dart`
 
 **Step 1: Add custom fields to _buildPdfDiveEntry**
@@ -1334,8 +1330,7 @@ if (dive.customFields.isNotEmpty) ...[
     }).toList(),
   ),
 ],
-```
-
+```text
 **Step 2: Verify build**
 
 Run: `flutter analyze`
@@ -1343,9 +1338,10 @@ Run: `flutter analyze`
 **Step 3: Commit**
 
 ```
-feat: include custom fields in PDF export
-```
 
+feat: include custom fields in PDF export
+
+```dart
 ---
 
 ### Task 16: Final Verification & Format
@@ -1369,6 +1365,7 @@ Expected: All files formatted
 
 Run: `flutter run -d macos`
 Test:
+
 - Create a dive with 2-3 custom fields
 - Verify autocomplete suggests keys on second dive
 - Verify custom fields display on detail page
@@ -1379,8 +1376,10 @@ Test:
 
 **Step 5: Commit any final fixes**
 
-```
+```text
+
 chore: final verification and formatting for custom fields
+
 ```
 
 ---

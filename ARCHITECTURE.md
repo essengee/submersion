@@ -11,6 +11,7 @@ Submersion is an open-source, cross-platform dive logging application built with
 ### Implemented Features
 
 #### Dive Logging & Management
+
 - ✅ Comprehensive dive log with 40+ data fields per dive
 - ✅ Multi-tank support with gas mix tracking (air, nitrox, trimix)
 - ✅ Dive profile visualization with interactive zoom/pan
@@ -20,6 +21,7 @@ Submersion is an open-source, cross-platform dive logging application built with
 - ✅ Multi-diver support (multiple profiles per device)
 
 #### Dive Computer Integration
+
 - ✅ Support for 300+ dive computer models via libdivecomputer
 - ✅ Bluetooth Classic, BLE, and USB connectivity
 - ✅ Manufacturer-specific protocols (Shearwater, Suunto, Mares, Aqualung)
@@ -28,6 +30,7 @@ Submersion is an open-source, cross-platform dive logging application built with
 - ✅ Multi-computer support with profile selection
 
 #### Decompression & Technical Diving
+
 - ✅ Bühlmann ZH-L16C algorithm with gradient factors
 - ✅ Real-time NDL, ceiling, and TTS calculations
 - ✅ 16-compartment tissue loading visualization
@@ -37,6 +40,7 @@ Submersion is an open-source, cross-platform dive logging application built with
 - ✅ MOD/END/EAD calculations
 
 #### Profile Analysis
+
 - ✅ Interactive depth/temperature/pressure charts
 - ✅ Touch markers with metrics at any point
 - ✅ Profile event markers (safety stops, gas switches, alerts)
@@ -44,6 +48,7 @@ Submersion is an open-source, cross-platform dive logging application built with
 - ✅ Deco ceiling curve visualization
 
 #### Location & Mapping
+
 - ✅ GPS tracking and dive site management
 - ✅ Interactive maps with marker clustering (OpenStreetMap)
 - ✅ Capture location from device GPS
@@ -52,6 +57,7 @@ Submersion is an open-source, cross-platform dive logging application built with
 - ✅ Tide integration (World Tides API)
 
 #### Equipment Management
+
 - ✅ Track 20+ equipment types with serial numbers
 - ✅ Service reminders with visual warnings
 - ✅ Service history and maintenance records
@@ -60,6 +66,7 @@ Submersion is an open-source, cross-platform dive logging application built with
 - ✅ Tank presets (AL80, HP100, etc.)
 
 #### People & Training
+
 - ✅ Buddy contact list with certification tracking
 - ✅ Buddy roles per dive (guide, instructor, student)
 - ✅ Certification management with expiry tracking
@@ -67,12 +74,14 @@ Submersion is an open-source, cross-platform dive logging application built with
 - ✅ 12+ certification agencies supported
 
 #### Import/Export
+
 - ✅ UDDF 3.2 import/export (Universal Dive Data Format)
 - ✅ CSV import/export with field mapping
 - ✅ PDF export for printable logbooks
 - ✅ Full SQLite database backup/restore
 
 #### Cloud Sync (Infrastructure Complete)
+
 - ✅ Google Drive integration
 - ✅ iCloud integration
 - ✅ Sync tables for conflict detection
@@ -101,7 +110,7 @@ Submersion is an open-source, cross-platform dive logging application built with
 
 ### High-Level Architecture
 
-```
+```dart
 ┌─────────────────────────────────────────────────────────────────┐
 │                       Client Applications                        │
 ├──────────────┬──────────────┬──────────────┬───────────────────┤
@@ -137,7 +146,7 @@ Submersion is an open-source, cross-platform dive logging application built with
 
 ### Layered Architecture
 
-```
+```dart
 ┌──────────────────────────────────────────┐
 │         Presentation Layer               │
 │  - Pages (50+ screens)                   │
@@ -172,7 +181,7 @@ Submersion is an open-source, cross-platform dive logging application built with
 
 ## Project Structure
 
-```
+```dart
 submersion/
 ├── lib/
 │   ├── main.dart                    # App entry point
@@ -274,6 +283,7 @@ Submersion uses **Drift ORM** with a SQLite database containing **30 tables** or
 ### Core Tables
 
 #### Divers (Multi-Account Support)
+
 ```sql
 CREATE TABLE divers (
   id TEXT PRIMARY KEY,
@@ -295,9 +305,9 @@ CREATE TABLE divers (
   created_at INTEGER NOT NULL,
   updated_at INTEGER NOT NULL
 );
-```
-
+```text
 #### Dives (Primary Dive Log)
+
 ```sql
 CREATE TABLE dives (
   id TEXT PRIMARY KEY,
@@ -350,9 +360,9 @@ CREATE TABLE dives (
   created_at INTEGER NOT NULL,
   updated_at INTEGER NOT NULL
 );
-```
-
+```text
 #### DiveProfiles (Time-Series Data)
+
 ```sql
 CREATE TABLE dive_profiles (
   id TEXT PRIMARY KEY,
@@ -369,9 +379,9 @@ CREATE TABLE dive_profiles (
   ndl INTEGER                  -- no-deco limit (computed)
 );
 CREATE INDEX idx_profile_dive ON dive_profiles(dive_id, timestamp);
-```
-
+```text
 #### DiveTanks (Gas Configuration)
+
 ```sql
 CREATE TABLE dive_tanks (
   id TEXT PRIMARY KEY,
@@ -389,11 +399,11 @@ CREATE TABLE dive_tanks (
   tank_name TEXT,
   preset_name TEXT
 );
-```
-
+```text
 ### Equipment Tables
 
 #### Equipment (Gear Catalog)
+
 ```sql
 CREATE TABLE equipment (
   id TEXT PRIMARY KEY,
@@ -415,11 +425,11 @@ CREATE TABLE equipment (
   created_at INTEGER NOT NULL,
   updated_at INTEGER NOT NULL
 );
-```
-
+```text
 ### People Tables
 
 #### Buddies
+
 ```sql
 CREATE TABLE buddies (
   id TEXT PRIMARY KEY,
@@ -434,9 +444,9 @@ CREATE TABLE buddies (
   created_at INTEGER NOT NULL,
   updated_at INTEGER NOT NULL
 );
-```
-
+```text
 #### DiveBuddies (Junction with Role)
+
 ```sql
 CREATE TABLE dive_buddies (
   id TEXT PRIMARY KEY,
@@ -445,11 +455,11 @@ CREATE TABLE dive_buddies (
   role TEXT DEFAULT 'buddy',  -- buddy, guide, instructor, student
   created_at INTEGER NOT NULL
 );
-```
-
+```text
 ### Profile Analysis Tables
 
 #### DiveComputers
+
 ```sql
 CREATE TABLE dive_computers (
   id TEXT PRIMARY KEY,
@@ -467,9 +477,9 @@ CREATE TABLE dive_computers (
   created_at INTEGER NOT NULL,
   updated_at INTEGER NOT NULL
 );
-```
-
+```text
 #### DiveProfileEvents
+
 ```sql
 CREATE TABLE dive_profile_events (
   id TEXT PRIMARY KEY,
@@ -483,11 +493,11 @@ CREATE TABLE dive_profile_events (
   tank_id TEXT,
   created_at INTEGER NOT NULL
 );
-```
-
+```text
 ### Sync Tables
 
 #### SyncMetadata
+
 ```sql
 CREATE TABLE sync_metadata (
   id TEXT PRIMARY KEY,  -- Always 'global'
@@ -499,9 +509,9 @@ CREATE TABLE sync_metadata (
   created_at INTEGER NOT NULL,
   updated_at INTEGER NOT NULL
 );
-```
-
+```text
 #### SyncRecords
+
 ```sql
 CREATE TABLE sync_records (
   id TEXT PRIMARY KEY,
@@ -514,8 +524,7 @@ CREATE TABLE sync_records (
   created_at INTEGER NOT NULL,
   updated_at INTEGER NOT NULL
 );
-```
-
+```dart
 ---
 
 ## State Management
@@ -577,8 +586,7 @@ class DiveListNotifier extends StateNotifier<AsyncValue<List<domain.Dive>>> {
     await _loadDives();
   }
 }
-```
-
+```text
 ### Multi-Diver Isolation
 
 All data queries are scoped to the current diver:
@@ -589,8 +597,7 @@ final divesProvider = FutureProvider<List<domain.Dive>>((ref) async {
   final repository = ref.watch(diveRepositoryProvider);
   return repository.getAllDives(diverId: diverId);
 });
-```
-
+```dart
 ### Provider Invalidation
 
 Providers are invalidated strategically to avoid unnecessary rebuilds:
@@ -604,8 +611,7 @@ Future<void> updateDive(domain.Dive dive) async {
     _ref.invalidate(tripWithStatsProvider(dive.tripId));
   }
 }
-```
-
+```diff
 ---
 
 ## Decompression Algorithms
@@ -639,8 +645,7 @@ class BuhlmannAlgorithm {
   /// Generate deco schedule
   List<DecoStop> calculateDecoSchedule(loading, gf);
 }
-```
-
+```text
 ### O₂ Toxicity Tracking
 
 CNS% and OTU calculations using NOAA exposure tables:
@@ -661,8 +666,7 @@ class O2ToxicityCalculator {
     // ...
   };
 }
-```
-
+```text
 ### Ascent Rate Monitoring
 
 Color-coded ascent rate warnings:
@@ -682,6 +686,7 @@ The sync system enables multi-device synchronization via Google Drive or iCloud.
 ### Sync Flow
 
 ```
+
 ┌─────────────────────────────────────────────────────────────────┐
 │                        Local Device                              │
 ├─────────────────────────────────────────────────────────────────┤
@@ -707,8 +712,8 @@ The sync system enables multi-device synchronization via Google Drive or iCloud.
                     ┌─────────────────┐
                     │  Other Devices  │
                     └─────────────────┘
-```
 
+```text
 ### Sync Tables
 
 - **SyncMetadata**: Global sync state (last sync time, device ID, provider)
@@ -718,6 +723,7 @@ The sync system enables multi-device synchronization via Google Drive or iCloud.
 ### Conflict Resolution
 
 When conflicts are detected:
+
 1. Compare `localUpdatedAt` vs remote timestamp
 2. Store conflicting data in `conflict_data` JSON field
 3. Mark record status as `conflict`
@@ -732,6 +738,7 @@ Submersion uses **go_router** with a `ShellRoute` for persistent navigation.
 ### Route Structure
 
 ```
+
 /welcome (outside shell - no nav)
 │
 ├── /dives (with bottom nav)
@@ -764,11 +771,12 @@ Submersion uses **go_router** with a `ShellRoute` for persistent navigation.
 └── /dive-computers
     ├── /dive-computers/discover
     └── /dive-computers/:id
-```
 
+```text
 ### MainScaffold
 
 Handles responsive navigation:
+
 - **Mobile**: Bottom navigation bar (5 tabs)
 - **Tablet**: Bottom navigation bar
 - **Desktop**: Side navigation rail (expandable)
@@ -810,8 +818,7 @@ dependencies:
   intl: ^0.19.0
   uuid: ^4.5.0
   equatable: ^2.0.5
-```
-
+```text
 ### Dev Dependencies
 
 ```yaml
@@ -823,8 +830,7 @@ dev_dependencies:
   freezed: ^2.5.7
   riverpod_generator: ^2.4.3
   mockito: ^5.4.4
-```
-
+```dart
 ---
 
 ## Testing
@@ -832,7 +838,7 @@ dev_dependencies:
 Submersion has 200+ tests with good coverage:
 
 | Test Type | Count | Coverage |
-|-----------|-------|----------|
+| --------- | ----- | ---------- |
 | Unit Tests | 150+ | Business logic, algorithms |
 | Widget Tests | 50+ | UI components |
 | Integration Tests | 10+ | E2E flows |
@@ -845,11 +851,11 @@ Submersion has 200+ tests with good coverage:
 - **Providers**: State management logic
 
 Run tests:
+
 ```bash
 flutter test                    # All tests
 flutter test test/core/deco/    # Deco algorithm tests only
-```
-
+```text
 ---
 
 ## Platform Support
@@ -868,6 +874,7 @@ flutter test test/core/deco/    # Deco algorithm tests only
 ## Build & Run
 
 ### Prerequisites
+
 - Flutter SDK 3.5.0+
 - Dart SDK 3.5.0+
 - Xcode (for iOS/macOS)
@@ -888,18 +895,17 @@ dart run build_runner build --delete-conflicting-outputs
 
 # Run
 flutter run -d macos   # or: ios, android, windows, linux
-```
-
+```text
 ### Code Generation
 
 After changing database schema or entities:
+
 ```bash
 dart run build_runner build --delete-conflicting-outputs
 
 # Or watch mode during development
 dart run build_runner watch
-```
-
+```text
 ### Build for Release
 
 ```bash
@@ -908,8 +914,7 @@ flutter build apk --release
 flutter build macos --release
 flutter build windows --release
 flutter build linux --release
-```
-
+```text
 ---
 
 ## Development Roadmap
@@ -929,10 +934,13 @@ See [FEATURE_ROADMAP.md](FEATURE_ROADMAP.md) for detailed planning.
 ## Open Source
 
 ### License
+
 GPL-3.0 - Ensures derivative works remain open source.
 
 ### Repository Structure
-```
+
+```text
+
 submersion/
 ├── README.md
 ├── ARCHITECTURE.md (this file)
@@ -944,17 +952,19 @@ submersion/
 └── docs/
     ├── UI_WIREFRAMES.md
     └── MIGRATION_STRATEGY.md
+
 ```
 
 ### Contributing
+
 See [README.md](README.md) for contribution guidelines.
 
 ---
 
 ## References
 
-- **libdivecomputer**: https://www.libdivecomputer.org/
-- **Subsurface**: https://subsurface-divelog.org/
-- **UDDF Specification**: http://www.uddf.org/
+- **libdivecomputer**: <https://www.libdivecomputer.org/>
+- **Subsurface**: <https://subsurface-divelog.org/>
+- **UDDF Specification**: <http://www.uddf.org/>
 - **Bühlmann Algorithm**: Tauchmedizin, Prof. A.A. Bühlmann
 - **NOAA O₂ Exposure Limits**: NOAA Diving Manual

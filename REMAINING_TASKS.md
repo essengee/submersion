@@ -21,18 +21,22 @@ This document contains only the features and tasks that are **not yet completed*
 ## v1.5 Remaining Tasks
 
 ### Category 5: GPS Integration
+
 - [ ] EXIF parsing from photo attachments
 - [ ] If photo has GPS and dive doesn't, suggest using photo GPS
 
 ### Category 8: Digital Cards (eCards)
+
 - [ ] Certification wallet view (card-style UI)
 - [ ] Export cert card as image (shareable)
 
 ### Category 11: Convenience Tools
+
 - [ ] Surface Interval Tool: Input previous dive (depth, time, gas) + desired next dive -> Output min surface interval
 - [ ] Display tissue loading chart showing saturation decreasing over time
 
 ### Release Criteria
+
 - [ ] Performance with 5000+ dives
 - [ ] App store submissions (iOS, Android)
 - [ ] Documentation (user guide, FAQ)
@@ -44,9 +48,11 @@ This document contains only the features and tasks that are **not yet completed*
 ## Category 1: Core Dive Log Entry
 
 ### 1.2 Location & Site
+
 | Feature | Notes |
 |---------|-------|
 | Liveaboard tracking | Specialized trip type |
+
 - [ ] Trip auto-add dives from trip time range
 
 ---
@@ -54,12 +60,14 @@ This document contains only the features and tasks that are **not yet completed*
 ## Category 2: Dive Profile & Telemetry
 
 ### 2.2 Multi-Profile Support
+
 | Feature | Notes |
 |---------|-------|
 | Profile merging | Combine multiple sources |
 | Multi-transmitter support | Track multiple tank transmitters (sidemount) |
 
 **Tasks:**
+
 - [ ] Side-by-side profile comparison view
 
 ---
@@ -67,6 +75,7 @@ This document contains only the features and tasks that are **not yet completed*
 ## Category 3: Dive Computer Connectivity
 
 ### 3.1 Connectivity Types
+
 | Feature | Notes |
 |---------|-------|
 | Wi-Fi / cloud devices | Garmin, Shearwater cloud API |
@@ -76,6 +85,7 @@ This document contains only the features and tasks that are **not yet completed*
 ## Category 4: Gases, Tanks & Technical Diving
 
 ### 4.5 Planning Utilities
+
 | Feature | Notes |
 |---------|-------|
 | What-if scenarios | Deeper/longer/different gas |
@@ -84,6 +94,7 @@ This document contains only the features and tasks that are **not yet completed*
 | Range plans | Multiple profiles with different depths/times |
 
 **Tasks:**
+
 - [ ] Repetitive dive planner with tissue loading from previous dive
 - [ ] "Extend dive" tool (add 5 mins at depth, recalculate deco)
 - [ ] "Add safety" tool (extend safety stop, add deep stop)
@@ -93,12 +104,15 @@ This document contains only the features and tasks that are **not yet completed*
 ## Category 6: Gear & Equipment Management
 
 ### 6.1 Gear Inventory
-| Feature | Notes |
-|---------|-------|
-| Photos of gear | Deferred with photos |
+
+| Feature         | Notes                      |
+|-----------------|----------------------------|
+| Photos of gear  | Deferred with photos       |
 
 ### 6.3 Maintenance
+
 **Tasks:**
+
 - [ ] Service log export to PDF (professional format with full history)
 
 ---
@@ -106,20 +120,24 @@ This document contains only the features and tasks that are **not yet completed*
 ## Category 8: Training, Certifications & Medical Info
 
 ### 8.2 Digital Cards (eCards)
+
 | Feature | Notes |
 |---------|-------|
 | QR codes | Scannable verification |
 
 **Tasks:**
+
 - [ ] Generate QR codes for certs (encode cert number, agency, level)
 - [ ] QR code verification (backend required)
 
 ### 8.4 Personal & Medical Data
+
 | Feature | Notes |
 |---------|-------|
 | Medical documents | PDF storage |
 
 **Tasks:**
+
 - [ ] Medical document storage (PDF of medical clearance)
 - [ ] Export profile with certs + medical for dive operations
 
@@ -128,6 +146,7 @@ This document contains only the features and tasks that are **not yet completed*
 ## Category 9: Environment, Wildlife & Photography
 
 ### 9.2 Marine Life Tracking
+
 | Feature | Notes |
 |---------|-------|
 | Species photos | Local or remote images |
@@ -136,6 +155,7 @@ This document contains only the features and tasks that are **not yet completed*
 | Offline species ID | Works without internet connection |
 
 **Tasks:**
+
 - [ ] Species photo library (local or remote images)
 - [ ] Species distribution map (heatmap of sightings)
 - [ ] "Life list" progress tracker (total species seen)
@@ -145,6 +165,7 @@ This document contains only the features and tasks that are **not yet completed*
 - [ ] Species identification confidence scores
 
 ### 9.3 Underwater Photography
+
 | Feature | Notes |
 |---------|-------|
 | Tag species in photos | Image annotation |
@@ -152,6 +173,7 @@ This document contains only the features and tasks that are **not yet completed*
 | Shareable dive cards | Generate visual summary for social media |
 
 **Tasks:**
+
 - [ ] Caption and datetime editing per photo
 - [ ] Export dive with photos (ZIP archive)
 - [ ] Bulk photo import with auto-match to dives
@@ -164,11 +186,13 @@ This document contains only the features and tasks that are **not yet completed*
 ## Category 10: Search, Filters, Statistics & Reports
 
 ### 10.1 Search & Filtering
+
 | Feature | Notes |
 |---------|-------|
 | Saved filters ("Smart Logs") | Persistent filter sets |
 
 **Tasks:**
+
 - [ ] Save filter configurations as "Smart Logs"
 - [ ] Smart Log management (name, description, icon)
 - [ ] Quick access to Smart Logs from home page
@@ -176,16 +200,20 @@ This document contains only the features and tasks that are **not yet completed*
 - [ ] Tag management support in Settings->Manage
 
 ### 10.2 Statistics
+
 **Tasks:**
+
 - [ ] Advanced analytics dashboard (customizable widgets)
 - [ ] Year-in-review summary (auto-generated at year end)
 
 ### 10.3 Reports & Printing
+
 | Feature | Notes |
 |---------|-------|
 | Custom report designer | Drag-drop fields |
 
 **Tasks:**
+
 - [ ] Custom report builder (select fields, layout, sorting)
 - [ ] Save custom report templates
 - [ ] Export to Excel/CSV with custom fields
@@ -195,26 +223,32 @@ This document contains only the features and tasks that are **not yet completed*
 ## Category 12: Cloud Sync, Backup & Multi-Device
 
 ### 12.1 Cloud Accounts
+
 **Tasks:**
+
 - [ ] Backend service for user accounts (Firebase, Supabase)
 - [ ] User authentication (email/password, OAuth)
 - [ ] Privacy policy and data handling docs
 
 ### 12.2 Synchronization
+
 | Feature | Notes |
 |---------|-------|
 | Web sync | Requires backend service |
 
 **Tasks:**
+
 - [ ] Web platform sync (requires backend)
 - [ ] "Force push" and "force pull" options for troubleshooting
 
 ### 12.4 Offline Behavior
+
 | Feature | Notes |
 |---------|-------|
 | Deferred sync | Queue changes when offline |
 
 **Tasks:**
+
 - [ ] Offline queue for pending sync operations
 - [ ] Auto-sync when connectivity restored
 - [ ] Sync conflict warnings and resolution
@@ -224,16 +258,19 @@ This document contains only the features and tasks that are **not yet completed*
 ## Category 13: Import, Export & Interoperability
 
 ### 13.1 File Formats
+
 | Feature | Notes |
 |---------|-------|
 | HTML export | Web-viewable logbook |
 
 **Tasks:**
+
 - [ ] ePub export (electronic book for showing experience digitally)
 - [ ] HTML export (static website with CSS, images, interactive map)
 - [ ] MySQL dump export (for migration to other systems)
 
 ### 13.2 Interoperability
+
 | Feature | Notes |
 |---------|-------|
 | Shearwater Cloud import | Import from Shearwater cloud |
@@ -242,6 +279,7 @@ This document contains only the features and tasks that are **not yet completed*
 | Deepblu import | Import from Deepblu platform |
 
 **Tasks:**
+
 - [ ] Shearwater Cloud API integration
 - [ ] Suunto app/Movescount API integration
 - [ ] Diviac API integration
@@ -252,6 +290,7 @@ This document contains only the features and tasks that are **not yet completed*
 ## Category 14: Social, Community & Travel Features
 
 ### 14.1 Social Sharing
+
 | Feature | Notes |
 |---------|-------|
 | Share dives to social media | FB, Instagram, Twitter |
@@ -259,6 +298,7 @@ This document contains only the features and tasks that are **not yet completed*
 | Shareable dive cards | Visual summary image for social |
 
 **Tasks:**
+
 - [ ] "Share Dive" action with platform picker
 - [ ] Generate shareable image (profile chart, photo, depth/time/location text overlay)
 - [ ] Share as PNG or link (if cloud sync enabled)
@@ -268,6 +308,7 @@ This document contains only the features and tasks that are **not yet completed*
 ## Category 15: UX, Customization & Quality-of-Life
 
 ### 15.4 Gamification & Achievements
+
 | Feature | Notes |
 |---------|-------|
 | Achievement badges | Earn badges for milestones |
@@ -278,6 +319,7 @@ This document contains only the features and tasks that are **not yet completed*
 | Progress visualization | Journey timeline with milestones |
 
 **Tasks:**
+
 - [ ] Achievement system with badge definitions
 - [ ] Milestone tracking (dive count, depths, locations, species)
 - [ ] Badge unlock notifications
@@ -286,16 +328,19 @@ This document contains only the features and tasks that are **not yet completed*
 - [ ] Life list tracker (species collection progress)
 
 ### 15.5 Wearable Integration
+
 | Feature | Notes |
 |---------|-------|
 | Garmin Connect cloud API | Cloud sync (not file-based) |
 
 **Tasks:**
+
 - [ ] Garmin Connect cloud API integration
 - [ ] Automatic sync from connected wearables
 - [ ] Merge wearable data with dive computer data
 
 ### 15.6 Well-being & Safety
+
 | Feature | Notes |
 |---------|-------|
 | Pre-dive feeling monitor | Track readiness before dive |
@@ -304,6 +349,7 @@ This document contains only the features and tasks that are **not yet completed*
 | Hydration reminders | DCS prevention |
 
 **Tasks:**
+
 - [ ] Pre/post dive well-being questionnaire
 - [ ] Correlation analysis (feeling vs dive parameters)
 - [ ] Breathing efficiency tips based on SAC trends
@@ -314,12 +360,13 @@ This document contains only the features and tasks that are **not yet completed*
 ## Category 16: Manufacturer-Specific & Advanced Features
 
 ### 16.2 Partner Ecosystem Integration
+
 | Feature | Notes |
 |---------|-------|
 | Shearwater Cloud sync | API integration |
 | PADI eCard integration | Display PADI certs |
 
 **Tasks:**
+
 - [ ] Shearwater Cloud API (import dives from cloud)
 - [ ] PADI app integration (OAuth, fetch eCards)
-
