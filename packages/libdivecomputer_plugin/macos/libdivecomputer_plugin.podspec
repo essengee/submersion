@@ -32,5 +32,6 @@ Pod::Spec.new do |s|
     :name => 'Build libdivecomputer',
     :script => '"${PODS_TARGET_SRCROOT}/build_libdc.sh"',
     :execution_position => :before_compile,
+    :output_files => ['$(PODS_TARGET_SRCROOT)/build/libdivecomputer.a'],
   }
 end

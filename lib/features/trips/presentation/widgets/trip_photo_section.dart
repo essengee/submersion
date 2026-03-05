@@ -68,10 +68,7 @@ class TripPhotoSection extends ConsumerWidget {
                 // Scan icon button (always visible)
                 if (onScanPressed != null)
                   IconButton(
-                    icon: Icon(
-                      Icons.image_search,
-                      color: colorScheme.primary,
-                    ),
+                    icon: Icon(Icons.image_search, color: colorScheme.primary),
                     visualDensity: VisualDensity.compact,
                     tooltip: context.l10n.trips_photos_tooltip_scan,
                     onPressed: onScanPressed,
