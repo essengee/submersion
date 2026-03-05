@@ -19,6 +19,7 @@ import 'package:submersion/features/media/presentation/providers/photo_picker_pr
 import 'package:submersion/features/media/presentation/widgets/scan_results_dialog.dart';
 import 'package:submersion/features/trips/domain/entities/trip.dart';
 import 'package:submersion/features/trips/presentation/providers/liveaboard_providers.dart';
+import 'package:submersion/features/trips/presentation/widgets/dive_assignment_dialog.dart';
 import 'package:submersion/features/trips/presentation/providers/trip_media_providers.dart';
 import 'package:submersion/features/trips/presentation/providers/trip_providers.dart';
 import 'package:submersion/features/trips/presentation/widgets/trip_daily_breakdown.dart';
@@ -387,21 +388,35 @@ class TripOverviewTab extends ConsumerWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                divesAsync.when(
-                  data: (dives) => TextButton(
-                    onPressed: dives.isEmpty
-                        ? null
-                        : () {
-                            ref.read(diveFilterProvider.notifier).state =
-                                DiveFilterState(tripId: tripWithStats.trip.id);
-                            context.go('/dives');
-                          },
-                    child: Text(
-                      context.l10n.trips_detail_dives_viewAll(dives.length),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.playlist_add, size: 20),
+                      visualDensity: VisualDensity.compact,
+                      tooltip: context.l10n.trips_diveScan_findButton,
+                      onPressed: () => _scanForDives(context, ref),
                     ),
-                  ),
-                  loading: () => const SizedBox.shrink(),
-                  error: (e, st) => const SizedBox.shrink(),
+                    divesAsync.when(
+                      data: (dives) => TextButton(
+                        onPressed: dives.isEmpty
+                            ? null
+                            : () {
+                                ref
+                                    .read(diveFilterProvider.notifier)
+                                    .state = DiveFilterState(
+                                  tripId: tripWithStats.trip.id,
+                                );
+                                context.go('/dives');
+                              },
+                        child: Text(
+                          context.l10n.trips_detail_dives_viewAll(dives.length),
+                        ),
+                      ),
+                      loading: () => const SizedBox.shrink(),
+                      error: (e, st) => const SizedBox.shrink(),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -689,6 +704,75 @@ class TripOverviewTab extends ConsumerWidget {
           SnackBar(
             content: Text(context.l10n.trips_detail_scan_errorLinking('$e')),
           ),
+        );
+      }
+    }
+  }
+
+  Future<void> _scanForDives(BuildContext context, WidgetRef ref) async {
+    final trip = tripWithStats.trip;
+    if (trip.diverId == null) return;
+
+    // Show loading
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+
+    try {
+      final candidates = await ref
+          .read(tripRepositoryProvider)
+          .findCandidateDivesForTrip(
+            tripId: trip.id,
+            startDate: trip.startDate,
+            endDate: trip.endDate,
+            diverId: trip.diverId!,
+          );
+
+      if (!context.mounted) return;
+      Navigator.of(context).pop(); // Dismiss loading
+
+      if (candidates.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.trips_diveScan_noMatches)),
+        );
+        return;
+      }
+
+      final selectedIds = await showDiveAssignmentDialog(
+        context: context,
+        candidates: candidates,
+      );
+
+      if (selectedIds == null || selectedIds.isEmpty || !context.mounted) {
+        return;
+      }
+
+      // Collect old trip IDs for invalidation
+      final oldTripIds = candidates
+          .where((c) => selectedIds.contains(c.dive.id) && !c.isUnassigned)
+          .map((c) => c.currentTripId!)
+          .toSet();
+
+      await ref
+          .read(tripListNotifierProvider.notifier)
+          .assignDivesToTrip(selectedIds, trip.id, oldTripIds: oldTripIds);
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              context.l10n.trips_diveScan_added(selectedIds.length),
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) Navigator.of(context).pop();
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.trips_diveScan_error('$e'))),
         );
       }
     }
