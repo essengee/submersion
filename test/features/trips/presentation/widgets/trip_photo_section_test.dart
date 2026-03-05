@@ -143,8 +143,8 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      // Should show camera icon in header
-      expect(find.byIcon(Icons.photo_camera), findsOneWidget);
+      // Should show photo library section icon in header
+      expect(find.byIcon(Icons.photo_library), findsOneWidget);
     });
 
     testWidgets('shows View All button when photos exist', (tester) async {
