@@ -587,4 +587,11 @@ class _MockTripListNotifier
 
   @override
   Future<void> removeDiveFromTrip(String diveId, String tripId) async {}
+
+  @override
+  Future<void> assignDivesToTrip(
+    List<String> diveIds,
+    String tripId, {
+    Set<String>? oldTripIds,
+  }) async {}
 }

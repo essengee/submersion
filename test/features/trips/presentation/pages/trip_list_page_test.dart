@@ -285,6 +285,13 @@ class _MockTripListNotifier
 
   @override
   Future<void> removeDiveFromTrip(String diveId, String tripId) async {}
+
+  @override
+  Future<void> assignDivesToTrip(
+    List<String> diveIds,
+    String tripId, {
+    Set<String>? oldTripIds,
+  }) async {}
 }
 
 /// Mock notifier that stays in loading state
@@ -310,4 +317,11 @@ class _LoadingTripListNotifier
 
   @override
   Future<void> removeDiveFromTrip(String diveId, String tripId) async {}
+
+  @override
+  Future<void> assignDivesToTrip(
+    List<String> diveIds,
+    String tripId, {
+    Set<String>? oldTripIds,
+  }) async {}
 }

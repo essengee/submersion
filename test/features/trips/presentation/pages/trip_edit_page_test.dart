@@ -5,6 +5,7 @@ import 'package:submersion/features/trips/domain/entities/trip.dart';
 import 'package:submersion/features/trips/presentation/pages/trip_edit_page.dart';
 import 'package:submersion/features/trips/presentation/providers/trip_providers.dart';
 import 'package:submersion/features/trips/data/repositories/trip_repository.dart';
+import 'package:submersion/features/trips/domain/entities/dive_candidate.dart';
 import 'package:submersion/l10n/arb/app_localizations.dart';
 
 void main() {
@@ -380,6 +381,17 @@ class _MockTripRepository implements TripRepository {
 
   @override
   Future<int> getDiveCountForTrip(String tripId) async => 0;
+
+  @override
+  Future<List<DiveCandidate>> findCandidateDivesForTrip({
+    required String tripId,
+    required DateTime startDate,
+    required DateTime endDate,
+    required String diverId,
+  }) async => [];
+
+  @override
+  Future<void> assignDivesToTrip(List<String> diveIds, String tripId) async {}
 }
 
 /// Mock repository that returns a test trip
@@ -435,6 +447,17 @@ class _MockTripRepositoryWithTrip implements TripRepository {
 
   @override
   Future<int> getDiveCountForTrip(String tripId) async => 0;
+
+  @override
+  Future<List<DiveCandidate>> findCandidateDivesForTrip({
+    required String tripId,
+    required DateTime startDate,
+    required DateTime endDate,
+    required String diverId,
+  }) async => [];
+
+  @override
+  Future<void> assignDivesToTrip(List<String> diveIds, String tripId) async {}
 }
 
 /// Mock notifier
@@ -461,4 +484,11 @@ class _MockTripListNotifier
 
   @override
   Future<void> removeDiveFromTrip(String diveId, String tripId) async {}
+
+  @override
+  Future<void> assignDivesToTrip(
+    List<String> diveIds,
+    String tripId, {
+    Set<String>? oldTripIds,
+  }) async {}
 }
