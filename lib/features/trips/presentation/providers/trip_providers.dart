@@ -321,6 +321,27 @@ class TripListNotifier extends StateNotifier<AsyncValue<List<TripWithStats>>> {
     _ref.invalidate(tripWithStatsProvider(tripId));
     _ref.invalidate(diveIdsForTripProvider(tripId));
   }
+
+  Future<void> assignDivesToTrip(
+    List<String> diveIds,
+    String tripId, {
+    Set<String>? oldTripIds,
+  }) async {
+    await _repository.assignDivesToTrip(diveIds, tripId);
+    await refresh();
+    _ref.invalidate(tripWithStatsProvider(tripId));
+    _ref.invalidate(diveIdsForTripProvider(tripId));
+    _ref.invalidate(divesForTripProvider(tripId));
+
+    // Invalidate old trip providers if dives were reassigned
+    if (oldTripIds != null) {
+      for (final oldTripId in oldTripIds) {
+        _ref.invalidate(tripWithStatsProvider(oldTripId));
+        _ref.invalidate(diveIdsForTripProvider(oldTripId));
+        _ref.invalidate(divesForTripProvider(oldTripId));
+      }
+    }
+  }
 }
 
 final tripListNotifierProvider =
