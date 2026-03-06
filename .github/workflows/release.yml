@@ -456,18 +456,30 @@ jobs:
       - name: Build Android APK
         run: flutter build apk --release --dart-define=UPDATE_CHANNEL=github
 
-      - name: Rename APK
+      - name: Build Android App Bundle
+        run: flutter build appbundle --release
+
+      - name: Rename artifacts
         env:
           TAG_NAME: ${{ github.ref_name }}
         run: |
           mv build/app/outputs/flutter-apk/app-release.apk \
             "Submersion-${TAG_NAME}-Android.apk"
+          mv build/app/outputs/bundle/release/app-release.aab \
+            "Submersion-${TAG_NAME}-Android.aab"
 
-      - name: Upload Android artifact
+      - name: Upload Android APK artifact
         uses: actions/upload-artifact@v7
         with:
           name: android-apk
           path: Submersion-*.apk
+          retention-days: 5
+
+      - name: Upload Android AAB artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: android-aab
+          path: Submersion-*.aab
           retention-days: 5
 
       - name: Cleanup sensitive files
@@ -749,6 +761,7 @@ jobs:
             "Submersion-${TAG_NAME}-Windows-Setup.exe" \
             "Submersion-${TAG_NAME}-Linux.tar.gz" \
             "Submersion-${TAG_NAME}-Android.apk" \
+            "Submersion-${TAG_NAME}-Android.aab" \
             "appcast.xml" \
             "checksums-sha256.txt"; do
             if echo "$ASSETS" | grep -q "$expected"; then
