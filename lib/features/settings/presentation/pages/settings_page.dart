@@ -93,6 +93,8 @@ class SettingsPage extends ConsumerWidget {
         return const _ManageSectionContent();
       case 'data':
         return _DataSectionContent(ref: ref);
+      case 'dataSources':
+        return const _DataSourcesSectionContent();
       case 'about':
         return const _AboutSectionContent();
       default:
@@ -169,6 +171,8 @@ class _SettingsSectionDetailPage extends ConsumerWidget {
         return const _ManageSectionContent();
       case 'data':
         return _DataSectionContent(ref: ref);
+      case 'dataSources':
+        return const _DataSourcesSectionContent();
       case 'about':
         return const _AboutSectionContent();
       default:
@@ -1769,6 +1773,109 @@ class _DataSectionContent extends ConsumerWidget {
       timeAgo = context.l10n.backup_time_daysAgo(diff.inDays);
     }
     return Text(context.l10n.backup_status_lastBackup(timeAgo));
+  }
+}
+
+/// Data Sources section - surfaces HealthKit integration for App Store compliance.
+class _DataSourcesSectionContent extends StatelessWidget {
+  const _DataSourcesSectionContent();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildSectionHeader(
+            context,
+            context.l10n.settings_dataSources_header,
+          ),
+          const SizedBox(height: 8),
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: Colors.red.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(
+                          Icons.favorite,
+                          color: Colors.red,
+                          size: 24,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          context.l10n.settings_dataSources_appleHealth_title,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    context.l10n.settings_dataSources_appleHealth_description,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(Icons.watch),
+                    title: Text(
+                      context
+                          .l10n
+                          .settings_dataSources_appleHealth_importAction,
+                    ),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => context.push('/settings/wearable-import'),
+                  ),
+                  const Divider(height: 1),
+                  const SizedBox(height: 12),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(
+                        Icons.lock_outline,
+                        size: 16,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          context
+                              .l10n
+                              .settings_dataSources_appleHealth_privacy,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

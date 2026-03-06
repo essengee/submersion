@@ -15130,4 +15130,33 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get tools_weight_yourWeight => 'Seu peso';
+
+  @override
+  String get settings_section_dataSources_title => 'Data Sources';
+
+  @override
+  String get settings_section_dataSources_subtitle =>
+      'Connected services & integrations';
+
+  @override
+  String get settings_dataSources_header => 'Data Sources';
+
+  @override
+  String get settings_dataSources_appleHealth_title => 'Apple Health';
+
+  @override
+  String get settings_dataSources_appleHealth_description =>
+      'Submersion reads underwater diving workout data from Apple Health, including depth, duration, water temperature, and heart rate, to create detailed dive logs.';
+
+  @override
+  String get settings_dataSources_appleHealth_importAction =>
+      'Import from Apple Watch';
+
+  @override
+  String get settings_dataSources_appleHealth_privacy =>
+      'Your health data is stored locally and is never shared with third parties.';
+
+  @override
+  String get settings_dataSources_noSources =>
+      'No data source integrations are available on this platform.';
 }

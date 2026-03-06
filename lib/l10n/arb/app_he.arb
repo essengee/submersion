@@ -4310,5 +4310,13 @@
   "trips_diveScan_title": "הוסף צלילות לטיול",
   "trips_diveScan_unknownSite": "אתר לא ידוע",
   "diveImport_healthkit_attribution": "מופעל על ידי Apple HealthKit",
-  "diveImport_healthkit_dataUsage": "קורא פעילויות צלילה תת-ימיות מ-Apple Health, כולל עומק, משך, טמפרטורת מים ודופק. נתונים אלה מאוחסנים מקומית ביומן הצלילה שלך ולעולם אינם משותפים עם צדדים שלישיים."
+  "diveImport_healthkit_dataUsage": "קורא פעילויות צלילה תת-ימיות מ-Apple Health, כולל עומק, משך, טמפרטורת מים ודופק. נתונים אלה מאוחסנים מקומית ביומן הצלילה שלך ולעולם אינם משותפים עם צדדים שלישיים.",
+  "settings_section_dataSources_title": "Data Sources",
+  "settings_section_dataSources_subtitle": "Connected services & integrations",
+  "settings_dataSources_header": "Data Sources",
+  "settings_dataSources_appleHealth_title": "Apple Health",
+  "settings_dataSources_appleHealth_description": "Submersion reads underwater diving workout data from Apple Health, including depth, duration, water temperature, and heart rate, to create detailed dive logs.",
+  "settings_dataSources_appleHealth_importAction": "Import from Apple Watch",
+  "settings_dataSources_appleHealth_privacy": "Your health data is stored locally and is never shared with third parties.",
+  "settings_dataSources_noSources": "No data source integrations are available on this platform."
 }

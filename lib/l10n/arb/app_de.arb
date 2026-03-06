@@ -4310,5 +4310,13 @@
   "trips_diveScan_title": "Tauchgaenge zur Reise hinzufuegen",
   "trips_diveScan_unknownSite": "Unbekannter Tauchplatz",
   "diveImport_healthkit_attribution": "Bereitgestellt von Apple HealthKit",
-  "diveImport_healthkit_dataUsage": "Liest Unterwasser-Tauchaktivitaeten aus Apple Health, einschliesslich Tiefe, Dauer, Wassertemperatur und Herzfrequenz. Diese Daten werden lokal in Ihrem Tauchlogbuch gespeichert und niemals an Dritte weitergegeben."
+  "diveImport_healthkit_dataUsage": "Liest Unterwasser-Tauchaktivitaeten aus Apple Health, einschliesslich Tiefe, Dauer, Wassertemperatur und Herzfrequenz. Diese Daten werden lokal in Ihrem Tauchlogbuch gespeichert und niemals an Dritte weitergegeben.",
+  "settings_section_dataSources_title": "Data Sources",
+  "settings_section_dataSources_subtitle": "Connected services & integrations",
+  "settings_dataSources_header": "Data Sources",
+  "settings_dataSources_appleHealth_title": "Apple Health",
+  "settings_dataSources_appleHealth_description": "Submersion reads underwater diving workout data from Apple Health, including depth, duration, water temperature, and heart rate, to create detailed dive logs.",
+  "settings_dataSources_appleHealth_importAction": "Import from Apple Watch",
+  "settings_dataSources_appleHealth_privacy": "Your health data is stored locally and is never shared with third parties.",
+  "settings_dataSources_noSources": "No data source integrations are available on this platform."
 }

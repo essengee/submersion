@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:submersion/l10n/l10n_extension.dart';
 
@@ -40,6 +42,13 @@ const settingsSections = [
     title: 'Data',
     subtitle: 'Backup, restore & storage',
     color: Colors.green,
+  ),
+  SettingsSection(
+    id: 'dataSources',
+    icon: Icons.link,
+    title: 'Data Sources',
+    subtitle: 'Connected services & integrations',
+    color: Colors.red,
   ),
   SettingsSection(
     id: 'decompression',
@@ -94,6 +103,9 @@ class SettingsListContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final sections = settingsSections
+        .where((s) => s.id != 'dataSources' || Platform.isIOS)
+        .toList();
 
     return Scaffold(
       appBar: showAppBar
@@ -119,10 +131,10 @@ class SettingsListContent extends StatelessWidget {
             ),
       body: ListView.separated(
         padding: const EdgeInsets.symmetric(vertical: 8),
-        itemCount: settingsSections.length,
+        itemCount: sections.length,
         separatorBuilder: (context, index) => const Divider(height: 1),
         itemBuilder: (context, index) {
-          final section = settingsSections[index];
+          final section = sections[index];
           final isSelected = selectedId == section.id;
 
           return _SettingsSectionTile(
@@ -213,6 +225,8 @@ class _SettingsSectionTile extends StatelessWidget {
         return context.l10n.settings_section_data_title;
       case 'about':
         return context.l10n.settings_section_about_title;
+      case 'dataSources':
+        return context.l10n.settings_section_dataSources_title;
       default:
         return section.title;
     }
@@ -236,6 +250,8 @@ class _SettingsSectionTile extends StatelessWidget {
         return context.l10n.settings_section_data_subtitle;
       case 'about':
         return context.l10n.settings_section_about_subtitle;
+      case 'dataSources':
+        return context.l10n.settings_section_dataSources_subtitle;
       default:
         return section.subtitle;
     }

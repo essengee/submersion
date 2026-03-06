@@ -6,55 +6,57 @@
 import 'dart:async' as _i17;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:mockito/src/dummies.dart' as _i28;
-import 'package:submersion/core/constants/enums.dart' as _i19;
+import 'package:mockito/src/dummies.dart' as _i29;
+import 'package:submersion/core/constants/enums.dart' as _i20;
 import 'package:submersion/features/buddies/data/repositories/buddy_repository.dart'
     as _i6;
 import 'package:submersion/features/buddies/domain/entities/buddy.dart' as _i5;
 import 'package:submersion/features/certifications/data/repositories/certification_repository.dart'
-    as _i22;
+    as _i23;
 import 'package:submersion/features/certifications/domain/entities/certification.dart'
     as _i8;
 import 'package:submersion/features/courses/data/repositories/course_repository.dart'
-    as _i30;
+    as _i31;
 import 'package:submersion/features/courses/domain/entities/course.dart'
     as _i15;
 import 'package:submersion/features/dive_centers/data/repositories/dive_center_repository.dart'
-    as _i21;
+    as _i22;
 import 'package:submersion/features/dive_centers/domain/entities/dive_center.dart'
     as _i7;
 import 'package:submersion/features/dive_log/data/repositories/dive_repository_impl.dart'
     as _i13;
 import 'package:submersion/features/dive_log/data/repositories/tank_pressure_repository.dart'
-    as _i29;
+    as _i30;
 import 'package:submersion/features/dive_log/domain/entities/dive.dart' as _i12;
 import 'package:submersion/features/dive_log/domain/entities/dive_summary.dart'
-    as _i26;
+    as _i27;
 import 'package:submersion/features/dive_log/domain/entities/gas_switch.dart'
     as _i14;
 import 'package:submersion/features/dive_log/domain/models/dive_filter_state.dart'
-    as _i27;
+    as _i28;
 import 'package:submersion/features/dive_sites/data/repositories/site_repository_impl.dart'
-    as _i25;
+    as _i26;
 import 'package:submersion/features/dive_sites/domain/entities/dive_site.dart'
     as _i11;
 import 'package:submersion/features/dive_types/data/repositories/dive_type_repository.dart'
-    as _i24;
+    as _i25;
 import 'package:submersion/features/dive_types/domain/entities/dive_type_entity.dart'
     as _i10;
 import 'package:submersion/features/equipment/data/repositories/equipment_repository_impl.dart'
-    as _i18;
+    as _i19;
 import 'package:submersion/features/equipment/data/repositories/equipment_set_repository_impl.dart'
-    as _i20;
+    as _i21;
 import 'package:submersion/features/equipment/domain/entities/equipment_item.dart'
     as _i3;
 import 'package:submersion/features/equipment/domain/entities/equipment_set.dart'
     as _i4;
 import 'package:submersion/features/tags/data/repositories/tag_repository.dart'
-    as _i23;
+    as _i24;
 import 'package:submersion/features/tags/domain/entities/tag.dart' as _i9;
 import 'package:submersion/features/trips/data/repositories/trip_repository.dart'
     as _i16;
+import 'package:submersion/features/trips/domain/entities/dive_candidate.dart'
+    as _i18;
 import 'package:submersion/features/trips/domain/entities/trip.dart' as _i2;
 
 // ignore_for_file: type=lint
@@ -255,6 +257,35 @@ class MockTripRepository extends _i1.Mock implements _i16.TripRepository {
           as _i17.Future<void>);
 
   @override
+  _i17.Future<List<_i18.DiveCandidate>> findCandidateDivesForTrip({
+    required String? tripId,
+    required DateTime? startDate,
+    required DateTime? endDate,
+    required String? diverId,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#findCandidateDivesForTrip, [], {
+              #tripId: tripId,
+              #startDate: startDate,
+              #endDate: endDate,
+              #diverId: diverId,
+            }),
+            returnValue: _i17.Future<List<_i18.DiveCandidate>>.value(
+              <_i18.DiveCandidate>[],
+            ),
+          )
+          as _i17.Future<List<_i18.DiveCandidate>>);
+
+  @override
+  _i17.Future<void> assignDivesToTrip(List<String>? diveIds, String? tripId) =>
+      (super.noSuchMethod(
+            Invocation.method(#assignDivesToTrip, [diveIds, tripId]),
+            returnValue: _i17.Future<void>.value(),
+            returnValueForMissingStub: _i17.Future<void>.value(),
+          )
+          as _i17.Future<void>);
+
+  @override
   _i17.Future<_i2.TripWithStats> getTripWithStats(String? tripId) =>
       (super.noSuchMethod(
             Invocation.method(#getTripWithStats, [tripId]),
@@ -292,7 +323,7 @@ class MockTripRepository extends _i1.Mock implements _i16.TripRepository {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockEquipmentRepository extends _i1.Mock
-    implements _i18.EquipmentRepository {
+    implements _i19.EquipmentRepository {
   MockEquipmentRepository() {
     _i1.throwOnMissingStub(this);
   }
@@ -329,7 +360,7 @@ class MockEquipmentRepository extends _i1.Mock
 
   @override
   _i17.Future<List<_i3.EquipmentItem>> getEquipmentByStatus(
-    _i19.EquipmentStatus? status, {
+    _i20.EquipmentStatus? status, {
     String? diverId,
   }) =>
       (super.noSuchMethod(
@@ -492,7 +523,7 @@ class MockEquipmentRepository extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockEquipmentSetRepository extends _i1.Mock
-    implements _i20.EquipmentSetRepository {
+    implements _i21.EquipmentSetRepository {
   MockEquipmentSetRepository() {
     _i1.throwOnMissingStub(this);
   }
@@ -675,7 +706,7 @@ class MockBuddyRepository extends _i1.Mock implements _i6.BuddyRepository {
   _i17.Future<void> addBuddyToDive(
     String? diveId,
     String? buddyId,
-    _i19.BuddyRole? role,
+    _i20.BuddyRole? role,
   ) =>
       (super.noSuchMethod(
             Invocation.method(#addBuddyToDive, [diveId, buddyId, role]),
@@ -741,7 +772,7 @@ class MockBuddyRepository extends _i1.Mock implements _i6.BuddyRepository {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockDiveCenterRepository extends _i1.Mock
-    implements _i21.DiveCenterRepository {
+    implements _i22.DiveCenterRepository {
   MockDiveCenterRepository() {
     _i1.throwOnMissingStub(this);
   }
@@ -860,7 +891,7 @@ class MockDiveCenterRepository extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockCertificationRepository extends _i1.Mock
-    implements _i22.CertificationRepository {
+    implements _i23.CertificationRepository {
   MockCertificationRepository() {
     _i1.throwOnMissingStub(this);
   }
@@ -966,7 +997,7 @@ class MockCertificationRepository extends _i1.Mock
 
   @override
   _i17.Future<List<_i8.Certification>> getCertificationsByAgency(
-    _i19.CertificationAgency? agency,
+    _i20.CertificationAgency? agency,
   ) =>
       (super.noSuchMethod(
             Invocation.method(#getCertificationsByAgency, [agency]),
@@ -980,7 +1011,7 @@ class MockCertificationRepository extends _i1.Mock
 /// A class which mocks [TagRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockTagRepository extends _i1.Mock implements _i23.TagRepository {
+class MockTagRepository extends _i1.Mock implements _i24.TagRepository {
   MockTagRepository() {
     _i1.throwOnMissingStub(this);
   }
@@ -1110,14 +1141,14 @@ class MockTagRepository extends _i1.Mock implements _i23.TagRepository {
           as _i17.Future<void>);
 
   @override
-  _i17.Future<List<_i23.TagStatistic>> getTagStatistics({String? diverId}) =>
+  _i17.Future<List<_i24.TagStatistic>> getTagStatistics({String? diverId}) =>
       (super.noSuchMethod(
             Invocation.method(#getTagStatistics, [], {#diverId: diverId}),
-            returnValue: _i17.Future<List<_i23.TagStatistic>>.value(
-              <_i23.TagStatistic>[],
+            returnValue: _i17.Future<List<_i24.TagStatistic>>.value(
+              <_i24.TagStatistic>[],
             ),
           )
-          as _i17.Future<List<_i23.TagStatistic>>);
+          as _i17.Future<List<_i24.TagStatistic>>);
 
   @override
   _i17.Future<int> getTagUsageCount(String? tagId) =>
@@ -1167,7 +1198,7 @@ class MockTagRepository extends _i1.Mock implements _i23.TagRepository {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockDiveTypeRepository extends _i1.Mock
-    implements _i24.DiveTypeRepository {
+    implements _i25.DiveTypeRepository {
   MockDiveTypeRepository() {
     _i1.throwOnMissingStub(this);
   }
@@ -1254,16 +1285,16 @@ class MockDiveTypeRepository extends _i1.Mock
           as _i17.Future<void>);
 
   @override
-  _i17.Future<List<_i24.DiveTypeStatistic>> getDiveTypeStatistics({
+  _i17.Future<List<_i25.DiveTypeStatistic>> getDiveTypeStatistics({
     String? diverId,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#getDiveTypeStatistics, [], {#diverId: diverId}),
-            returnValue: _i17.Future<List<_i24.DiveTypeStatistic>>.value(
-              <_i24.DiveTypeStatistic>[],
+            returnValue: _i17.Future<List<_i25.DiveTypeStatistic>>.value(
+              <_i25.DiveTypeStatistic>[],
             ),
           )
-          as _i17.Future<List<_i24.DiveTypeStatistic>>);
+          as _i17.Future<List<_i25.DiveTypeStatistic>>);
 
   @override
   _i17.Future<bool> isDiveTypeInUse(String? id) =>
@@ -1277,7 +1308,7 @@ class MockDiveTypeRepository extends _i1.Mock
 /// A class which mocks [SiteRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockSiteRepository extends _i1.Mock implements _i25.SiteRepository {
+class MockSiteRepository extends _i1.Mock implements _i26.SiteRepository {
   MockSiteRepository() {
     _i1.throwOnMissingStub(this);
   }
@@ -1369,16 +1400,16 @@ class MockSiteRepository extends _i1.Mock implements _i25.SiteRepository {
           as _i17.Future<Map<String, int>>);
 
   @override
-  _i17.Future<List<_i25.SiteWithDiveCount>> getSitesWithDiveCounts({
+  _i17.Future<List<_i26.SiteWithDiveCount>> getSitesWithDiveCounts({
     String? diverId,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#getSitesWithDiveCounts, [], {#diverId: diverId}),
-            returnValue: _i17.Future<List<_i25.SiteWithDiveCount>>.value(
-              <_i25.SiteWithDiveCount>[],
+            returnValue: _i17.Future<List<_i26.SiteWithDiveCount>>.value(
+              <_i26.SiteWithDiveCount>[],
             ),
           )
-          as _i17.Future<List<_i25.SiteWithDiveCount>>);
+          as _i17.Future<List<_i26.SiteWithDiveCount>>);
 }
 
 /// A class which mocks [DiveRepository].
@@ -1510,10 +1541,10 @@ class MockDiveRepository extends _i1.Mock implements _i13.DiveRepository {
           as _i17.Future<List<_i12.Dive>>);
 
   @override
-  _i17.Future<List<_i26.DiveSummary>> getDiveSummaries({
+  _i17.Future<List<_i27.DiveSummary>> getDiveSummaries({
     String? diverId,
-    _i27.DiveFilterState? filter = const _i27.DiveFilterState(),
-    _i26.DiveSummaryCursor? cursor,
+    _i28.DiveFilterState? filter = const _i28.DiveFilterState(),
+    _i27.DiveSummaryCursor? cursor,
     int? limit = 50,
   }) =>
       (super.noSuchMethod(
@@ -1523,16 +1554,16 @@ class MockDiveRepository extends _i1.Mock implements _i13.DiveRepository {
               #cursor: cursor,
               #limit: limit,
             }),
-            returnValue: _i17.Future<List<_i26.DiveSummary>>.value(
-              <_i26.DiveSummary>[],
+            returnValue: _i17.Future<List<_i27.DiveSummary>>.value(
+              <_i27.DiveSummary>[],
             ),
           )
-          as _i17.Future<List<_i26.DiveSummary>>);
+          as _i17.Future<List<_i27.DiveSummary>>);
 
   @override
   _i17.Future<int> getDiveCount({
     String? diverId,
-    _i27.DiveFilterState? filter = const _i27.DiveFilterState(),
+    _i28.DiveFilterState? filter = const _i28.DiveFilterState(),
   }) =>
       (super.noSuchMethod(
             Invocation.method(#getDiveCount, [], {
@@ -1697,7 +1728,7 @@ class MockDiveRepository extends _i1.Mock implements _i13.DiveRepository {
               {#actualDateTime: actualDateTime},
             ),
             returnValue: _i17.Future<String>.value(
-              _i28.dummyValue<String>(
+              _i29.dummyValue<String>(
                 this,
                 Invocation.method(
                   #convertPlanToActualDive,
@@ -1854,7 +1885,7 @@ class MockDiveRepository extends _i1.Mock implements _i13.DiveRepository {
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockTankPressureRepository extends _i1.Mock
-    implements _i29.TankPressureRepository {
+    implements _i30.TankPressureRepository {
   MockTankPressureRepository() {
     _i1.throwOnMissingStub(this);
   }
@@ -1929,7 +1960,7 @@ class MockTankPressureRepository extends _i1.Mock
 /// A class which mocks [CourseRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockCourseRepository extends _i1.Mock implements _i30.CourseRepository {
+class MockCourseRepository extends _i1.Mock implements _i31.CourseRepository {
   MockCourseRepository() {
     _i1.throwOnMissingStub(this);
   }
@@ -1976,7 +2007,7 @@ class MockCourseRepository extends _i1.Mock implements _i30.CourseRepository {
 
   @override
   _i17.Future<List<_i15.Course>> getCoursesByAgency(
-    _i19.CertificationAgency? agency, {
+    _i20.CertificationAgency? agency, {
     String? diverId,
   }) =>
       (super.noSuchMethod(

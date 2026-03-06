@@ -25581,6 +25581,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your weight'**
   String get tools_weight_yourWeight;
+
+  /// No description provided for @settings_section_dataSources_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Data Sources'**
+  String get settings_section_dataSources_title;
+
+  /// No description provided for @settings_section_dataSources_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected services & integrations'**
+  String get settings_section_dataSources_subtitle;
+
+  /// No description provided for @settings_dataSources_header.
+  ///
+  /// In en, this message translates to:
+  /// **'Data Sources'**
+  String get settings_dataSources_header;
+
+  /// No description provided for @settings_dataSources_appleHealth_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Apple Health'**
+  String get settings_dataSources_appleHealth_title;
+
+  /// No description provided for @settings_dataSources_appleHealth_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Submersion reads underwater diving workout data from Apple Health, including depth, duration, water temperature, and heart rate, to create detailed dive logs.'**
+  String get settings_dataSources_appleHealth_description;
+
+  /// No description provided for @settings_dataSources_appleHealth_importAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Import from Apple Watch'**
+  String get settings_dataSources_appleHealth_importAction;
+
+  /// No description provided for @settings_dataSources_appleHealth_privacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Your health data is stored locally and is never shared with third parties.'**
+  String get settings_dataSources_appleHealth_privacy;
+
+  /// No description provided for @settings_dataSources_noSources.
+  ///
+  /// In en, this message translates to:
+  /// **'No data source integrations are available on this platform.'**
+  String get settings_dataSources_noSources;
 }
 
 class _AppLocalizationsDelegate
