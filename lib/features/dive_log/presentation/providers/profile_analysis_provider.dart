@@ -1,8 +1,12 @@
+import 'package:flutter/foundation.dart';
+
+import 'package:submersion/core/constants/enums.dart';
 import 'package:submersion/core/constants/profile_metrics.dart';
 import 'package:submersion/core/deco/buhlmann_algorithm.dart';
 import 'package:submersion/core/deco/constants/buhlmann_coefficients.dart';
 import 'package:submersion/core/deco/entities/o2_exposure.dart';
 import 'package:submersion/core/deco/entities/tissue_compartment.dart';
+import 'package:submersion/core/deco/scr_calculator.dart';
 import 'package:submersion/core/providers/provider.dart';
 
 import 'package:submersion/core/services/logger_service.dart';
@@ -255,6 +259,93 @@ final profileAnalysisServiceProvider = Provider<ProfileAnalysisService>((ref) {
   );
 });
 
+/// Input parameters for running profile analysis on a background isolate.
+///
+/// All fields must be isolate-safe (primitives, lists, enums, simple classes).
+class _ProfileAnalysisInput {
+  final double gfLow;
+  final double gfHigh;
+  final double ppO2WarningThreshold;
+  final double ppO2CriticalThreshold;
+  final int cnsWarningThreshold;
+  final double ascentRateWarning;
+  final double ascentRateCritical;
+  final double lastStopDepth;
+  final String diveId;
+  final List<double> depths;
+  final List<int> timestamps;
+  final double o2Fraction;
+  final double heFraction;
+  final double startCns;
+  final List<double>? pressures;
+  final DiveMode diveMode;
+  final double? setpointHigh;
+  final double? setpointLow;
+  final double? scrInjectionRate;
+  final double? scrSupplyO2Percent;
+  final double scrVo2;
+  final List<TissueCompartment>? startCompartments;
+  final double startOtu;
+
+  const _ProfileAnalysisInput({
+    required this.gfLow,
+    required this.gfHigh,
+    required this.ppO2WarningThreshold,
+    required this.ppO2CriticalThreshold,
+    required this.cnsWarningThreshold,
+    required this.ascentRateWarning,
+    required this.ascentRateCritical,
+    required this.lastStopDepth,
+    required this.diveId,
+    required this.depths,
+    required this.timestamps,
+    required this.o2Fraction,
+    required this.heFraction,
+    required this.startCns,
+    this.pressures,
+    this.diveMode = DiveMode.oc,
+    this.setpointHigh,
+    this.setpointLow,
+    this.scrInjectionRate,
+    this.scrSupplyO2Percent,
+    this.scrVo2 = ScrCalculator.defaultVo2,
+    this.startCompartments,
+    this.startOtu = 0.0,
+  });
+}
+
+/// Top-level function for [compute] -- runs Buhlmann profile analysis on a
+/// background isolate so the UI thread stays responsive.
+ProfileAnalysis _runProfileAnalysis(_ProfileAnalysisInput input) {
+  final service = ProfileAnalysisService(
+    gfLow: input.gfLow,
+    gfHigh: input.gfHigh,
+    ppO2WarningThreshold: input.ppO2WarningThreshold,
+    ppO2CriticalThreshold: input.ppO2CriticalThreshold,
+    cnsWarningThreshold: input.cnsWarningThreshold,
+    ascentRateWarning: input.ascentRateWarning,
+    ascentRateCritical: input.ascentRateCritical,
+    lastStopDepth: input.lastStopDepth,
+  );
+  return service.analyze(
+    diveId: input.diveId,
+    depths: input.depths,
+    timestamps: input.timestamps,
+    o2Fraction: input.o2Fraction,
+    heFraction: input.heFraction,
+    startCns: input.startCns,
+    pressures: input.pressures,
+    diveMode: input.diveMode,
+    setpointHigh: input.setpointHigh,
+    setpointLow: input.setpointLow,
+    scrInjectionRate: input.scrInjectionRate,
+    scrSupplyO2Percent: input.scrSupplyO2Percent,
+    scrVo2: input.scrVo2,
+    startCompartments: input.startCompartments,
+    startOtu: input.startOtu,
+  );
+}
+
 /// Provider for profile analysis of a specific dive.
 ///
 /// Recursively computes residual CNS from previous dives: looks up the
@@ -282,19 +373,20 @@ final profileAnalysisProvider = FutureProvider.family<ProfileAnalysis?, String>(
         return null;
       }
 
-      // Use dive-specific GF if the dive computer provided them,
-      // otherwise fall back to user settings
+      // Resolve GF values: use dive-specific if provided, else user settings
+      final double gfLow;
+      final double gfHigh;
       if (dive.gradientFactorLow != null && dive.gradientFactorHigh != null) {
         _log.debug(
           'Using dive-specific GF ${dive.gradientFactorLow}/'
           '${dive.gradientFactorHigh} for dive $diveId',
         );
+        gfLow = (dive.gradientFactorLow! / 100.0).clamp(0.0, 1.0);
+        gfHigh = (dive.gradientFactorHigh! / 100.0).clamp(0.0, 1.0);
+      } else {
+        gfLow = ref.watch(gfLowProvider) / 100.0;
+        gfHigh = ref.watch(gfHighProvider) / 100.0;
       }
-      final service = _resolveAnalysisService(
-        ref,
-        dive.gradientFactorLow,
-        dive.gradientFactorHigh,
-      );
 
       // Extract profile data
       final depths = dive.profile.map((p) => p.depth).toList();
@@ -364,30 +456,39 @@ final profileAnalysisProvider = FutureProvider.family<ProfileAnalysis?, String>(
       // Compute cumulative OTU from earlier same-day dives
       final startOtu = await _computeResidualOtu(ref, diveId);
 
-      // Analyze the profile
+      // Run Buhlmann analysis on a background isolate to keep UI responsive
       _log.debug(
         'Analyzing profile for dive $diveId with ${depths.length} points, '
         'pressures: ${pressures?.length ?? 0}, mode: ${dive.diveMode}, '
         'startCns: ${startCns.toStringAsFixed(1)}',
       );
-      final analysis = service.analyze(
-        diveId: diveId,
-        depths: depths,
-        timestamps: timestamps,
-        o2Fraction: o2Fraction,
-        heFraction: heFraction,
-        startCns: startCns,
-        startCompartments: startCompartments,
-        startOtu: startOtu,
-        pressures: pressures,
-        // CCR/SCR parameters
-        diveMode: dive.diveMode,
-        setpointHigh: dive.setpointHigh,
-        setpointLow: dive.setpointLow,
-        scrInjectionRate: dive.scrInjectionRate,
-        scrSupplyO2Percent:
-            dive.diluentGas?.o2, // For SCR, diluent is the supply gas
-        scrVo2: dive.assumedVo2 ?? 1.3,
+      final analysis = await compute(
+        _runProfileAnalysis,
+        _ProfileAnalysisInput(
+          gfLow: gfLow,
+          gfHigh: gfHigh,
+          ppO2WarningThreshold: ref.watch(ppO2MaxWorkingProvider),
+          ppO2CriticalThreshold: ref.watch(ppO2MaxDecoProvider),
+          cnsWarningThreshold: ref.watch(cnsWarningThresholdProvider),
+          ascentRateWarning: ref.watch(ascentRateWarningProvider),
+          ascentRateCritical: ref.watch(ascentRateCriticalProvider),
+          lastStopDepth: ref.watch(lastStopDepthProvider),
+          diveId: diveId,
+          depths: depths,
+          timestamps: timestamps,
+          o2Fraction: o2Fraction,
+          heFraction: heFraction,
+          startCns: startCns,
+          pressures: pressures,
+          diveMode: dive.diveMode,
+          setpointHigh: dive.setpointHigh,
+          setpointLow: dive.setpointLow,
+          scrInjectionRate: dive.scrInjectionRate,
+          scrSupplyO2Percent: dive.diluentGas?.o2,
+          scrVo2: dive.assumedVo2 ?? 1.3,
+          startCompartments: startCompartments,
+          startOtu: startOtu,
+        ),
       );
 
       // Overlay computer-reported deco data where available
