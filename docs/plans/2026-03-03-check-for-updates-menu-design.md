@@ -53,9 +53,12 @@ Sparkle/WinSparkle native dialog
 
 ## Visibility
 
-The menu item is always present. Store builds where auto-update is disabled
-will simply get a no-op (the update service provider returns null, and the
-check method returns early).
+The menu item is defined in the XIB/resource but removed at runtime for App
+Store builds. On macOS the `AppDelegate` checks for the App Store receipt
+(`Bundle.main.appStoreReceiptURL`); when the receipt file exists (MAS and
+TestFlight builds) the menu item and its trailing separator are removed before
+the window is shown. Direct-distribution builds (DMG / GitHub) keep the menu
+item.
 
 ## Files to modify
 

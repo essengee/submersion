@@ -16,6 +16,7 @@
         <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="Runner" customModuleProvider="target">
             <connections>
                 <outlet property="applicationMenu" destination="uQy-DD-JDr" id="XBo-yE-nKs"/>
+                <outlet property="checkForUpdatesMenuItem" destination="kFl-7z-upc" id="cFu-Up-dM1"/>
                 <outlet property="mainFlutterWindow" destination="QvC-M9-y7g" id="gIp-Ho-8D9"/>
             </connections>
         </customObject>
