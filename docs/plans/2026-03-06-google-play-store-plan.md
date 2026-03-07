@@ -451,11 +451,13 @@ These steps must be done manually in the Google Cloud Console and Google Play Co
 
 ### 5b: Grant Service Account Access in Play Console
 
-1. Go to [Google Play Console](https://play.google.com/console/) > **Setup > API access**
-2. Link the Google Cloud project
-3. Find the service account and click **Manage permissions**
-4. Grant **Release manager** role (or at minimum: manage production/testing releases, manage app information)
-5. Apply permissions to **Submersion Dive Log** app
+1. Go to [Google Play Console](https://play.google.com/console/)
+2. Make sure you are at the **account level** (click "All apps" or your developer account name at the top — you must NOT be inside a specific app)
+3. In the left sidebar, scroll to the **Setup** section and click **API access**
+4. Link the Google Cloud project created in 5a
+5. Find the service account and click **Manage permissions**
+6. Grant **Release manager** role (or at minimum: manage production/testing releases, manage app information)
+7. Apply permissions to **Submersion Dive Log** app
 
 ### 5c: Enroll in Play App Signing
 
