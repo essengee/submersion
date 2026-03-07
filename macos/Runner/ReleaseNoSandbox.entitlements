@@ -17,8 +17,6 @@
 	<!-- File access - required by file_picker plugin even with sandbox disabled -->
 	<key>com.apple.security.files.user-selected.read-write</key>
 	<true/>
-	<key>com.apple.security.files.downloads.read-write</key>
-	<true/>
 
 	<!-- Network access (client only - for cloud sync, no server functionality) -->
 	<key>com.apple.security.network.client</key>
