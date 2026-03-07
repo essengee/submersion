@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:submersion/core/providers/provider.dart';
@@ -110,14 +111,18 @@ class SettingsMobileContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final sections = settingsSections
+        .where((s) => s.id != 'dataSources' || Platform.isIOS)
+        .toList();
+
     return Scaffold(
       appBar: AppBar(title: Text(context.l10n.settings_appBar_title)),
       body: ListView.separated(
         padding: const EdgeInsets.symmetric(vertical: 8),
-        itemCount: settingsSections.length,
+        itemCount: sections.length,
         separatorBuilder: (context, index) => const Divider(height: 1),
         itemBuilder: (context, index) {
-          final section = settingsSections[index];
+          final section = sections[index];
           return _MobileSettingsTile(section: section);
         },
       ),
