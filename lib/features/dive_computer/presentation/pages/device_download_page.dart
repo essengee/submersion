@@ -13,6 +13,7 @@ import 'package:submersion/features/dive_log/domain/entities/dive_computer.dart'
 import 'package:submersion/features/dive_log/presentation/providers/dive_computer_providers.dart';
 import 'package:submersion/features/dive_log/presentation/providers/dive_providers.dart';
 import 'package:submersion/features/divers/presentation/providers/diver_providers.dart';
+import 'package:submersion/features/dive_computer/presentation/widgets/download_exit_dialog.dart';
 import 'package:submersion/l10n/l10n_extension.dart';
 
 /// Page for downloading dives from a known/saved dive computer.
@@ -186,6 +187,16 @@ class _DeviceDownloadPageState extends ConsumerState<DeviceDownloadPage> {
     );
   }
 
+  Future<void> _handleCloseWithConfirmation() async {
+    final downloadState = ref.read(downloadNotifierProvider);
+    if (downloadState.isDownloading) {
+      final shouldLeave = await showDownloadExitConfirmation(context);
+      if (!shouldLeave || !mounted) return;
+      await ref.read(downloadNotifierProvider.notifier).cancelDownload();
+    }
+    if (mounted) context.pop();
+  }
+
   @override
   Widget build(BuildContext context) {
     final computerAsync = ref.watch(
@@ -208,62 +219,69 @@ class _DeviceDownloadPageState extends ConsumerState<DeviceDownloadPage> {
       });
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(context.l10n.diveComputer_download_title),
-        leading: IconButton(
-          icon: const Icon(Icons.close),
-          onPressed: () {
-            if (downloadState.isDownloading) {
-              ref.read(downloadNotifierProvider.notifier).cancelDownload();
-            }
-            context.pop();
-          },
-          tooltip: context.l10n.diveComputer_download_closeTooltip,
-        ),
-      ),
-      body: computerAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.error_outline, size: 64, color: colorScheme.error),
-              const SizedBox(height: 16),
-              Text(
-                context.l10n.diveComputer_download_errorWithMessage(
-                  error.toString(),
-                ),
-              ),
-              const SizedBox(height: 16),
-              FilledButton(
-                onPressed: () => context.pop(),
-                child: Text(context.l10n.diveComputer_download_goBack),
-              ),
-            ],
+    return PopScope(
+      canPop: !downloadState.isDownloading,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          _handleCloseWithConfirmation();
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(context.l10n.diveComputer_download_title),
+          leading: IconButton(
+            icon: const Icon(Icons.close),
+            onPressed: _handleCloseWithConfirmation,
+            tooltip: context.l10n.diveComputer_download_closeTooltip,
           ),
         ),
-        data: (computer) {
-          if (computer == null) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.error_outline, size: 64, color: colorScheme.error),
-                  const SizedBox(height: 16),
-                  Text(context.l10n.diveComputer_download_computerNotFound),
-                  const SizedBox(height: 16),
-                  FilledButton(
-                    onPressed: () => context.pop(),
-                    child: Text(context.l10n.diveComputer_download_goBack),
+        body: computerAsync.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, _) => Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.error_outline, size: 64, color: colorScheme.error),
+                const SizedBox(height: 16),
+                Text(
+                  context.l10n.diveComputer_download_errorWithMessage(
+                    error.toString(),
                   ),
-                ],
-              ),
-            );
-          }
+                ),
+                const SizedBox(height: 16),
+                FilledButton(
+                  onPressed: () => context.pop(),
+                  child: Text(context.l10n.diveComputer_download_goBack),
+                ),
+              ],
+            ),
+          ),
+          data: (computer) {
+            if (computer == null) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      size: 64,
+                      color: colorScheme.error,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(context.l10n.diveComputer_download_computerNotFound),
+                    const SizedBox(height: 16),
+                    FilledButton(
+                      onPressed: () => context.pop(),
+                      child: Text(context.l10n.diveComputer_download_goBack),
+                    ),
+                  ],
+                ),
+              );
+            }
 
-          return _buildContent(context, computer, downloadState);
-        },
+            return _buildContent(context, computer, downloadState);
+          },
+        ),
       ),
     );
   }

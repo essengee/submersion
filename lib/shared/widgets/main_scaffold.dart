@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:submersion/core/providers/provider.dart';
 import 'package:submersion/features/auto_update/presentation/widgets/update_banner.dart';
+import 'package:submersion/features/dive_computer/presentation/providers/download_providers.dart';
+import 'package:submersion/features/dive_computer/presentation/widgets/download_exit_dialog.dart';
 import 'package:submersion/l10n/l10n_extension.dart';
 
-class MainScaffold extends StatefulWidget {
+class MainScaffold extends ConsumerStatefulWidget {
   final Widget child;
 
   const MainScaffold({super.key, required this.child});
 
   @override
-  State<MainScaffold> createState() => _MainScaffoldState();
+  ConsumerState<MainScaffold> createState() => _MainScaffoldState();
 }
 
-class _MainScaffoldState extends State<MainScaffold> {
+class _MainScaffoldState extends ConsumerState<MainScaffold> {
   /// When true, the user has manually collapsed the rail (overrides auto-extend)
   bool _isCollapsed = false;
 
@@ -66,11 +69,19 @@ class _MainScaffoldState extends State<MainScaffold> {
     }
   }
 
-  void _onDestinationSelected(
-    BuildContext context,
+  Future<void> _onDestinationSelected(
     int index, {
     required bool isWideScreen,
-  }) {
+  }) async {
+    // Guard: if a download is in progress, confirm before navigating away
+    final isDownloading = ref.read(downloadNotifierProvider).isDownloading;
+    if (isDownloading) {
+      final shouldLeave = await showDownloadExitConfirmation(context);
+      if (!shouldLeave || !mounted) return;
+      await ref.read(downloadNotifierProvider.notifier).cancelDownload();
+      if (!mounted) return;
+    }
+
     if (isWideScreen) {
       switch (index) {
         case 0:
@@ -302,11 +313,7 @@ class _MainScaffoldState extends State<MainScaffold> {
                               : null,
                           selectedIndex: selectedIndex,
                           onDestinationSelected: (index) =>
-                              _onDestinationSelected(
-                                context,
-                                index,
-                                isWideScreen: true,
-                              ),
+                              _onDestinationSelected(index, isWideScreen: true),
                           destinations: [
                             NavigationRailDestination(
                               icon: const Icon(Icons.home_outlined),
@@ -406,7 +413,7 @@ class _MainScaffoldState extends State<MainScaffold> {
       bottomNavigationBar: NavigationBar(
         selectedIndex: selectedIndex,
         onDestinationSelected: (index) =>
-            _onDestinationSelected(context, index, isWideScreen: false),
+            _onDestinationSelected(index, isWideScreen: false),
         destinations: [
           NavigationDestination(
             icon: const Icon(Icons.home_outlined),

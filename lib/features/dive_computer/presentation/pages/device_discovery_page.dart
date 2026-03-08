@@ -10,6 +10,9 @@ import 'package:submersion/features/dive_computer/presentation/providers/discove
 import 'package:submersion/features/dive_computer/presentation/widgets/scan_step_widget.dart';
 import 'package:submersion/features/dive_computer/presentation/widgets/download_step_widget.dart';
 import 'package:submersion/features/dive_computer/presentation/widgets/summary_step_widget.dart';
+import 'package:submersion/features/dive_computer/presentation/providers/download_providers.dart'
+    hide diveComputerRepositoryProvider;
+import 'package:submersion/features/dive_computer/presentation/widgets/download_exit_dialog.dart';
 import 'package:submersion/l10n/l10n_extension.dart';
 
 /// Multi-step wizard for discovering and connecting to dive computers.
@@ -61,7 +64,9 @@ class _DeviceDiscoveryPageState extends ConsumerState<DeviceDiscoveryPage> {
     });
 
     return PopScope(
-      canPop: discoveryState.currentStep == DiscoveryStep.scan,
+      canPop:
+          discoveryState.currentStep == DiscoveryStep.scan &&
+          !ref.watch(downloadNotifierProvider).isDownloading,
       onPopInvokedWithResult: (didPop, result) {
         if (!didPop) {
           _handleBack();
@@ -544,7 +549,7 @@ class _DeviceDiscoveryPageState extends ConsumerState<DeviceDiscoveryPage> {
     }
   }
 
-  void _showExitConfirmation(BuildContext context) {
+  Future<void> _showExitConfirmation(BuildContext context) async {
     final state = ref.read(discoveryNotifierProvider);
 
     if (state.currentStep == DiscoveryStep.scan) {
@@ -553,6 +558,19 @@ class _DeviceDiscoveryPageState extends ConsumerState<DeviceDiscoveryPage> {
       return;
     }
 
+    // If download is actively in progress, show download-specific dialog
+    final downloadState = ref.read(downloadNotifierProvider);
+    if (downloadState.isDownloading) {
+      final shouldLeave = await showDownloadExitConfirmation(context);
+      if (!shouldLeave || !mounted) return;
+      await ref.read(downloadNotifierProvider.notifier).cancelDownload();
+      if (!mounted) return;
+      ref.read(discoveryNotifierProvider.notifier).reset();
+      this.context.pop();
+      return;
+    }
+
+    // Otherwise show generic exit confirmation
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
