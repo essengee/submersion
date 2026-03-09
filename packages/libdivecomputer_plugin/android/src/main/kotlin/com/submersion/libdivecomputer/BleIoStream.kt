@@ -250,6 +250,75 @@ class BleIoStream(
         return ok
     }
 
+    // Ensure the device is bonded before starting I/O. Called AFTER
+    // connectAndDiscover() so there is an active GATT connection.
+    // If the device is already bonded, returns immediately.
+    // Otherwise calls createBond() and blocks until the user accepts
+    // the pairing dialog (or timeout). Needs an active connection
+    // because many BLE peripherals ignore pairing requests without one.
+    fun ensureBonded(): Boolean {
+        if (device.bondState == BluetoothDevice.BOND_BONDED) {
+            Log.d(TAG, "ensureBonded: already bonded")
+            return true
+        }
+
+        Log.d(TAG, "ensureBonded: initiating bonding for ${device.address}")
+        val bondSemaphore = Semaphore(0)
+        val receiver = object : BroadcastReceiver() {
+            override fun onReceive(ctx: Context, intent: Intent) {
+                if (intent.action != BluetoothDevice.ACTION_BOND_STATE_CHANGED) return
+                val bondDevice = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    intent.getParcelableExtra(
+                        BluetoothDevice.EXTRA_DEVICE,
+                        BluetoothDevice::class.java
+                    )
+                } else {
+                    @Suppress("DEPRECATION")
+                    intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+                }
+                if (bondDevice?.address != device.address) return
+
+                val state = intent.getIntExtra(
+                    BluetoothDevice.EXTRA_BOND_STATE,
+                    BluetoothDevice.BOND_NONE
+                )
+                Log.d(TAG, "ensureBonded: bond state changed to $state")
+                if (state == BluetoothDevice.BOND_BONDED ||
+                    state == BluetoothDevice.BOND_NONE
+                ) {
+                    bondSemaphore.release()
+                }
+            }
+        }
+
+        val filter = IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            context.registerReceiver(receiver, filter, Context.RECEIVER_EXPORTED)
+        } else {
+            context.registerReceiver(receiver, filter)
+        }
+
+        try {
+            if (!device.createBond()) {
+                Log.e(TAG, "ensureBonded: createBond() returned false")
+                return false
+            }
+            // 30s timeout: user needs time to interact with pairing dialog.
+            if (!bondSemaphore.tryAcquire(30, TimeUnit.SECONDS)) {
+                Log.e(TAG, "ensureBonded: timeout waiting for bonding")
+                return false
+            }
+            val bonded = device.bondState == BluetoothDevice.BOND_BONDED
+            Log.d(TAG, "ensureBonded: result=$bonded")
+            return bonded
+        } catch (e: Exception) {
+            Log.e(TAG, "ensureBonded: failed", e)
+            return false
+        } finally {
+            context.unregisterReceiver(receiver)
+        }
+    }
+
     // Remove an existing bond. Used when bond keys are stale: the device
     // reports BOND_BONDED but connections fail with GATT status 5.
     // Uses reflection because BluetoothDevice.removeBond() is hidden API.

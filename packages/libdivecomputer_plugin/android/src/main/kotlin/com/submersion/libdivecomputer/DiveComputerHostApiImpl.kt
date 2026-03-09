@@ -171,6 +171,19 @@ class DiveComputerHostApiImpl(
             return
         }
 
+        // Ensure the device is bonded before starting the download.
+        // Devices using encrypted BLE services (e.g. Aqualung i300C on
+        // the Pelagic service) need an established bond. createBond()
+        // works here because we have an active GATT connection.
+        if (!bleStream.ensureBonded()) {
+            reportError("bond_failed", "Failed to pair with device")
+            bleStream.close()
+            LibdcWrapper.nativeDownloadSessionFree(sessionPtr)
+            downloadSessionPtr = 0
+            activeBleStream = null
+            return
+        }
+
         // Map transport type.
         val transportValue = when (device.transport) {
             TransportType.BLE -> LIBDC_TRANSPORT_BLE
