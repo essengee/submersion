@@ -20,6 +20,7 @@ private const val LIBDC_TRANSPORT_BLE = 1 shl 5
 
 private const val LIBDC_STATUS_CANCELLED = -10
 private const val UINT32_SENTINEL: Long = 4294967295L  // UINT32_MAX = unavailable
+private const val GATT_INSUFFICIENT_AUTHENTICATION = 5
 
 // Bluetooth permissions are requested at the Dart layer before BLE methods are called.
 @SuppressLint("MissingPermission")
@@ -138,7 +139,7 @@ class DiveComputerHostApiImpl(
         }
     }
 
-    private fun performDownload(device: DiscoveredDevice) {
+    private fun performDownload(device: DiscoveredDevice, isRetry: Boolean = false) {
         // Create download session.
         val sessionPtr = LibdcWrapper.nativeDownloadSessionNew()
         if (sessionPtr == 0L) {
@@ -216,6 +217,23 @@ class DiveComputerHostApiImpl(
         if (result == 0) {
             mainHandler.post { flutterApi.onDownloadComplete(0, null, null) { } }
         } else if (result != LIBDC_STATUS_CANCELLED) {
+            // If the download failed because the remote device rejected our
+            // encryption keys (GATT status 5), the bond is stale. Remove
+            // it so that a fresh pairing can be negotiated on retry.
+            if (!isRetry &&
+                bleStream.lastDisconnectStatus == GATT_INSUFFICIENT_AUTHENTICATION
+            ) {
+                android.util.Log.w("DiveComputerHost",
+                    "Auth failure (GATT status 5), removing stale bond and retrying")
+                bleStream.close()
+                bleStream.removeBond()
+                activeBleStream = null
+                LibdcWrapper.nativeDownloadSessionFree(sessionPtr)
+                downloadSessionPtr = 0
+                performDownload(device, isRetry = true)
+                return
+            }
+
             val errorMsg = String(errorBuf).trim('\u0000')
             android.util.Log.e("DiveComputerHost", "download error: $errorMsg")
             reportError("download_error", errorMsg)

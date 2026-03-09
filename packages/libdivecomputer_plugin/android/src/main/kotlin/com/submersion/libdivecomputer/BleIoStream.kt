@@ -7,7 +7,11 @@ import android.bluetooth.BluetoothGattCallback
 import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothGattDescriptor
 import android.bluetooth.BluetoothProfile
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.os.Build
 import android.util.Log
 import java.util.UUID
 import java.util.concurrent.LinkedBlockingQueue
@@ -56,6 +60,11 @@ class BleIoStream(
     private var connected = false
     private var readBuffer = ByteArray(0)
 
+    // GATT status from the most recent disconnect. Exposed so that callers
+    // can detect stale bond keys (status 5 = GATT_INSUFFICIENT_AUTHENTICATION).
+    var lastDisconnectStatus = 0
+        private set
+
     private val gattCallback = object : BluetoothGattCallback() {
         override fun onConnectionStateChange(
             gatt: BluetoothGatt, status: Int, newState: Int
@@ -68,6 +77,8 @@ class BleIoStream(
                 gatt.requestMtu(512)
             } else {
                 connected = false
+                lastDisconnectStatus = status
+                Log.d(TAG, "onConnectionStateChange: disconnected status=$status")
                 connectSemaphore.release()
             }
         }
@@ -221,6 +232,13 @@ class BleIoStream(
 
     // Connect to the BLE device and discover services.
     // Blocks until ready or timeout. Returns true on success.
+    //
+    // Does NOT pre-bond. If the device requires encryption, the Android
+    // BLE stack will handle pairing transparently during the first
+    // encrypted GATT operation (Just Works or PIN dialog). Pre-bonding
+    // with createBond() doesn't work reliably for many BLE peripherals
+    // because they won't respond to pairing requests without an active
+    // GATT connection.
     fun connectAndDiscover(): Boolean {
         gatt = device.connectGatt(context, false, gattCallback)
         if (!connectSemaphore.tryAcquire(15, TimeUnit.SECONDS)) {
@@ -230,6 +248,71 @@ class BleIoStream(
         val ok = connected && writeCharacteristic != null
         Log.d(TAG, "connectAndDiscover: connected=$connected writeChar=${writeCharacteristic?.uuid} result=$ok")
         return ok
+    }
+
+    // Remove an existing bond. Used when bond keys are stale: the device
+    // reports BOND_BONDED but connections fail with GATT status 5.
+    // Uses reflection because BluetoothDevice.removeBond() is hidden API.
+    fun removeBond(): Boolean {
+        if (device.bondState != BluetoothDevice.BOND_BONDED) {
+            Log.d(TAG, "removeBond: not bonded, nothing to remove")
+            return true
+        }
+
+        Log.d(TAG, "removeBond: removing bond for ${device.address}")
+        val bondSemaphore = Semaphore(0)
+        val receiver = object : BroadcastReceiver() {
+            override fun onReceive(ctx: Context, intent: Intent) {
+                if (intent.action != BluetoothDevice.ACTION_BOND_STATE_CHANGED) return
+                val bondDevice = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    intent.getParcelableExtra(
+                        BluetoothDevice.EXTRA_DEVICE,
+                        BluetoothDevice::class.java
+                    )
+                } else {
+                    @Suppress("DEPRECATION")
+                    intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+                }
+                if (bondDevice?.address != device.address) return
+
+                val state = intent.getIntExtra(
+                    BluetoothDevice.EXTRA_BOND_STATE,
+                    BluetoothDevice.BOND_NONE
+                )
+                Log.d(TAG, "removeBond: bond state changed to $state")
+                if (state == BluetoothDevice.BOND_NONE) {
+                    bondSemaphore.release()
+                }
+            }
+        }
+
+        val filter = IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            context.registerReceiver(receiver, filter, Context.RECEIVER_EXPORTED)
+        } else {
+            context.registerReceiver(receiver, filter)
+        }
+
+        try {
+            val method = device.javaClass.getMethod("removeBond")
+            val result = method.invoke(device) as Boolean
+            if (!result) {
+                Log.e(TAG, "removeBond: removeBond() returned false")
+                return false
+            }
+            if (!bondSemaphore.tryAcquire(5, TimeUnit.SECONDS)) {
+                Log.e(TAG, "removeBond: timeout waiting for bond removal")
+                return false
+            }
+            val removed = device.bondState == BluetoothDevice.BOND_NONE
+            Log.d(TAG, "removeBond: result=$removed")
+            return removed
+        } catch (e: Exception) {
+            Log.e(TAG, "removeBond: failed", e)
+            return false
+        } finally {
+            context.unregisterReceiver(receiver)
+        }
     }
 
     // BleIoHandler implementation - called from native code via JNI.
