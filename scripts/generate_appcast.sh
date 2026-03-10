@@ -5,7 +5,7 @@
 #
 # Arguments:
 #   version       - Marketing version string (e.g. "1.1.3")
-#   build_number  - Build number (e.g. "40"), used as sparkle:version for comparison
+#   build_number  - Build number (e.g. "40"), used as sparkle:version for macOS (CFBundleVersion)
 #   date          - RFC 2822 date string for pubDate
 #   macos_dmg_url - Download URL for macOS DMG
 #   windows_url     - Download URL for Windows installer
@@ -42,6 +42,13 @@ cat <<APPCAST
         type="application/octet-stream"
         sparkle:os="macos"
       />
+    </item>
+    <item>
+      <title>Version ${VERSION}</title>
+      <sparkle:version>${VERSION}</sparkle:version>
+      <sparkle:shortVersionString>${VERSION}</sparkle:shortVersionString>
+      <sparkle:releaseNotesLink>https://github.com/submersion-app/submersion/releases/tag/v${VERSION}</sparkle:releaseNotesLink>
+      <pubDate>${DATE}</pubDate>
       <enclosure
         url="${WINDOWS_URL}"
         type="application/octet-stream"
