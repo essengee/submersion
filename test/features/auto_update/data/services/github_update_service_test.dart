@@ -249,5 +249,27 @@ void main() {
       expect(GithubUpdateService.isNewer('2.0.0-beta.1', '1.9.9'), true);
       expect(GithubUpdateService.isNewer('1.0.0-beta.1', '1.0.0'), false);
     });
+
+    test('isNewer detects build number bump in 4-segment version', () {
+      expect(GithubUpdateService.isNewer('1.2.21.65', '1.2.21.64'), true);
+    });
+
+    test('isNewer returns false for same 4-segment version', () {
+      expect(GithubUpdateService.isNewer('1.2.21.65', '1.2.21.65'), false);
+    });
+
+    test('isNewer returns false when 4-segment remote is older', () {
+      expect(GithubUpdateService.isNewer('1.2.21.64', '1.2.21.65'), false);
+    });
+
+    test('isNewer compares 4-segment remote against 3-segment current', () {
+      expect(GithubUpdateService.isNewer('1.2.21.1', '1.2.21'), true);
+      expect(GithubUpdateService.isNewer('1.2.21.0', '1.2.21'), false);
+    });
+
+    test('isNewer compares 3-segment remote against 4-segment current', () {
+      expect(GithubUpdateService.isNewer('1.2.21', '1.2.21.1'), false);
+      expect(GithubUpdateService.isNewer('1.2.22', '1.2.21.99'), true);
+    });
   });
 }

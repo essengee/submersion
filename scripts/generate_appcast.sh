@@ -45,7 +45,7 @@ cat <<APPCAST
     </item>
     <item>
       <title>Version ${VERSION}</title>
-      <sparkle:version>${VERSION}</sparkle:version>
+      <sparkle:version>${VERSION}.${BUILD_NUMBER}</sparkle:version>
       <sparkle:shortVersionString>${VERSION}</sparkle:shortVersionString>
       <sparkle:releaseNotesLink>https://github.com/submersion-app/submersion/releases/tag/v${VERSION}</sparkle:releaseNotesLink>
       <pubDate>${DATE}</pubDate>

@@ -80,7 +80,8 @@ class GithubUpdateService extends UpdateService {
     }
   }
 
-  /// Compares two semver strings. Returns true if [remote] is newer than [current].
+  /// Compares two version strings. Returns true if [remote] is newer than [current].
+  /// Supports any number of dot-separated segments (e.g., "1.2.21.65").
   /// Pre-release suffixes (e.g., "-beta.1") are stripped before comparison.
   static bool isNewer(String remote, String current) {
     // Strip pre-release suffix (e.g., "2.0.0-beta.1" -> "2.0.0")
@@ -96,7 +97,10 @@ class GithubUpdateService extends UpdateService {
         .map((s) => int.tryParse(s) ?? 0)
         .toList();
 
-    for (var i = 0; i < 3; i++) {
+    final maxLen = remoteParts.length > currentParts.length
+        ? remoteParts.length
+        : currentParts.length;
+    for (var i = 0; i < maxLen; i++) {
       final r = i < remoteParts.length ? remoteParts[i] : 0;
       final c = i < currentParts.length ? currentParts[i] : 0;
       if (r > c) return true;
