@@ -7,6 +7,22 @@ All notable changes to Submersion are documented in this file.
 
 ### Bug Fixes
 
+- failing test due to label change
+- release.sh use project directory for generating the changelog.
+- UI improvements for phone layout and settings organization
+
+### Chores
+
+- bump version to 1.2.23+69
+- bump version to 1.2.23+68
+- bump version to 1.2.23+67
+- add code optimization plan
+
+
+## 1.2.23 (2026-03-10)
+
+### Bug Fixes
+
 - release.sh use project directory for generating the changelog.
 - UI improvements for phone layout and settings organization
 
