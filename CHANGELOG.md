@@ -2,6 +2,18 @@
 
 All notable changes to Submersion are documented in this file.
 
+
+## 1.2.23 (2026-03-10)
+
+### Bug Fixes
+
+- UI improvements for phone layout and settings organization
+
+### Chores
+
+- bump version to 1.2.23+67
+- add code optimization plan
+
 ## 1.1.2 (2026-02-16)
 
 ### Chores

@@ -19,6 +19,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_DIR="$(dirname "$(dirname "$SCRIPT_DIR")")"
 
 # --- Parse arguments ---
 BUMP_TYPE=""
@@ -79,7 +80,7 @@ if [ "$DRY_RUN" = true ]; then
   "$SCRIPT_DIR/generate_changelog.sh" --dry-run
 else
   "$SCRIPT_DIR/generate_changelog.sh"
-  git add CHANGELOG.md
+  git add "$PROJECT_DIR/CHANGELOG.md"
   git commit --amend --no-edit
   echo ""
   echo "Amended version commit with CHANGELOG.md"
