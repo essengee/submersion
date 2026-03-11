@@ -77,7 +77,7 @@
 	<key>NSBluetoothAlwaysUsageDescription</key>
 	<string>Submersion uses Bluetooth to connect to dive computers and import dive data.</string>
 	<key>NSLocationUsageDescription</key>
-	<string>Submersion uses your location to set GPS coordinates when adding dive sites.</string>
+	<string>Submersion uses your location to automatically record GPS coordinates when you create or edit dive sites, so you can remember exactly where you dived. Location data is stored locally on your device and is never sent to external servers.</string>
 	<key>NSHealthShareUsageDescription</key>
 	<string>Submersion imports your Apple Watch dive data including depth, temperature, and heart rate to create detailed dive logs.</string>
 	<key>NSHealthUpdateUsageDescription</key>
