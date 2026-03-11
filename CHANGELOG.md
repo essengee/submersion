@@ -7,6 +7,19 @@ All notable changes to Submersion are documented in this file.
 
 ### Bug Fixes
 
+- declare location data collection in privacy manifests and improve macOS purpose string
+- refactor github release workflow to require all builds to succeed before uploading to any app store.
+- replace flutter-action internal actions/cache@v4 with explicit actions/cache@v5
+
+### Chores
+
+- bump version to 1.2.23+70
+
+
+## 1.2.23 (2026-03-10)
+
+### Bug Fixes
+
 - failing test due to label change
 - release.sh use project directory for generating the changelog.
 - UI improvements for phone layout and settings organization
