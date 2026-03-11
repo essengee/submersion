@@ -10,6 +10,9 @@
 #   bundle exec fastlane release            # Build + upload to App Store
 #   bundle exec fastlane full_release       # Screenshots + build + upload
 #
+#   bundle exec fastlane upload_only           # Upload pre-built IPA to App Store
+#   bundle exec fastlane upload_testflight_only # Upload pre-built IPA to TestFlight
+#
 #   Signing is handled automatically via Xcode + App Store Connect API key.
 
 default_platform(:ios)
@@ -232,6 +235,38 @@ platform :ios do
     UI.success("Build uploaded to App Store Connect!")
   end
 
+  desc "Upload pre-built IPA to App Store (no rebuild)"
+  lane :upload_only do |options|
+    api_key = load_api_key
+    ipa_path = options[:ipa] || "./build/Submersion.ipa"
+
+    UI.message("Uploading IPA to App Store Connect: #{ipa_path}")
+    upload_to_app_store(
+      api_key: api_key,
+      ipa: ipa_path,
+      skip_screenshots: true,
+      skip_metadata: true,
+      submit_for_review: false,
+      automatic_release: false,
+      precheck_include_in_app_purchases: false
+    )
+    UI.success("iOS build uploaded to App Store Connect!")
+  end
+
+  desc "Upload pre-built IPA to TestFlight (no rebuild)"
+  lane :upload_testflight_only do |options|
+    api_key = load_api_key
+    ipa_path = options[:ipa] || "./build/Submersion.ipa"
+
+    UI.message("Uploading IPA to TestFlight: #{ipa_path}")
+    upload_to_testflight(
+      api_key: api_key,
+      ipa: ipa_path,
+      skip_waiting_for_build_processing: true
+    )
+    UI.success("iOS build uploaded to TestFlight!")
+  end
+
   desc "Full release: capture screenshots, upload everything, and submit build"
   lane :full_release do
     screenshots
@@ -296,6 +331,8 @@ platform :ios do
     UI.message("    beta               - Build + upload to TestFlight")
     UI.message("    release            - Build + upload to App Store")
     UI.message("    full_release       - Screenshots + build + upload")
+    UI.message("    upload_only           - Upload pre-built IPA to App Store (CI)")
+    UI.message("    upload_testflight_only - Upload pre-built IPA to TestFlight (CI)")
     UI.message("")
     UI.message("  Utilities:")
     UI.message("    clean              - Clean all build artifacts")

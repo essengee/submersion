@@ -10,6 +10,9 @@
 #   bundle exec fastlane release            # Build + upload to App Store
 #   bundle exec fastlane full_release       # Screenshots + build + upload
 #
+#   bundle exec fastlane upload_only           # Upload pre-built pkg to App Store
+#   bundle exec fastlane upload_testflight_only # Upload pre-built pkg to TestFlight
+#
 #   Signing is handled automatically via Xcode + App Store Connect API key.
 
 default_platform(:mac)
@@ -314,6 +317,38 @@ platform :mac do
     UI.success("macOS build uploaded to Mac App Store!")
   end
 
+  desc "Upload pre-built pkg to Mac App Store (no rebuild)"
+  lane :upload_only do |options|
+    api_key = load_api_key
+    pkg_path = options[:pkg] || "./build/Submersion.pkg"
+
+    UI.message("Uploading pkg to Mac App Store: #{pkg_path}")
+    upload_to_app_store(
+      api_key: api_key,
+      pkg: pkg_path,
+      skip_screenshots: true,
+      skip_metadata: true,
+      submit_for_review: false,
+      automatic_release: false,
+      precheck_include_in_app_purchases: false
+    )
+    UI.success("macOS build uploaded to Mac App Store!")
+  end
+
+  desc "Upload pre-built pkg to TestFlight (no rebuild)"
+  lane :upload_testflight_only do |options|
+    api_key = load_api_key
+    pkg_path = options[:pkg] || "./build/Submersion.pkg"
+
+    UI.message("Uploading pkg to TestFlight: #{pkg_path}")
+    upload_to_testflight(
+      api_key: api_key,
+      pkg: pkg_path,
+      skip_waiting_for_build_processing: true
+    )
+    UI.success("macOS build uploaded to TestFlight!")
+  end
+
   desc "Full release: capture screenshots, upload everything, and submit build"
   lane :full_release do
     screenshots
@@ -365,6 +400,8 @@ platform :mac do
     UI.message("    beta               - Build + upload to TestFlight")
     UI.message("    release            - Build + upload to App Store")
     UI.message("    full_release       - Screenshots + build + upload")
+    UI.message("    upload_only           - Upload pre-built pkg to App Store (CI)")
+    UI.message("    upload_testflight_only - Upload pre-built pkg to TestFlight (CI)")
     UI.message("")
     UI.message("  Utilities:")
     UI.message("    clean              - Clean all build artifacts")
