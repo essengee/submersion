@@ -3,6 +3,18 @@
 All notable changes to Submersion are documented in this file.
 
 
+## 1.2.24 (2026-03-11)
+
+### Bug Fixes
+
+- decouple store uploads from GitHub release and notify on upload failures
+
+### Chores
+
+- bump version to 1.2.24+71
+- added translations
+
+
 ## 1.2.23 (2026-03-10)
 
 ### Bug Fixes
