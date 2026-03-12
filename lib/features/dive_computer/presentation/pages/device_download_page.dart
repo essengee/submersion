@@ -420,11 +420,11 @@ class _DeviceDownloadPageState extends ConsumerState<DeviceDownloadPage> {
               padding: const EdgeInsets.only(bottom: 16),
               child: SwitchListTile(
                 title: Text(
-                  'Download new dives only',
+                  context.l10n.diveComputer_download_newDivesOnlyTitle,
                   style: theme.textTheme.bodyMedium,
                 ),
                 subtitle: Text(
-                  'Only downloads dives added since your last sync',
+                  context.l10n.diveComputer_download_newDivesOnlySubtitle,
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                   ),
@@ -553,9 +553,9 @@ class _DeviceDownloadPageState extends ConsumerState<DeviceDownloadPage> {
     if (state.phase == DownloadPhase.processing) {
       final count = state.downloadedDives.length;
       if (state.newDivesOnly && count > 0) {
-        return 'Importing $count new dives...';
+        return context.l10n.diveComputer_download_importingCountNewDives(count);
       }
-      return 'Importing $count dives...';
+      return context.l10n.diveComputer_download_importingCountDives(count);
     }
     return state.progress?.status ??
         context.l10n.diveComputer_download_preparing;
@@ -738,7 +738,7 @@ class _DeviceDownloadPageState extends ConsumerState<DeviceDownloadPage> {
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  'No new dives found -- your log is up to date',
+                  context.l10n.diveComputer_download_upToDate,
                   style: theme.textTheme.bodyMedium,
                 ),
               ),
