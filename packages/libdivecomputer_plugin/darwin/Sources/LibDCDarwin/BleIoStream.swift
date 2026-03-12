@@ -32,6 +32,11 @@ class BleIoStream: NSObject, CBPeripheralDelegate {
     private static let notifySettleDelaySeconds: TimeInterval = 0.3
     private static let bleIoctlType: UInt32 = UInt32(Character("b").asciiValue!)
     private static let bleIoctlGetNameNumber: UInt32 = 0
+    private static let bleIoctlGetPinCodeNumber: UInt32 = 1
+    private static let bleIoctlAccessCodeNumber: UInt32 = 2
+    private static let ioctlDirRead: UInt32 = 1
+    private static let ioctlDirWrite: UInt32 = 2
+    private static let pinTimeoutSeconds: TimeInterval = 60
     private static let directionInput: UInt32 = 1
     private static let maxLogBytes = 24
 
@@ -61,6 +66,14 @@ class BleIoStream: NSObject, CBPeripheralDelegate {
     private var writeWithoutResponsePreferred = false
     private var consecutiveReadTimeouts = 0
 
+    private let pinSemaphore = DispatchSemaphore(value: 0)
+    private var pendingPinCode: String?
+    private var deviceAddress: String = ""
+
+    /// Callback invoked on the main thread when a PIN code is needed.
+    /// Set by DiveComputerHostApiImpl before download starts.
+    var onPinCodeRequired: ((String) -> Void)?
+
     init(peripheral: CBPeripheral, centralManager: CBCentralManager) {
         self.peripheral = peripheral
         self.centralManager = centralManager
@@ -84,6 +97,17 @@ class BleIoStream: NSObject, CBPeripheralDelegate {
         cbs.sleep = nil
         cbs.userdata = opaque
         return cbs
+    }
+
+    /// Called from main thread to supply PIN code for BLE authentication.
+    func submitPinCode(_ pin: String) {
+        pendingPinCode = pin
+        pinSemaphore.signal()
+    }
+
+    /// Set the device address for access code storage.
+    func setDeviceAddress(_ address: String) {
+        deviceAddress = address
     }
 
     // MARK: - Connection
@@ -409,6 +433,18 @@ class BleIoStream: NSObject, CBPeripheralDelegate {
         )
     }
 
+    private static let accessCodeKeyPrefix = "ble_access_code_"
+
+    private func loadAccessCode() -> Data? {
+        let key = Self.accessCodeKeyPrefix + deviceAddress
+        return UserDefaults.standard.data(forKey: key)
+    }
+
+    private func saveAccessCode(_ data: Data) {
+        let key = Self.accessCodeKeyPrefix + deviceAddress
+        UserDefaults.standard.set(data, forKey: key)
+    }
+
     private func performIoctl(request: UInt32, data: UnsafeMutableRawPointer?,
                                size: size_t) -> Int32 {
         let ioctlType = (request >> 8) & 0xFF
@@ -434,6 +470,77 @@ class BleIoStream: NSObject, CBPeripheralDelegate {
             }
             NSLog("[BleIoStream] ioctl BLE_GET_NAME -> %@", name)
             return Int32(LIBDC_STATUS_SUCCESS)
+        }
+
+        if ioctlType == Self.bleIoctlType && ioctlNumber == Self.bleIoctlGetPinCodeNumber {
+            guard let data, size > 0 else {
+                return Int32(LIBDC_STATUS_INVALIDARGS)
+            }
+
+            NSLog("[BleIoStream] ioctl BLE_GET_PINCODE -> requesting PIN from user")
+            pendingPinCode = nil
+
+            // Dispatch callback to main thread BEFORE blocking.
+            let address = deviceAddress
+            DispatchQueue.main.async { [weak self] in
+                self?.onPinCodeRequired?(address)
+            }
+
+            // Block on semaphore until submitPinCode() is called.
+            let result = pinSemaphore.wait(timeout: .now() + Self.pinTimeoutSeconds)
+            if result == .timedOut {
+                NSLog("[BleIoStream] PIN entry timed out")
+                return Int32(LIBDC_STATUS_TIMEOUT)
+            }
+
+            guard let pin = pendingPinCode, !pin.isEmpty else {
+                NSLog("[BleIoStream] PIN entry cancelled")
+                return Int32(LIBDC_STATUS_CANCELLED)
+            }
+
+            guard let cString = pin.cString(using: .utf8), !cString.isEmpty else {
+                return Int32(LIBDC_STATUS_IO)
+            }
+
+            let maxCount = Int(size)
+            let copyCount = min(cString.count, maxCount)
+            _ = cString.withUnsafeBytes { bytes in
+                memcpy(data, bytes.baseAddress!, copyCount)
+            }
+            if copyCount == maxCount {
+                data.assumingMemoryBound(to: CChar.self)[maxCount - 1] = 0
+            }
+            NSLog("[BleIoStream] ioctl BLE_GET_PINCODE -> PIN provided (%d chars)", pin.count)
+            return Int32(LIBDC_STATUS_SUCCESS)
+        }
+
+        if ioctlType == Self.bleIoctlType && ioctlNumber == Self.bleIoctlAccessCodeNumber {
+            let direction = (request >> 30) & 0x3
+            guard let data, size > 0 else {
+                return Int32(LIBDC_STATUS_INVALIDARGS)
+            }
+
+            if direction == Self.ioctlDirRead {
+                // GET access code
+                guard let stored = loadAccessCode(), !stored.isEmpty else {
+                    NSLog("[BleIoStream] ioctl BLE_GET_ACCESSCODE -> not found")
+                    return Int32(LIBDC_STATUS_UNSUPPORTED)
+                }
+                let copyCount = min(stored.count, Int(size))
+                stored.withUnsafeBytes { bytes in
+                    memcpy(data, bytes.baseAddress!, copyCount)
+                }
+                NSLog("[BleIoStream] ioctl BLE_GET_ACCESSCODE -> found (%d bytes)", stored.count)
+                return Int32(LIBDC_STATUS_SUCCESS)
+            }
+
+            if direction == Self.ioctlDirWrite {
+                // SET access code
+                let accessData = Data(bytes: data, count: Int(size))
+                saveAccessCode(accessData)
+                NSLog("[BleIoStream] ioctl BLE_SET_ACCESSCODE -> stored (%d bytes)", size)
+                return Int32(LIBDC_STATUS_SUCCESS)
+            }
         }
 
         return Int32(LIBDC_STATUS_UNSUPPORTED)
