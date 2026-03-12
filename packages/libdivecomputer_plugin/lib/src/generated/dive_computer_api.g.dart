@@ -636,6 +636,30 @@ class DiveComputerHostApi {
     }
   }
 
+  Future<void> submitPinCode(String pinCode) async {
+    final String pigeonVar_channelName =
+        'dev.flutter.pigeon.libdivecomputer_plugin.DiveComputerHostApi.submitPinCode$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel =
+        BasicMessageChannel<Object?>(
+          pigeonVar_channelName,
+          pigeonChannelCodec,
+          binaryMessenger: pigeonVar_binaryMessenger,
+        );
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(<Object?>[pinCode]) as List<Object?>?;
+    if (pigeonVar_replyList == null) {
+      throw _createConnectionError(pigeonVar_channelName);
+    } else if (pigeonVar_replyList.length > 1) {
+      throw PlatformException(
+        code: pigeonVar_replyList[0]! as String,
+        message: pigeonVar_replyList[1] as String?,
+        details: pigeonVar_replyList[2],
+      );
+    } else {
+      return;
+    }
+  }
+
   Future<String> getLibdivecomputerVersion() async {
     final String pigeonVar_channelName =
         'dev.flutter.pigeon.libdivecomputer_plugin.DiveComputerHostApi.getLibdivecomputerVersion$pigeonVar_messageChannelSuffix';
@@ -684,6 +708,8 @@ abstract class DiveComputerFlutterApi {
   );
 
   void onError(DiveComputerError error);
+
+  void onPinCodeRequired(String deviceAddress);
 
   static void setUp(
     DiveComputerFlutterApi? api, {
@@ -882,6 +908,40 @@ abstract class DiveComputerFlutterApi {
           );
           try {
             api.onError(arg_error!);
+            return wrapResponse(empty: true);
+          } on PlatformException catch (e) {
+            return wrapResponse(error: e);
+          } catch (e) {
+            return wrapResponse(
+              error: PlatformException(code: 'error', message: e.toString()),
+            );
+          }
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?>
+      pigeonVar_channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.libdivecomputer_plugin.DiveComputerFlutterApi.onPinCodeRequired$messageChannelSuffix',
+        pigeonChannelCodec,
+        binaryMessenger: binaryMessenger,
+      );
+      if (api == null) {
+        pigeonVar_channel.setMessageHandler(null);
+      } else {
+        pigeonVar_channel.setMessageHandler((Object? message) async {
+          assert(
+            message != null,
+            'Argument for dev.flutter.pigeon.libdivecomputer_plugin.DiveComputerFlutterApi.onPinCodeRequired was null.',
+          );
+          final List<Object?> args = (message as List<Object?>?)!;
+          final String? arg_deviceAddress = (args[0] as String?);
+          assert(
+            arg_deviceAddress != null,
+            'Argument for dev.flutter.pigeon.libdivecomputer_plugin.DiveComputerFlutterApi.onPinCodeRequired was null, expected non-null String.',
+          );
+          try {
+            api.onPinCodeRequired(arg_deviceAddress!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
