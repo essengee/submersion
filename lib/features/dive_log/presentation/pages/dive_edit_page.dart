@@ -39,6 +39,7 @@ import 'package:submersion/features/dive_log/presentation/widgets/dive_mode_sele
 import 'package:submersion/features/dive_log/presentation/widgets/scr_settings_panel.dart';
 import 'package:submersion/features/dive_log/presentation/widgets/tank_editor.dart';
 import 'package:submersion/features/tides/presentation/providers/tide_providers.dart';
+import 'package:submersion/features/weather/presentation/providers/weather_providers.dart';
 import 'package:submersion/features/courses/domain/entities/course.dart';
 import 'package:submersion/features/courses/presentation/providers/course_providers.dart';
 import 'package:submersion/features/courses/presentation/widgets/course_picker.dart';
@@ -113,6 +114,17 @@ class _DiveEditPageState extends ConsumerState<DiveEditPage> {
   final _swellHeightController = TextEditingController();
   final _altitudeController = TextEditingController();
   final _surfacePressureController = TextEditingController();
+
+  // Weather fields
+  CurrentDirection? _windDirection;
+  CloudCover? _cloudCover;
+  Precipitation? _precipitation;
+  WeatherSource? _weatherSource;
+  DateTime? _weatherFetchedAt;
+  final _windSpeedController = TextEditingController();
+  final _humidityController = TextEditingController();
+  final _weatherDescriptionController = TextEditingController();
+  bool _isFetchingWeather = false;
 
   // Weight fields - multiple weight entries per dive
   List<DiveWeight> _weights = [];
@@ -288,6 +300,20 @@ class _DiveEditPageState extends ConsumerState<DiveEditPage> {
                 ) // Convert bar to mbar
               : '';
 
+          // Load weather fields
+          _windDirection = dive.windDirection;
+          _cloudCover = dive.cloudCover;
+          _precipitation = dive.precipitation;
+          _weatherSource = dive.weatherSource;
+          _weatherFetchedAt = dive.weatherFetchedAt;
+          _windSpeedController.text = dive.windSpeed != null
+              ? units.convertWindSpeed(dive.windSpeed!).toStringAsFixed(1)
+              : '';
+          _humidityController.text = dive.humidity != null
+              ? dive.humidity!.toStringAsFixed(0)
+              : '';
+          _weatherDescriptionController.text = dive.weatherDescription ?? '';
+
           // Load weight entries (weights already stored in kg, conversion happens in display)
           _weights = List.from(dive.weights);
           // Migrate legacy single weight to weights list if needed
@@ -396,6 +422,9 @@ class _DiveEditPageState extends ConsumerState<DiveEditPage> {
     _swellHeightController.dispose();
     _altitudeController.dispose();
     _surfacePressureController.dispose();
+    _windSpeedController.dispose();
+    _humidityController.dispose();
+    _weatherDescriptionController.dispose();
     super.dispose();
   }
 
@@ -443,7 +472,7 @@ class _DiveEditPageState extends ConsumerState<DiveEditPage> {
           const SizedBox(height: 16),
           _buildEquipmentSection(),
           const SizedBox(height: 16),
-          _buildConditionsSection(units),
+          _buildEnvironmentSection(units),
           const SizedBox(height: 16),
           _buildWeightSection(units),
           const SizedBox(height: 16),
@@ -2126,18 +2155,60 @@ class _DiveEditPageState extends ConsumerState<DiveEditPage> {
     );
   }
 
-  Widget _buildConditionsSection(UnitFormatter units) {
+  Widget _buildEnvironmentSection(UnitFormatter units) {
+    final canFetchWeather =
+        _selectedSite != null && _selectedSite!.hasCoordinates;
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              context.l10n.diveLog_edit_section_conditions,
-              style: Theme.of(context).textTheme.titleMedium,
+            // Section header with Fetch Weather button
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Environment',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                _isFetchingWeather
+                    ? const SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : TextButton.icon(
+                        onPressed: canFetchWeather
+                            ? () => _fetchWeather(units)
+                            : null,
+                        icon: const Icon(Icons.cloud_download, size: 18),
+                        label: const Text('Fetch Weather'),
+                      ),
+              ],
             ),
+            const SizedBox(height: 8),
+            // -- Weather sub-header --
+            Text(
+              'Weather',
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+            const SizedBox(height: 12),
+            _buildWeatherFields(units),
             const SizedBox(height: 16),
+            const Divider(),
+            const SizedBox(height: 12),
+            // -- Dive Conditions sub-header --
+            Text(
+              'Dive Conditions',
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+            const SizedBox(height: 12),
             Consumer(
               builder: (context, ref, child) {
                 final diveTypesAsync = ref.watch(diveTypeListNotifierProvider);
@@ -2182,24 +2253,6 @@ class _DiveEditPageState extends ConsumerState<DiveEditPage> {
               },
             ),
             const SizedBox(height: 16),
-            DropdownButtonFormField<Visibility>(
-              initialValue: _selectedVisibility,
-              decoration: InputDecoration(
-                labelText: context.l10n.diveLog_edit_label_visibility,
-              ),
-              items: Visibility.values.map((vis) {
-                return DropdownMenuItem(
-                  value: vis,
-                  child: Text(vis.displayName),
-                );
-              }).toList(),
-              onChanged: (value) {
-                if (value != null) {
-                  setState(() => _selectedVisibility = value);
-                }
-              },
-            ),
-            const SizedBox(height: 16),
             Row(
               children: [
                 Expanded(
@@ -2216,15 +2269,22 @@ class _DiveEditPageState extends ConsumerState<DiveEditPage> {
                 ),
                 const SizedBox(width: 16),
                 Expanded(
-                  child: TextFormField(
-                    controller: _airTempController,
+                  child: DropdownButtonFormField<Visibility>(
+                    initialValue: _selectedVisibility,
                     decoration: InputDecoration(
-                      labelText: context.l10n.diveLog_edit_label_airTemp,
-                      suffixText: units.temperatureSymbol,
+                      labelText: context.l10n.diveLog_edit_label_visibility,
                     ),
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
-                    ),
+                    items: Visibility.values.map((vis) {
+                      return DropdownMenuItem(
+                        value: vis,
+                        child: Text(vis.displayName),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      if (value != null) {
+                        setState(() => _selectedVisibility = value);
+                      }
+                    },
                   ),
                 ),
               ],
@@ -2343,19 +2403,6 @@ class _DiveEditPageState extends ConsumerState<DiveEditPage> {
               ],
             ),
             const SizedBox(height: 16),
-            // Surface Pressure field (always in mbar)
-            TextFormField(
-              controller: _surfacePressureController,
-              decoration: InputDecoration(
-                labelText: context.l10n.diveLog_edit_label_surfacePressure,
-                suffixText: 'mbar',
-                helperText: context.l10n.diveLog_edit_surfacePressureHint,
-                hintText: context.l10n.diveLog_edit_surfacePressureDefault,
-                prefixIcon: const Icon(Icons.speed),
-              ),
-              keyboardType: TextInputType.number,
-            ),
-            const SizedBox(height: 16),
             Row(
               children: [
                 Expanded(
@@ -2413,6 +2460,291 @@ class _DiveEditPageState extends ConsumerState<DiveEditPage> {
         ),
       ),
     );
+  }
+
+  /// Weather fields extracted into a helper to keep the environment section
+  /// manageable given the file size.
+  Widget _buildWeatherFields(UnitFormatter units) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Air Temp and Humidity row
+        Row(
+          children: [
+            Expanded(
+              child: TextFormField(
+                controller: _airTempController,
+                decoration: InputDecoration(
+                  labelText: context.l10n.diveLog_edit_label_airTemp,
+                  suffixText: units.temperatureSymbol,
+                ),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: TextFormField(
+                controller: _humidityController,
+                decoration: const InputDecoration(
+                  labelText: 'Humidity',
+                  suffixText: '%',
+                ),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: false,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        // Wind Speed and Wind Direction row
+        Row(
+          children: [
+            Expanded(
+              child: TextFormField(
+                controller: _windSpeedController,
+                decoration: InputDecoration(
+                  labelText: 'Wind Speed',
+                  suffixText: units.windSpeedSymbol,
+                ),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: DropdownButtonFormField<CurrentDirection>(
+                initialValue: _windDirection,
+                decoration: const InputDecoration(labelText: 'Wind Direction'),
+                isExpanded: true,
+                items: [
+                  DropdownMenuItem<CurrentDirection>(
+                    value: null,
+                    child: Text(context.l10n.diveLog_edit_notSpecified),
+                  ),
+                  ...CurrentDirection.values.map((dir) {
+                    return DropdownMenuItem(
+                      value: dir,
+                      child: Text(dir.displayName),
+                    );
+                  }),
+                ],
+                onChanged: (value) {
+                  setState(() => _windDirection = value);
+                },
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        // Surface Pressure field (always in mbar)
+        TextFormField(
+          controller: _surfacePressureController,
+          decoration: InputDecoration(
+            labelText: context.l10n.diveLog_edit_label_surfacePressure,
+            suffixText: 'mbar',
+            helperText: context.l10n.diveLog_edit_surfacePressureHint,
+            hintText: context.l10n.diveLog_edit_surfacePressureDefault,
+            prefixIcon: const Icon(Icons.speed),
+          ),
+          keyboardType: TextInputType.number,
+        ),
+        const SizedBox(height: 16),
+        // Cloud Cover and Precipitation row
+        Row(
+          children: [
+            Expanded(
+              child: DropdownButtonFormField<CloudCover>(
+                initialValue: _cloudCover,
+                decoration: const InputDecoration(labelText: 'Cloud Cover'),
+                isExpanded: true,
+                items: [
+                  DropdownMenuItem<CloudCover>(
+                    value: null,
+                    child: Text(context.l10n.diveLog_edit_notSpecified),
+                  ),
+                  ...CloudCover.values.map((cover) {
+                    return DropdownMenuItem(
+                      value: cover,
+                      child: Text(cover.displayName),
+                    );
+                  }),
+                ],
+                onChanged: (value) {
+                  setState(() => _cloudCover = value);
+                },
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: DropdownButtonFormField<Precipitation>(
+                initialValue: _precipitation,
+                decoration: const InputDecoration(labelText: 'Precipitation'),
+                isExpanded: true,
+                items: [
+                  DropdownMenuItem<Precipitation>(
+                    value: null,
+                    child: Text(context.l10n.diveLog_edit_notSpecified),
+                  ),
+                  ...Precipitation.values.map((precip) {
+                    return DropdownMenuItem(
+                      value: precip,
+                      child: Text(precip.displayName),
+                    );
+                  }),
+                ],
+                onChanged: (value) {
+                  setState(() => _precipitation = value);
+                },
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        // Weather Description
+        TextFormField(
+          controller: _weatherDescriptionController,
+          decoration: const InputDecoration(
+            labelText: 'Weather Description',
+            hintText: 'e.g., Sunny with light breeze',
+          ),
+          maxLines: 2,
+        ),
+      ],
+    );
+  }
+
+  /// Fetch weather data from Open-Meteo for the selected site and dive date.
+  Future<void> _fetchWeather(UnitFormatter units) async {
+    if (_selectedSite == null || !_selectedSite!.hasCoordinates) return;
+
+    // If any weather field is already populated, confirm before overwriting
+    final hasExistingWeatherData =
+        _windSpeedController.text.isNotEmpty ||
+        _humidityController.text.isNotEmpty ||
+        _weatherDescriptionController.text.isNotEmpty ||
+        _windDirection != null ||
+        _cloudCover != null ||
+        _precipitation != null;
+
+    if (hasExistingWeatherData) {
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Overwrite Weather Data?'),
+          content: const Text(
+            'Some weather fields already have values. '
+            'Fetching will overwrite them with data from Open-Meteo.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(false),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(true),
+              child: const Text('Overwrite'),
+            ),
+          ],
+        ),
+      );
+      if (confirmed != true) return;
+    }
+
+    setState(() => _isFetchingWeather = true);
+
+    try {
+      final entryDateTime = DateTime(
+        _entryDate.year,
+        _entryDate.month,
+        _entryDate.day,
+        _entryTime.hour,
+        _entryTime.minute,
+      );
+
+      final service = ref.read(weatherServiceProvider);
+      final weather = await service.fetchWeather(
+        latitude: _selectedSite!.location!.latitude,
+        longitude: _selectedSite!.location!.longitude,
+        date: _entryDate,
+        entryTime: entryDateTime,
+      );
+
+      if (!mounted) return;
+
+      if (weather == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text(
+              'Unable to fetch weather data. '
+              'The date may be too recent or the service is unavailable.',
+            ),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+        return;
+      }
+
+      setState(() {
+        // Populate weather fields from fetched data
+        if (weather.windSpeed != null) {
+          _windSpeedController.text = units
+              .convertWindSpeed(weather.windSpeed!)
+              .toStringAsFixed(1);
+        }
+        if (weather.windDirection != null) {
+          _windDirection = weather.windDirection;
+        }
+        if (weather.cloudCover != null) {
+          _cloudCover = weather.cloudCover;
+        }
+        if (weather.precipitation != null) {
+          _precipitation = weather.precipitation;
+        }
+        if (weather.humidity != null) {
+          _humidityController.text = weather.humidity!.toStringAsFixed(0);
+        }
+        if (weather.description != null && weather.description!.isNotEmpty) {
+          _weatherDescriptionController.text = weather.description!;
+        }
+        // Only fill airTemp if the controller is currently empty
+        if (weather.airTemp != null && _airTempController.text.isEmpty) {
+          _airTempController.text = units
+              .convertTemperature(weather.airTemp!)
+              .toStringAsFixed(0);
+        }
+        // Only fill surfacePressure if the controller is currently empty
+        if (weather.surfacePressure != null &&
+            _surfacePressureController.text.isEmpty) {
+          _surfacePressureController.text = (weather.surfacePressure! * 1000)
+              .toStringAsFixed(0);
+        }
+        _weatherSource = WeatherSource.openMeteo;
+        _weatherFetchedAt = DateTime.now();
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Weather data fetched successfully.')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to fetch weather: $e'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isFetchingWeather = false);
+      }
+    }
   }
 
   Widget _buildWeightSection(UnitFormatter units) {
@@ -3028,6 +3360,21 @@ class _DiveEditPageState extends ConsumerState<DiveEditPage> {
         waterType: _waterType,
         altitude: altitude,
         surfacePressure: surfacePressure,
+        // Weather fields
+        windSpeed: _windSpeedController.text.isNotEmpty
+            ? units.windSpeedToMs(double.parse(_windSpeedController.text))
+            : null,
+        windDirection: _windDirection,
+        cloudCover: _cloudCover,
+        precipitation: _precipitation,
+        humidity: _humidityController.text.isNotEmpty
+            ? double.parse(_humidityController.text)
+            : null,
+        weatherDescription: _weatherDescriptionController.text.isNotEmpty
+            ? _weatherDescriptionController.text
+            : null,
+        weatherSource: _weatherSource,
+        weatherFetchedAt: _weatherFetchedAt,
         // Weight entries (multiple)
         weights: _weights,
         // Tags
