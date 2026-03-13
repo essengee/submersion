@@ -467,3 +467,38 @@ enum DayType {
     );
   }
 }
+
+/// Cloud cover conditions
+enum CloudCover {
+  clear('Clear'),
+  partlyCloudy('Partly Cloudy'),
+  mostlyCloudy('Mostly Cloudy'),
+  overcast('Overcast');
+
+  final String displayName;
+  const CloudCover(this.displayName);
+}
+
+/// Precipitation type
+enum Precipitation {
+  none('None'),
+  drizzle('Drizzle'),
+  lightRain('Light Rain'),
+  rain('Rain'),
+  heavyRain('Heavy Rain'),
+  snow('Snow'),
+  sleet('Sleet'),
+  hail('Hail');
+
+  final String displayName;
+  const Precipitation(this.displayName);
+}
+
+/// Source of weather data
+enum WeatherSource {
+  manual('Manual'),
+  openMeteo('Open-Meteo');
+
+  final String displayName;
+  const WeatherSource(this.displayName);
+}
