@@ -216,6 +216,37 @@ class UnitFormatter {
   }
 
   // ============================================================================
+  // Wind Speed
+  // ============================================================================
+
+  /// Whether the user prefers metric wind speed (km/h) vs imperial (knots).
+  /// Derived from depth unit: meters -> metric, feet -> imperial.
+  bool get _isMetricWind => settings.depthUnit == DepthUnit.meters;
+
+  /// Format wind speed from m/s to the user's preferred unit.
+  String formatWindSpeed(double? metersPerSecond, {int decimals = 0}) {
+    if (metersPerSecond == null) return '--';
+    final converted = convertWindSpeed(metersPerSecond);
+    return '${converted.toStringAsFixed(decimals)} $windSpeedSymbol';
+  }
+
+  /// Convert wind speed from m/s to the user's preferred display unit.
+  double convertWindSpeed(double metersPerSecond) {
+    return _isMetricWind
+        ? metersPerSecond *
+              3.6 // m/s to km/h
+        : metersPerSecond * 1.94384; // m/s to knots
+  }
+
+  /// Convert wind speed from the user's display unit back to m/s (for storage).
+  double windSpeedToMs(double value) {
+    return _isMetricWind ? value / 3.6 : value / 1.94384;
+  }
+
+  /// Wind speed unit symbol.
+  String get windSpeedSymbol => _isMetricWind ? 'km/h' : 'kts';
+
+  // ============================================================================
   // Date/Time Formatting
   // ============================================================================
 
