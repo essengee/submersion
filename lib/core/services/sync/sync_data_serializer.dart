@@ -1502,6 +1502,14 @@ class SyncDataSerializer {
     'computerId': r.computerId,
     'createdAt': r.createdAt,
     'updatedAt': r.updatedAt,
+    'windSpeed': r.windSpeed,
+    'windDirection': r.windDirection,
+    'cloudCover': r.cloudCover,
+    'precipitation': r.precipitation,
+    'humidity': r.humidity,
+    'weatherDescription': r.weatherDescription,
+    'weatherSource': r.weatherSource,
+    'weatherFetchedAt': r.weatherFetchedAt,
   };
 
   Map<String, dynamic> _diveProfileToJson(DiveProfile r) => {
