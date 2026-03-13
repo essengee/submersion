@@ -157,6 +157,36 @@ class UddfExportBuilders {
                 nest: (dive.surfacePressure! * 100000).toString(),
               );
             }
+            // Custom weather extension elements (not UDDF standard, but
+            // consistent with existing custom elements in informationbeforedive)
+            if (dive.windSpeed != null) {
+              builder.element(
+                'windspeed',
+                nest: dive.windSpeed!.toStringAsFixed(1),
+              );
+            }
+            if (dive.windDirection != null) {
+              builder.element('winddirection', nest: dive.windDirection!.name);
+            }
+            if (dive.cloudCover != null) {
+              builder.element('cloudcover', nest: dive.cloudCover!.name);
+            }
+            if (dive.precipitation != null &&
+                dive.precipitation != Precipitation.none) {
+              builder.element('precipitation', nest: dive.precipitation!.name);
+            }
+            if (dive.humidity != null) {
+              builder.element(
+                'humidity',
+                nest: dive.humidity!.toStringAsFixed(0),
+              );
+            }
+            if (dive.weatherDescription != null) {
+              builder.element(
+                'weatherdescription',
+                nest: dive.weatherDescription!,
+              );
+            }
             // Surface interval before dive
             if (dive.surfaceInterval != null) {
               builder.element(
