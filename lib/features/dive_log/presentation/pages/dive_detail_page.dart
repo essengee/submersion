@@ -2265,9 +2265,6 @@ class _DiveDetailPageState extends ConsumerState<DiveDetailPage> {
         dive.precipitation != null ||
         dive.humidity != null ||
         dive.weatherDescription != null ||
-        dive.waterTemp != null ||
-        dive.visibility != null ||
-        dive.waterType != null ||
         dive.currentDirection != null ||
         dive.currentStrength != null ||
         dive.swellHeight != null ||
@@ -2346,11 +2343,14 @@ class _DiveDetailPageState extends ConsumerState<DiveDetailPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Environment', style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              context.l10n.diveLog_detail_section_environment,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
             const Divider(),
             if (hasWeather) ...[
               Text(
-                'Weather',
+                context.l10n.diveLog_detail_subsection_weather,
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
                   color: Theme.of(context).colorScheme.primary,
                 ),
@@ -2371,41 +2371,45 @@ class _DiveDetailPageState extends ConsumerState<DiveDetailPage> {
               if (dive.windSpeed != null)
                 _buildDetailRow(
                   context,
-                  'Wind Speed',
+                  context.l10n.diveLog_detail_label_windSpeed,
                   units.formatWindSpeed(dive.windSpeed),
                 ),
               if (dive.windDirection != null)
                 _buildDetailRow(
                   context,
-                  'Wind Direction',
+                  context.l10n.diveLog_detail_label_windDirection,
                   dive.windDirection!.displayName,
                 ),
               if (dive.cloudCover != null)
                 _buildDetailRow(
                   context,
-                  'Cloud Cover',
+                  context.l10n.diveLog_detail_label_cloudCover,
                   dive.cloudCover!.displayName,
                 ),
               if (dive.precipitation != null)
                 _buildDetailRow(
                   context,
-                  'Precipitation',
+                  context.l10n.diveLog_detail_label_precipitation,
                   dive.precipitation!.displayName,
                 ),
               if (dive.humidity != null)
                 _buildDetailRow(
                   context,
-                  'Humidity',
+                  context.l10n.diveLog_detail_label_humidity,
                   '${dive.humidity!.toStringAsFixed(0)}%',
                 ),
               if (dive.weatherDescription != null &&
                   dive.weatherDescription!.isNotEmpty)
-                _buildDetailRow(context, 'Weather', dive.weatherDescription!),
+                _buildDetailRow(
+                  context,
+                  context.l10n.diveLog_detail_label_weatherDescription,
+                  dive.weatherDescription!,
+                ),
               if (dive.weatherSource == WeatherSource.openMeteo)
                 Padding(
                   padding: const EdgeInsets.only(top: 4),
                   child: Text(
-                    'via Open-Meteo',
+                    context.l10n.diveLog_detail_weatherSourceOpenMeteo,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Theme.of(
                         context,
@@ -2421,7 +2425,7 @@ class _DiveDetailPageState extends ConsumerState<DiveDetailPage> {
             ],
             if (hasDiveConditions) ...[
               Text(
-                'Dive Conditions',
+                context.l10n.diveLog_detail_subsection_diveConditions,
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
                   color: Theme.of(context).colorScheme.primary,
                 ),

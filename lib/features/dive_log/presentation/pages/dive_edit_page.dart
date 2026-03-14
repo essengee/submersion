@@ -2170,7 +2170,7 @@ class _DiveEditPageState extends ConsumerState<DiveEditPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Environment',
+                  context.l10n.diveLog_edit_section_environment,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 _isFetchingWeather
@@ -2184,14 +2184,16 @@ class _DiveEditPageState extends ConsumerState<DiveEditPage> {
                             ? () => _fetchWeather(units)
                             : null,
                         icon: const Icon(Icons.cloud_download, size: 18),
-                        label: const Text('Fetch Weather'),
+                        label: Text(
+                          context.l10n.diveLog_edit_button_fetchWeather,
+                        ),
                       ),
               ],
             ),
             const SizedBox(height: 8),
             // -- Weather sub-header --
             Text(
-              'Weather',
+              context.l10n.diveLog_edit_subsection_weather,
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
                 color: Theme.of(context).colorScheme.primary,
               ),
@@ -2203,7 +2205,7 @@ class _DiveEditPageState extends ConsumerState<DiveEditPage> {
             const SizedBox(height: 12),
             // -- Dive Conditions sub-header --
             Text(
-              'Dive Conditions',
+              context.l10n.diveLog_edit_subsection_diveConditions,
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
                 color: Theme.of(context).colorScheme.primary,
               ),
@@ -2487,8 +2489,8 @@ class _DiveEditPageState extends ConsumerState<DiveEditPage> {
             Expanded(
               child: TextFormField(
                 controller: _humidityController,
-                decoration: const InputDecoration(
-                  labelText: 'Humidity',
+                decoration: InputDecoration(
+                  labelText: context.l10n.diveLog_edit_label_humidity,
                   suffixText: '%',
                 ),
                 keyboardType: const TextInputType.numberWithOptions(
@@ -2506,7 +2508,7 @@ class _DiveEditPageState extends ConsumerState<DiveEditPage> {
               child: TextFormField(
                 controller: _windSpeedController,
                 decoration: InputDecoration(
-                  labelText: 'Wind Speed',
+                  labelText: context.l10n.diveLog_edit_label_windSpeed,
                   suffixText: units.windSpeedSymbol,
                 ),
                 keyboardType: const TextInputType.numberWithOptions(
@@ -2518,7 +2520,9 @@ class _DiveEditPageState extends ConsumerState<DiveEditPage> {
             Expanded(
               child: DropdownButtonFormField<CurrentDirection>(
                 initialValue: _windDirection,
-                decoration: const InputDecoration(labelText: 'Wind Direction'),
+                decoration: InputDecoration(
+                  labelText: context.l10n.diveLog_edit_label_windDirection,
+                ),
                 isExpanded: true,
                 items: [
                   DropdownMenuItem<CurrentDirection>(
@@ -2559,7 +2563,9 @@ class _DiveEditPageState extends ConsumerState<DiveEditPage> {
             Expanded(
               child: DropdownButtonFormField<CloudCover>(
                 initialValue: _cloudCover,
-                decoration: const InputDecoration(labelText: 'Cloud Cover'),
+                decoration: InputDecoration(
+                  labelText: context.l10n.diveLog_edit_label_cloudCover,
+                ),
                 isExpanded: true,
                 items: [
                   DropdownMenuItem<CloudCover>(
@@ -2582,7 +2588,9 @@ class _DiveEditPageState extends ConsumerState<DiveEditPage> {
             Expanded(
               child: DropdownButtonFormField<Precipitation>(
                 initialValue: _precipitation,
-                decoration: const InputDecoration(labelText: 'Precipitation'),
+                decoration: InputDecoration(
+                  labelText: context.l10n.diveLog_edit_label_precipitation,
+                ),
                 isExpanded: true,
                 items: [
                   DropdownMenuItem<Precipitation>(
@@ -2607,9 +2615,8 @@ class _DiveEditPageState extends ConsumerState<DiveEditPage> {
         // Weather Description
         TextFormField(
           controller: _weatherDescriptionController,
-          decoration: const InputDecoration(
-            labelText: 'Weather Description',
-            hintText: 'e.g., Sunny with light breeze',
+          decoration: InputDecoration(
+            labelText: context.l10n.diveLog_edit_label_weatherDescription,
           ),
           maxLines: 2,
         ),
@@ -2634,19 +2641,16 @@ class _DiveEditPageState extends ConsumerState<DiveEditPage> {
       final confirmed = await showDialog<bool>(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: const Text('Overwrite Weather Data?'),
-          content: const Text(
-            'Some weather fields already have values. '
-            'Fetching will overwrite them with data from Open-Meteo.',
-          ),
+          title: Text(context.l10n.diveLog_edit_fetchWeatherConfirm),
+          content: Text(context.l10n.diveLog_edit_fetchWeatherConfirm),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(false),
-              child: const Text('Cancel'),
+              child: Text(context.l10n.common_action_cancel),
             ),
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(true),
-              child: const Text('Overwrite'),
+              child: Text(context.l10n.common_action_ok),
             ),
           ],
         ),
@@ -2678,10 +2682,7 @@ class _DiveEditPageState extends ConsumerState<DiveEditPage> {
       if (weather == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text(
-              'Unable to fetch weather data. '
-              'The date may be too recent or the service is unavailable.',
-            ),
+            content: Text(context.l10n.diveLog_edit_fetchWeatherUnavailable),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -2728,7 +2729,7 @@ class _DiveEditPageState extends ConsumerState<DiveEditPage> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Weather data fetched successfully.')),
+          SnackBar(content: Text(context.l10n.diveLog_edit_weatherFetched)),
         );
       }
     } catch (e) {
