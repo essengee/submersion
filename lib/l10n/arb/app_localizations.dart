@@ -25761,6 +25761,240 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No data source integrations are available on this platform.'**
   String get settings_dataSources_noSources;
+
+  /// No description provided for @diveLog_edit_section_environment.
+  ///
+  /// In en, this message translates to:
+  /// **'Environment'**
+  String get diveLog_edit_section_environment;
+
+  /// No description provided for @diveLog_edit_subsection_weather.
+  ///
+  /// In en, this message translates to:
+  /// **'Weather'**
+  String get diveLog_edit_subsection_weather;
+
+  /// No description provided for @diveLog_edit_subsection_diveConditions.
+  ///
+  /// In en, this message translates to:
+  /// **'Dive Conditions'**
+  String get diveLog_edit_subsection_diveConditions;
+
+  /// No description provided for @diveLog_edit_label_windSpeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Wind Speed'**
+  String get diveLog_edit_label_windSpeed;
+
+  /// No description provided for @diveLog_edit_label_windDirection.
+  ///
+  /// In en, this message translates to:
+  /// **'Wind Direction'**
+  String get diveLog_edit_label_windDirection;
+
+  /// No description provided for @diveLog_edit_label_cloudCover.
+  ///
+  /// In en, this message translates to:
+  /// **'Cloud Cover'**
+  String get diveLog_edit_label_cloudCover;
+
+  /// No description provided for @diveLog_edit_label_precipitation.
+  ///
+  /// In en, this message translates to:
+  /// **'Precipitation'**
+  String get diveLog_edit_label_precipitation;
+
+  /// No description provided for @diveLog_edit_label_humidity.
+  ///
+  /// In en, this message translates to:
+  /// **'Humidity'**
+  String get diveLog_edit_label_humidity;
+
+  /// No description provided for @diveLog_edit_label_weatherDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Weather Description'**
+  String get diveLog_edit_label_weatherDescription;
+
+  /// No description provided for @diveLog_edit_button_fetchWeather.
+  ///
+  /// In en, this message translates to:
+  /// **'Fetch Weather'**
+  String get diveLog_edit_button_fetchWeather;
+
+  /// No description provided for @diveLog_edit_fetchingWeather.
+  ///
+  /// In en, this message translates to:
+  /// **'Fetching weather...'**
+  String get diveLog_edit_fetchingWeather;
+
+  /// No description provided for @diveLog_edit_weatherFetched.
+  ///
+  /// In en, this message translates to:
+  /// **'Weather data loaded'**
+  String get diveLog_edit_weatherFetched;
+
+  /// No description provided for @diveLog_edit_fetchWeatherNoConnection.
+  ///
+  /// In en, this message translates to:
+  /// **'No internet connection'**
+  String get diveLog_edit_fetchWeatherNoConnection;
+
+  /// No description provided for @diveLog_edit_fetchWeatherUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Weather data unavailable for this date'**
+  String get diveLog_edit_fetchWeatherUnavailable;
+
+  /// No description provided for @diveLog_edit_fetchWeatherNotYetAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Weather data not yet available for this date'**
+  String get diveLog_edit_fetchWeatherNotYetAvailable;
+
+  /// No description provided for @diveLog_edit_fetchWeatherHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a date and dive site first'**
+  String get diveLog_edit_fetchWeatherHint;
+
+  /// No description provided for @diveLog_edit_fetchWeatherConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace existing weather data with fetched data?'**
+  String get diveLog_edit_fetchWeatherConfirm;
+
+  /// No description provided for @diveLog_detail_section_environment.
+  ///
+  /// In en, this message translates to:
+  /// **'Environment'**
+  String get diveLog_detail_section_environment;
+
+  /// No description provided for @diveLog_detail_subsection_weather.
+  ///
+  /// In en, this message translates to:
+  /// **'Weather'**
+  String get diveLog_detail_subsection_weather;
+
+  /// No description provided for @diveLog_detail_subsection_diveConditions.
+  ///
+  /// In en, this message translates to:
+  /// **'Dive Conditions'**
+  String get diveLog_detail_subsection_diveConditions;
+
+  /// No description provided for @diveLog_detail_label_windSpeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Wind Speed'**
+  String get diveLog_detail_label_windSpeed;
+
+  /// No description provided for @diveLog_detail_label_windDirection.
+  ///
+  /// In en, this message translates to:
+  /// **'Wind Direction'**
+  String get diveLog_detail_label_windDirection;
+
+  /// No description provided for @diveLog_detail_label_cloudCover.
+  ///
+  /// In en, this message translates to:
+  /// **'Cloud Cover'**
+  String get diveLog_detail_label_cloudCover;
+
+  /// No description provided for @diveLog_detail_label_precipitation.
+  ///
+  /// In en, this message translates to:
+  /// **'Precipitation'**
+  String get diveLog_detail_label_precipitation;
+
+  /// No description provided for @diveLog_detail_label_humidity.
+  ///
+  /// In en, this message translates to:
+  /// **'Humidity'**
+  String get diveLog_detail_label_humidity;
+
+  /// No description provided for @diveLog_detail_label_weatherDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get diveLog_detail_label_weatherDescription;
+
+  /// No description provided for @diveLog_detail_weatherSourceOpenMeteo.
+  ///
+  /// In en, this message translates to:
+  /// **'via Open-Meteo'**
+  String get diveLog_detail_weatherSourceOpenMeteo;
+
+  /// No description provided for @enum_cloudCover_clear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get enum_cloudCover_clear;
+
+  /// No description provided for @enum_cloudCover_partlyCloudy.
+  ///
+  /// In en, this message translates to:
+  /// **'Partly Cloudy'**
+  String get enum_cloudCover_partlyCloudy;
+
+  /// No description provided for @enum_cloudCover_mostlyCloudy.
+  ///
+  /// In en, this message translates to:
+  /// **'Mostly Cloudy'**
+  String get enum_cloudCover_mostlyCloudy;
+
+  /// No description provided for @enum_cloudCover_overcast.
+  ///
+  /// In en, this message translates to:
+  /// **'Overcast'**
+  String get enum_cloudCover_overcast;
+
+  /// No description provided for @enum_precipitation_none.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get enum_precipitation_none;
+
+  /// No description provided for @enum_precipitation_drizzle.
+  ///
+  /// In en, this message translates to:
+  /// **'Drizzle'**
+  String get enum_precipitation_drizzle;
+
+  /// No description provided for @enum_precipitation_lightRain.
+  ///
+  /// In en, this message translates to:
+  /// **'Light Rain'**
+  String get enum_precipitation_lightRain;
+
+  /// No description provided for @enum_precipitation_rain.
+  ///
+  /// In en, this message translates to:
+  /// **'Rain'**
+  String get enum_precipitation_rain;
+
+  /// No description provided for @enum_precipitation_heavyRain.
+  ///
+  /// In en, this message translates to:
+  /// **'Heavy Rain'**
+  String get enum_precipitation_heavyRain;
+
+  /// No description provided for @enum_precipitation_snow.
+  ///
+  /// In en, this message translates to:
+  /// **'Snow'**
+  String get enum_precipitation_snow;
+
+  /// No description provided for @enum_precipitation_sleet.
+  ///
+  /// In en, this message translates to:
+  /// **'Sleet'**
+  String get enum_precipitation_sleet;
+
+  /// No description provided for @enum_precipitation_hail.
+  ///
+  /// In en, this message translates to:
+  /// **'Hail'**
+  String get enum_precipitation_hail;
 }
 
 class _AppLocalizationsDelegate

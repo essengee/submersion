@@ -15288,4 +15288,124 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get settings_dataSources_noSources =>
       'No data source integrations are available on this platform.';
+
+  @override
+  String get diveLog_edit_section_environment => 'Environment';
+
+  @override
+  String get diveLog_edit_subsection_weather => 'Weather';
+
+  @override
+  String get diveLog_edit_subsection_diveConditions => 'Dive Conditions';
+
+  @override
+  String get diveLog_edit_label_windSpeed => 'Wind Speed';
+
+  @override
+  String get diveLog_edit_label_windDirection => 'Wind Direction';
+
+  @override
+  String get diveLog_edit_label_cloudCover => 'Cloud Cover';
+
+  @override
+  String get diveLog_edit_label_precipitation => 'Precipitation';
+
+  @override
+  String get diveLog_edit_label_humidity => 'Humidity';
+
+  @override
+  String get diveLog_edit_label_weatherDescription => 'Weather Description';
+
+  @override
+  String get diveLog_edit_button_fetchWeather => 'Fetch Weather';
+
+  @override
+  String get diveLog_edit_fetchingWeather => 'Fetching weather...';
+
+  @override
+  String get diveLog_edit_weatherFetched => 'Weather data loaded';
+
+  @override
+  String get diveLog_edit_fetchWeatherNoConnection => 'No internet connection';
+
+  @override
+  String get diveLog_edit_fetchWeatherUnavailable =>
+      'Weather data unavailable for this date';
+
+  @override
+  String get diveLog_edit_fetchWeatherNotYetAvailable =>
+      'Weather data not yet available for this date';
+
+  @override
+  String get diveLog_edit_fetchWeatherHint => 'Add a date and dive site first';
+
+  @override
+  String get diveLog_edit_fetchWeatherConfirm =>
+      'Replace existing weather data with fetched data?';
+
+  @override
+  String get diveLog_detail_section_environment => 'Environment';
+
+  @override
+  String get diveLog_detail_subsection_weather => 'Weather';
+
+  @override
+  String get diveLog_detail_subsection_diveConditions => 'Dive Conditions';
+
+  @override
+  String get diveLog_detail_label_windSpeed => 'Wind Speed';
+
+  @override
+  String get diveLog_detail_label_windDirection => 'Wind Direction';
+
+  @override
+  String get diveLog_detail_label_cloudCover => 'Cloud Cover';
+
+  @override
+  String get diveLog_detail_label_precipitation => 'Precipitation';
+
+  @override
+  String get diveLog_detail_label_humidity => 'Humidity';
+
+  @override
+  String get diveLog_detail_label_weatherDescription => 'Description';
+
+  @override
+  String get diveLog_detail_weatherSourceOpenMeteo => 'via Open-Meteo';
+
+  @override
+  String get enum_cloudCover_clear => 'Clear';
+
+  @override
+  String get enum_cloudCover_partlyCloudy => 'Partly Cloudy';
+
+  @override
+  String get enum_cloudCover_mostlyCloudy => 'Mostly Cloudy';
+
+  @override
+  String get enum_cloudCover_overcast => 'Overcast';
+
+  @override
+  String get enum_precipitation_none => 'None';
+
+  @override
+  String get enum_precipitation_drizzle => 'Drizzle';
+
+  @override
+  String get enum_precipitation_lightRain => 'Light Rain';
+
+  @override
+  String get enum_precipitation_rain => 'Rain';
+
+  @override
+  String get enum_precipitation_heavyRain => 'Heavy Rain';
+
+  @override
+  String get enum_precipitation_snow => 'Snow';
+
+  @override
+  String get enum_precipitation_sleet => 'Sleet';
+
+  @override
+  String get enum_precipitation_hail => 'Hail';
 }
