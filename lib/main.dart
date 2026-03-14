@@ -8,6 +8,7 @@ import 'package:submersion/app.dart';
 import 'package:submersion/core/domain/entities/storage_config.dart';
 import 'package:submersion/core/services/database_location_service.dart';
 import 'package:submersion/core/services/database_service.dart';
+import 'package:submersion/core/services/local_cache_database_service.dart';
 import 'package:submersion/core/services/security_scoped_bookmark_service.dart';
 import 'package:submersion/features/maps/data/services/tile_cache_service.dart';
 import 'package:submersion/features/marine_life/data/repositories/species_repository.dart';
@@ -79,6 +80,9 @@ Future<void> main() async {
 
   // Initialize database with location service
   await DatabaseService.instance.initialize(locationService: locationService);
+
+  // Initialize local-only cache database (device-specific, never synced)
+  await LocalCacheDatabaseService.instance.initialize();
 
   // Initialize notification service
   await NotificationService.instance.initialize();
