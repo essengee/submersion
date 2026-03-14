@@ -5,7 +5,7 @@ import 'package:submersion/features/weather/domain/entities/weather_data.dart';
 void main() {
   group('WeatherData', () {
     test('can be constructed with all fields', () {
-      final data = WeatherData(
+      const data = WeatherData(
         windSpeed: 5.5,
         windDirection: CurrentDirection.north,
         cloudCover: CloudCover.clear,

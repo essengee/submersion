@@ -3433,12 +3433,14 @@ class _DiveEditPageState extends ConsumerState<DiveEditPage> {
         // Auto-fetch weather for new dives with coordinates
         if (_selectedSite != null && _selectedSite!.hasCoordinates) {
           // Fire and forget -- don't await, don't block save
-          ref.read(weatherRepositoryProvider).fetchAndSaveWeather(
-            diveId: savedDiveId,
-            latitude: _selectedSite!.location!.latitude,
-            longitude: _selectedSite!.location!.longitude,
-            dateTime: dive.dateTime,
-          );
+          ref
+              .read(weatherRepositoryProvider)
+              .fetchAndSaveWeather(
+                diveId: savedDiveId,
+                latitude: _selectedSite!.location!.latitude,
+                longitude: _selectedSite!.location!.longitude,
+                dateTime: dive.dateTime,
+              );
         }
       }
 

@@ -33,7 +33,7 @@ void main() {
       surfacePressure: null,
     );
 
-    final testWeatherData = WeatherData(
+    const testWeatherData = WeatherData(
       windSpeed: 3.5,
       windDirection: CurrentDirection.northEast,
       cloudCover: CloudCover.partlyCloudy,

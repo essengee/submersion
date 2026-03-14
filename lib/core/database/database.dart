@@ -223,14 +223,15 @@ class Dives extends Table {
 
   // Weather conditions
   RealColumn get windSpeed => real().nullable()(); // m/s
-  TextColumn get windDirection => text().nullable()(); // enum: CurrentDirection.name
+  TextColumn get windDirection =>
+      text().nullable()(); // enum: CurrentDirection.name
   TextColumn get cloudCover => text().nullable()();
   TextColumn get precipitation => text().nullable()();
   RealColumn get humidity => real().nullable()(); // 0-100
   TextColumn get weatherDescription => text().nullable()();
-  TextColumn get weatherSource => text().nullable()(); // enum: WeatherSource.name
-  IntColumn get weatherFetchedAt =>
-      integer().nullable()(); // unix timestamp
+  TextColumn get weatherSource =>
+      text().nullable()(); // enum: WeatherSource.name
+  IntColumn get weatherFetchedAt => integer().nullable()(); // unix timestamp
 
   IntColumn get createdAt => integer()();
   IntColumn get updatedAt => integer()();
@@ -2204,9 +2205,7 @@ class AppDatabase extends _$AppDatabase {
           }
         }
         if (from < 48) {
-          await customStatement(
-            'ALTER TABLE dives ADD COLUMN wind_speed REAL',
-          );
+          await customStatement('ALTER TABLE dives ADD COLUMN wind_speed REAL');
           await customStatement(
             'ALTER TABLE dives ADD COLUMN wind_direction TEXT',
           );
@@ -2216,9 +2215,7 @@ class AppDatabase extends _$AppDatabase {
           await customStatement(
             'ALTER TABLE dives ADD COLUMN precipitation TEXT',
           );
-          await customStatement(
-            'ALTER TABLE dives ADD COLUMN humidity REAL',
-          );
+          await customStatement('ALTER TABLE dives ADD COLUMN humidity REAL');
           await customStatement(
             'ALTER TABLE dives ADD COLUMN weather_description TEXT',
           );
