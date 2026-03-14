@@ -2205,26 +2205,53 @@ class AppDatabase extends _$AppDatabase {
           }
         }
         if (from < 48) {
-          await customStatement('ALTER TABLE dives ADD COLUMN wind_speed REAL');
-          await customStatement(
-            'ALTER TABLE dives ADD COLUMN wind_direction TEXT',
-          );
-          await customStatement(
-            'ALTER TABLE dives ADD COLUMN cloud_cover TEXT',
-          );
-          await customStatement(
-            'ALTER TABLE dives ADD COLUMN precipitation TEXT',
-          );
-          await customStatement('ALTER TABLE dives ADD COLUMN humidity REAL');
-          await customStatement(
-            'ALTER TABLE dives ADD COLUMN weather_description TEXT',
-          );
-          await customStatement(
-            'ALTER TABLE dives ADD COLUMN weather_source TEXT',
-          );
-          await customStatement(
-            'ALTER TABLE dives ADD COLUMN weather_fetched_at INTEGER',
-          );
+          // Add weather columns to dives table.
+          // Guard with PRAGMA table_info to handle partial migrations
+          // (ALTER TABLE ADD COLUMN cannot be rolled back in SQLite).
+          final divesInfo = await customSelect(
+            'PRAGMA table_info(dives)',
+          ).get();
+          final divesCols = divesInfo
+              .map((r) => r.read<String>('name'))
+              .toSet();
+          if (!divesCols.contains('wind_speed')) {
+            await customStatement(
+              'ALTER TABLE dives ADD COLUMN wind_speed REAL',
+            );
+          }
+          if (!divesCols.contains('wind_direction')) {
+            await customStatement(
+              'ALTER TABLE dives ADD COLUMN wind_direction TEXT',
+            );
+          }
+          if (!divesCols.contains('cloud_cover')) {
+            await customStatement(
+              'ALTER TABLE dives ADD COLUMN cloud_cover TEXT',
+            );
+          }
+          if (!divesCols.contains('precipitation')) {
+            await customStatement(
+              'ALTER TABLE dives ADD COLUMN precipitation TEXT',
+            );
+          }
+          if (!divesCols.contains('humidity')) {
+            await customStatement('ALTER TABLE dives ADD COLUMN humidity REAL');
+          }
+          if (!divesCols.contains('weather_description')) {
+            await customStatement(
+              'ALTER TABLE dives ADD COLUMN weather_description TEXT',
+            );
+          }
+          if (!divesCols.contains('weather_source')) {
+            await customStatement(
+              'ALTER TABLE dives ADD COLUMN weather_source TEXT',
+            );
+          }
+          if (!divesCols.contains('weather_fetched_at')) {
+            await customStatement(
+              'ALTER TABLE dives ADD COLUMN weather_fetched_at INTEGER',
+            );
+          }
         }
       },
       beforeOpen: (details) async {

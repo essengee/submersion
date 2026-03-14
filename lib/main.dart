@@ -78,32 +78,73 @@ Future<void> main() async {
     }
   }
 
-  // Initialize database with location service
-  await DatabaseService.instance.initialize(locationService: locationService);
-
-  // Initialize local-only cache database (device-specific, never synced)
-  await LocalCacheDatabaseService.instance.initialize();
-
-  // Initialize notification service
-  await NotificationService.instance.initialize();
-
-  // Initialize background service for periodic notification refresh
-  await initializeBackgroundService();
-
-  // Initialize tile cache for offline maps (non-blocking - app works without it)
   try {
-    await TileCacheService.instance.initialize();
-    debugPrint('Tile cache initialized successfully');
-  } catch (e) {
-    debugPrint('Warning: Tile cache initialization failed: $e');
-    // App continues without offline map caching
+    // Initialize database with location service
+    await DatabaseService.instance.initialize(locationService: locationService);
+
+    // Initialize local-only cache database (device-specific, never synced)
+    await LocalCacheDatabaseService.instance.initialize();
+
+    // Initialize notification service
+    await NotificationService.instance.initialize();
+
+    // Initialize background service for periodic notification refresh
+    await initializeBackgroundService();
+
+    // Initialize tile cache for offline maps (non-blocking - app works without it)
+    try {
+      await TileCacheService.instance.initialize();
+      debugPrint('Tile cache initialized successfully');
+    } catch (e) {
+      debugPrint('Warning: Tile cache initialization failed: $e');
+      // App continues without offline map caching
+    }
+
+    // Seed built-in species from bundled JSON asset
+    final speciesRepository = SpeciesRepository();
+    await speciesRepository.seedBuiltInSpecies();
+
+    runApp(SubmersionRestart(prefs: prefs));
+  } catch (e, stack) {
+    debugPrint('FATAL: App initialization failed: $e');
+    debugPrint('$stack');
+    runApp(
+      MaterialApp(
+        home: Scaffold(
+          body: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                  const SizedBox(height: 24),
+                  const Text(
+                    'Submersion failed to start',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    '$e',
+                    style: const TextStyle(fontSize: 14, color: Colors.grey),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 24),
+                  const Text(
+                    'Try restarting the app. If this persists, '
+                    'reinstall or contact support.',
+                    style: TextStyle(fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
-
-  // Seed built-in species from bundled JSON asset
-  final speciesRepository = SpeciesRepository();
-  await speciesRepository.seedBuiltInSpecies();
-
-  runApp(SubmersionRestart(prefs: prefs));
 }
 
 /// Global key notifier. Changing the value forces ProviderScope to rebuild,
