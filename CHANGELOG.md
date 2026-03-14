@@ -3,6 +3,75 @@
 All notable changes to Submersion are documented in this file.
 
 
+## 1.3.0 (2026-03-14)
+
+### Features
+
+- migrate all display widgets to resolved asset providers
+- add unavailable photo placeholder widget and l10n key
+- add resolved asset providers for cross-device photo display
+- add AssetResolutionService with tiered matching and cache
+- initialize local cache database at app startup
+- add LocalAssetCacheRepository with CRUD and backoff logic
+- add LocalCacheDatabaseService singleton for local cache lifecycle
+- add local cache Drift database for cross-device asset resolution
+- weather documentation
+- add weather localization strings
+- add weather fields to universal import mapping
+- add weather fields to UDDF export
+- add weather fields to sync serializer
+- add weather columns to Excel export
+- add weather columns to CSV export
+- auto-fetch weather on new dive creation
+- replace Conditions with Environment section on dive detail page
+- replace Conditions with Environment section on dive edit page
+- add wind speed formatting to UnitFormatter
+- add weather Riverpod providers
+- add WeatherRepository for fetch + persist orchestration
+- add WeatherService HTTP client for Open-Meteo API
+- add WeatherMapper for Open-Meteo API response mapping
+- map weather fields in DiveRepository
+- add weather columns to dives table (migration v48)
+- create WeatherData value object
+- add weather fields to Dive entity
+- add CloudCover, Precipitation, WeatherSource enums
+- handle zero-dive incremental download with up-to-date message
+- add incremental download toggle and completion messages to download page
+- wire fingerprint logic into DownloadNotifier for incremental download
+- pass fingerprint to libdc_download_run
+- pass fingerprint to libdc_download_run
+- pass fingerprint through JNI to libdc_download_run
+- pass fingerprint to libdc_download_run for incremental download
+- add fingerprint parameter to DiveComputerService.startDownload
+- add fingerprint parameter to Pigeon startDownload API
+- add lastDiveFingerprint schema column and repository support
+- add lastDiveFingerprint field to DiveComputer entity
+- add selectNewestFingerprint utility for incremental download
+
+### Bug Fixes
+
+- verify cached asset IDs are still loadable before returning
+- update Submersion preset column count test to 21
+- wire up l10n keys for weather UI and fix _hasEnvironmentData
+- invalidate stale provider cache so incremental download uses stored fingerprint
+- replace hardcoded strings with l10n keys for incremental download UI
+
+### Tests
+
+- add escalating backoff coverage for local asset cache
+- add integration tests for fingerprint persistence in DownloadNotifier
+
+### Chores
+
+- bump version to 1.3.0+74
+- localization update
+- format code and fix lint warnings for weather feature
+- documentation update
+- formatting
+- translations
+- fix mock override and format generated code for incremental download
+
+
 ## 1.2.25 (2026-03-12)
 
 ### Features
