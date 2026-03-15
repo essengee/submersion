@@ -48,6 +48,8 @@ import 'package:submersion/features/media/presentation/widgets/photo_gps_suggest
 import 'package:submersion/features/media/presentation/widgets/quick_site_from_gps_dialog.dart';
 import 'package:submersion/l10n/l10n_extension.dart';
 
+const _createNewSiteSentinel = '__create_new__';
+
 class DiveEditPage extends ConsumerStatefulWidget {
   final String? diveId;
 
@@ -1025,26 +1027,40 @@ class _DiveEditPageState extends ConsumerState<DiveEditPage> {
     }
   }
 
-  void _showSitePicker() {
-    showModalBottomSheet(
+  Future<void> _showSitePicker() async {
+    final result = await showModalBottomSheet<String>(
       context: context,
       isScrollControlled: true,
-      builder: (context) => DraggableScrollableSheet(
+      builder: (sheetContext) => DraggableScrollableSheet(
         initialChildSize: 0.7,
         minChildSize: 0.5,
         maxChildSize: 0.95,
         expand: false,
-        builder: (context, scrollController) => _SitePickerSheet(
+        builder: (sheetContext, scrollController) => _SitePickerSheet(
           scrollController: scrollController,
           selectedSiteId: _selectedSite?.id,
           currentLocation: _currentLocation,
           onSiteSelected: (site) {
             setState(() => _selectedSite = site);
-            Navigator.of(context).pop();
+            Navigator.of(sheetContext).pop();
+          },
+          onCreateNewSite: () {
+            Navigator.of(sheetContext).pop(_createNewSiteSentinel);
           },
         ),
       ),
     );
+
+    if (result == _createNewSiteSentinel && mounted) {
+      final siteId = await context.push<String>('/sites/new');
+      if (siteId != null && mounted) {
+        final repo = ref.read(siteRepositoryProvider);
+        final site = await repo.getSiteById(siteId);
+        if (site != null && mounted) {
+          setState(() => _selectedSite = site);
+        }
+      }
+    }
   }
 
   Widget _buildTripSection() {
@@ -3606,12 +3622,14 @@ class _SitePickerSheet extends ConsumerWidget {
   final String? selectedSiteId;
   final LocationResult? currentLocation;
   final void Function(DiveSite) onSiteSelected;
+  final VoidCallback onCreateNewSite;
 
   const _SitePickerSheet({
     required this.scrollController,
     required this.selectedSiteId,
     this.currentLocation,
     required this.onSiteSelected,
+    required this.onCreateNewSite,
   });
 
   /// Calculate distance from current location to a site in km
@@ -3675,10 +3693,7 @@ class _SitePickerSheet extends ConsumerWidget {
                 ],
               ),
               TextButton.icon(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  context.push('/sites/new');
-                },
+                onPressed: onCreateNewSite,
                 icon: const Icon(Icons.add),
                 label: Text(context.l10n.diveLog_sitePicker_newDiveSite),
               ),
@@ -3706,10 +3721,7 @@ class _SitePickerSheet extends ConsumerWidget {
                       ),
                       const SizedBox(height: 8),
                       TextButton.icon(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                          context.push('/sites/new');
-                        },
+                        onPressed: onCreateNewSite,
                         icon: const Icon(Icons.add),
                         label: Text(
                           context.l10n.diveLog_sitePicker_addDiveSite,

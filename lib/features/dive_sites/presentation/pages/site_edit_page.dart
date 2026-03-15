@@ -1360,7 +1360,7 @@ class _SiteEditPageState extends ConsumerState<SiteEditPage> {
         if (widget.embedded) {
           widget.onSaved?.call(savedId);
         } else {
-          context.pop();
+          context.pop(savedId);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(

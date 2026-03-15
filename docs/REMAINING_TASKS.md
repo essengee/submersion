@@ -223,11 +223,13 @@ All v1.5 tasks complete.
 | Feature | Notes |
 |---------|-------|
 | HTML export | Web-viewable logbook |
+| Subsurface XML import | Common format |
 
 **Tasks:**
 
 - [ ] HTML export (static website with CSS, images, interactive map)
 - [ ] MySQL dump export (for migration to other systems)
+- [ ] Handle importing Subsurface XML natively
 
 ### 13.2 Interoperability
 
