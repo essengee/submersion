@@ -371,4 +371,66 @@ void main() {
       expect(weights[0]['notes'], 'belt');
     });
   });
+
+  group('sites', () {
+    test('parses site name, GPS, and geo taxonomy', () async {
+      final result = await parser.parse(
+        xmlBytes('''
+<divelog program='subsurface' version='3'>
+<divesites>
+<site uuid='abc123' name='Blue Hole' gps='18.465562 -66.084902'>
+  <geo cat='2' origin='2' value='Puerto Rico'/>
+  <geo cat='3' origin='0' value='Isabela'/>
+</site>
+</divesites>
+<dives>
+<dive number='1' divesiteid='abc123' date='2025-01-15' time='10:00:00' duration='30:00 min'>
+  <divecomputer model='Test'>
+  <depth max='20.0 m' mean='15.0 m' />
+  </divecomputer>
+</dive>
+</dives>
+</divelog>
+'''),
+      );
+      final sites = result.entitiesOf(ImportEntityType.sites);
+      expect(sites.length, 1);
+      expect(sites[0]['name'], 'Blue Hole');
+      expect(sites[0]['uddfId'], 'abc123');
+      expect(sites[0]['latitude'], closeTo(18.4656, 0.001));
+      expect(sites[0]['longitude'], closeTo(-66.0849, 0.001));
+      expect(sites[0]['country'], 'Puerto Rico');
+      expect(sites[0]['region'], 'Isabela');
+
+      final dive = result.entitiesOf(ImportEntityType.dives).first;
+      final siteRef = dive['site'] as Map<String, dynamic>;
+      expect(siteRef['uddfId'], 'abc123');
+    });
+
+    test('trims leading whitespace from UUIDs', () async {
+      final result = await parser.parse(
+        xmlBytes('''
+<divelog program='subsurface' version='3'>
+<divesites>
+<site uuid=' b95bba6' name='Escambron' gps='18.465562 -66.084902'>
+</site>
+</divesites>
+<dives>
+<dive number='1' divesiteid=' b95bba6' date='2025-01-15' time='10:00:00' duration='30:00 min'>
+  <divecomputer model='Test'>
+  <depth max='20.0 m' mean='15.0 m' />
+  </divecomputer>
+</dive>
+</dives>
+</divelog>
+'''),
+      );
+      final sites = result.entitiesOf(ImportEntityType.sites);
+      expect(sites[0]['uddfId'], 'b95bba6');
+
+      final dive = result.entitiesOf(ImportEntityType.dives).first;
+      final siteRef = dive['site'] as Map<String, dynamic>;
+      expect(siteRef['uddfId'], 'b95bba6');
+    });
+  });
 }

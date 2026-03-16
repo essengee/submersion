@@ -8,6 +8,7 @@ import 'package:submersion/features/dive_log/domain/entities/dive.dart';
 import 'package:submersion/features/universal_import/data/models/import_enums.dart';
 import 'package:submersion/features/universal_import/data/models/import_options.dart';
 import 'package:submersion/features/universal_import/data/models/import_payload.dart';
+import 'package:submersion/features/universal_import/data/models/import_warning.dart';
 import 'package:submersion/features/universal_import/data/parsers/import_parser.dart';
 
 /// Parser for Subsurface XML (.ssrf) dive log files.
@@ -23,47 +24,148 @@ class SubsurfaceXmlParser implements ImportParser {
     Uint8List fileBytes, {
     ImportOptions? options,
   }) async {
-    final content = utf8.decode(fileBytes, allowMalformed: true);
-    final document = XmlDocument.parse(content);
+    final warnings = <ImportWarning>[];
+    final entities = <ImportEntityType, List<Map<String, dynamic>>>{};
 
-    final root = document.rootElement;
-    if (root.name.local != 'divelog') {
-      return const ImportPayload(
-        entities: {},
-        warnings: [],
-        metadata: {'source': 'subsurface_xml'},
+    if (fileBytes.isEmpty) {
+      return ImportPayload(
+        entities: entities,
+        warnings: [
+          const ImportWarning(
+            severity: ImportWarningSeverity.error,
+            message: 'Empty file',
+          ),
+        ],
+        metadata: const {'source': 'subsurface_xml'},
       );
     }
 
-    final dives = <Map<String, dynamic>>[];
-
-    final divesElement = root.findElements('dives').firstOrNull;
-    if (divesElement != null) {
-      for (final diveElement in divesElement.findElements('dive')) {
-        try {
-          final dive = _parseDive(diveElement);
-          if (dive != null) {
-            dives.add(dive);
-          }
-        } catch (_) {
-          // Skip malformed dive entries
-        }
-      }
+    XmlDocument document;
+    try {
+      final content = utf8.decode(fileBytes, allowMalformed: true);
+      document = XmlDocument.parse(content);
+    } catch (e) {
+      return ImportPayload(
+        entities: entities,
+        warnings: [
+          ImportWarning(
+            severity: ImportWarningSeverity.error,
+            message: 'Failed to parse XML: $e',
+          ),
+        ],
+        metadata: const {'source': 'subsurface_xml'},
+      );
     }
 
-    final entities = <ImportEntityType, List<Map<String, dynamic>>>{};
-    if (dives.isNotEmpty) {
-      entities[ImportEntityType.dives] = dives;
+    final root = document.rootElement;
+    if (root.name.local != 'divelog') {
+      return ImportPayload(
+        entities: entities,
+        warnings: [
+          const ImportWarning(
+            severity: ImportWarningSeverity.error,
+            message: 'Root element is not divelog',
+          ),
+        ],
+        metadata: const {'source': 'subsurface_xml'},
+      );
+    }
+
+    // Parse sites and build lookup map
+    final siteMap = <String, Map<String, dynamic>>{};
+    final divesitesElement = root.findElements('divesites').firstOrNull;
+    if (divesitesElement != null) {
+      final sites = _parseSites(divesitesElement);
+      for (final site in sites) {
+        final id = site['uddfId'] as String?;
+        if (id != null) siteMap[id] = site;
+      }
+      if (sites.isNotEmpty) entities[ImportEntityType.sites] = sites;
+    }
+
+    // Parse dives (with trip support)
+    final divesElement = root.findElements('dives').firstOrNull;
+    if (divesElement != null) {
+      final dives = <Map<String, dynamic>>[];
+      final trips = <Map<String, dynamic>>[];
+      final allTags = <String, Map<String, dynamic>>{};
+
+      // Process trip-wrapped dives
+      for (final tripElement in divesElement.findElements('trip')) {
+        final tripData = _parseTrip(tripElement);
+        trips.add(tripData);
+        final tripId = tripData['uddfId'] as String;
+
+        final tripDives = <Map<String, dynamic>>[];
+        for (final diveElement in tripElement.findElements('dive')) {
+          try {
+            final diveData = _parseDive(diveElement, siteMap: siteMap);
+            if (diveData != null) {
+              diveData['tripRef'] = tripId;
+              _collectTags(diveElement, diveData, allTags);
+              dives.add(diveData);
+              tripDives.add(diveData);
+            }
+          } catch (e) {
+            warnings.add(
+              ImportWarning(
+                severity: ImportWarningSeverity.warning,
+                message: 'Skipped dive: $e',
+                entityType: ImportEntityType.dives,
+              ),
+            );
+          }
+        }
+
+        if (tripDives.isNotEmpty) {
+          final lastDiveInTrip = tripDives.last;
+          final lastDateTime = lastDiveInTrip['dateTime'] as DateTime?;
+          final lastDuration = lastDiveInTrip['runtime'] as Duration?;
+          if (lastDateTime != null && lastDuration != null) {
+            tripData['endDate'] = lastDateTime.add(lastDuration);
+          } else if (lastDateTime != null) {
+            tripData['endDate'] = lastDateTime;
+          }
+        }
+      }
+
+      // Process standalone dives (not inside a trip)
+      for (final diveElement in divesElement.findElements('dive')) {
+        try {
+          final diveData = _parseDive(diveElement, siteMap: siteMap);
+          if (diveData != null) {
+            _collectTags(diveElement, diveData, allTags);
+            dives.add(diveData);
+          }
+        } catch (e) {
+          warnings.add(
+            ImportWarning(
+              severity: ImportWarningSeverity.warning,
+              message: 'Skipped dive: $e',
+              entityType: ImportEntityType.dives,
+            ),
+          );
+        }
+      }
+
+      if (dives.isNotEmpty) entities[ImportEntityType.dives] = dives;
+      if (trips.isNotEmpty) entities[ImportEntityType.trips] = trips;
+      if (allTags.isNotEmpty) {
+        entities[ImportEntityType.tags] = allTags.values.toList();
+      }
     }
 
     return ImportPayload(
       entities: entities,
-      warnings: [],
-      metadata: {'source': 'subsurface_xml'},
+      warnings: warnings,
+      metadata: const {'source': 'subsurface_xml'},
     );
   }
 
-  Map<String, dynamic>? _parseDive(XmlElement dive) {
+  Map<String, dynamic>? _parseDive(
+    XmlElement dive, {
+    Map<String, Map<String, dynamic>> siteMap = const {},
+  }) {
     final dateStr = dive.getAttribute('date');
     final timeStr = dive.getAttribute('time');
     final durationStr = dive.getAttribute('duration');
@@ -181,6 +283,12 @@ class SubsurfaceXmlParser implements ImportParser {
     }
     if (notesParts.isNotEmpty) result['notes'] = notesParts.join('\n');
 
+    // Site linking via divesiteid attribute
+    final siteId = dive.getAttribute('divesiteid')?.trim();
+    if (siteId != null && siteId.isNotEmpty) {
+      result['site'] = {'uddfId': siteId};
+    }
+
     // Profile samples — parsed before cylinders for pressure fallback
     final profilePoints = divecomputer != null
         ? _parseProfile(divecomputer)
@@ -198,6 +306,81 @@ class SubsurfaceXmlParser implements ImportParser {
     if (weights.isNotEmpty) result['weights'] = weights;
 
     return result;
+  }
+
+  List<Map<String, dynamic>> _parseSites(XmlElement divesites) {
+    final sites = <Map<String, dynamic>>[];
+    for (final site in divesites.findElements('site')) {
+      final name = site.getAttribute('name');
+      if (name == null || name.isEmpty) continue;
+      final siteData = <String, dynamic>{'name': name};
+      final uuid = site.getAttribute('uuid')?.trim();
+      if (uuid != null) siteData['uddfId'] = uuid;
+      final gps = site.getAttribute('gps');
+      if (gps != null) {
+        final parts = gps.trim().split(RegExp(r'\s+'));
+        if (parts.length == 2) {
+          final lat = double.tryParse(parts[0].trim());
+          final lon = double.tryParse(parts[1].trim());
+          if (lat != null) siteData['latitude'] = lat;
+          if (lon != null) siteData['longitude'] = lon;
+        }
+      }
+      for (final geo in site.findElements('geo')) {
+        final cat = geo.getAttribute('cat');
+        final value = geo.getAttribute('value');
+        if (value == null) continue;
+        if (cat == '2') siteData['country'] = value;
+        if (cat == '3') siteData['region'] = value;
+      }
+      final notes = site.findElements('notes').firstOrNull?.innerText;
+      if (notes != null && notes.trim().isNotEmpty) {
+        siteData['notes'] = notes.trim();
+      }
+      sites.add(siteData);
+    }
+    return sites;
+  }
+
+  Map<String, dynamic> _parseTrip(XmlElement trip) {
+    final tripId =
+        'trip_${trip.getAttribute('date')}_${trip.getAttribute('time') ?? ''}';
+    final location = trip.getAttribute('location') ?? '';
+    final date = trip.getAttribute('date');
+    final time = trip.getAttribute('time');
+    DateTime? startDate;
+    if (date != null) {
+      startDate = time != null
+          ? DateTime.parse('${date}T$time')
+          : DateTime.parse(date);
+    }
+    final notes = trip.findElements('notes').firstOrNull?.innerText.trim();
+    return {
+      'uddfId': tripId,
+      'name': location.isNotEmpty ? location : 'Trip on ${date ?? 'unknown'}',
+      'location': location,
+      'startDate': startDate,
+      'endDate': startDate,
+      if (notes != null && notes.isNotEmpty) 'notes': notes,
+    };
+  }
+
+  void _collectTags(
+    XmlElement diveElement,
+    Map<String, dynamic> diveData,
+    Map<String, Map<String, dynamic>> allTags,
+  ) {
+    final tagsAttr = diveElement.getAttribute('tags');
+    if (tagsAttr == null || tagsAttr.isEmpty) return;
+    final tagNames = tagsAttr
+        .split(',')
+        .map((t) => t.trim())
+        .where((t) => t.isNotEmpty)
+        .toList();
+    diveData['tagRefs'] = tagNames;
+    for (final tagName in tagNames) {
+      allTags.putIfAbsent(tagName, () => {'name': tagName, 'uddfId': tagName});
+    }
   }
 
   /// Parses `<sample>` elements from a `<divecomputer>` into profile points.
