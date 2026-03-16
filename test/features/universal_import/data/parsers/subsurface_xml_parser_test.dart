@@ -81,7 +81,7 @@ void main() {
   });
 
   group('dive metadata', () {
-    test('parses buddies and divemasters as unmatched name lists', () async {
+    test('creates buddy entities and sets refs on dives', () async {
       final result = await parser.parse(
         xmlBytes('''
 <divelog program='subsurface' version='3'>
@@ -97,9 +97,16 @@ void main() {
 </divelog>
 '''),
       );
+      // Buddy entities created for review step
+      final buddies = result.entitiesOf(ImportEntityType.buddies);
+      expect(buddies.length, 3);
+      final buddyNames = buddies.map((b) => b['name']).toSet();
+      expect(buddyNames, containsAll(['John Doe', 'Alice', 'Jane Smith']));
+
+      // Dive has refs, not inline text
       final dive = result.entitiesOf(ImportEntityType.dives).first;
-      expect(dive['unmatchedBuddyNames'], ['John Doe', 'Alice']);
-      expect(dive['unmatchedDiveGuideNames'], ['Jane Smith']);
+      expect(dive['buddyRefs'], ['John Doe', 'Alice']);
+      expect(dive['diveGuideRefs'], ['Jane Smith']);
       expect(dive.containsKey('buddy'), isFalse);
       expect(dive.containsKey('diveMaster'), isFalse);
     });
@@ -581,10 +588,14 @@ void main() {
       // Verify a specific dive has expected data
       final dive1 = dives.firstWhere((d) => d['diveNumber'] == 1);
       expect(dive1['dateTime'], DateTime(2025, 9, 20, 7, 44, 37));
-      final buddyNames = dive1['unmatchedBuddyNames'] as List<String>;
-      expect(buddyNames, isNotEmpty);
-      final guideNames = dive1['unmatchedDiveGuideNames'] as List<String>;
-      expect(guideNames, isNotEmpty);
+      final buddyRefs = dive1['buddyRefs'] as List<String>;
+      expect(buddyRefs, isNotEmpty);
+      final guideRefs = dive1['diveGuideRefs'] as List<String>;
+      expect(guideRefs, isNotEmpty);
+
+      // Buddy entities should be in the payload for the review step
+      final buddies = result.entitiesOf(ImportEntityType.buddies);
+      expect(buddies.length, greaterThanOrEqualTo(2));
       expect(dive1['visibility'], Visibility.poor);
       expect(dive1['currentStrength'], CurrentStrength.strong);
       expect(dive1['waterType'], WaterType.salt);

@@ -1289,7 +1289,7 @@ class UddfEntityImporter {
     Map<String, String> buddyIdMapping,
     BuddyRepository repository,
   ) async {
-    // Link referenced buddies
+    // Link referenced buddies (from pre-imported buddy entities)
     final buddyRefsValue = diveData['buddyRefs'];
     final buddyRefs = buddyRefsValue is List
         ? buddyRefsValue.whereType<String>().toList()
@@ -1298,6 +1298,22 @@ class UddfEntityImporter {
       final newBuddyId = buddyIdMapping[buddyRef];
       if (newBuddyId != null) {
         await repository.addBuddyToDive(diveId, newBuddyId, BuddyRole.buddy);
+      }
+    }
+
+    // Link referenced dive guides (same buddy entities, different role)
+    final guideRefsValue = diveData['diveGuideRefs'];
+    final guideRefs = guideRefsValue is List
+        ? guideRefsValue.whereType<String>().toList()
+        : <String>[];
+    for (final guideRef in guideRefs) {
+      final newGuideId = buddyIdMapping[guideRef];
+      if (newGuideId != null) {
+        await repository.addBuddyToDive(
+          diveId,
+          newGuideId,
+          BuddyRole.diveGuide,
+        );
       }
     }
 

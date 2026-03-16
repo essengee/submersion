@@ -89,6 +89,7 @@ class SubsurfaceXmlParser implements ImportParser {
       final dives = <Map<String, dynamic>>[];
       final trips = <Map<String, dynamic>>[];
       final allTags = <String, Map<String, dynamic>>{};
+      final allBuddies = <String, Map<String, dynamic>>{};
 
       // Process trip-wrapped dives
       for (final tripElement in divesElement.findElements('trip')) {
@@ -103,6 +104,7 @@ class SubsurfaceXmlParser implements ImportParser {
             if (diveData != null) {
               diveData['tripRef'] = tripId;
               _collectTags(diveElement, diveData, allTags);
+              _collectBuddies(diveElement, diveData, allBuddies);
               dives.add(diveData);
               tripDives.add(diveData);
             }
@@ -135,6 +137,7 @@ class SubsurfaceXmlParser implements ImportParser {
           final diveData = _parseDive(diveElement, siteMap: siteMap);
           if (diveData != null) {
             _collectTags(diveElement, diveData, allTags);
+            _collectBuddies(diveElement, diveData, allBuddies);
             dives.add(diveData);
           }
         } catch (e) {
@@ -152,6 +155,9 @@ class SubsurfaceXmlParser implements ImportParser {
       if (trips.isNotEmpty) entities[ImportEntityType.trips] = trips;
       if (allTags.isNotEmpty) {
         entities[ImportEntityType.tags] = allTags.values.toList();
+      }
+      if (allBuddies.isNotEmpty) {
+        entities[ImportEntityType.buddies] = allBuddies.values.toList();
       }
     }
 
@@ -250,23 +256,8 @@ class SubsurfaceXmlParser implements ImportParser {
           : WaterType.fresh;
     }
 
-    // Buddy -> proper Buddy entities via unmatchedBuddyNames
-    final buddyEl = dive.findElements('buddy').firstOrNull;
-    if (buddyEl != null) {
-      final buddyNames = _splitNames(buddyEl.innerText);
-      if (buddyNames.isNotEmpty) {
-        result['unmatchedBuddyNames'] = buddyNames;
-      }
-    }
-
-    // Divemaster -> proper Buddy entities with diveGuide role
-    final divemasterEl = dive.findElements('divemaster').firstOrNull;
-    if (divemasterEl != null) {
-      final dmNames = _splitNames(divemasterEl.innerText);
-      if (dmNames.isNotEmpty) {
-        result['unmatchedDiveGuideNames'] = dmNames;
-      }
-    }
+    // Buddy and divemaster names are collected separately via _collectBuddies
+    // after _parseDive returns, so they appear in ImportEntityType.buddies
 
     // Composite notes: <notes> + "Suit: <suit>" + "SAC: <sac attr>"
     final notesParts = <String>[];
@@ -366,6 +357,34 @@ class SubsurfaceXmlParser implements ImportParser {
       'endDate': startDate,
       if (notes != null && notes.isNotEmpty) 'notes': notes,
     };
+  }
+
+  void _collectBuddies(
+    XmlElement diveElement,
+    Map<String, dynamic> diveData,
+    Map<String, Map<String, dynamic>> allBuddies,
+  ) {
+    final buddyEl = diveElement.findElements('buddy').firstOrNull;
+    if (buddyEl != null) {
+      final names = _splitNames(buddyEl.innerText);
+      if (names.isNotEmpty) {
+        diveData['buddyRefs'] = names;
+        for (final name in names) {
+          allBuddies.putIfAbsent(name, () => {'name': name, 'uddfId': name});
+        }
+      }
+    }
+
+    final dmEl = diveElement.findElements('divemaster').firstOrNull;
+    if (dmEl != null) {
+      final names = _splitNames(dmEl.innerText);
+      if (names.isNotEmpty) {
+        diveData['diveGuideRefs'] = names;
+        for (final name in names) {
+          allBuddies.putIfAbsent(name, () => {'name': name, 'uddfId': name});
+        }
+      }
+    }
   }
 
   void _collectTags(
