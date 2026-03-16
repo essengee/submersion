@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:xml/xml.dart';
 
 import 'package:submersion/core/constants/enums.dart';
+import 'package:submersion/features/dive_log/domain/entities/dive.dart';
 import 'package:submersion/features/universal_import/data/models/import_enums.dart';
 import 'package:submersion/features/universal_import/data/models/import_options.dart';
 import 'package:submersion/features/universal_import/data/models/import_payload.dart';
@@ -180,7 +181,122 @@ class SubsurfaceXmlParser implements ImportParser {
     }
     if (notesParts.isNotEmpty) result['notes'] = notesParts.join('\n');
 
+    // Profile samples — parsed before cylinders for pressure fallback
+    final profilePoints = divecomputer != null
+        ? _parseProfile(divecomputer)
+        : null;
+    if (profilePoints != null && profilePoints.isNotEmpty) {
+      result['profile'] = profilePoints;
+    }
+
+    // Cylinders / tanks
+    final tanks = _parseCylinders(dive, profilePoints);
+    if (tanks.isNotEmpty) result['tanks'] = tanks;
+
+    // Weights
+    final weights = _parseWeights(dive);
+    if (weights.isNotEmpty) result['weights'] = weights;
+
     return result;
+  }
+
+  /// Parses `<sample>` elements from a `<divecomputer>` into profile points.
+  List<Map<String, dynamic>> _parseProfile(XmlElement divecomputer) {
+    final points = <Map<String, dynamic>>[];
+    for (final sample in divecomputer.findElements('sample')) {
+      final timestamp = _parseDurationSeconds(sample.getAttribute('time'));
+      final depth = _parseDouble(sample.getAttribute('depth'));
+      if (timestamp == null || depth == null) continue;
+      final point = <String, dynamic>{'timestamp': timestamp, 'depth': depth};
+      final temp = _parseDouble(sample.getAttribute('temp'));
+      if (temp != null) point['temperature'] = temp;
+      final pressure = _parseDouble(sample.getAttribute('pressure0'));
+      if (pressure != null) point['pressure'] = pressure;
+      points.add(point);
+    }
+    return points;
+  }
+
+  /// Parses `<cylinder>` elements into tank maps with [GasMix] objects.
+  ///
+  /// Empty cylinders (no size and no description) are skipped. The first
+  /// cylinder uses profile sample pressures as a fallback when `start`/`end`
+  /// attributes are absent.
+  List<Map<String, dynamic>> _parseCylinders(
+    XmlElement dive,
+    List<Map<String, dynamic>>? profilePoints,
+  ) {
+    final tanks = <Map<String, dynamic>>[];
+    var index = 0;
+    for (final cyl in dive.findElements('cylinder')) {
+      final size = cyl.getAttribute('size');
+      final description = cyl.getAttribute('description');
+      // Skip empty cylinder elements
+      if ((size == null || size.isEmpty) &&
+          (description == null || description.isEmpty)) {
+        continue;
+      }
+
+      final o2Raw = _parseDouble(cyl.getAttribute('o2')?.replaceAll('%', ''));
+      final heRaw = _parseDouble(cyl.getAttribute('he')?.replaceAll('%', ''));
+      final gasMix = GasMix(o2: o2Raw ?? 21.0, he: heRaw ?? 0.0);
+
+      int? startPressure = _parseInt(cyl.getAttribute('start'));
+      int? endPressure = _parseInt(cyl.getAttribute('end'));
+
+      // First cylinder: fall back to first/last sample pressure0
+      if (index == 0 && profilePoints != null && profilePoints.isNotEmpty) {
+        if (startPressure == null) {
+          final firstPressure = profilePoints
+              .map((p) => p['pressure'] as double?)
+              .firstWhere((p) => p != null, orElse: () => null);
+          startPressure = firstPressure?.round();
+        }
+        if (endPressure == null) {
+          final lastPressure = profilePoints
+              .map((p) => p['pressure'] as double?)
+              .lastWhere((p) => p != null, orElse: () => null);
+          endPressure = lastPressure?.round();
+        }
+      }
+
+      final tank = <String, dynamic>{'gasMix': gasMix};
+      final volume = _parseDouble(size);
+      if (volume != null) tank['volume'] = volume;
+      final workingPressure = _parseInt(cyl.getAttribute('workpressure'));
+      if (workingPressure != null) tank['workingPressure'] = workingPressure;
+      if (startPressure != null) tank['startPressure'] = startPressure;
+      if (endPressure != null) tank['endPressure'] = endPressure;
+      if (description != null && description.isNotEmpty) {
+        tank['name'] = description;
+      }
+      tanks.add(tank);
+      index++;
+    }
+    return tanks;
+  }
+
+  /// Parses `<weightsystem>` elements into weight maps with [WeightType] values.
+  List<Map<String, dynamic>> _parseWeights(XmlElement dive) {
+    final weights = <Map<String, dynamic>>[];
+    for (final ws in dive.findElements('weightsystem')) {
+      final amount = _parseDouble(ws.getAttribute('weight'));
+      if (amount == null) continue;
+      final description = ws.getAttribute('description') ?? '';
+      final weightType = _mapWeightType(description);
+      weights.add({'amount': amount, 'type': weightType, 'notes': description});
+    }
+    return weights;
+  }
+
+  static WeightType _mapWeightType(String description) {
+    final lower = description.toLowerCase();
+    if (lower.contains('belt')) return WeightType.belt;
+    if (lower.contains('integrated')) return WeightType.integrated;
+    if (lower.contains('ankle')) return WeightType.ankleWeights;
+    if (lower.contains('trim')) return WeightType.trimWeights;
+    if (lower.contains('backplate')) return WeightType.backplate;
+    return WeightType.integrated;
   }
 
   static Visibility? _mapVisibility(int? value) => switch (value) {

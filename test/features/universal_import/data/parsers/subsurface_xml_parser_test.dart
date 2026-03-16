@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:submersion/core/constants/enums.dart';
+import 'package:submersion/features/dive_log/domain/entities/dive.dart';
 import 'package:submersion/features/universal_import/data/models/import_enums.dart';
 import 'package:submersion/features/universal_import/data/parsers/subsurface_xml_parser.dart';
 
@@ -178,6 +179,196 @@ void main() {
       );
       final dive = result.entitiesOf(ImportEntityType.dives).first;
       expect(dive['waterType'], WaterType.salt);
+    });
+  });
+
+  group('cylinders', () {
+    test('parses cylinder with gas mix as GasMix object', () async {
+      final result = await parser.parse(
+        xmlBytes('''
+<divelog program='subsurface' version='3'>
+<dives>
+<dive number='1' date='2025-01-15' time='10:00:00' duration='30:00 min'>
+  <cylinder size='11.094 l' workpressure='206.843 bar' description='AL80' o2='32.0%' start='200.0 bar' end='50.0 bar' />
+  <divecomputer model='Test'>
+  <depth max='20.0 m' mean='15.0 m' />
+  </divecomputer>
+</dive>
+</dives>
+</divelog>
+'''),
+      );
+      final dive = result.entitiesOf(ImportEntityType.dives).first;
+      final tanks = dive['tanks'] as List<Map<String, dynamic>>;
+      expect(tanks.length, 1);
+      expect(tanks[0]['volume'], closeTo(11.094, 0.001));
+      expect(tanks[0]['workingPressure'], 207);
+      expect(tanks[0]['startPressure'], 200);
+      expect(tanks[0]['endPressure'], 50);
+      expect(tanks[0]['gasMix'], isA<GasMix>());
+      expect((tanks[0]['gasMix'] as GasMix).o2, 32.0);
+      expect((tanks[0]['gasMix'] as GasMix).he, 0.0);
+      expect(tanks[0]['name'], 'AL80');
+    });
+
+    test('defaults to air (21% O2, 0% He) when no gas attrs', () async {
+      final result = await parser.parse(
+        xmlBytes('''
+<divelog program='subsurface' version='3'>
+<dives>
+<dive number='1' date='2025-01-15' time='10:00:00' duration='30:00 min'>
+  <cylinder size='11.094 l' workpressure='206.843 bar' description='AL80' />
+  <divecomputer model='Test'>
+  <depth max='20.0 m' mean='15.0 m' />
+  </divecomputer>
+</dive>
+</dives>
+</divelog>
+'''),
+      );
+      final tanks =
+          result.entitiesOf(ImportEntityType.dives).first['tanks']
+              as List<Map<String, dynamic>>;
+      expect(tanks.length, 1);
+      final gasMix = tanks[0]['gasMix'] as GasMix;
+      expect(gasMix.o2, 21.0);
+      expect(gasMix.he, 0.0);
+    });
+
+    test('skips empty cylinder elements', () async {
+      final result = await parser.parse(
+        xmlBytes('''
+<divelog program='subsurface' version='3'>
+<dives>
+<dive number='1' date='2025-01-15' time='10:00:00' duration='30:00 min'>
+  <cylinder size='11.094 l' workpressure='206.843 bar' description='AL80' />
+  <cylinder />
+  <cylinder />
+  <divecomputer model='Test'>
+  <depth max='20.0 m' mean='15.0 m' />
+  </divecomputer>
+</dive>
+</dives>
+</divelog>
+'''),
+      );
+      final tanks =
+          result.entitiesOf(ImportEntityType.dives).first['tanks']
+              as List<Map<String, dynamic>>;
+      expect(tanks.length, 1);
+    });
+
+    test('parses trimix cylinder', () async {
+      final result = await parser.parse(
+        xmlBytes('''
+<divelog program='subsurface' version='3'>
+<dives>
+<dive number='1' date='2025-01-15' time='10:00:00' duration='30:00 min'>
+  <cylinder size='12.0 l' workpressure='232.0 bar' description='D12' o2='18.0%' he='45.0%' />
+  <divecomputer model='Test'>
+  <depth max='20.0 m' mean='15.0 m' />
+  </divecomputer>
+</dive>
+</dives>
+</divelog>
+'''),
+      );
+      final tanks =
+          result.entitiesOf(ImportEntityType.dives).first['tanks']
+              as List<Map<String, dynamic>>;
+      final gasMix = tanks[0]['gasMix'] as GasMix;
+      expect(gasMix.o2, 18.0);
+      expect(gasMix.he, 45.0);
+      expect(gasMix.isTrimix, isTrue);
+    });
+
+    test(
+      'falls back to sample pressures when cylinder lacks start/end',
+      () async {
+        final result = await parser.parse(
+          xmlBytes('''
+<divelog program='subsurface' version='3'>
+<dives>
+<dive number='1' date='2025-01-15' time='10:00:00' duration='2:00 min'>
+  <cylinder size='11.094 l' description='AL80' />
+  <divecomputer model='Test'>
+  <depth max='20.0 m' mean='15.0 m' />
+  <sample time='0:00 min' depth='0.0 m' pressure0='200.5 bar' />
+  <sample time='1:00 min' depth='20.0 m' pressure0='150.0 bar' />
+  <sample time='2:00 min' depth='0.0 m' pressure0='100.3 bar' />
+  </divecomputer>
+</dive>
+</dives>
+</divelog>
+'''),
+        );
+        final tanks =
+            result.entitiesOf(ImportEntityType.dives).first['tanks']
+                as List<Map<String, dynamic>>;
+        expect(tanks[0]['startPressure'], 201);
+        expect(tanks[0]['endPressure'], 100);
+      },
+    );
+  });
+
+  group('profile samples', () {
+    test('parses sample time/depth/temp/pressure', () async {
+      final result = await parser.parse(
+        xmlBytes('''
+<divelog program='subsurface' version='3'>
+<dives>
+<dive number='1' date='2025-01-15' time='10:00:00' duration='2:00 min'>
+  <divecomputer model='Test'>
+  <depth max='20.0 m' mean='15.0 m' />
+  <sample time='0:00 min' depth='0.0 m' temp='21.0 C' pressure0='196.9 bar' />
+  <sample time='0:30 min' depth='10.5 m' />
+  <sample time='1:00 min' depth='20.0 m' pressure0='180.0 bar' />
+  <sample time='1:30 min' depth='10.0 m' />
+  <sample time='2:00 min' depth='0.0 m' pressure0='170.0 bar' />
+  </divecomputer>
+</dive>
+</dives>
+</divelog>
+'''),
+      );
+      final dive = result.entitiesOf(ImportEntityType.dives).first;
+      final profile = dive['profile'] as List<Map<String, dynamic>>;
+      expect(profile.length, 5);
+      expect(profile[0]['timestamp'], 0);
+      expect(profile[0]['depth'], 0.0);
+      expect(profile[0]['temperature'], 21.0);
+      expect(profile[0]['pressure'], 196.9);
+      expect(profile[1]['timestamp'], 30);
+      expect(profile[1]['depth'], 10.5);
+      expect(profile[1].containsKey('temperature'), isFalse);
+      expect(profile[1].containsKey('pressure'), isFalse);
+      expect(profile[4]['timestamp'], 120);
+      expect(profile[4]['depth'], 0.0);
+    });
+  });
+
+  group('weights', () {
+    test('parses weight amount and maps description to WeightType', () async {
+      final result = await parser.parse(
+        xmlBytes('''
+<divelog program='subsurface' version='3'>
+<dives>
+<dive number='1' date='2025-01-15' time='10:00:00' duration='30:00 min'>
+  <weightsystem weight='6.35 kg' description='belt' />
+  <divecomputer model='Test'>
+  <depth max='20.0 m' mean='15.0 m' />
+  </divecomputer>
+</dive>
+</dives>
+</divelog>
+'''),
+      );
+      final dive = result.entitiesOf(ImportEntityType.dives).first;
+      final weights = dive['weights'] as List<Map<String, dynamic>>;
+      expect(weights.length, 1);
+      expect(weights[0]['amount'], closeTo(6.35, 0.01));
+      expect(weights[0]['type'], WeightType.belt);
+      expect(weights[0]['notes'], 'belt');
     });
   });
 }
