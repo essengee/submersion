@@ -433,4 +433,73 @@ void main() {
       expect(siteRef['uddfId'], 'b95bba6');
     });
   });
+
+  group('trips', () {
+    test('parses trip wrapper and links child dives', () async {
+      final result = await parser.parse(
+        xmlBytes('''
+<divelog program='subsurface' version='3'>
+<dives>
+<trip date='2025-11-13' time='07:00:00' location='Puerto Rico'>
+  <notes>Caribbean trip</notes>
+  <dive number='1' date='2025-11-13' time='07:23:58' duration='60:00 min'>
+    <divecomputer model='Test'>
+    <depth max='8.0 m' mean='4.0 m' />
+    </divecomputer>
+  </dive>
+  <dive number='2' date='2025-11-13' time='10:14:49' duration='65:00 min'>
+    <divecomputer model='Test'>
+    <depth max='10.0 m' mean='5.0 m' />
+    </divecomputer>
+  </dive>
+</trip>
+</dives>
+</divelog>
+'''),
+      );
+      final trips = result.entitiesOf(ImportEntityType.trips);
+      expect(trips.length, 1);
+      expect(trips[0]['name'], 'Puerto Rico');
+      expect(trips[0]['location'], 'Puerto Rico');
+      expect(trips[0]['notes'], 'Caribbean trip');
+      expect(trips[0]['startDate'], DateTime(2025, 11, 13, 7, 0, 0));
+
+      final dives = result.entitiesOf(ImportEntityType.dives);
+      expect(dives.length, 2);
+      final tripId = trips[0]['uddfId'] as String;
+      expect(dives[0]['tripRef'], tripId);
+      expect(dives[1]['tripRef'], tripId);
+    });
+  });
+
+  group('tags', () {
+    test('extracts unique tags from comma-separated dive attrs', () async {
+      final result = await parser.parse(
+        xmlBytes('''
+<divelog program='subsurface' version='3'>
+<dives>
+<dive number='1' tags='shore, student' date='2025-01-15' time='10:00:00' duration='30:00 min'>
+  <divecomputer model='Test'>
+  <depth max='20.0 m' mean='15.0 m' />
+  </divecomputer>
+</dive>
+<dive number='2' tags='shore, boat' date='2025-01-16' time='10:00:00' duration='30:00 min'>
+  <divecomputer model='Test'>
+  <depth max='20.0 m' mean='15.0 m' />
+  </divecomputer>
+</dive>
+</dives>
+</divelog>
+'''),
+      );
+      final tags = result.entitiesOf(ImportEntityType.tags);
+      expect(tags.length, 3);
+      final tagNames = tags.map((t) => t['name']).toSet();
+      expect(tagNames, containsAll(['shore', 'student', 'boat']));
+
+      final dives = result.entitiesOf(ImportEntityType.dives);
+      final dive1TagRefs = dives[0]['tagRefs'] as List<String>;
+      expect(dive1TagRefs, containsAll(['shore', 'student']));
+    });
+  });
 }
