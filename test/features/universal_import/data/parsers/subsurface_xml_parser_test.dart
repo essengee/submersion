@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:submersion/core/constants/enums.dart';
 import 'package:submersion/features/dive_log/domain/entities/dive.dart';
 import 'package:submersion/features/universal_import/data/models/import_enums.dart';
+import 'package:submersion/features/universal_import/data/models/import_warning.dart';
 import 'package:submersion/features/universal_import/data/parsers/subsurface_xml_parser.dart';
 
 void main() {
@@ -500,6 +501,46 @@ void main() {
       final dives = result.entitiesOf(ImportEntityType.dives);
       final dive1TagRefs = dives[0]['tagRefs'] as List<String>;
       expect(dive1TagRefs, containsAll(['shore', 'student']));
+    });
+  });
+
+  group('edge cases', () {
+    test('returns error warning for empty input', () async {
+      final result = await parser.parse(Uint8List(0));
+      expect(result.isEmpty, isTrue);
+      expect(result.warnings, isNotEmpty);
+      expect(result.warnings.first.severity, ImportWarningSeverity.error);
+    });
+
+    test('returns error warning for malformed XML', () async {
+      final result = await parser.parse(xmlBytes('<not valid xml>>>'));
+      expect(result.isEmpty, isTrue);
+      expect(result.warnings, isNotEmpty);
+      expect(result.warnings.first.severity, ImportWarningSeverity.error);
+    });
+
+    test('returns error warning for non-divelog root', () async {
+      final result = await parser.parse(xmlBytes('<uddf></uddf>'));
+      expect(result.isEmpty, isTrue);
+      expect(result.warnings, isNotEmpty);
+      expect(result.warnings.first.message, contains('divelog'));
+    });
+
+    test('handles dive with no divecomputer element', () async {
+      final result = await parser.parse(
+        xmlBytes('''
+<divelog program='subsurface' version='3'>
+<dives>
+<dive number='1' date='2025-01-15' time='10:00:00' duration='30:00 min'>
+</dive>
+</dives>
+</divelog>
+'''),
+      );
+      final dives = result.entitiesOf(ImportEntityType.dives);
+      expect(dives.length, 1);
+      expect(dives[0]['dateTime'], isNotNull);
+      expect(dives[0].containsKey('maxDepth'), isFalse);
     });
   });
 }
