@@ -885,7 +885,7 @@ class UddfEntityImporter {
     if (selected.isEmpty) return const _DiveImportResult(0, 0);
     onProgress?.call('Importing dives', 0, selected.length);
     var count = 0;
-    var inlineBuddies = 0;
+    final inlineBuddyIds = <String>{};
 
     for (var i = 0; i < items.length; i++) {
       if (!selected.contains(i)) continue;
@@ -1112,13 +1112,14 @@ class UddfEntityImporter {
       }
 
       // Link buddies to dive
-      inlineBuddies += await _linkBuddiesToDive(
+      final linkedIds = await _linkBuddiesToDive(
         diveData,
         diveId,
         diverId,
         buddyIdMapping,
         repos.buddyRepository,
       );
+      inlineBuddyIds.addAll(linkedIds);
 
       // Link tags to dive
       await _linkTagsToDive(
@@ -1132,7 +1133,7 @@ class UddfEntityImporter {
       onProgress?.call('Importing dives', count, selected.length);
     }
 
-    return _DiveImportResult(count, inlineBuddies);
+    return _DiveImportResult(count, inlineBuddyIds.length);
   }
 
   // -- Dive helper methods --
@@ -1280,8 +1281,8 @@ class UddfEntityImporter {
     }
   }
 
-  /// Returns the count of inline buddies created (not from the buddy section).
-  Future<int> _linkBuddiesToDive(
+  /// Returns the IDs of inline buddies created (not from the buddy section).
+  Future<Set<String>> _linkBuddiesToDive(
     Map<String, dynamic> diveData,
     String diveId,
     String diverId,
@@ -1301,7 +1302,7 @@ class UddfEntityImporter {
     }
 
     // Handle inline buddy names not in the diver section
-    var inlineCount = 0;
+    final inlineIds = <String>{};
     final unmatchedNamesValue = diveData['unmatchedBuddyNames'];
     final unmatchedNames = unmatchedNamesValue is List
         ? unmatchedNamesValue.whereType<String>().toList()
@@ -1312,7 +1313,7 @@ class UddfEntityImporter {
         await repository.updateBuddy(buddy.copyWith(diverId: diverId));
       }
       await repository.addBuddyToDive(diveId, buddy.id, BuddyRole.buddy);
-      inlineCount++;
+      inlineIds.add(buddy.id);
     }
 
     // Handle inline dive guide / divemaster names
@@ -1326,10 +1327,10 @@ class UddfEntityImporter {
         await repository.updateBuddy(guide.copyWith(diverId: diverId));
       }
       await repository.addBuddyToDive(diveId, guide.id, BuddyRole.diveGuide);
-      inlineCount++;
+      inlineIds.add(guide.id);
     }
 
-    return inlineCount;
+    return inlineIds;
   }
 
   Future<void> _linkTagsToDive(
