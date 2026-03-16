@@ -3,6 +3,42 @@
 All notable changes to Submersion are documented in this file.
 
 
+## 1.3.2 (2026-03-15)
+
+### Features
+
+- wire SubsurfaceXmlParser and add integration test with real export
+- add trip and tag parsing with deduplication
+- add site parsing with GPS, geo taxonomy, and UUID whitespace trimming
+- add cylinder/tank, weight, and profile sample parsing
+- add dive metadata parsing (buddy, notes, visibility, current, salinity)
+- scaffold SubsurfaceXmlParser with value helpers and minimal dive parsing
+
+### Bug Fixes
+
+- show imported buddies in review step and fix profile temperature
+- import buddies as proper entities and fill sparse profile data
+- import Subsurface buddies and divemasters as proper Buddy entities
+- import Subsurface buddies and divemasters as proper Buddy entities
+- interpolate sparse pressure data in Subsurface XML profile samples
+- auto-select newly created dive site when returning to dive edit page
+
+### Documentation
+
+- add Subsurface XML import implementation plan
+- fix spec review issues in Subsurface XML import design
+- add Subsurface XML import design spec
+
+### Tests
+
+- add edge case and error handling tests
+
+### Chores
+
+- bump version to 1.3.2+76
+- update README.md
+
+
 ## 1.3.1 (2026-03-14)
 
 ### Bug Fixes
