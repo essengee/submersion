@@ -4,19 +4,118 @@ import 'package:submersion/features/dive_computer/data/services/parsed_dive_mapp
 
 void main() {
   group('parsedDiveToDownloaded', () {
+    pigeon.ParsedDive makeParsedDive({
+      String fingerprint = 'abc123',
+      int year = 2024,
+      int month = 6,
+      int day = 15,
+      int hour = 8,
+      int minute = 42,
+      int second = 0,
+      int? timezoneOffset,
+      double maxDepthMeters = 20.0,
+      double avgDepthMeters = 12.0,
+      int durationSeconds = 3600,
+      double? minTemperatureCelsius,
+      double? maxTemperatureCelsius,
+      List<pigeon.ProfileSample>? samples,
+      List<pigeon.TankInfo>? tanks,
+      List<pigeon.GasMix>? gasMixes,
+      List<pigeon.DiveEvent>? events,
+      String? decoAlgorithm,
+      int? gfLow,
+      int? gfHigh,
+      int? decoConservatism,
+    }) {
+      return pigeon.ParsedDive(
+        fingerprint: fingerprint,
+        dateTimeYear: year,
+        dateTimeMonth: month,
+        dateTimeDay: day,
+        dateTimeHour: hour,
+        dateTimeMinute: minute,
+        dateTimeSecond: second,
+        dateTimeTimezoneOffset: timezoneOffset,
+        maxDepthMeters: maxDepthMeters,
+        avgDepthMeters: avgDepthMeters,
+        durationSeconds: durationSeconds,
+        minTemperatureCelsius: minTemperatureCelsius,
+        maxTemperatureCelsius: maxTemperatureCelsius,
+        samples: samples ?? [],
+        tanks: tanks ?? [],
+        gasMixes: gasMixes ?? [],
+        events: events ?? [],
+        decoAlgorithm: decoAlgorithm,
+        gfLow: gfLow,
+        gfHigh: gfHigh,
+        decoConservatism: decoConservatism,
+      );
+    }
+
+    // --- DateTime construction ---
+
+    test('constructs wall-clock-as-UTC DateTime from components', () {
+      final parsed = makeParsedDive(
+        year: 2024,
+        month: 6,
+        day: 15,
+        hour: 8,
+        minute: 42,
+        second: 30,
+      );
+      final result = parsedDiveToDownloaded(parsed);
+
+      expect(result.startTime.isUtc, isTrue);
+      expect(result.startTime.year, 2024);
+      expect(result.startTime.month, 6);
+      expect(result.startTime.day, 15);
+      expect(result.startTime.hour, 8);
+      expect(result.startTime.minute, 42);
+      expect(result.startTime.second, 30);
+    });
+
+    test('ignores timezone offset (components treated as wall-clock)', () {
+      final parsed = makeParsedDive(
+        year: 2024,
+        month: 6,
+        day: 15,
+        hour: 14,
+        minute: 42,
+        second: 0,
+        timezoneOffset: 3600, // UTC+1
+      );
+      final result = parsedDiveToDownloaded(parsed);
+
+      // Components are used as-is regardless of timezone
+      expect(result.startTime.isUtc, isTrue);
+      expect(result.startTime.hour, 14);
+      expect(result.startTime.minute, 42);
+    });
+
+    test('handles null timezone offset', () {
+      final parsed = makeParsedDive(timezoneOffset: null);
+      final result = parsedDiveToDownloaded(parsed);
+
+      expect(result.startTime.isUtc, isTrue);
+      expect(result.startTime.hour, 8);
+    });
+
+    // --- Basic field mapping ---
+
     test('converts basic ParsedDive to DownloadedDive', () {
-      final parsed = pigeon.ParsedDive(
+      final parsed = makeParsedDive(
         fingerprint: 'abc123',
-        dateTimeEpoch: 1700000000,
+        year: 2023,
+        month: 11,
+        day: 14,
+        hour: 22,
+        minute: 13,
+        second: 20,
         maxDepthMeters: 30.0,
         avgDepthMeters: 15.5,
         durationSeconds: 3600,
         minTemperatureCelsius: 18.0,
         maxTemperatureCelsius: 22.0,
-        samples: [],
-        tanks: [],
-        gasMixes: [],
-        events: [],
       );
 
       final downloaded = parsedDiveToDownloaded(parsed);
@@ -27,19 +126,14 @@ void main() {
       expect(downloaded.durationSeconds, 3600);
       expect(downloaded.minTemperature, 18.0);
       expect(downloaded.maxTemperature, 22.0);
-      expect(
-        downloaded.startTime,
-        DateTime.fromMillisecondsSinceEpoch(1700000000 * 1000),
-      );
+      expect(downloaded.startTime, DateTime.utc(2023, 11, 14, 22, 13, 20));
     });
 
+    // --- Profile samples ---
+
     test('maps profile samples correctly', () {
-      final parsed = pigeon.ParsedDive(
+      final parsed = makeParsedDive(
         fingerprint: 'def456',
-        dateTimeEpoch: 1700000000,
-        maxDepthMeters: 25.0,
-        avgDepthMeters: 12.0,
-        durationSeconds: 2400,
         samples: [
           pigeon.ProfileSample(timeSeconds: 0, depthMeters: 0.0),
           pigeon.ProfileSample(
@@ -56,9 +150,6 @@ void main() {
             heartRate: 85,
           ),
         ],
-        tanks: [],
-        gasMixes: [],
-        events: [],
       );
 
       final downloaded = parsedDiveToDownloaded(parsed);
@@ -78,14 +169,14 @@ void main() {
       expect(downloaded.profile[2].heartRate, 85);
     });
 
+    // --- Tanks and gas mixes ---
+
     test('maps tanks with gas mixes correctly', () {
-      final parsed = pigeon.ParsedDive(
+      final parsed = makeParsedDive(
         fingerprint: 'ghi789',
-        dateTimeEpoch: 1700000000,
         maxDepthMeters: 40.0,
         avgDepthMeters: 20.0,
         durationSeconds: 3000,
-        samples: [],
         tanks: [
           pigeon.TankInfo(
             index: 0,
@@ -105,7 +196,6 @@ void main() {
           pigeon.GasMix(index: 0, o2Percent: 32.0, hePercent: 0.0),
           pigeon.GasMix(index: 1, o2Percent: 50.0, hePercent: 0.0),
         ],
-        events: [],
       );
 
       final downloaded = parsedDiveToDownloaded(parsed);
@@ -126,16 +216,9 @@ void main() {
     });
 
     test('falls back to air when gas mix not found', () {
-      final parsed = pigeon.ParsedDive(
+      final parsed = makeParsedDive(
         fingerprint: 'fallback',
-        dateTimeEpoch: 1700000000,
-        maxDepthMeters: 20.0,
-        avgDepthMeters: 10.0,
-        durationSeconds: 1800,
-        samples: [],
         tanks: [pigeon.TankInfo(index: 0, gasMixIndex: 99)],
-        gasMixes: [],
-        events: [],
       );
 
       final downloaded = parsedDiveToDownloaded(parsed);
@@ -147,16 +230,13 @@ void main() {
     });
 
     test('handles trimix gas', () {
-      final parsed = pigeon.ParsedDive(
+      final parsed = makeParsedDive(
         fingerprint: 'trimix',
-        dateTimeEpoch: 1700000000,
         maxDepthMeters: 60.0,
         avgDepthMeters: 35.0,
         durationSeconds: 4800,
-        samples: [],
         tanks: [pigeon.TankInfo(index: 0, gasMixIndex: 0)],
         gasMixes: [pigeon.GasMix(index: 0, o2Percent: 18.0, hePercent: 45.0)],
-        events: [],
       );
 
       final downloaded = parsedDiveToDownloaded(parsed);
@@ -167,18 +247,10 @@ void main() {
       expect(downloaded.tanks[0].gasName, 'TMX 18/45');
     });
 
+    // --- Optional fields ---
+
     test('handles null optional fields', () {
-      final parsed = pigeon.ParsedDive(
-        fingerprint: 'minimal',
-        dateTimeEpoch: 1700000000,
-        maxDepthMeters: 10.0,
-        avgDepthMeters: 5.0,
-        durationSeconds: 600,
-        samples: [],
-        tanks: [],
-        gasMixes: [],
-        events: [],
-      );
+      final parsed = makeParsedDive(fingerprint: 'minimal');
 
       final downloaded = parsedDiveToDownloaded(parsed);
 
@@ -189,9 +261,8 @@ void main() {
     });
 
     test('maps all new sample fields when populated', () {
-      final parsed = pigeon.ParsedDive(
+      final parsed = makeParsedDive(
         fingerprint: 'all-fields',
-        dateTimeEpoch: 1700000000,
         maxDepthMeters: 40.0,
         avgDepthMeters: 25.0,
         durationSeconds: 3600,
@@ -213,9 +284,6 @@ void main() {
             tts: 420,
           ),
         ],
-        tanks: [],
-        gasMixes: [],
-        events: [],
       );
 
       final downloaded = parsedDiveToDownloaded(parsed);
@@ -238,16 +306,9 @@ void main() {
     });
 
     test('maps null/missing new sample fields correctly', () {
-      final parsed = pigeon.ParsedDive(
+      final parsed = makeParsedDive(
         fingerprint: 'null-fields',
-        dateTimeEpoch: 1700000000,
-        maxDepthMeters: 20.0,
-        avgDepthMeters: 10.0,
-        durationSeconds: 1800,
         samples: [pigeon.ProfileSample(timeSeconds: 60, depthMeters: 15.0)],
-        tanks: [],
-        gasMixes: [],
-        events: [],
       );
 
       final downloaded = parsedDiveToDownloaded(parsed);
@@ -265,13 +326,11 @@ void main() {
       expect(sample.ceiling, isNull);
     });
 
+    // --- NDL / ceiling derivation ---
+
     test('derives NDL from decoTime when decoType is 0 (NDL mode)', () {
-      final parsed = pigeon.ParsedDive(
+      final parsed = makeParsedDive(
         fingerprint: 'ndl-derive',
-        dateTimeEpoch: 1700000000,
-        maxDepthMeters: 20.0,
-        avgDepthMeters: 15.0,
-        durationSeconds: 1800,
         samples: [
           pigeon.ProfileSample(
             timeSeconds: 60,
@@ -280,9 +339,6 @@ void main() {
             decoTime: 720,
           ),
         ],
-        tanks: [],
-        gasMixes: [],
-        events: [],
       );
 
       final downloaded = parsedDiveToDownloaded(parsed);
@@ -293,9 +349,8 @@ void main() {
     });
 
     test('derives ceiling from decoDepth when decoType is deco mode', () {
-      final parsed = pigeon.ParsedDive(
+      final parsed = makeParsedDive(
         fingerprint: 'ceiling-derive',
-        dateTimeEpoch: 1700000000,
         maxDepthMeters: 45.0,
         avgDepthMeters: 30.0,
         durationSeconds: 3600,
@@ -308,9 +363,6 @@ void main() {
             decoDepth: 6.0,
           ),
         ],
-        tanks: [],
-        gasMixes: [],
-        events: [],
       );
 
       final downloaded = parsedDiveToDownloaded(parsed);
@@ -321,9 +373,8 @@ void main() {
     });
 
     test('derives ceiling from decoDepth when decoType is safety stop (1)', () {
-      final parsed = pigeon.ParsedDive(
+      final parsed = makeParsedDive(
         fingerprint: 'ceiling-safety',
-        dateTimeEpoch: 1700000000,
         maxDepthMeters: 30.0,
         avgDepthMeters: 20.0,
         durationSeconds: 2400,
@@ -336,9 +387,6 @@ void main() {
             decoDepth: 5.0,
           ),
         ],
-        tanks: [],
-        gasMixes: [],
-        events: [],
       );
 
       final downloaded = parsedDiveToDownloaded(parsed);
@@ -349,9 +397,8 @@ void main() {
     });
 
     test('derives ceiling from decoDepth when decoType is deep stop (3)', () {
-      final parsed = pigeon.ParsedDive(
+      final parsed = makeParsedDive(
         fingerprint: 'ceiling-deep',
-        dateTimeEpoch: 1700000000,
         maxDepthMeters: 50.0,
         avgDepthMeters: 35.0,
         durationSeconds: 3600,
@@ -364,9 +411,6 @@ void main() {
             decoDepth: 18.0,
           ),
         ],
-        tanks: [],
-        gasMixes: [],
-        events: [],
       );
 
       final downloaded = parsedDiveToDownloaded(parsed);
@@ -377,12 +421,8 @@ void main() {
     });
 
     test('does not derive ceiling for NDL mode (decoType 0)', () {
-      final parsed = pigeon.ParsedDive(
+      final parsed = makeParsedDive(
         fingerprint: 'no-ceiling-ndl',
-        dateTimeEpoch: 1700000000,
-        maxDepthMeters: 20.0,
-        avgDepthMeters: 10.0,
-        durationSeconds: 1800,
         samples: [
           pigeon.ProfileSample(
             timeSeconds: 60,
@@ -392,9 +432,6 @@ void main() {
             decoDepth: 0.0,
           ),
         ],
-        tanks: [],
-        gasMixes: [],
-        events: [],
       );
 
       final downloaded = parsedDiveToDownloaded(parsed);
@@ -404,10 +441,11 @@ void main() {
       expect(sample.ceiling, isNull);
     });
 
+    // --- Deco model fields ---
+
     test('maps deco model fields correctly', () {
-      final parsed = pigeon.ParsedDive(
+      final parsed = makeParsedDive(
         fingerprint: 'deco-model',
-        dateTimeEpoch: 1700000000,
         maxDepthMeters: 50.0,
         avgDepthMeters: 30.0,
         durationSeconds: 3600,
@@ -415,10 +453,6 @@ void main() {
         gfLow: 30,
         gfHigh: 70,
         decoConservatism: 2,
-        samples: [],
-        tanks: [],
-        gasMixes: [],
-        events: [],
       );
 
       final downloaded = parsedDiveToDownloaded(parsed);
@@ -430,17 +464,7 @@ void main() {
     });
 
     test('maps null deco model fields correctly', () {
-      final parsed = pigeon.ParsedDive(
-        fingerprint: 'no-deco-model',
-        dateTimeEpoch: 1700000000,
-        maxDepthMeters: 20.0,
-        avgDepthMeters: 10.0,
-        durationSeconds: 1800,
-        samples: [],
-        tanks: [],
-        gasMixes: [],
-        events: [],
-      );
+      final parsed = makeParsedDive(fingerprint: 'no-deco-model');
 
       final downloaded = parsedDiveToDownloaded(parsed);
 
@@ -450,16 +474,14 @@ void main() {
       expect(downloaded.decoConservatism, isNull);
     });
 
+    // --- Events ---
+
     test('maps events with flags and value from data map', () {
-      final parsed = pigeon.ParsedDive(
+      final parsed = makeParsedDive(
         fingerprint: 'events-test',
-        dateTimeEpoch: 1700000000,
         maxDepthMeters: 30.0,
         avgDepthMeters: 20.0,
         durationSeconds: 2400,
-        samples: [],
-        tanks: [],
-        gasMixes: [],
         events: [
           pigeon.DiveEvent(
             timeSeconds: 120,
@@ -490,15 +512,11 @@ void main() {
     });
 
     test('maps events with null data map', () {
-      final parsed = pigeon.ParsedDive(
+      final parsed = makeParsedDive(
         fingerprint: 'events-null-data',
-        dateTimeEpoch: 1700000000,
         maxDepthMeters: 30.0,
         avgDepthMeters: 20.0,
         durationSeconds: 2400,
-        samples: [],
-        tanks: [],
-        gasMixes: [],
         events: [pigeon.DiveEvent(timeSeconds: 300, type: 'heading')],
       );
 
@@ -512,17 +530,7 @@ void main() {
     });
 
     test('maps empty events list to empty DownloadedEvent list', () {
-      final parsed = pigeon.ParsedDive(
-        fingerprint: 'no-events',
-        dateTimeEpoch: 1700000000,
-        maxDepthMeters: 20.0,
-        avgDepthMeters: 10.0,
-        durationSeconds: 1800,
-        samples: [],
-        tanks: [],
-        gasMixes: [],
-        events: [],
-      );
+      final parsed = makeParsedDive(fingerprint: 'no-events');
 
       final downloaded = parsedDiveToDownloaded(parsed);
 

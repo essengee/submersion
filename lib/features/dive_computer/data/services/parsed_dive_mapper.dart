@@ -4,7 +4,14 @@ import 'package:submersion/features/dive_computer/domain/entities/downloaded_div
 /// Convert a Pigeon ParsedDive to the app's DownloadedDive format.
 DownloadedDive parsedDiveToDownloaded(pigeon.ParsedDive parsed) {
   return DownloadedDive(
-    startTime: DateTime.fromMillisecondsSinceEpoch(parsed.dateTimeEpoch * 1000),
+    startTime: DateTime.utc(
+      parsed.dateTimeYear,
+      parsed.dateTimeMonth,
+      parsed.dateTimeDay,
+      parsed.dateTimeHour,
+      parsed.dateTimeMinute,
+      parsed.dateTimeSecond,
+    ),
     durationSeconds: parsed.durationSeconds,
     maxDepth: parsed.maxDepthMeters,
     avgDepth: parsed.avgDepthMeters,
