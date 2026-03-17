@@ -652,7 +652,11 @@ Future<double> _computeResidualOtu(Ref ref, String diveId) async {
     if (currentDive == null) return 0.0;
 
     final diveDate = currentDive.entryTime ?? currentDive.dateTime;
-    final startOfDay = DateTime.utc(diveDate.year, diveDate.month, diveDate.day);
+    final startOfDay = DateTime.utc(
+      diveDate.year,
+      diveDate.month,
+      diveDate.day,
+    );
     final endOfDay = startOfDay.add(const Duration(days: 1));
 
     // Get all dives on the same day

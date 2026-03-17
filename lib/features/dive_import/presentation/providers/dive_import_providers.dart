@@ -264,12 +264,20 @@ class DiveImportNotifier extends StateNotifier<DiveImportState> {
           .map((d) => d.endTime)
           .reduce((a, b) => a.isAfter(b) ? a : b);
       final rangeStart = DateTime.utc(
-        earliest.year, earliest.month, earliest.day,
-        earliest.hour, earliest.minute, earliest.second,
+        earliest.year,
+        earliest.month,
+        earliest.day,
+        earliest.hour,
+        earliest.minute,
+        earliest.second,
       ).subtract(const Duration(hours: 1));
       final rangeEnd = DateTime.utc(
-        latest.year, latest.month, latest.day,
-        latest.hour, latest.minute, latest.second,
+        latest.year,
+        latest.month,
+        latest.day,
+        latest.hour,
+        latest.minute,
+        latest.second,
       ).add(const Duration(hours: 1));
 
       final existingDives = await repository.getDivesInRange(
@@ -349,8 +357,12 @@ class DiveImportNotifier extends StateNotifier<DiveImportState> {
 
         // Get the next dive number for proper ordering
         final diveDateTime = DateTime.utc(
-          iDive.startTime.year, iDive.startTime.month, iDive.startTime.day,
-          iDive.startTime.hour, iDive.startTime.minute, iDive.startTime.second,
+          iDive.startTime.year,
+          iDive.startTime.month,
+          iDive.startTime.day,
+          iDive.startTime.hour,
+          iDive.startTime.minute,
+          iDive.startTime.second,
         );
         final diveNumber = await repository.getDiveNumberForDate(
           diveDateTime,
