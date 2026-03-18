@@ -38,6 +38,7 @@ All v1.5 tasks complete.
 **Tasks:**
 
 - [ ] Side-by-side profile comparison view
+- [ ] Default tank type for new and imported dives
 
 ---
 

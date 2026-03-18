@@ -209,6 +209,11 @@ class DatabaseService {
     final sourceFile = File(sourcePath);
 
     if (await sourceFile.exists()) {
+      // Ensure the destination directory exists
+      final destDir = Directory(p.dirname(destinationPath));
+      if (!await destDir.exists()) {
+        await destDir.create(recursive: true);
+      }
       await sourceFile.copy(destinationPath);
     }
   }
