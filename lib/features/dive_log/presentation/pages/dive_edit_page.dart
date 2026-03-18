@@ -1890,6 +1890,7 @@ class _DiveEditPageState extends ConsumerState<DiveEditPage> {
           volume: _defaultPreset?.volumeLiters ?? settings.defaultTankVolume,
           workingPressure: _defaultPreset?.workingPressureBar,
           startPressure: settings.defaultStartPressure,
+          endPressure: 50,
           gasMix: const GasMix(),
           role: _tanks.isEmpty ? TankRole.backGas : TankRole.stage,
           material: _defaultPreset?.material,
