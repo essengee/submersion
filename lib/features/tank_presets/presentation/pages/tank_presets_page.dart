@@ -46,6 +46,23 @@ class TankPresetsPage extends ConsumerWidget {
 
           return ListView(
             children: [
+              _buildSectionHeader(
+                context,
+                context.l10n.tankPresets_defaultSettings,
+              ),
+              SwitchListTile(
+                title: Text(context.l10n.tankPresets_applyToImports),
+                subtitle: Text(
+                  context.l10n.tankPresets_applyToImports_subtitle,
+                ),
+                value: settings.applyDefaultTankToImports,
+                onChanged: (value) {
+                  ref
+                      .read(settingsProvider.notifier)
+                      .setApplyDefaultTankToImports(value);
+                },
+              ),
+              const Divider(),
               if (customPresets.isNotEmpty) ...[
                 _buildSectionHeader(
                   context,
@@ -58,6 +75,7 @@ class TankPresetsPage extends ConsumerWidget {
                     preset,
                     units,
                     canEdit: true,
+                    isDefault: settings.defaultTankPreset == preset.name,
                   ),
                 ),
                 const Divider(),
@@ -73,6 +91,7 @@ class TankPresetsPage extends ConsumerWidget {
                   preset,
                   units,
                   canEdit: false,
+                  isDefault: settings.defaultTankPreset == preset.name,
                 ),
               ),
             ],
@@ -100,6 +119,7 @@ class TankPresetsPage extends ConsumerWidget {
     TankPresetEntity preset,
     UnitFormatter units, {
     required bool canEdit,
+    required bool isDefault,
   }) {
     final volumeStr = units.formatTankVolume(
       preset.volumeLiters,
@@ -122,24 +142,37 @@ class TankPresetsPage extends ConsumerWidget {
       subtitle: Text(
         '$volumeStr • $pressureStr • ${preset.material.displayName}',
       ),
-      trailing: canEdit
-          ? Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.edit_outlined),
-                  onPressed: () =>
-                      context.push('/tank-presets/${preset.id}/edit'),
-                  tooltip: context.l10n.tankPresets_editPreset,
-                ),
-                IconButton(
-                  icon: const Icon(Icons.delete_outline),
-                  onPressed: () => _confirmDelete(context, ref, preset),
-                  tooltip: context.l10n.tankPresets_deletePreset,
-                ),
-              ],
-            )
-          : null,
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconButton(
+            icon: Icon(
+              isDefault ? Icons.star : Icons.star_outline,
+              color: isDefault ? Theme.of(context).colorScheme.primary : null,
+            ),
+            onPressed: isDefault
+                ? null
+                : () => ref
+                      .read(settingsProvider.notifier)
+                      .setDefaultTankPreset(preset.name),
+            tooltip: isDefault
+                ? context.l10n.tankPresets_currentDefault
+                : context.l10n.tankPresets_setAsDefault,
+          ),
+          if (canEdit) ...[
+            IconButton(
+              icon: const Icon(Icons.edit_outlined),
+              onPressed: () => context.push('/tank-presets/${preset.id}/edit'),
+              tooltip: context.l10n.tankPresets_editPreset,
+            ),
+            IconButton(
+              icon: const Icon(Icons.delete_outline),
+              onPressed: () => _confirmDelete(context, ref, preset),
+              tooltip: context.l10n.tankPresets_deletePreset,
+            ),
+          ],
+        ],
+      ),
     );
   }
 
@@ -148,12 +181,19 @@ class TankPresetsPage extends ConsumerWidget {
     WidgetRef ref,
     TankPresetEntity preset,
   ) async {
+    final settings = ref.read(settingsProvider);
+    final isDefault = settings.defaultTankPreset == preset.name;
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(context.l10n.tankPresets_deleteTitle),
         content: Text(
-          context.l10n.tankPresets_deleteMessage(preset.displayName),
+          isDefault
+              ? context.l10n.tankPresets_deleteDefaultMessage(
+                  preset.displayName,
+                )
+              : context.l10n.tankPresets_deleteMessage(preset.displayName),
         ),
         actions: [
           TextButton(
@@ -175,6 +215,9 @@ class TankPresetsPage extends ConsumerWidget {
       try {
         final notifier = ref.read(tankPresetListNotifierProvider.notifier);
         await notifier.deletePreset(preset.id);
+        if (isDefault) {
+          ref.read(settingsProvider.notifier).setDefaultTankPreset('al80');
+        }
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
