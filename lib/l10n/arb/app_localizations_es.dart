@@ -14947,7 +14947,18 @@ class AppLocalizationsEs extends AppLocalizations {
   String get tankPresets_builtInPresets => 'Presets incluidos';
 
   @override
+  String get tankPresets_currentDefault => 'Current default';
+
+  @override
   String get tankPresets_customPresets => 'Presets personalizados';
+
+  @override
+  String get tankPresets_defaultSettings => 'Default Tank';
+
+  @override
+  String tankPresets_deleteDefaultMessage(String name) {
+    return 'Are you sure you want to delete \"$name\"? This is your current default tank preset and will be reset to AL80.';
+  }
 
   @override
   String tankPresets_deleteMessage(Object name) {
@@ -15068,10 +15079,20 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String get tankPresets_applyToImports => 'Apply default tank to imports';
+
+  @override
+  String get tankPresets_applyToImports_subtitle =>
+      'Fill in missing tank data on imported dives using the default preset';
+
+  @override
   String get tankPresets_new_title => 'Nuevo preset de tanque';
 
   @override
   String get tankPresets_noPresets => 'No hay presets de tanque disponibles';
+
+  @override
+  String get tankPresets_setAsDefault => 'Set as default';
 
   @override
   String get tankPresets_title => 'Presets de tanque';

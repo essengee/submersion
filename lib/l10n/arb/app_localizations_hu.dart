@@ -14896,7 +14896,18 @@ class AppLocalizationsHu extends AppLocalizations {
   String get tankPresets_builtInPresets => 'Beepitett sablonok';
 
   @override
+  String get tankPresets_currentDefault => 'Current default';
+
+  @override
   String get tankPresets_customPresets => 'Egyedi sablonok';
+
+  @override
+  String get tankPresets_defaultSettings => 'Default Tank';
+
+  @override
+  String tankPresets_deleteDefaultMessage(String name) {
+    return 'Are you sure you want to delete \"$name\"? This is your current default tank preset and will be reset to AL80.';
+  }
 
   @override
   String tankPresets_deleteMessage(Object name) {
@@ -15016,10 +15027,20 @@ class AppLocalizationsHu extends AppLocalizations {
   }
 
   @override
+  String get tankPresets_applyToImports => 'Apply default tank to imports';
+
+  @override
+  String get tankPresets_applyToImports_subtitle =>
+      'Fill in missing tank data on imported dives using the default preset';
+
+  @override
   String get tankPresets_new_title => 'Uj palacksablon';
 
   @override
   String get tankPresets_noPresets => 'Nincsenek elerheto palacksablonok';
+
+  @override
+  String get tankPresets_setAsDefault => 'Set as default';
 
   @override
   String get tankPresets_title => 'Palacksablonok';

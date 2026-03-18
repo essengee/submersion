@@ -9118,7 +9118,17 @@
   "maps_regionSelector_selectRegionButton": "Select Region",
   "tankPresets_addPreset": "Add tank preset",
   "tankPresets_builtInPresets": "Built-in Presets",
+  "tankPresets_currentDefault": "Current default",
   "tankPresets_customPresets": "Custom Presets",
+  "tankPresets_defaultSettings": "Default Tank",
+  "tankPresets_deleteDefaultMessage": "Are you sure you want to delete \"{name}\"? This is your current default tank preset and will be reset to AL80.",
+  "@tankPresets_deleteDefaultMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "tankPresets_deleteMessage": "Are you sure you want to delete \"{name}\"?",
   "@tankPresets_deleteMessage": {
     "placeholders": {
@@ -9227,8 +9237,11 @@
       }
     }
   },
+  "tankPresets_applyToImports": "Apply default tank to imports",
+  "tankPresets_applyToImports_subtitle": "Fill in missing tank data on imported dives using the default preset",
   "tankPresets_new_title": "New Tank Preset",
   "tankPresets_noPresets": "No tank presets available",
+  "tankPresets_setAsDefault": "Set as default",
   "tankPresets_title": "Tank Presets",
   "tools_deco_description": "Calculate no-decompression limits, required deco stops, and CNS/OTU exposure for multi-level dive profiles.",
   "tools_deco_subtitle": "Plan dives with decompression stops",

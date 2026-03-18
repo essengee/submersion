@@ -25270,11 +25270,29 @@ abstract class AppLocalizations {
   /// **'Built-in Presets'**
   String get tankPresets_builtInPresets;
 
+  /// No description provided for @tankPresets_currentDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Current default'**
+  String get tankPresets_currentDefault;
+
   /// No description provided for @tankPresets_customPresets.
   ///
   /// In en, this message translates to:
   /// **'Custom Presets'**
   String get tankPresets_customPresets;
+
+  /// No description provided for @tankPresets_defaultSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Default Tank'**
+  String get tankPresets_defaultSettings;
+
+  /// No description provided for @tankPresets_deleteDefaultMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete \"{name}\"? This is your current default tank preset and will be reset to AL80.'**
+  String tankPresets_deleteDefaultMessage(String name);
 
   /// No description provided for @tankPresets_deleteMessage.
   ///
@@ -25462,6 +25480,18 @@ abstract class AppLocalizations {
   /// **'Error deleting preset: {error}'**
   String tankPresets_errorDeleting(Object error);
 
+  /// No description provided for @tankPresets_applyToImports.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply default tank to imports'**
+  String get tankPresets_applyToImports;
+
+  /// No description provided for @tankPresets_applyToImports_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Fill in missing tank data on imported dives using the default preset'**
+  String get tankPresets_applyToImports_subtitle;
+
   /// No description provided for @tankPresets_new_title.
   ///
   /// In en, this message translates to:
@@ -25473,6 +25503,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No tank presets available'**
   String get tankPresets_noPresets;
+
+  /// No description provided for @tankPresets_setAsDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Set as default'**
+  String get tankPresets_setAsDefault;
 
   /// No description provided for @tankPresets_title.
   ///
