@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:submersion/core/constants/tank_presets.dart';
-import 'package:submersion/features/tank_presets/domain/entities/tank_preset_entity.dart';
 import 'package:submersion/features/tank_presets/domain/services/default_tank_preset_resolver.dart';
 
 void main() {

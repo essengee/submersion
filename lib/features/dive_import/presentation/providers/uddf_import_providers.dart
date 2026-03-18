@@ -17,7 +17,10 @@ import 'package:submersion/features/dive_types/presentation/providers/dive_type_
 import 'package:submersion/features/divers/presentation/providers/diver_providers.dart';
 import 'package:submersion/features/equipment/presentation/providers/equipment_providers.dart';
 import 'package:submersion/features/equipment/presentation/providers/equipment_set_providers.dart';
+import 'package:submersion/features/settings/presentation/providers/settings_providers.dart';
 import 'package:submersion/features/tags/presentation/providers/tag_providers.dart';
+import 'package:submersion/features/tank_presets/domain/services/default_tank_preset_resolver.dart';
+import 'package:submersion/features/tank_presets/presentation/providers/tank_preset_providers.dart';
 import 'package:submersion/features/trips/presentation/providers/trip_providers.dart';
 
 // ============================================================================
@@ -456,7 +459,18 @@ class UddfImportNotifier extends StateNotifier<UddfImportState> {
         courseRepository: _ref.read(courseRepositoryProvider),
       );
 
-      const importer = UddfEntityImporter();
+      final settings = _ref.read(settingsProvider);
+      final resolver = DefaultTankPresetResolver(
+        repository: _ref.read(tankPresetRepositoryProvider),
+      );
+      final defaultTankPreset = await resolver.resolve(
+        settings.defaultTankPreset,
+      );
+      final importer = UddfEntityImporter(
+        defaultTankPreset: defaultTankPreset,
+        defaultStartPressure: settings.defaultStartPressure,
+        applyDefaultTankToImports: settings.applyDefaultTankToImports,
+      );
       final result = await importer.import(
         data: data,
         selections: state.toSelections(),

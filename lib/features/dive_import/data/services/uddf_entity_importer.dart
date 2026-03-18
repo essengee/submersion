@@ -26,6 +26,8 @@ import 'package:submersion/features/tags/data/repositories/tag_repository.dart';
 import 'package:submersion/features/tags/domain/entities/tag.dart';
 import 'package:submersion/features/trips/data/repositories/trip_repository.dart';
 import 'package:submersion/features/trips/domain/entities/trip.dart';
+import 'package:submersion/features/tank_presets/domain/entities/tank_preset_entity.dart';
+import 'package:submersion/features/universal_import/data/services/import_tank_defaults.dart';
 import 'package:uuid/uuid.dart';
 
 /// Bundles all repositories needed for UDDF import.
@@ -178,7 +180,17 @@ typedef ImportProgressCallback =
 class UddfEntityImporter {
   static const _uuid = Uuid();
 
-  const UddfEntityImporter();
+  final TankPresetEntity? _defaultTankPreset;
+  final int _defaultStartPressure;
+  final bool _applyDefaultTankToImports;
+
+  UddfEntityImporter({
+    TankPresetEntity? defaultTankPreset,
+    int defaultStartPressure = 200,
+    bool applyDefaultTankToImports = false,
+  }) : _defaultTankPreset = defaultTankPreset,
+       _defaultStartPressure = defaultStartPressure,
+       _applyDefaultTankToImports = applyDefaultTankToImports;
 
   /// Import selected entities from [data] using [repositories].
   ///
@@ -1141,7 +1153,14 @@ class UddfEntityImporter {
   List<DiveTank> _buildTanks(Map<String, dynamic> diveData) {
     final tanksData = diveData['tanks'] as List<Map<String, dynamic>>?;
     if (tanksData != null && tanksData.isNotEmpty) {
-      return tanksData.map((t) {
+      final processedTanks = _applyDefaultTankToImports
+          ? applyTankDefaultsToList(
+              tanksData,
+              defaultPreset: _defaultTankPreset,
+              defaultStartPressure: _defaultStartPressure,
+            )
+          : tanksData;
+      return processedTanks.map((t) {
         TankMaterial? material;
         final materialValue = t['material'];
         if (materialValue is TankMaterial) {

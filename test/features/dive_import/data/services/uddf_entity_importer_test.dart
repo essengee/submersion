@@ -44,7 +44,7 @@ import 'package:submersion/features/trips/domain/entities/trip.dart';
 import 'uddf_entity_importer_test.mocks.dart';
 
 void main() {
-  const importer = UddfEntityImporter();
+  final importer = UddfEntityImporter();
   const diverId = 'diver-123';
   final now = DateTime(2024, 1, 15);
 
