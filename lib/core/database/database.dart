@@ -603,6 +603,10 @@ class DiverSettings extends Table {
       real().withDefault(const Constant(12.0))();
   IntColumn get defaultStartPressure =>
       integer().withDefault(const Constant(200))();
+  TextColumn get defaultTankPreset =>
+      text().nullable().withDefault(const Constant('al80'))();
+  BoolColumn get applyDefaultTankToImports =>
+      boolean().withDefault(const Constant(false))();
   // Decompression settings
   IntColumn get gfLow => integer().withDefault(const Constant(30))();
   IntColumn get gfHigh => integer().withDefault(const Constant(70))();
@@ -1180,7 +1184,7 @@ class AppDatabase extends _$AppDatabase {
 
   /// The current schema version as a static constant so that pre-open checks
   /// (e.g. version-mismatch guard) can reference it without an instance.
-  static const int currentSchemaVersion = 49;
+  static const int currentSchemaVersion = 50;
 
   @override
   int get schemaVersion => currentSchemaVersion;
@@ -2308,6 +2312,24 @@ class AppDatabase extends _$AppDatabase {
                 import_version = 1
             WHERE import_version IS NULL
           ''');
+        }
+        if (from < 50) {
+          final settingsInfo = await customSelect(
+            'PRAGMA table_info(diver_settings)',
+          ).get();
+          final settingsCols = settingsInfo
+              .map((r) => r.read<String>('name'))
+              .toSet();
+          if (!settingsCols.contains('default_tank_preset')) {
+            await customStatement(
+              "ALTER TABLE diver_settings ADD COLUMN default_tank_preset TEXT DEFAULT 'al80'",
+            );
+          }
+          if (!settingsCols.contains('apply_default_tank_to_imports')) {
+            await customStatement(
+              'ALTER TABLE diver_settings ADD COLUMN apply_default_tank_to_imports INTEGER NOT NULL DEFAULT 0',
+            );
+          }
         }
       },
       beforeOpen: (details) async {
