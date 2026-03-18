@@ -3697,7 +3697,18 @@
   "tags_title_manageTags": "Címkék kezelése",
   "tankPresets_addPreset": "Palacksablon hozzaadasa",
   "tankPresets_builtInPresets": "Beepitett sablonok",
+  "tankPresets_currentDefault": "Jelenlegi alapértelmezett",
   "tankPresets_customPresets": "Egyedi sablonok",
+  "tankPresets_defaultSettings": "Alapértelmezett palack",
+  "tankPresets_defaultSettings_description": "A csillaggal jelölt sablon lesz az alapértelmezett palack új merülések naplózásakor.",
+  "tankPresets_deleteDefaultMessage": "Biztosan törölni szeretnéd a(z) \"{name}\" sablont? Ez a jelenlegi alapértelmezett palacksablon, és visszaáll AL80-ra.",
+  "@tankPresets_deleteDefaultMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "tankPresets_deleteMessage": "Biztosan torolni szeretne a(z) \"{name}\" sablont?",
   "tankPresets_deletePreset": "Sablon torlese",
   "tankPresets_deleteTitle": "Palacksablon torlese?",
@@ -3729,8 +3740,11 @@
   "tankPresets_edit_workingPressureBar": "- Üzemi nyomas: {pressure} bar",
   "tankPresets_error": "Hiba: {error}",
   "tankPresets_errorDeleting": "Hiba a sablon torlesekor: {error}",
+  "tankPresets_applyToImports": "Importált merülésekre is alkalmaz",
+  "tankPresets_applyToImports_subtitle": "Hiányzó palackadatok kitöltése importált merüléseknél az alapértelmezett sablon alapján",
   "tankPresets_new_title": "Uj palacksablon",
   "tankPresets_noPresets": "Nincsenek elerheto palacksablonok",
+  "tankPresets_setAsDefault": "Beállítás alapértelmezettként",
   "tankPresets_title": "Palacksablonok",
   "tank_al30Stage_description": "Aluminium 30 cu ft stage palack",
   "tank_al30Stage_displayName": "AL30 Stage",

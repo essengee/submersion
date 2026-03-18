@@ -3697,7 +3697,18 @@
   "tags_title_manageTags": "Tags beheren",
   "tankPresets_addPreset": "Flesinstelling toevoegen",
   "tankPresets_builtInPresets": "Standaard instellingen",
+  "tankPresets_currentDefault": "Huidige standaard",
   "tankPresets_customPresets": "Eigen instellingen",
+  "tankPresets_defaultSettings": "Standaardfles",
+  "tankPresets_defaultSettings_description": "De met ster gemarkeerde preset wordt gebruikt als standaardfles bij het registreren van nieuwe duiken.",
+  "tankPresets_deleteDefaultMessage": "Weet je zeker dat je \"{name}\" wilt verwijderen? Dit is je huidige standaard flessenpreset en wordt teruggezet naar AL80.",
+  "@tankPresets_deleteDefaultMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "tankPresets_deleteMessage": "Weet je zeker dat je \"{name}\" wilt verwijderen?",
   "tankPresets_deletePreset": "Instelling verwijderen",
   "tankPresets_deleteTitle": "Flesinstelling verwijderen?",
@@ -3729,8 +3740,11 @@
   "tankPresets_edit_workingPressureBar": "• Werkdruk: {pressure} bar",
   "tankPresets_error": "Fout: {error}",
   "tankPresets_errorDeleting": "Fout bij verwijderen instelling: {error}",
+  "tankPresets_applyToImports": "Ook toepassen op geïmporteerde duiken",
+  "tankPresets_applyToImports_subtitle": "Ontbrekende flesgegevens bij geïmporteerde duiken aanvullen met de standaardpreset",
   "tankPresets_new_title": "Nieuwe flesinstelling",
   "tankPresets_noPresets": "Geen flesinstellingen beschikbaar",
+  "tankPresets_setAsDefault": "Als standaard instellen",
   "tankPresets_title": "Flesinstellingen",
   "tank_al30Stage_description": "Aluminium 30 cu ft stagefles",
   "tank_al30Stage_displayName": "AL30 Stage",

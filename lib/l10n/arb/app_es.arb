@@ -3697,7 +3697,18 @@
   "tags_title_manageTags": "Administrar Etiquetas",
   "tankPresets_addPreset": "Anadir preset de tanque",
   "tankPresets_builtInPresets": "Presets incluidos",
+  "tankPresets_currentDefault": "Predeterminado actual",
   "tankPresets_customPresets": "Presets personalizados",
+  "tankPresets_defaultSettings": "Tanque predeterminado",
+  "tankPresets_defaultSettings_description": "El preset marcado con estrella se usa como tanque predeterminado al registrar nuevas inmersiones.",
+  "tankPresets_deleteDefaultMessage": "¿Estás seguro de que quieres eliminar \"{name}\"? Este es tu preset de tanque predeterminado actual y se restablecerá a AL80.",
+  "@tankPresets_deleteDefaultMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "tankPresets_deleteMessage": "Seguro que quieres eliminar \"{name}\"?",
   "tankPresets_deletePreset": "Eliminar preset",
   "tankPresets_deleteTitle": "Eliminar preset de tanque?",
@@ -3729,8 +3740,11 @@
   "tankPresets_edit_workingPressureBar": "- Presion de trabajo: {pressure} bar",
   "tankPresets_error": "Error: {error}",
   "tankPresets_errorDeleting": "Error al eliminar preset: {error}",
+  "tankPresets_applyToImports": "Aplicar también a inmersiones importadas",
+  "tankPresets_applyToImports_subtitle": "Completar datos de tanque faltantes en inmersiones importadas usando el preset predeterminado",
   "tankPresets_new_title": "Nuevo preset de tanque",
   "tankPresets_noPresets": "No hay presets de tanque disponibles",
+  "tankPresets_setAsDefault": "Establecer como predeterminado",
   "tankPresets_title": "Presets de tanque",
   "tank_al30Stage_description": "Tanque stage de aluminio de 30 cu ft",
   "tank_al30Stage_displayName": "AL30 Stage",

@@ -14817,21 +14817,21 @@ class AppLocalizationsNl extends AppLocalizations {
   String get tankPresets_builtInPresets => 'Standaard instellingen';
 
   @override
-  String get tankPresets_currentDefault => 'Current default';
+  String get tankPresets_currentDefault => 'Huidige standaard';
 
   @override
   String get tankPresets_customPresets => 'Eigen instellingen';
 
   @override
-  String get tankPresets_defaultSettings => 'Default Tank';
+  String get tankPresets_defaultSettings => 'Standaardfles';
 
   @override
   String get tankPresets_defaultSettings_description =>
-      'The starred preset is used as the default tank when logging new dives.';
+      'De met ster gemarkeerde preset wordt gebruikt als standaardfles bij het registreren van nieuwe duiken.';
 
   @override
   String tankPresets_deleteDefaultMessage(String name) {
-    return 'Are you sure you want to delete \"$name\"? This is your current default tank preset and will be reset to AL80.';
+    return 'Weet je zeker dat je \"$name\" wilt verwijderen? Dit is je huidige standaard flessenpreset en wordt teruggezet naar AL80.';
   }
 
   @override
@@ -14952,11 +14952,12 @@ class AppLocalizationsNl extends AppLocalizations {
   }
 
   @override
-  String get tankPresets_applyToImports => 'Also apply to imported dives';
+  String get tankPresets_applyToImports =>
+      'Ook toepassen op geïmporteerde duiken';
 
   @override
   String get tankPresets_applyToImports_subtitle =>
-      'Fill in missing tank data on imported dives using the default preset';
+      'Ontbrekende flesgegevens bij geïmporteerde duiken aanvullen met de standaardpreset';
 
   @override
   String get tankPresets_new_title => 'Nieuwe flesinstelling';
@@ -14965,7 +14966,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get tankPresets_noPresets => 'Geen flesinstellingen beschikbaar';
 
   @override
-  String get tankPresets_setAsDefault => 'Set as default';
+  String get tankPresets_setAsDefault => 'Als standaard instellen';
 
   @override
   String get tankPresets_title => 'Flesinstellingen';

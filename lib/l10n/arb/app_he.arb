@@ -3697,7 +3697,18 @@
   "tags_title_manageTags": "נהל תגיות",
   "tankPresets_addPreset": "הוסף תבנית מיכל",
   "tankPresets_builtInPresets": "תבניות מובנות",
+  "tankPresets_currentDefault": "ברירת מחדל נוכחית",
   "tankPresets_customPresets": "תבניות מותאמות אישית",
+  "tankPresets_defaultSettings": "מיכל ברירת מחדל",
+  "tankPresets_defaultSettings_description": "התבנית המסומנת בכוכב משמשת כמיכל ברירת מחדל בעת רישום צלילות חדשות.",
+  "tankPresets_deleteDefaultMessage": "האם אתה בטוח שברצונך למחוק את \"{name}\"? זוהי תבנית מיכל ברירת המחדל הנוכחית שלך ותאופס ל-AL80.",
+  "@tankPresets_deleteDefaultMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "tankPresets_deleteMessage": "האם אתה בטוח שברצונך למחוק את \"{name}\"?",
   "tankPresets_deletePreset": "מחק תבנית",
   "tankPresets_deleteTitle": "למחוק תבנית מיכל?",
@@ -3729,8 +3740,11 @@
   "tankPresets_edit_workingPressureBar": "• לחץ עבודה: {pressure} bar",
   "tankPresets_error": "שגיאה: {error}",
   "tankPresets_errorDeleting": "שגיאה במחיקת תבנית: {error}",
+  "tankPresets_applyToImports": "החל גם על צלילות מיובאות",
+  "tankPresets_applyToImports_subtitle": "השלם נתוני מיכל חסרים בצלילות מיובאות באמצעות תבנית ברירת המחדל",
   "tankPresets_new_title": "תבנית מיכל חדשה",
   "tankPresets_noPresets": "אין תבניות מיכל זמינות",
+  "tankPresets_setAsDefault": "הגדר כברירת מחדל",
   "tankPresets_title": "תבניות מיכל",
   "tank_al30Stage_description": "בלון סטייג' אלומיניום 30 cuft",
   "tank_al30Stage_displayName": "AL30 Stage",

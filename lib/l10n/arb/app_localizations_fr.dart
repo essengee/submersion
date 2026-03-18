@@ -14991,21 +14991,21 @@ class AppLocalizationsFr extends AppLocalizations {
   String get tankPresets_builtInPresets => 'Presets integres';
 
   @override
-  String get tankPresets_currentDefault => 'Current default';
+  String get tankPresets_currentDefault => 'Par défaut actuel';
 
   @override
   String get tankPresets_customPresets => 'Presets personnalises';
 
   @override
-  String get tankPresets_defaultSettings => 'Default Tank';
+  String get tankPresets_defaultSettings => 'Bloc par défaut';
 
   @override
   String get tankPresets_defaultSettings_description =>
-      'The starred preset is used as the default tank when logging new dives.';
+      'Le preset marqué d\'une étoile est utilisé comme bloc par défaut lors de l\'enregistrement de nouvelles plongées.';
 
   @override
   String tankPresets_deleteDefaultMessage(String name) {
-    return 'Are you sure you want to delete \"$name\"? This is your current default tank preset and will be reset to AL80.';
+    return 'Voulez-vous vraiment supprimer \"$name\" ? C\'est votre preset de bloc par défaut actuel et il sera réinitialisé à AL80.';
   }
 
   @override
@@ -15126,11 +15126,12 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get tankPresets_applyToImports => 'Also apply to imported dives';
+  String get tankPresets_applyToImports =>
+      'Appliquer aussi aux plongées importées';
 
   @override
   String get tankPresets_applyToImports_subtitle =>
-      'Fill in missing tank data on imported dives using the default preset';
+      'Compléter les données de bloc manquantes des plongées importées avec le preset par défaut';
 
   @override
   String get tankPresets_new_title => 'Nouveau preset de bloc';
@@ -15139,7 +15140,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get tankPresets_noPresets => 'Aucun preset de bloc disponible';
 
   @override
-  String get tankPresets_setAsDefault => 'Set as default';
+  String get tankPresets_setAsDefault => 'Définir par défaut';
 
   @override
   String get tankPresets_title => 'Presets de blocs';

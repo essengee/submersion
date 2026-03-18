@@ -3697,7 +3697,18 @@
   "tags_title_manageTags": "Gerenciar Tags",
   "tankPresets_addPreset": "Adicionar preset de cilindro",
   "tankPresets_builtInPresets": "Presets Integrados",
+  "tankPresets_currentDefault": "Padrão atual",
   "tankPresets_customPresets": "Presets Personalizados",
+  "tankPresets_defaultSettings": "Cilindro padrão",
+  "tankPresets_defaultSettings_description": "O preset marcado com estrela é usado como cilindro padrão ao registrar novos mergulhos.",
+  "tankPresets_deleteDefaultMessage": "Tem certeza de que deseja excluir \"{name}\"? Este é seu preset de cilindro padrão atual e será redefinido para AL80.",
+  "@tankPresets_deleteDefaultMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "tankPresets_deleteMessage": "Tem certeza que deseja excluir \"{name}\"?",
   "tankPresets_deletePreset": "Excluir preset",
   "tankPresets_deleteTitle": "Excluir Preset de Cilindro?",
@@ -3729,8 +3740,11 @@
   "tankPresets_edit_workingPressureBar": "- Pressao de trabalho: {pressure} bar",
   "tankPresets_error": "Erro: {error}",
   "tankPresets_errorDeleting": "Erro ao excluir preset: {error}",
+  "tankPresets_applyToImports": "Aplicar também a mergulhos importados",
+  "tankPresets_applyToImports_subtitle": "Preencher dados de cilindro ausentes em mergulhos importados usando o preset padrão",
   "tankPresets_new_title": "Novo Preset de Cilindro",
   "tankPresets_noPresets": "Nenhum preset de cilindro disponivel",
+  "tankPresets_setAsDefault": "Definir como padrão",
   "tankPresets_title": "Presets de Cilindro",
   "tank_al30Stage_description": "Cilindro stage de aluminio 30 cu ft",
   "tank_al30Stage_displayName": "AL30 Stage",

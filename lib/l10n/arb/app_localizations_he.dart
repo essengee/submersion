@@ -14547,21 +14547,21 @@ class AppLocalizationsHe extends AppLocalizations {
   String get tankPresets_builtInPresets => 'תבניות מובנות';
 
   @override
-  String get tankPresets_currentDefault => 'Current default';
+  String get tankPresets_currentDefault => 'ברירת מחדל נוכחית';
 
   @override
   String get tankPresets_customPresets => 'תבניות מותאמות אישית';
 
   @override
-  String get tankPresets_defaultSettings => 'Default Tank';
+  String get tankPresets_defaultSettings => 'מיכל ברירת מחדל';
 
   @override
   String get tankPresets_defaultSettings_description =>
-      'The starred preset is used as the default tank when logging new dives.';
+      'התבנית המסומנת בכוכב משמשת כמיכל ברירת מחדל בעת רישום צלילות חדשות.';
 
   @override
   String tankPresets_deleteDefaultMessage(String name) {
-    return 'Are you sure you want to delete \"$name\"? This is your current default tank preset and will be reset to AL80.';
+    return 'האם אתה בטוח שברצונך למחוק את \"$name\"? זוהי תבנית מיכל ברירת המחדל הנוכחית שלך ותאופס ל-AL80.';
   }
 
   @override
@@ -14681,11 +14681,11 @@ class AppLocalizationsHe extends AppLocalizations {
   }
 
   @override
-  String get tankPresets_applyToImports => 'Also apply to imported dives';
+  String get tankPresets_applyToImports => 'החל גם על צלילות מיובאות';
 
   @override
   String get tankPresets_applyToImports_subtitle =>
-      'Fill in missing tank data on imported dives using the default preset';
+      'השלם נתוני מיכל חסרים בצלילות מיובאות באמצעות תבנית ברירת המחדל';
 
   @override
   String get tankPresets_new_title => 'תבנית מיכל חדשה';
@@ -14694,7 +14694,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get tankPresets_noPresets => 'אין תבניות מיכל זמינות';
 
   @override
-  String get tankPresets_setAsDefault => 'Set as default';
+  String get tankPresets_setAsDefault => 'הגדר כברירת מחדל';
 
   @override
   String get tankPresets_title => 'תבניות מיכל';

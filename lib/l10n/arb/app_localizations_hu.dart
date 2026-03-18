@@ -14896,21 +14896,21 @@ class AppLocalizationsHu extends AppLocalizations {
   String get tankPresets_builtInPresets => 'Beepitett sablonok';
 
   @override
-  String get tankPresets_currentDefault => 'Current default';
+  String get tankPresets_currentDefault => 'Jelenlegi alapértelmezett';
 
   @override
   String get tankPresets_customPresets => 'Egyedi sablonok';
 
   @override
-  String get tankPresets_defaultSettings => 'Default Tank';
+  String get tankPresets_defaultSettings => 'Alapértelmezett palack';
 
   @override
   String get tankPresets_defaultSettings_description =>
-      'The starred preset is used as the default tank when logging new dives.';
+      'A csillaggal jelölt sablon lesz az alapértelmezett palack új merülések naplózásakor.';
 
   @override
   String tankPresets_deleteDefaultMessage(String name) {
-    return 'Are you sure you want to delete \"$name\"? This is your current default tank preset and will be reset to AL80.';
+    return 'Biztosan törölni szeretnéd a(z) \"$name\" sablont? Ez a jelenlegi alapértelmezett palacksablon, és visszaáll AL80-ra.';
   }
 
   @override
@@ -15031,11 +15031,11 @@ class AppLocalizationsHu extends AppLocalizations {
   }
 
   @override
-  String get tankPresets_applyToImports => 'Also apply to imported dives';
+  String get tankPresets_applyToImports => 'Importált merülésekre is alkalmaz';
 
   @override
   String get tankPresets_applyToImports_subtitle =>
-      'Fill in missing tank data on imported dives using the default preset';
+      'Hiányzó palackadatok kitöltése importált merüléseknél az alapértelmezett sablon alapján';
 
   @override
   String get tankPresets_new_title => 'Uj palacksablon';
@@ -15044,7 +15044,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get tankPresets_noPresets => 'Nincsenek elerheto palacksablonok';
 
   @override
-  String get tankPresets_setAsDefault => 'Set as default';
+  String get tankPresets_setAsDefault => 'Beállítás alapértelmezettként';
 
   @override
   String get tankPresets_title => 'Palacksablonok';

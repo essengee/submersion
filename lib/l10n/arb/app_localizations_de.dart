@@ -14925,21 +14925,21 @@ class AppLocalizationsDe extends AppLocalizations {
   String get tankPresets_builtInPresets => 'Integrierte Vorlagen';
 
   @override
-  String get tankPresets_currentDefault => 'Current default';
+  String get tankPresets_currentDefault => 'Aktueller Standard';
 
   @override
   String get tankPresets_customPresets => 'Eigene Vorlagen';
 
   @override
-  String get tankPresets_defaultSettings => 'Default Tank';
+  String get tankPresets_defaultSettings => 'Standardtank';
 
   @override
   String get tankPresets_defaultSettings_description =>
-      'The starred preset is used as the default tank when logging new dives.';
+      'Die mit Stern markierte Vorlage wird als Standardtank beim Erstellen neuer Tauchgänge verwendet.';
 
   @override
   String tankPresets_deleteDefaultMessage(String name) {
-    return 'Are you sure you want to delete \"$name\"? This is your current default tank preset and will be reset to AL80.';
+    return 'Möchtest du \"$name\" wirklich löschen? Dies ist deine aktuelle Standardtank-Vorlage und wird auf AL80 zurückgesetzt.';
   }
 
   @override
@@ -15060,11 +15060,12 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get tankPresets_applyToImports => 'Also apply to imported dives';
+  String get tankPresets_applyToImports =>
+      'Auch auf importierte Tauchgänge anwenden';
 
   @override
   String get tankPresets_applyToImports_subtitle =>
-      'Fill in missing tank data on imported dives using the default preset';
+      'Fehlende Tankdaten bei importierten Tauchgängen mit der Standardvorlage ergänzen';
 
   @override
   String get tankPresets_new_title => 'Neue Flaschenvorlage';
@@ -15073,7 +15074,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get tankPresets_noPresets => 'Keine Flaschenvorlagen verfuegbar';
 
   @override
-  String get tankPresets_setAsDefault => 'Set as default';
+  String get tankPresets_setAsDefault => 'Als Standard festlegen';
 
   @override
   String get tankPresets_title => 'Flaschenvorlagen';

@@ -3697,7 +3697,18 @@
   "tags_title_manageTags": "Gérer les étiquettes",
   "tankPresets_addPreset": "Ajouter un preset de bloc",
   "tankPresets_builtInPresets": "Presets integres",
+  "tankPresets_currentDefault": "Par défaut actuel",
   "tankPresets_customPresets": "Presets personnalises",
+  "tankPresets_defaultSettings": "Bloc par défaut",
+  "tankPresets_defaultSettings_description": "Le preset marqué d'une étoile est utilisé comme bloc par défaut lors de l'enregistrement de nouvelles plongées.",
+  "tankPresets_deleteDefaultMessage": "Voulez-vous vraiment supprimer \"{name}\" ? C'est votre preset de bloc par défaut actuel et il sera réinitialisé à AL80.",
+  "@tankPresets_deleteDefaultMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "tankPresets_deleteMessage": "Voulez-vous vraiment supprimer \"{name}\" ?",
   "tankPresets_deletePreset": "Supprimer le preset",
   "tankPresets_deleteTitle": "Supprimer le preset de bloc ?",
@@ -3729,8 +3740,11 @@
   "tankPresets_edit_workingPressureBar": "- Pression de service : {pressure} bar",
   "tankPresets_error": "Erreur : {error}",
   "tankPresets_errorDeleting": "Erreur de suppression du preset : {error}",
+  "tankPresets_applyToImports": "Appliquer aussi aux plongées importées",
+  "tankPresets_applyToImports_subtitle": "Compléter les données de bloc manquantes des plongées importées avec le preset par défaut",
   "tankPresets_new_title": "Nouveau preset de bloc",
   "tankPresets_noPresets": "Aucun preset de bloc disponible",
+  "tankPresets_setAsDefault": "Définir par défaut",
   "tankPresets_title": "Presets de blocs",
   "tank_al30Stage_description": "Bloc aluminium 30 cu ft stage",
   "tank_al30Stage_displayName": "AL30 Stage",

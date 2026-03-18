@@ -14947,21 +14947,21 @@ class AppLocalizationsEs extends AppLocalizations {
   String get tankPresets_builtInPresets => 'Presets incluidos';
 
   @override
-  String get tankPresets_currentDefault => 'Current default';
+  String get tankPresets_currentDefault => 'Predeterminado actual';
 
   @override
   String get tankPresets_customPresets => 'Presets personalizados';
 
   @override
-  String get tankPresets_defaultSettings => 'Default Tank';
+  String get tankPresets_defaultSettings => 'Tanque predeterminado';
 
   @override
   String get tankPresets_defaultSettings_description =>
-      'The starred preset is used as the default tank when logging new dives.';
+      'El preset marcado con estrella se usa como tanque predeterminado al registrar nuevas inmersiones.';
 
   @override
   String tankPresets_deleteDefaultMessage(String name) {
-    return 'Are you sure you want to delete \"$name\"? This is your current default tank preset and will be reset to AL80.';
+    return '¿Estás seguro de que quieres eliminar \"$name\"? Este es tu preset de tanque predeterminado actual y se restablecerá a AL80.';
   }
 
   @override
@@ -15083,11 +15083,12 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get tankPresets_applyToImports => 'Also apply to imported dives';
+  String get tankPresets_applyToImports =>
+      'Aplicar también a inmersiones importadas';
 
   @override
   String get tankPresets_applyToImports_subtitle =>
-      'Fill in missing tank data on imported dives using the default preset';
+      'Completar datos de tanque faltantes en inmersiones importadas usando el preset predeterminado';
 
   @override
   String get tankPresets_new_title => 'Nuevo preset de tanque';
@@ -15096,7 +15097,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get tankPresets_noPresets => 'No hay presets de tanque disponibles';
 
   @override
-  String get tankPresets_setAsDefault => 'Set as default';
+  String get tankPresets_setAsDefault => 'Establecer como predeterminado';
 
   @override
   String get tankPresets_title => 'Presets de tanque';

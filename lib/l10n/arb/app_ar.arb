@@ -3697,7 +3697,18 @@
   "tags_title_manageTags": "إدارة الوسوم",
   "tankPresets_addPreset": "إضافة إعداد أسطوانة",
   "tankPresets_builtInPresets": "الإعدادات المدمجة",
+  "tankPresets_currentDefault": "الافتراضي الحالي",
   "tankPresets_customPresets": "الإعدادات المخصصة",
+  "tankPresets_defaultSettings": "الخزان الافتراضي",
+  "tankPresets_defaultSettings_description": "يُستخدم الإعداد المميز بنجمة كخزان افتراضي عند تسجيل غطسات جديدة.",
+  "tankPresets_deleteDefaultMessage": "هل أنت متأكد من حذف \"{name}\"؟ هذا هو إعداد الخزان الافتراضي الحالي وسيتم إعادته إلى AL80.",
+  "@tankPresets_deleteDefaultMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "tankPresets_deleteMessage": "هل أنت متأكد من حذف \"{name}\"؟",
   "tankPresets_deletePreset": "حذف الإعداد",
   "tankPresets_deleteTitle": "حذف إعداد الأسطوانة؟",
@@ -3729,8 +3740,11 @@
   "tankPresets_edit_workingPressureBar": "ضغط العمل: {pressure} bar •",
   "tankPresets_error": "خطأ: {error}",
   "tankPresets_errorDeleting": "خطأ في حذف الإعداد: {error}",
+  "tankPresets_applyToImports": "تطبيق على الغطسات المستوردة أيضاً",
+  "tankPresets_applyToImports_subtitle": "ملء بيانات الخزان المفقودة في الغطسات المستوردة باستخدام الإعداد الافتراضي",
   "tankPresets_new_title": "إعداد أسطوانة جديد",
   "tankPresets_noPresets": "لا توجد إعدادات أسطوانات",
+  "tankPresets_setAsDefault": "تعيين كافتراضي",
   "tankPresets_title": "إعدادات الأسطوانات",
   "tank_al30Stage_description": "أسطوانة ألومنيوم مرحلية 30 قدم مكعب",
   "tank_al30Stage_displayName": "AL30 Stage",

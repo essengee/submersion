@@ -14940,21 +14940,21 @@ class AppLocalizationsPt extends AppLocalizations {
   String get tankPresets_builtInPresets => 'Presets Integrados';
 
   @override
-  String get tankPresets_currentDefault => 'Current default';
+  String get tankPresets_currentDefault => 'Padrão atual';
 
   @override
   String get tankPresets_customPresets => 'Presets Personalizados';
 
   @override
-  String get tankPresets_defaultSettings => 'Default Tank';
+  String get tankPresets_defaultSettings => 'Cilindro padrão';
 
   @override
   String get tankPresets_defaultSettings_description =>
-      'The starred preset is used as the default tank when logging new dives.';
+      'O preset marcado com estrela é usado como cilindro padrão ao registrar novos mergulhos.';
 
   @override
   String tankPresets_deleteDefaultMessage(String name) {
-    return 'Are you sure you want to delete \"$name\"? This is your current default tank preset and will be reset to AL80.';
+    return 'Tem certeza de que deseja excluir \"$name\"? Este é seu preset de cilindro padrão atual e será redefinido para AL80.';
   }
 
   @override
@@ -15076,11 +15076,12 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
-  String get tankPresets_applyToImports => 'Also apply to imported dives';
+  String get tankPresets_applyToImports =>
+      'Aplicar também a mergulhos importados';
 
   @override
   String get tankPresets_applyToImports_subtitle =>
-      'Fill in missing tank data on imported dives using the default preset';
+      'Preencher dados de cilindro ausentes em mergulhos importados usando o preset padrão';
 
   @override
   String get tankPresets_new_title => 'Novo Preset de Cilindro';
@@ -15089,7 +15090,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get tankPresets_noPresets => 'Nenhum preset de cilindro disponivel';
 
   @override
-  String get tankPresets_setAsDefault => 'Set as default';
+  String get tankPresets_setAsDefault => 'Definir como padrão';
 
   @override
   String get tankPresets_title => 'Presets de Cilindro';

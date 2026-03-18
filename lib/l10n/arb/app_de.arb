@@ -3697,7 +3697,18 @@
   "tags_title_manageTags": "Tags verwalten",
   "tankPresets_addPreset": "Flaschenvorlage hinzufuegen",
   "tankPresets_builtInPresets": "Integrierte Vorlagen",
+  "tankPresets_currentDefault": "Aktueller Standard",
   "tankPresets_customPresets": "Eigene Vorlagen",
+  "tankPresets_defaultSettings": "Standardtank",
+  "tankPresets_defaultSettings_description": "Die mit Stern markierte Vorlage wird als Standardtank beim Erstellen neuer Tauchgänge verwendet.",
+  "tankPresets_deleteDefaultMessage": "Möchtest du \"{name}\" wirklich löschen? Dies ist deine aktuelle Standardtank-Vorlage und wird auf AL80 zurückgesetzt.",
+  "@tankPresets_deleteDefaultMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "tankPresets_deleteMessage": "Moechten Sie \"{name}\" wirklich loeschen?",
   "tankPresets_deletePreset": "Vorlage loeschen",
   "tankPresets_deleteTitle": "Flaschenvorlage loeschen?",
@@ -3729,8 +3740,11 @@
   "tankPresets_edit_workingPressureBar": "- Betriebsdruck: {pressure} bar",
   "tankPresets_error": "Fehler: {error}",
   "tankPresets_errorDeleting": "Fehler beim Loeschen der Vorlage: {error}",
+  "tankPresets_applyToImports": "Auch auf importierte Tauchgänge anwenden",
+  "tankPresets_applyToImports_subtitle": "Fehlende Tankdaten bei importierten Tauchgängen mit der Standardvorlage ergänzen",
   "tankPresets_new_title": "Neue Flaschenvorlage",
   "tankPresets_noPresets": "Keine Flaschenvorlagen verfuegbar",
+  "tankPresets_setAsDefault": "Als Standard festlegen",
   "tankPresets_title": "Flaschenvorlagen",
   "tank_al30Stage_description": "Aluminium 30 cuft Stageflasche",
   "tank_al30Stage_displayName": "AL30 Stage",

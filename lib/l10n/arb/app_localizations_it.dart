@@ -14945,21 +14945,21 @@ class AppLocalizationsIt extends AppLocalizations {
   String get tankPresets_builtInPresets => 'Preset predefiniti';
 
   @override
-  String get tankPresets_currentDefault => 'Current default';
+  String get tankPresets_currentDefault => 'Predefinito attuale';
 
   @override
   String get tankPresets_customPresets => 'Preset personalizzati';
 
   @override
-  String get tankPresets_defaultSettings => 'Default Tank';
+  String get tankPresets_defaultSettings => 'Bombola predefinita';
 
   @override
   String get tankPresets_defaultSettings_description =>
-      'The starred preset is used as the default tank when logging new dives.';
+      'Il preset contrassegnato con la stella viene usato come bombola predefinita quando si registrano nuove immersioni.';
 
   @override
   String tankPresets_deleteDefaultMessage(String name) {
-    return 'Are you sure you want to delete \"$name\"? This is your current default tank preset and will be reset to AL80.';
+    return 'Sei sicuro di voler eliminare \"$name\"? Questo è il tuo preset bombola predefinito attuale e verrà reimpostato su AL80.';
   }
 
   @override
@@ -15080,11 +15080,12 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get tankPresets_applyToImports => 'Also apply to imported dives';
+  String get tankPresets_applyToImports =>
+      'Applica anche alle immersioni importate';
 
   @override
   String get tankPresets_applyToImports_subtitle =>
-      'Fill in missing tank data on imported dives using the default preset';
+      'Completa i dati bombola mancanti nelle immersioni importate usando il preset predefinito';
 
   @override
   String get tankPresets_new_title => 'Nuovo preset bombola';
@@ -15093,7 +15094,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get tankPresets_noPresets => 'Nessun preset bombola disponibile';
 
   @override
-  String get tankPresets_setAsDefault => 'Set as default';
+  String get tankPresets_setAsDefault => 'Imposta come predefinito';
 
   @override
   String get tankPresets_title => 'Preset bombole';
