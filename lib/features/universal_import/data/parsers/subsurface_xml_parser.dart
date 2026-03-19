@@ -192,10 +192,10 @@ class SubsurfaceXmlParser implements ImportParser {
             final hour = int.tryParse(timeParts[0]) ?? 0;
             final minute = int.tryParse(timeParts[1]) ?? 0;
             final second = int.tryParse(timeParts[2]) ?? 0;
-            dateTime = DateTime(year, month, day, hour, minute, second);
+            dateTime = DateTime.utc(year, month, day, hour, minute, second);
           }
         }
-        dateTime ??= DateTime(year, month, day);
+        dateTime ??= DateTime.utc(year, month, day);
       }
     }
 
@@ -344,9 +344,17 @@ class SubsurfaceXmlParser implements ImportParser {
     final time = trip.getAttribute('time');
     DateTime? startDate;
     if (date != null) {
-      startDate = time != null
+      final dt = time != null
           ? DateTime.parse('${date}T$time')
           : DateTime.parse(date);
+      startDate = DateTime.utc(
+        dt.year,
+        dt.month,
+        dt.day,
+        dt.hour,
+        dt.minute,
+        dt.second,
+      );
     }
     final notes = trip.findElements('notes').firstOrNull?.innerText.trim();
     return {

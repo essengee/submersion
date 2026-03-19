@@ -75,7 +75,7 @@ void main() {
 '''),
       );
       final dives = result.entitiesOf(ImportEntityType.dives);
-      expect(dives[0]['dateTime'], DateTime(2025, 11, 13, 7, 23, 58));
+      expect(dives[0]['dateTime'], DateTime.utc(2025, 11, 13, 7, 23, 58));
       expect(dives[0]['diveNumber'], 5);
     });
   });
@@ -486,7 +486,7 @@ void main() {
       expect(trips[0]['name'], 'Puerto Rico');
       expect(trips[0]['location'], 'Puerto Rico');
       expect(trips[0]['notes'], 'Caribbean trip');
-      expect(trips[0]['startDate'], DateTime(2025, 11, 13, 7, 0, 0));
+      expect(trips[0]['startDate'], DateTime.utc(2025, 11, 13, 7, 0, 0));
 
       final dives = result.entitiesOf(ImportEntityType.dives);
       expect(dives.length, 2);
@@ -587,7 +587,7 @@ void main() {
 
       // Verify a specific dive has expected data
       final dive1 = dives.firstWhere((d) => d['diveNumber'] == 1);
-      expect(dive1['dateTime'], DateTime(2025, 9, 20, 7, 44, 37));
+      expect(dive1['dateTime'], DateTime.utc(2025, 9, 20, 7, 44, 37));
       final buddyRefs = dive1['buddyRefs'] as List<String>;
       expect(buddyRefs, isNotEmpty);
       final guideRefs = dive1['diveGuideRefs'] as List<String>;
