@@ -232,7 +232,25 @@ static gpointer download_thread_func(gpointer data) {
     // Serial or USB transport.
     transport_flag = LIBDC_TRANSPORT_SERIAL;
     ctx->serial_stream = serial_io_stream_new();
-    if (!serial_io_stream_open(ctx->serial_stream, td->address)) {
+
+    // If the address looks like a device path, use it directly.
+    // Otherwise (manual model selection), try each available port.
+    gboolean opened = FALSE;
+    if (g_str_has_prefix(td->address, "/dev/")) {
+      opened = serial_io_stream_open(ctx->serial_stream, td->address);
+    } else {
+      g_auto(GStrv) ports = serial_enumerate_ports();
+      if (ports) {
+        for (int i = 0; ports[i] != NULL; i++) {
+          if (serial_io_stream_open(ctx->serial_stream, ports[i])) {
+            opened = TRUE;
+            break;
+          }
+        }
+      }
+    }
+
+    if (!opened) {
       LibdivecomputerPluginDiveComputerError* error =
           libdivecomputer_plugin_dive_computer_error_new(
               "connect_failed", "Failed to open serial port");

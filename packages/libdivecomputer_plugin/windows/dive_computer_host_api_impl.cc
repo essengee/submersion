@@ -1,6 +1,7 @@
 #include "dive_computer_host_api_impl.h"
 
 #include "dive_converter.h"
+#include "serial_scanner.h"
 
 #include <cmath>
 #include <cstdio>
@@ -181,9 +182,30 @@ void DiveComputerHostApiImpl::PerformDownload(
     if (device.transport() == TransportType::kSerial ||
         device.transport() == TransportType::kUsb) {
         serial_stream_ = std::make_unique<SerialIoStream>();
-        if (serial_stream_->Open(device.address())) {
-            io_callbacks = serial_stream_->MakeCallbacks();
-            connected = true;
+
+        // If the address looks like a COM port, use it directly.
+        // Otherwise (manual model selection), try each available port.
+        std::string address = device.address();
+        bool is_com_port = (address.size() >= 4 &&
+            (address[0] == 'C' || address[0] == 'c') &&
+            (address[1] == 'O' || address[1] == 'o') &&
+            (address[2] == 'M' || address[2] == 'm'));
+
+        if (is_com_port) {
+            if (serial_stream_->Open(address)) {
+                io_callbacks = serial_stream_->MakeCallbacks();
+                connected = true;
+            }
+        } else {
+            // Auto-detect: try each available serial port.
+            auto ports = EnumerateAvailableSerialPorts();
+            for (const auto& port : ports) {
+                if (serial_stream_->Open(port)) {
+                    io_callbacks = serial_stream_->MakeCallbacks();
+                    connected = true;
+                    break;
+                }
+            }
         }
     } else {
         // BLE transport.
