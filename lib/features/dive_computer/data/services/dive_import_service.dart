@@ -1,4 +1,5 @@
 import 'package:submersion/features/dive_log/data/repositories/dive_computer_repository_impl.dart';
+import 'package:submersion/features/dive_log/data/repositories/dive_repository_impl.dart';
 import 'package:submersion/features/dive_log/domain/entities/dive_computer.dart';
 import 'package:submersion/features/dive_computer/domain/entities/downloaded_dive.dart';
 import 'package:submersion/features/dive_computer/data/services/dive_parser.dart';
@@ -179,12 +180,15 @@ class ImportResult {
 /// Service for importing downloaded dives into the app's database.
 class DiveImportService {
   final DiveComputerRepository _repository;
+  final DiveRepository? _diveRepository;
   final DiveParser _parser;
 
   DiveImportService({
     required DiveComputerRepository repository,
+    DiveRepository? diveRepository,
     DiveParser? parser,
   }) : _repository = repository,
+       _diveRepository = diveRepository,
        _parser = parser ?? const DiveParser();
 
   /// Import a list of downloaded dives.
@@ -208,7 +212,12 @@ class DiveImportService {
     final importedDives = <DownloadedDive>[];
     final conflicts = <ImportConflict>[];
 
-    for (final dive in dives) {
+    // Sort dives chronologically (oldest first) so that sequential
+    // getDiveNumberForDate() calls produce correct numbering.
+    final sortedDives = List<DownloadedDive>.of(dives)
+      ..sort((a, b) => a.startTime.compareTo(b.startTime));
+
+    for (final dive in sortedDives) {
       try {
         // Check for duplicates
         final duplicateResult = await detectDuplicate(dive);
@@ -329,6 +338,15 @@ class DiveImportService {
     String computerId,
     String? diverId,
   ) async {
+    // Calculate chronological dive number
+    int? diveNumber;
+    if (_diveRepository != null) {
+      diveNumber = await _diveRepository.getDiveNumberForDate(
+        dive.startTime,
+        diverId: diverId,
+      );
+    }
+
     // Parse profile data
     final profilePoints = _parser.parseProfile(dive);
 
@@ -354,6 +372,7 @@ class DiveImportService {
       gfHigh: dive.gfHigh,
       decoConservatism: dive.decoConservatism,
       events: events,
+      diveNumber: diveNumber,
     );
 
     return diveId;

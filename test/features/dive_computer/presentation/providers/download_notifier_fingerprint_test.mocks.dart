@@ -339,6 +339,7 @@ class MockDiveComputerRepository extends _i1.Mock
                   #gfHigh: gfHigh,
                   #decoConservatism: decoConservatism,
                   #events: events,
+                  #diveNumber: diveNumber,
                 }),
               ),
             ),

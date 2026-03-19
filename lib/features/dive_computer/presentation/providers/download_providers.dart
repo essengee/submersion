@@ -6,6 +6,7 @@ import 'package:submersion/core/providers/provider.dart';
 
 import 'package:submersion/features/dive_log/data/repositories/dive_computer_repository_impl.dart';
 import 'package:submersion/features/dive_log/domain/entities/dive_computer.dart';
+import 'package:submersion/features/dive_log/presentation/providers/dive_providers.dart';
 import 'package:submersion/features/dive_computer/data/services/dive_import_service.dart';
 import 'package:submersion/features/dive_computer/data/services/parsed_dive_mapper.dart';
 import 'package:submersion/features/dive_computer/domain/entities/device_model.dart';
@@ -21,7 +22,11 @@ final diveComputerRepositoryProvider = Provider<DiveComputerRepository>((ref) {
 /// Provider for the dive import service.
 final diveImportServiceProvider = Provider<DiveImportService>((ref) {
   final repository = ref.watch(diveComputerRepositoryProvider);
-  return DiveImportService(repository: repository);
+  final diveRepository = ref.watch(diveRepositoryProvider);
+  return DiveImportService(
+    repository: repository,
+    diveRepository: diveRepository,
+  );
 });
 
 /// Stream provider for download events from the service.
