@@ -301,6 +301,7 @@ class MockDiveComputerRepository extends _i1.Mock
     int? gfHigh,
     int? decoConservatism,
     List<_i3.EventData>? events,
+    int? diveNumber,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#importProfile, [], {
@@ -318,6 +319,7 @@ class MockDiveComputerRepository extends _i1.Mock
               #gfHigh: gfHigh,
               #decoConservatism: decoConservatism,
               #events: events,
+              #diveNumber: diveNumber,
             }),
             returnValue: _i5.Future<String>.value(
               _i7.dummyValue<String>(

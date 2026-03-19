@@ -728,6 +728,7 @@ class DiveComputerRepository {
     int? gfHigh,
     int? decoConservatism,
     List<EventData>? events,
+    int? diveNumber,
   }) async {
     try {
       _log.info('Importing profile from computer $computerId');
@@ -771,6 +772,7 @@ class DiveComputerRepository {
               DivesCompanion(
                 id: Value(diveId),
                 diverId: Value(diverId),
+                diveNumber: Value(diveNumber),
                 diveDateTime: Value(entryTimeMs),
                 entryTime: Value(entryTimeMs),
                 exitTime: Value(exitTimeMs),
