@@ -57,22 +57,21 @@ static void test_callbacks_struct_accepts_serial_functions(void) {
     printf("PASS: test_callbacks_struct_accepts_serial_functions\n");
 }
 
+static unsigned int captured_baud, captured_data, captured_parity;
+static unsigned int captured_stop, captured_flow;
+
+static int capture_configure(void *ud, unsigned int b, unsigned int d,
+                             unsigned int p, unsigned int s, unsigned int f) {
+    (void)ud;
+    captured_baud = b;
+    captured_data = d;
+    captured_parity = p;
+    captured_stop = s;
+    captured_flow = f;
+    return LIBDC_STATUS_SUCCESS;
+}
+
 static void test_configure_receives_parameters(void) {
-    // Verify parameters are forwarded correctly.
-    static unsigned int captured_baud, captured_data, captured_parity;
-    static unsigned int captured_stop, captured_flow;
-
-    int capture_configure(void *ud, unsigned int b, unsigned int d,
-                          unsigned int p, unsigned int s, unsigned int f) {
-        (void)ud;
-        captured_baud = b;
-        captured_data = d;
-        captured_parity = p;
-        captured_stop = s;
-        captured_flow = f;
-        return LIBDC_STATUS_SUCCESS;
-    }
-
     libdc_io_callbacks_t cbs = {0};
     cbs.configure = capture_configure;
 
