@@ -54,8 +54,9 @@ void main() {
       expect(find.text('0'), findsOneWidget);
     });
 
-    testWidgets('applies selected background color when isSelected is true',
-        (tester) async {
+    testWidgets('applies selected background color when isSelected is true', (
+      tester,
+    ) async {
       final center = _makeCenter(city: 'Koror', country: 'Palau');
 
       await tester.pumpWidget(

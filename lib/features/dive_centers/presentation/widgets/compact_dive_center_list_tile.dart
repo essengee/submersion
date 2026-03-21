@@ -48,9 +48,7 @@ class CompactDiveCenterListTile extends StatelessWidget {
                     Expanded(
                       child: Text(
                         center.name,
-                        style: Theme.of(
-                          context,
-                        ).textTheme.bodyMedium?.copyWith(
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
                         overflow: TextOverflow.ellipsis,

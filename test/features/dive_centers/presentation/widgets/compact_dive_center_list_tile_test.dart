@@ -54,8 +54,9 @@ void main() {
       expect(find.textContaining('0'), findsWidgets);
     });
 
-    testWidgets('applies selected card color when isSelected is true',
-        (tester) async {
+    testWidgets('applies selected card color when isSelected is true', (
+      tester,
+    ) async {
       final center = _makeCenter(city: 'Koror', country: 'Palau');
 
       await tester.pumpWidget(

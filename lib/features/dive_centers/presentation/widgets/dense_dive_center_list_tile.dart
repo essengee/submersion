@@ -77,9 +77,9 @@ class DenseDiveCenterListTile extends StatelessWidget {
                   width: 40,
                   child: Text(
                     '$diveCount',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: secondaryTextColor,
-                    ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: secondaryTextColor),
                     textAlign: TextAlign.right,
                   ),
                 ),
