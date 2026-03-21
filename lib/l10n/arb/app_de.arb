@@ -1567,6 +1567,7 @@
   "divePlanner_label_ndl": "Nullzeit",
   "divePlanner_label_planSettings": "Planeinstellungen",
   "divePlanner_label_remaining": "Verbleibend",
+  "divePlanner_label_reserve": "Reserve:",
   "divePlanner_label_resultsWithWarnings": "Ergebnisse, {count} Warnungen",
   "divePlanner_label_runtime": "Laufzeit",
   "divePlanner_label_sacRate": "AMV-Rate:",

@@ -106,15 +106,30 @@ class PlanSettingsPanel extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
 
-            // Altitude for altitude diving
-            _AltitudeInput(
-              altitude: planState.altitude,
-              units: units,
-              onChanged: (value) {
-                ref
-                    .read(divePlanNotifierProvider.notifier)
-                    .updateAltitude(value);
-              },
+            // Altitude and reserve pressure row
+            Row(
+              children: [
+                Expanded(
+                  child: _AltitudeInput(
+                    altitude: planState.altitude,
+                    units: units,
+                    onChanged: (value) {
+                      ref
+                          .read(divePlanNotifierProvider.notifier)
+                          .updateAltitude(value);
+                    },
+                  ),
+                ),
+                _ReservePressureInput(
+                  reservePressure: planState.reservePressure,
+                  units: units,
+                  onChanged: (value) {
+                    ref
+                        .read(divePlanNotifierProvider.notifier)
+                        .updateReservePressure(value);
+                  },
+                ),
+              ],
             ),
           ],
         ),
@@ -269,6 +284,87 @@ class _AltitudeInputState extends State<_AltitudeInput> {
       case AltitudeWarningLevel.severe:
         return Colors.red;
     }
+  }
+}
+
+/// Reserve pressure input field.
+class _ReservePressureInput extends StatefulWidget {
+  final double reservePressure;
+  final UnitFormatter units;
+  final ValueChanged<double> onChanged;
+
+  const _ReservePressureInput({
+    required this.reservePressure,
+    required this.units,
+    required this.onChanged,
+  });
+
+  @override
+  State<_ReservePressureInput> createState() => _ReservePressureInputState();
+}
+
+class _ReservePressureInputState extends State<_ReservePressureInput> {
+  late TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(
+      text: widget.units
+          .convertPressure(widget.reservePressure)
+          .toStringAsFixed(0),
+    );
+  }
+
+  @override
+  void didUpdateWidget(_ReservePressureInput oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.reservePressure != widget.reservePressure) {
+      final newText = widget.units
+          .convertPressure(widget.reservePressure)
+          .toStringAsFixed(0);
+      if (_controller.text != newText) {
+        _controller.text = newText;
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(context.l10n.divePlanner_label_reserve),
+        const SizedBox(width: 8),
+        SizedBox(
+          width: 80,
+          child: TextField(
+            controller: _controller,
+            decoration: InputDecoration(
+              isDense: true,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 8,
+                vertical: 8,
+              ),
+              suffixText: widget.units.pressureSymbol,
+            ),
+            keyboardType: TextInputType.number,
+            onChanged: (value) {
+              final parsed = double.tryParse(value);
+              if (parsed != null) {
+                widget.onChanged(widget.units.pressureToBar(parsed));
+              }
+            },
+          ),
+        ),
+      ],
+    );
   }
 }
 

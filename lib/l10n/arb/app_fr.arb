@@ -1567,6 +1567,7 @@
   "divePlanner_label_ndl": "DTR",
   "divePlanner_label_planSettings": "Paramètres du plan",
   "divePlanner_label_remaining": "Restant",
+  "divePlanner_label_reserve": "Réserve :",
   "divePlanner_label_resultsWithWarnings": "Résultats, {count} avertissements",
   "divePlanner_label_runtime": "Durée totale",
   "divePlanner_label_sacRate": "Taux CAS :",

@@ -4798,6 +4798,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get divePlanner_label_remaining => 'Maradt';
 
   @override
+  String get divePlanner_label_reserve => 'Tartalék:';
+
+  @override
   String get divePlanner_label_runtime => 'Futási idő';
 
   @override

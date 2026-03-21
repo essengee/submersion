@@ -4683,6 +4683,9 @@ class AppLocalizationsHe extends AppLocalizations {
   String get divePlanner_label_remaining => 'נותר';
 
   @override
+  String get divePlanner_label_reserve => 'עתודה:';
+
+  @override
   String get divePlanner_label_runtime => 'זמן ריצה';
 
   @override

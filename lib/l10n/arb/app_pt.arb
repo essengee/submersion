@@ -1567,6 +1567,7 @@
   "divePlanner_label_ndl": "NDL",
   "divePlanner_label_planSettings": "Configurações do Plano",
   "divePlanner_label_remaining": "Restante",
+  "divePlanner_label_reserve": "Reserva:",
   "divePlanner_label_resultsWithWarnings": "Resultados, {count} avisos",
   "divePlanner_label_runtime": "Tempo Total",
   "divePlanner_label_sacRate": "Taxa SAC:",

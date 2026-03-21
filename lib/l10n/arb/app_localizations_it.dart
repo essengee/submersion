@@ -4820,6 +4820,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get divePlanner_label_remaining => 'Rimanente';
 
   @override
+  String get divePlanner_label_reserve => 'Riserva:';
+
+  @override
   String get divePlanner_label_runtime => 'Tempo Totale';
 
   @override

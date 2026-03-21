@@ -4776,6 +4776,9 @@ class AppLocalizationsNl extends AppLocalizations {
   String get divePlanner_label_remaining => 'Resterend';
 
   @override
+  String get divePlanner_label_reserve => 'Reserve:';
+
+  @override
   String get divePlanner_label_runtime => 'Looptijd';
 
   @override

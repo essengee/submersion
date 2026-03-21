@@ -8314,6 +8314,12 @@ abstract class AppLocalizations {
   /// **'Remaining'**
   String get divePlanner_label_remaining;
 
+  /// No description provided for @divePlanner_label_reserve.
+  ///
+  /// In en, this message translates to:
+  /// **'Reserve:'**
+  String get divePlanner_label_reserve;
+
   /// No description provided for @divePlanner_label_runtime.
   ///
   /// In en, this message translates to:

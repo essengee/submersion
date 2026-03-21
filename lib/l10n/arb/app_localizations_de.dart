@@ -4810,6 +4810,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get divePlanner_label_remaining => 'Verbleibend';
 
   @override
+  String get divePlanner_label_reserve => 'Reserve:';
+
+  @override
   String get divePlanner_label_runtime => 'Laufzeit';
 
   @override

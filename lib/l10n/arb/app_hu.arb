@@ -1567,6 +1567,7 @@
   "divePlanner_label_ndl": "NDL",
   "divePlanner_label_planSettings": "Terv beállításai",
   "divePlanner_label_remaining": "Maradt",
+  "divePlanner_label_reserve": "Tartalék:",
   "divePlanner_label_resultsWithWarnings": "Eredmények, {count} figyelmeztetés",
   "divePlanner_label_runtime": "Futási idő",
   "divePlanner_label_sacRate": "SAC érték:",

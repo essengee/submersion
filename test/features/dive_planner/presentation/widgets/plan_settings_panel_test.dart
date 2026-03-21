@@ -3,15 +3,13 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:submersion/core/constants/units.dart';
 import 'package:submersion/core/providers/provider.dart';
-import 'package:submersion/features/dive_planner/presentation/providers/dive_planner_providers.dart';
 import 'package:submersion/features/dive_planner/presentation/widgets/plan_settings_panel.dart';
 import 'package:submersion/features/settings/presentation/providers/settings_providers.dart';
 
 import '../../../../helpers/test_app.dart';
 
-/// Minimal [SettingsNotifier] stub that returns [AppSettings] with the given
-/// [pressureUnit]. Uses [noSuchMethod] so we don't have to implement every
-/// setter on the real notifier.
+/// Minimal [SettingsNotifier] stub. Uses [noSuchMethod] so we don't have to
+/// implement every setter on the real notifier.
 class _TestSettingsNotifier extends StateNotifier<AppSettings>
     implements SettingsNotifier {
   _TestSettingsNotifier({PressureUnit pressureUnit = PressureUnit.bar})
@@ -36,9 +34,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // The field label should be visible
       expect(find.text('Reserve:'), findsOneWidget);
-      // The unit suffix should show bar
       expect(find.text('bar'), findsOneWidget);
     });
 
@@ -72,7 +68,6 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // The text field should contain '50'
       final textField = tester.widget<TextField>(
         find.widgetWithText(TextField, '50'),
       );

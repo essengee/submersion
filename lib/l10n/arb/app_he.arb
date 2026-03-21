@@ -1567,6 +1567,7 @@
   "divePlanner_label_ndl": "NDL",
   "divePlanner_label_planSettings": "הגדרות תכנית",
   "divePlanner_label_remaining": "נותר",
+  "divePlanner_label_reserve": "עתודה:",
   "divePlanner_label_resultsWithWarnings": "תוצאות, {count} אזהרות",
   "divePlanner_label_runtime": "זמן ריצה",
   "divePlanner_label_sacRate": "קצב SAC:",

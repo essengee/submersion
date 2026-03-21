@@ -4703,6 +4703,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get divePlanner_label_remaining => 'المتبقي';
 
   @override
+  String get divePlanner_label_reserve => 'الاحتياطي:';
+
+  @override
   String get divePlanner_label_runtime => 'وقت التشغيل';
 
   @override

@@ -1567,6 +1567,7 @@
   "divePlanner_label_ndl": "NDL",
   "divePlanner_label_planSettings": "إعدادات الخطة",
   "divePlanner_label_remaining": "المتبقي",
+  "divePlanner_label_reserve": "الاحتياطي:",
   "divePlanner_label_resultsWithWarnings": "النتائج، {count} تحذير",
   "divePlanner_label_runtime": "وقت التشغيل",
   "divePlanner_label_sacRate": "معدل SAC:",
