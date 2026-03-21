@@ -65,11 +65,20 @@ class StatisticsGasPage extends ConsumerWidget {
       title: context.l10n.statistics_gas_sacTrend_title,
       subtitle: context.l10n.statistics_gas_sacTrend_subtitle,
       child: sacTrendAsync.when(
-        data: (data) => TrendLineChart(
-          data: data,
-          lineColor: Colors.blue,
-          valueFormatter: (value) => '${value.toStringAsFixed(1)} $unitSymbol',
-        ),
+        data: (data) {
+          double convert(double v) => sacUnit == SacUnit.litersPerMin
+              ? units.convertVolume(v)
+              : units.convertPressure(v);
+
+          return TrendLineChart(
+            data: data,
+            lineColor: Colors.blue,
+            yAxisLabel: unitSymbol,
+            valueFormatter: (value) =>
+                '${convert(value).toStringAsFixed(1)} $unitSymbol',
+            yAxisFormatter: (value) => convert(value).toStringAsFixed(1),
+          );
+        },
         loading: () => const SizedBox(
           height: 200,
           child: Center(child: CircularProgressIndicator()),
@@ -156,7 +165,10 @@ class StatisticsGasPage extends ConsumerWidget {
               final sac = entry.value;
               final isFirst = entry.key == data.keys.first;
               final displayName = getRoleDisplayName(role);
-              final sacValue = '${sac.toStringAsFixed(1)} $unitSymbol';
+              final convertedSac = sacUnit == SacUnit.litersPerMin
+                  ? units.convertVolume(sac)
+                  : units.convertPressure(sac);
+              final sacValue = '${convertedSac.toStringAsFixed(1)} $unitSymbol';
 
               return Semantics(
                 label: statLabel(name: displayName, value: sacValue),
@@ -229,13 +241,20 @@ class StatisticsGasPage extends ConsumerWidget {
             );
           }
 
+          String formatSacRecord(double? value) {
+            if (value == null) return '-- $unitSymbol';
+            final converted = sacUnit == SacUnit.litersPerMin
+                ? units.convertVolume(value)
+                : units.convertPressure(value);
+            return '${converted.toStringAsFixed(1)} $unitSymbol';
+          }
+
           return Column(
             children: [
               if (records.best != null)
                 ValueRankingCard(
                   title: context.l10n.statistics_gas_sacRecords_best,
-                  value:
-                      '${records.best!.value?.toStringAsFixed(1)} $unitSymbol',
+                  value: formatSacRecord(records.best!.value),
                   subtitle: records.best!.subtitle,
                   icon: Icons.emoji_events,
                   iconColor: Colors.green,
@@ -246,8 +265,7 @@ class StatisticsGasPage extends ConsumerWidget {
               if (records.worst != null)
                 ValueRankingCard(
                   title: context.l10n.statistics_gas_sacRecords_highest,
-                  value:
-                      '${records.worst!.value?.toStringAsFixed(1)} $unitSymbol',
+                  value: formatSacRecord(records.worst!.value),
                   subtitle: records.worst!.subtitle,
                   icon: Icons.speed,
                   iconColor: Colors.orange,
