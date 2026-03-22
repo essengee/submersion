@@ -309,7 +309,7 @@ class PlanCalculatorService {
             PlanWarning(
               type: PlanWarningType.gasLow,
               severity: PlanWarningSeverity.alert,
-              message: 'Tank ${tank.name ?? tank.gasMix.name} below reserve',
+              message: 'Tank ${tank.name ?? tank.gasMix.name} below ${reservePressure.toStringAsFixed(0)} bar reserve',
               value: remainingPressure.toDouble(),
               threshold: reservePressure,
             ),
