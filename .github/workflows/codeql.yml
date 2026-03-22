@@ -41,43 +41,8 @@ jobs:
         with:
           category: '/language:${{ matrix.language }}'
 
-  analyze-cpp:
-    name: Analyze (c-cpp)
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          submodules: true
-
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
-        with:
-          languages: c-cpp
-
-      - name: Install build dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libusb-1.0-0-dev libhidapi-dev libblkid-dev
-
-      - name: Build native C code
-        run: |
-          if [ -d "native" ]; then
-            cd native
-            if [ -f "Makefile" ]; then
-              make || true
-            elif [ -f "CMakeLists.txt" ]; then
-              cmake -B build && cmake --build build || true
-            fi
-          fi
-
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
-        with:
-          category: '/language:c-cpp'
-
-  analyze-swift:
-    name: Analyze (swift)
+  analyze-swift-and-cpp:
+    name: Analyze (swift, c-cpp)
     runs-on: macos-14
 
     steps:
@@ -111,7 +76,7 @@ jobs:
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
-          languages: swift
+          languages: swift, c-cpp
 
       - name: Build macOS for CodeQL
         run: |
@@ -121,12 +86,10 @@ jobs:
             -e 's/PROVISIONING_PROFILE_SPECIFIER = ".*"/PROVISIONING_PROFILE_SPECIFIER = ""/g' \
             -e 's/"CODE_SIGN_IDENTITY\[sdk=macosx\*\]" = ".*"/"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-"/g' \
             macos/Runner.xcodeproj/project.pbxproj
-          flutter build macos --release ${{ env.DART_DEFINES }}
+          flutter build macos --release "${{ env.DART_DEFINES }}"
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
-        with:
-          category: '/language:swift'
 
   analyze-java-kotlin:
     name: Analyze (java-kotlin)
@@ -164,7 +127,7 @@ jobs:
           languages: java-kotlin
 
       - name: Build Android for CodeQL
-        run: flutter build apk --release ${{ env.DART_DEFINES }}
+        run: flutter build apk --release "${{ env.DART_DEFINES }}"
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
