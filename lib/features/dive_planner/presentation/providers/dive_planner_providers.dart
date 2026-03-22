@@ -41,11 +41,15 @@ class DivePlanNotifier extends StateNotifier<DivePlanState> {
   final PlanCalculatorService _calculator;
   final double _defaultReservePressure;
 
-  DivePlanNotifier(this._calculator, {double reservePressure = DivePlanState.kDefaultReservePressureBar})
-    : _defaultReservePressure = reservePressure,
-      super(_createInitialState(reservePressure: reservePressure));
+  DivePlanNotifier(
+    this._calculator, {
+    double reservePressure = DivePlanState.kDefaultReservePressureBar,
+  }) : _defaultReservePressure = reservePressure,
+       super(_createInitialState(reservePressure: reservePressure));
 
-  static DivePlanState _createInitialState({double reservePressure = DivePlanState.kDefaultReservePressureBar}) {
+  static DivePlanState _createInitialState({
+    double reservePressure = DivePlanState.kDefaultReservePressureBar,
+  }) {
     final now = DateTime.now();
     return DivePlanState(
       id: _uuid.v4(),

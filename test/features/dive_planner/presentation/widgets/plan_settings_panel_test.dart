@@ -197,30 +197,28 @@ void main() {
       expect(find.textContaining('Exceeds tank pressure'), findsNothing);
     });
 
-    testWidgets(
-      'shows error when reserve exceeds max tank pressure in psi',
-      (tester) async {
-        await tester.pumpWidget(
-          testApp(
-            overrides: [
-              settingsProvider.overrideWith(
-                (ref) =>
-                    _TestSettingsNotifier(pressureUnit: PressureUnit.psi),
-              ),
-            ],
-            child: const SingleChildScrollView(child: PlanSettingsPanel()),
-          ),
-        );
-        await tester.pumpAndSettle();
+    testWidgets('shows error when reserve exceeds max tank pressure in psi', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        testApp(
+          overrides: [
+            settingsProvider.overrideWith(
+              (ref) => _TestSettingsNotifier(pressureUnit: PressureUnit.psi),
+            ),
+          ],
+          child: const SingleChildScrollView(child: PlanSettingsPanel()),
+        ),
+      );
+      await tester.pumpAndSettle();
 
-        // Default tank is 200 bar ≈ 2901 psi; entering 3000 should error
-        final reserveField = find.widgetWithText(TextField, '500');
-        await tester.enterText(reserveField, '3000');
-        await tester.pumpAndSettle();
+      // Default tank is 200 bar ≈ 2901 psi; entering 3000 should error
+      final reserveField = find.widgetWithText(TextField, '500');
+      await tester.enterText(reserveField, '3000');
+      await tester.pumpAndSettle();
 
-        expect(find.textContaining('Exceeds tank pressure'), findsOneWidget);
-      },
-    );
+      expect(find.textContaining('Exceeds tank pressure'), findsOneWidget);
+    });
 
     testWidgets(
       'no error when reserve equals max tank pressure in psi (2901)',
@@ -229,8 +227,7 @@ void main() {
           testApp(
             overrides: [
               settingsProvider.overrideWith(
-                (ref) =>
-                    _TestSettingsNotifier(pressureUnit: PressureUnit.psi),
+                (ref) => _TestSettingsNotifier(pressureUnit: PressureUnit.psi),
               ),
             ],
             child: const SingleChildScrollView(child: PlanSettingsPanel()),
@@ -247,57 +244,52 @@ void main() {
       },
     );
 
-    testWidgets(
-      'shows default assumption message when field cleared in bar',
-      (tester) async {
-        await tester.pumpWidget(
-          testApp(
-            overrides: [
-              settingsProvider.overrideWith(
-                (ref) => _TestSettingsNotifier(),
-              ),
-            ],
-            child: const SingleChildScrollView(child: PlanSettingsPanel()),
-          ),
-        );
-        await tester.pumpAndSettle();
+    testWidgets('shows default assumption message when field cleared in bar', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        testApp(
+          overrides: [
+            settingsProvider.overrideWith((ref) => _TestSettingsNotifier()),
+          ],
+          child: const SingleChildScrollView(child: PlanSettingsPanel()),
+        ),
+      );
+      await tester.pumpAndSettle();
 
-        final reserveField = find.widgetWithText(TextField, '50');
-        await tester.enterText(reserveField, '');
-        await tester.pumpAndSettle();
+      final reserveField = find.widgetWithText(TextField, '50');
+      await tester.enterText(reserveField, '');
+      await tester.pumpAndSettle();
 
-        expect(
-          find.textContaining('Not entered — assuming 50 bar'),
-          findsOneWidget,
-        );
-      },
-    );
+      expect(
+        find.textContaining('Not entered — assuming 50 bar'),
+        findsOneWidget,
+      );
+    });
 
-    testWidgets(
-      'shows default assumption message when field cleared in psi',
-      (tester) async {
-        await tester.pumpWidget(
-          testApp(
-            overrides: [
-              settingsProvider.overrideWith(
-                (ref) =>
-                    _TestSettingsNotifier(pressureUnit: PressureUnit.psi),
-              ),
-            ],
-            child: const SingleChildScrollView(child: PlanSettingsPanel()),
-          ),
-        );
-        await tester.pumpAndSettle();
+    testWidgets('shows default assumption message when field cleared in psi', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        testApp(
+          overrides: [
+            settingsProvider.overrideWith(
+              (ref) => _TestSettingsNotifier(pressureUnit: PressureUnit.psi),
+            ),
+          ],
+          child: const SingleChildScrollView(child: PlanSettingsPanel()),
+        ),
+      );
+      await tester.pumpAndSettle();
 
-        final reserveField = find.widgetWithText(TextField, '500');
-        await tester.enterText(reserveField, '');
-        await tester.pumpAndSettle();
+      final reserveField = find.widgetWithText(TextField, '500');
+      await tester.enterText(reserveField, '');
+      await tester.pumpAndSettle();
 
-        expect(
-          find.textContaining('Not entered — assuming 500 psi'),
-          findsOneWidget,
-        );
-      },
-    );
+      expect(
+        find.textContaining('Not entered — assuming 500 psi'),
+        findsOneWidget,
+      );
+    });
   });
 }

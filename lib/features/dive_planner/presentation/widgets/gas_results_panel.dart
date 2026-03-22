@@ -64,12 +64,13 @@ class GasResultsPanel extends ConsumerWidget {
               )
             else
               ...results.gasConsumptions.map(
-                (consumption) =>
-                    _GasConsumptionCard(
-                      consumption: consumption,
-                      reservePressure: ref.watch(divePlanNotifierProvider).reservePressure,
-                      units: units,
-                    ),
+                (consumption) => _GasConsumptionCard(
+                  consumption: consumption,
+                  reservePressure: ref
+                      .watch(divePlanNotifierProvider)
+                      .reservePressure,
+                  units: units,
+                ),
               ),
           ],
         ),

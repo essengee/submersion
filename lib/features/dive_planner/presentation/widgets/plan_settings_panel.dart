@@ -125,21 +125,22 @@ class PlanSettingsPanel extends ConsumerWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: _ReservePressureInput(
-                  reservePressure: planState.reservePressure,
-                  defaultPressureBar: settings.pressureUnit == PressureUnit.psi
-                      ? PressureUnit.psi.convert(500, PressureUnit.bar)
-                      : DivePlanState.kDefaultReservePressureBar,
-                  maxPressureBar: planState.tanks
-                      .map((t) => t.startPressure ?? 0)
-                      .fold(0, (a, b) => a + b)
-                      .toDouble(),
-                  units: units,
-                  onChanged: (value) {
-                    ref
-                        .read(divePlanNotifierProvider.notifier)
-                        .updateReservePressure(value);
-                  },
-                ),
+                    reservePressure: planState.reservePressure,
+                    defaultPressureBar:
+                        settings.pressureUnit == PressureUnit.psi
+                        ? PressureUnit.psi.convert(500, PressureUnit.bar)
+                        : DivePlanState.kDefaultReservePressureBar,
+                    maxPressureBar: planState.tanks
+                        .map((t) => t.startPressure ?? 0)
+                        .fold(0, (a, b) => a + b)
+                        .toDouble(),
+                    units: units,
+                    onChanged: (value) {
+                      ref
+                          .read(divePlanNotifierProvider.notifier)
+                          .updateReservePressure(value);
+                    },
+                  ),
                 ),
               ],
             ),
@@ -367,7 +368,10 @@ class _ReservePressureInputState extends State<_ReservePressureInput> {
     final bar = widget.units.pressureToBar(parsed);
     if (bar <= 0) return context.l10n.divePlanner_error_reserveMustBePositive;
     if (widget.maxPressureBar > 0 &&
-        parsed > widget.units.convertPressure(widget.maxPressureBar).roundToDouble()) {
+        parsed >
+            widget.units
+                .convertPressure(widget.maxPressureBar)
+                .roundToDouble()) {
       return context.l10n.divePlanner_error_reserveExceedsTank;
     }
     return null;
@@ -417,21 +421,21 @@ class _ReservePressureInputState extends State<_ReservePressureInput> {
               child: Semantics(
                 label: 'Reserve pressure in ${widget.units.pressureSymbol}',
                 child: TextField(
-                controller: _controller,
-                decoration: InputDecoration(
-                  isDense: true,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 8,
+                  controller: _controller,
+                  decoration: InputDecoration(
+                    isDense: true,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 8,
+                    ),
+                    suffixText: widget.units.pressureSymbol,
+                    // Error text rendered separately below
+                    errorText: _isError ? '' : null,
+                    errorStyle: const TextStyle(height: 0, fontSize: 0),
                   ),
-                  suffixText: widget.units.pressureSymbol,
-                  // Error text rendered separately below
-                  errorText: _isError ? '' : null,
-                  errorStyle: const TextStyle(height: 0, fontSize: 0),
+                  keyboardType: TextInputType.number,
+                  onChanged: _validate,
                 ),
-                keyboardType: TextInputType.number,
-                onChanged: _validate,
-              ),
               ),
             ),
           ],
