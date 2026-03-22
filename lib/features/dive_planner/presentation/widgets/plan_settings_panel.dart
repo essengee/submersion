@@ -132,7 +132,7 @@ class PlanSettingsPanel extends ConsumerWidget {
                         : DivePlanState.kDefaultReservePressureBar,
                     maxPressureBar: planState.tanks
                         .map((t) => t.startPressure ?? 0)
-                        .fold(0, (a, b) => a + b)
+                        .fold(0, (a, b) => a > b ? a : b)
                         .toDouble(),
                     units: units,
                     onChanged: (value) {
