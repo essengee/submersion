@@ -115,26 +115,6 @@ void main() {
       expect(find.textContaining('Must be greater than 0'), findsOneWidget);
     });
 
-    testWidgets('shows error when reserve pressure is negative', (
-      tester,
-    ) async {
-      await tester.pumpWidget(
-        testApp(
-          overrides: [
-            settingsProvider.overrideWith((ref) => _TestSettingsNotifier()),
-          ],
-          child: const SingleChildScrollView(child: PlanSettingsPanel()),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      final reserveField = find.widgetWithText(TextField, '50');
-      await tester.enterText(reserveField, '-10');
-      await tester.pumpAndSettle();
-
-      expect(find.textContaining('Must be greater than 0'), findsOneWidget);
-    });
-
     testWidgets('shows error when reserve exceeds max tank pressure in bar', (
       tester,
     ) async {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:submersion/core/constants/units.dart';
 import 'package:submersion/core/deco/altitude_calculator.dart';
@@ -434,6 +435,7 @@ class _ReservePressureInputState extends State<_ReservePressureInput> {
                     errorStyle: const TextStyle(height: 0, fontSize: 0),
                   ),
                   keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   onChanged: _validate,
                 ),
               ),
