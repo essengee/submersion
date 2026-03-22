@@ -5194,6 +5194,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get diveSites_edit_appBar_editSite => 'Editar sitio';
 
   @override
+  String get diveSites_edit_appBar_merge => 'Fusionar';
+
+  @override
+  String get diveSites_edit_appBar_mergeSites => 'Fusionar puntos de buceo';
+
+  @override
   String get diveSites_edit_appBar_newSite => 'Nuevo sitio';
 
   @override
@@ -5201,6 +5207,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get diveSites_edit_button_addSite => 'Agregar sitio';
+
+  @override
+  String get diveSites_edit_button_mergeSites => 'Fusionar puntos de buceo';
 
   @override
   String get diveSites_edit_button_saveChanges => 'Guardar cambios';
@@ -5328,6 +5337,51 @@ class AppLocalizationsEs extends AppLocalizations {
       'Especies que esperas ver en este sitio';
 
   @override
+  String diveSites_edit_merge_confirmBody(int count) {
+    return 'Esto fusionará $count puntos de buceo en uno solo. Las inmersiones, los medios y las especies esperadas se combinarán bajo el punto de buceo superviviente. Los demás puntos se eliminarán.';
+  }
+
+  @override
+  String get diveSites_edit_merge_confirmTitle => 'Fusionar puntos de buceo';
+
+  @override
+  String get diveSites_edit_merge_fieldSourceCycleTooltip =>
+      'Usar valor del siguiente punto seleccionado';
+
+  @override
+  String diveSites_edit_merge_fieldSourceLabel(
+    Object siteName,
+    int current,
+    int total,
+  ) {
+    return 'De $siteName ($current/$total)';
+  }
+
+  @override
+  String get diveSites_edit_merge_fieldSourceMenuTooltip =>
+      'Seleccionar valor del punto seleccionado';
+
+  @override
+  String get diveSites_edit_merge_marineLifeHelperText =>
+      'Combinado de todos los puntos seleccionados';
+
+  @override
+  String diveSites_edit_merge_loadingErrorBody(Object error) {
+    return 'Error al cargar puntos de buceo: $error';
+  }
+
+  @override
+  String get diveSites_edit_merge_loadingErrorTitle =>
+      'Fusionar puntos de buceo';
+
+  @override
+  String get diveSites_edit_merge_notEnoughBody =>
+      'No hay suficientes puntos de buceo para fusionar.';
+
+  @override
+  String get diveSites_edit_merge_notEnoughTitle => 'Fusionar puntos de buceo';
+
+  @override
   String get diveSites_edit_rating_clear => 'Borrar calificacion';
 
   @override
@@ -5401,6 +5455,10 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get diveSites_edit_snackbar_siteAdded => 'Sitio agregado';
+
+  @override
+  String get diveSites_edit_snackbar_sitesMerged =>
+      'Puntos de buceo fusionados';
 
   @override
   String get diveSites_edit_snackbar_siteUpdated => 'Sitio actualizado';
@@ -5676,6 +5734,23 @@ class AppLocalizationsEs extends AppLocalizations {
   String get diveSites_list_bulkDelete_undo => 'Deshacer';
 
   @override
+  String get diveSites_list_merge_restored => 'Fusion deshecha';
+
+  @override
+  String diveSites_list_merge_snackbar(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'sitios fusionados',
+      one: 'sitio fusionado',
+    );
+    return '$count $_temp0';
+  }
+
+  @override
+  String get diveSites_list_merge_undo => 'Deshacer';
+
+  @override
   String get diveSites_list_emptyFiltered_clearAll =>
       'Borrar todos los filtros';
 
@@ -5744,6 +5819,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get diveSites_list_selection_deleteTooltip => 'Eliminar seleccionados';
+
+  @override
+  String get diveSites_list_selection_mergeTooltip => 'Fusionar seleccionados';
 
   @override
   String get diveSites_list_selection_deselectAllTooltip =>

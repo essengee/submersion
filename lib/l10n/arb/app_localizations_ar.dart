@@ -5080,6 +5080,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get diveSites_edit_appBar_editSite => 'تعديل الموقع';
 
   @override
+  String get diveSites_edit_appBar_merge => 'دمج';
+
+  @override
+  String get diveSites_edit_appBar_mergeSites => 'دمج المواقع';
+
+  @override
   String get diveSites_edit_appBar_newSite => 'موقع جديد';
 
   @override
@@ -5087,6 +5093,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get diveSites_edit_button_addSite => 'إضافة موقع';
+
+  @override
+  String get diveSites_edit_button_mergeSites => 'دمج المواقع';
 
   @override
   String get diveSites_edit_button_saveChanges => 'حفظ التغييرات';
@@ -5211,6 +5220,50 @@ class AppLocalizationsAr extends AppLocalizations {
       'الأنواع التي تتوقع رؤيتها في هذا الموقع';
 
   @override
+  String diveSites_edit_merge_confirmBody(int count) {
+    return 'سيتم دمج $count موقع في موقع واحد. سيتم جمع الغطسات والوسائط والأنواع المتوقعة تحت الموقع المتبقي. سيتم حذف المواقع الأخرى.';
+  }
+
+  @override
+  String get diveSites_edit_merge_confirmTitle => 'دمج المواقع';
+
+  @override
+  String get diveSites_edit_merge_fieldSourceCycleTooltip =>
+      'استخدام القيمة من الموقع المحدد التالي';
+
+  @override
+  String diveSites_edit_merge_fieldSourceLabel(
+    Object siteName,
+    int current,
+    int total,
+  ) {
+    return 'من $siteName ($current/$total)';
+  }
+
+  @override
+  String get diveSites_edit_merge_fieldSourceMenuTooltip =>
+      'حدد القيمة من الموقع المحدد';
+
+  @override
+  String get diveSites_edit_merge_marineLifeHelperText =>
+      'مجمّعة من جميع المواقع المحددة';
+
+  @override
+  String diveSites_edit_merge_loadingErrorBody(Object error) {
+    return 'فشل تحميل المواقع: $error';
+  }
+
+  @override
+  String get diveSites_edit_merge_loadingErrorTitle => 'دمج المواقع';
+
+  @override
+  String get diveSites_edit_merge_notEnoughBody =>
+      'عدد المواقع غير كافٍ للدمج.';
+
+  @override
+  String get diveSites_edit_merge_notEnoughTitle => 'دمج المواقع';
+
+  @override
   String get diveSites_edit_rating_clear => 'مسح التقييم';
 
   @override
@@ -5284,6 +5337,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get diveSites_edit_snackbar_siteAdded => 'تمت إضافة الموقع';
+
+  @override
+  String get diveSites_edit_snackbar_sitesMerged => 'تم دمج المواقع';
 
   @override
   String get diveSites_edit_snackbar_siteUpdated => 'تم تحديث الموقع';
@@ -5557,6 +5613,23 @@ class AppLocalizationsAr extends AppLocalizations {
   String get diveSites_list_bulkDelete_undo => 'تراجع';
 
   @override
+  String get diveSites_list_merge_restored => 'تم التراجع عن الدمج';
+
+  @override
+  String diveSites_list_merge_snackbar(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'مواقع',
+      one: 'موقع',
+    );
+    return 'تم دمج $count $_temp0';
+  }
+
+  @override
+  String get diveSites_list_merge_undo => 'تراجع';
+
+  @override
   String get diveSites_list_emptyFiltered_clearAll => 'مسح جميع الفلاتر';
 
   @override
@@ -5624,6 +5697,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get diveSites_list_selection_deleteTooltip => 'حذف المحدد';
+
+  @override
+  String get diveSites_list_selection_mergeTooltip => 'دمج المحدد';
 
   @override
   String get diveSites_list_selection_deselectAllTooltip => 'إلغاء تحديد الكل';
