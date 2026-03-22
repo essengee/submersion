@@ -272,4 +272,129 @@ void main() {
       );
     });
   });
+
+  group('PlanSettingsPanel altitude input', () {
+    testWidgets('shows altitude group chip when altitude entered', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(1200, 800);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await tester.pumpWidget(
+        testApp(
+          overrides: [
+            settingsProvider.overrideWith((ref) => _TestSettingsNotifier()),
+          ],
+          child: const SingleChildScrollView(child: PlanSettingsPanel()),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Enter 1000m — should be Altitude Group 2 (caution)
+      final altitudeField = find.widgetWithText(TextField, '0');
+      await tester.enterText(altitudeField, '1000');
+      await tester.pumpAndSettle();
+
+      expect(find.text('Altitude Group 2'), findsOneWidget);
+      expect(find.textContaining('900-1800m'), findsOneWidget);
+    });
+
+    testWidgets('shows warning-level group chip for high altitude', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(1200, 800);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await tester.pumpWidget(
+        testApp(
+          overrides: [
+            settingsProvider.overrideWith((ref) => _TestSettingsNotifier()),
+          ],
+          child: const SingleChildScrollView(child: PlanSettingsPanel()),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Enter 2000m — should be Altitude Group 3 (warning)
+      final altitudeField = find.widgetWithText(TextField, '0');
+      await tester.enterText(altitudeField, '2000');
+      await tester.pumpAndSettle();
+
+      expect(find.text('Altitude Group 3'), findsOneWidget);
+    });
+
+    testWidgets('shows extreme altitude group chip for very high altitude', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(1200, 800);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await tester.pumpWidget(
+        testApp(
+          overrides: [
+            settingsProvider.overrideWith((ref) => _TestSettingsNotifier()),
+          ],
+          child: const SingleChildScrollView(child: PlanSettingsPanel()),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Enter 3000m — should be Extreme Altitude (severe)
+      final altitudeField = find.widgetWithText(TextField, '0');
+      await tester.enterText(altitudeField, '3000');
+      await tester.pumpAndSettle();
+
+      expect(find.text('Extreme Altitude'), findsOneWidget);
+    });
+
+    testWidgets('no group chip shown at sea level', (tester) async {
+      await tester.pumpWidget(
+        testApp(
+          overrides: [
+            settingsProvider.overrideWith((ref) => _TestSettingsNotifier()),
+          ],
+          child: const SingleChildScrollView(child: PlanSettingsPanel()),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Enter 100m — still sea level group, no chip
+      final altitudeField = find.widgetWithText(TextField, '0');
+      await tester.enterText(altitudeField, '100');
+      await tester.pumpAndSettle();
+
+      expect(find.text('Sea Level'), findsNothing);
+      expect(find.text('Altitude Group 1'), findsNothing);
+    });
+
+    testWidgets('shows info-level group chip for low altitude', (tester) async {
+      tester.view.physicalSize = const Size(1200, 800);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await tester.pumpWidget(
+        testApp(
+          overrides: [
+            settingsProvider.overrideWith((ref) => _TestSettingsNotifier()),
+          ],
+          child: const SingleChildScrollView(child: PlanSettingsPanel()),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Enter 500m — should be Altitude Group 1 (info)
+      final altitudeField = find.widgetWithText(TextField, '0');
+      await tester.enterText(altitudeField, '500');
+      await tester.pumpAndSettle();
+
+      expect(find.text('Altitude Group 1'), findsOneWidget);
+    });
+  });
 }
