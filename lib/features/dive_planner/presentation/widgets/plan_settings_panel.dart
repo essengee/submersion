@@ -413,7 +413,9 @@ class _ReservePressureInputState extends State<_ReservePressureInput> {
             const SizedBox(width: 8),
             SizedBox(
               width: 80,
-              child: TextField(
+              child: Semantics(
+                label: 'Reserve pressure in ${widget.units.pressureSymbol}',
+                child: TextField(
                 controller: _controller,
                 decoration: InputDecoration(
                   isDense: true,
@@ -428,6 +430,7 @@ class _ReservePressureInputState extends State<_ReservePressureInput> {
                 ),
                 keyboardType: TextInputType.number,
                 onChanged: _validate,
+              ),
               ),
             ),
           ],
