@@ -120,7 +120,9 @@ class PlanSettingsPanel extends ConsumerWidget {
                     },
                   ),
                 ),
-                _ReservePressureInput(
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _ReservePressureInput(
                   reservePressure: planState.reservePressure,
                   maxPressureBar: planState.tanks
                       .map((t) => t.startPressure ?? 0)
@@ -132,6 +134,7 @@ class PlanSettingsPanel extends ConsumerWidget {
                         .read(divePlanNotifierProvider.notifier)
                         .updateReservePressure(value);
                   },
+                ),
                 ),
               ],
             ),
