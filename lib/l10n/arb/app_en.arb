@@ -8413,6 +8413,7 @@
   "diveComputer_discovery_titleFindDevice": "Find Device",
   "diveComputer_discovery_unknownDevice": "Unknown Device",
   "diveComputer_discovery_unknownDeviceDescription": "This device is not in our library. We'll try to connect, but download may not work.",
+  "diveComputer_discovery_usbInstructions": "Connect your dive computer via USB cable, then select it below.",
   "diveComputer_discovery_usbNoResults": "No devices matching \"{query}\"",
   "@diveComputer_discovery_usbNoResults": {
     "placeholders": {

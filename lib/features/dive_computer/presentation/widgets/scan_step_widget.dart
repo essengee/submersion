@@ -331,6 +331,7 @@ class _UsbDevicesTabState extends ConsumerState<_UsbDevicesTab> {
         }
 
         final filtered = _filterDevices(usbDevicesByManufacturer);
+        final manufacturers = filtered.keys.toList();
 
         return Column(
           children: [
@@ -362,6 +363,7 @@ class _UsbDevicesTabState extends ConsumerState<_UsbDevicesTab> {
                         ),
                         IconButton(
                           icon: const Icon(Icons.close),
+                          tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
                           onPressed: () {
                             _searchController.clear();
                             setState(() {
@@ -378,7 +380,7 @@ class _UsbDevicesTabState extends ConsumerState<_UsbDevicesTab> {
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            'Connect your dive computer via USB cable, then select it below.',
+                            context.l10n.diveComputer_discovery_usbInstructions,
                             style: theme.textTheme.bodyMedium?.copyWith(
                               color: colorScheme.onSurfaceVariant,
                             ),
@@ -386,6 +388,7 @@ class _UsbDevicesTabState extends ConsumerState<_UsbDevicesTab> {
                         ),
                         IconButton(
                           icon: const Icon(Icons.search),
+                          tooltip: context.l10n.diveComputer_discovery_usbSearchHint,
                           onPressed: () => setState(() => _isSearching = true),
                         ),
                       ],
@@ -409,7 +412,7 @@ class _UsbDevicesTabState extends ConsumerState<_UsbDevicesTab> {
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       itemCount: filtered.length,
                       itemBuilder: (context, index) {
-                        final manufacturer = filtered.keys.elementAt(index);
+                        final manufacturer = manufacturers[index];
                         final devices = filtered[manufacturer]!;
 
                         return Column(

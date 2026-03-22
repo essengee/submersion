@@ -13598,6 +13598,10 @@ class AppLocalizationsHe extends AppLocalizations {
       'מכשיר זה אינו בספרייה שלנו. ננסה להתחבר, אך ייתכן שההורדה לא תעבוד.';
 
   @override
+  String get diveComputer_discovery_usbInstructions =>
+      'חבר את מחשב הצלילה שלך באמצעות כבל USB, ואז בחר אותו למטה.';
+
+  @override
   String diveComputer_discovery_usbNoResults(String query) {
     return 'לא נמצאו מכשירים עבור \"$query\"';
   }

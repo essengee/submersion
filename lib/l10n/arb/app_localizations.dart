@@ -23757,6 +23757,12 @@ abstract class AppLocalizations {
   /// **'This device is not in our library. We\'ll try to connect, but download may not work.'**
   String get diveComputer_discovery_unknownDeviceDescription;
 
+  /// No description provided for @diveComputer_discovery_usbInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect your dive computer via USB cable, then select it below.'**
+  String get diveComputer_discovery_usbInstructions;
+
   /// No description provided for @diveComputer_discovery_usbNoResults.
   ///
   /// In en, this message translates to:
