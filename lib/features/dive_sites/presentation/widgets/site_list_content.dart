@@ -68,6 +68,7 @@ class _SiteListContentState extends ConsumerState<SiteListContent> {
   bool _isSelectionMode = false;
   final Set<String> _selectedIds = {};
   List<DiveSite>? _deletedSites;
+  MergeSnapshot? _mergeSnapshot;
 
   @override
   void initState() {
@@ -193,6 +194,63 @@ class _SiteListContentState extends ConsumerState<SiteListContent> {
     setState(() {
       _selectedIds.clear();
     });
+  }
+
+  Future<void> _startMerge() async {
+    final selectedCount = _selectedIds.length;
+    final result = await context.push<SiteMergeResult>(
+      '/sites/merge',
+      extra: _selectedIds.toList(),
+    );
+
+    if (!mounted || result == null) return;
+
+    _mergeSnapshot = result.snapshot;
+    final mergedId = result.survivorId;
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
+    setState(() {
+      _isSelectionMode = false;
+      _selectedIds.clear();
+    });
+
+    if (widget.onItemSelected != null) {
+      _selectionFromList = true;
+      widget.onItemSelected!(mergedId);
+    }
+
+    // Show undo snackbar if a snapshot was captured by the merge page
+    if (_mergeSnapshot != null && mounted) {
+      scaffoldMessenger.clearSnackBars();
+      scaffoldMessenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            context.l10n.diveSites_list_merge_snackbar(selectedCount),
+          ),
+          duration: const Duration(seconds: 5),
+          showCloseIcon: true,
+          action: SnackBarAction(
+            label: context.l10n.diveSites_list_merge_undo,
+            onPressed: () async {
+              if (_mergeSnapshot != null) {
+                await ref
+                    .read(siteListNotifierProvider.notifier)
+                    .undoMerge(_mergeSnapshot!);
+                _mergeSnapshot = null;
+                if (mounted) {
+                  scaffoldMessenger.showSnackBar(
+                    SnackBar(
+                      content: Text(context.l10n.diveSites_list_merge_restored),
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
+                }
+              }
+            },
+          ),
+        ),
+      );
+    }
   }
 
   Future<void> _confirmAndDelete() async {
@@ -516,28 +574,32 @@ class _SiteListContentState extends ConsumerState<SiteListContent> {
             ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
           ),
           const Spacer(),
-          if (_selectedIds.length < sites.length)
-            IconButton(
-              icon: const Icon(Icons.select_all, size: 20),
-              tooltip: context.l10n.diveSites_list_selection_selectAllTooltip,
-              onPressed: () => _selectAll(sites),
+          IconButton(
+            icon: const Icon(Icons.select_all, size: 20),
+            tooltip: context.l10n.diveSites_list_selection_selectAllTooltip,
+            onPressed: _selectedIds.length < sites.length
+                ? () => _selectAll(sites)
+                : null,
+          ),
+          IconButton(
+            icon: const Icon(Icons.deselect, size: 20),
+            tooltip: context.l10n.diveSites_list_selection_deselectAllTooltip,
+            onPressed: _selectedIds.isNotEmpty ? _deselectAll : null,
+          ),
+          IconButton(
+            icon: const Icon(Icons.merge_type, size: 20),
+            tooltip: context.l10n.diveSites_list_selection_mergeTooltip,
+            onPressed: _selectedIds.length > 1 ? _startMerge : null,
+          ),
+          IconButton(
+            icon: Icon(
+              Icons.delete,
+              size: 20,
+              color: Theme.of(context).colorScheme.error,
             ),
-          if (_selectedIds.isNotEmpty)
-            IconButton(
-              icon: const Icon(Icons.deselect, size: 20),
-              tooltip: context.l10n.diveSites_list_selection_deselectAllTooltip,
-              onPressed: _deselectAll,
-            ),
-          if (_selectedIds.isNotEmpty)
-            IconButton(
-              icon: Icon(
-                Icons.delete,
-                size: 20,
-                color: Theme.of(context).colorScheme.error,
-              ),
-              tooltip: context.l10n.diveSites_list_selection_deleteTooltip,
-              onPressed: _confirmAndDelete,
-            ),
+            tooltip: context.l10n.diveSites_list_selection_deleteTooltip,
+            onPressed: _selectedIds.isNotEmpty ? _confirmAndDelete : null,
+          ),
         ],
       ),
     );
@@ -554,27 +616,28 @@ class _SiteListContentState extends ConsumerState<SiteListContent> {
         context.l10n.diveSites_list_selection_count(_selectedIds.length),
       ),
       actions: [
-        if (_selectedIds.length < sites.length)
-          IconButton(
-            icon: const Icon(Icons.select_all),
-            tooltip: context.l10n.diveSites_list_selection_selectAllTooltip,
-            onPressed: () => _selectAll(sites),
-          ),
-        if (_selectedIds.isNotEmpty)
-          IconButton(
-            icon: const Icon(Icons.deselect),
-            tooltip: context.l10n.diveSites_list_selection_deselectAllTooltip,
-            onPressed: _deselectAll,
-          ),
-        if (_selectedIds.isNotEmpty)
-          IconButton(
-            icon: Icon(
-              Icons.delete,
-              color: Theme.of(context).colorScheme.error,
-            ),
-            tooltip: context.l10n.diveSites_list_selection_deleteTooltip,
-            onPressed: _confirmAndDelete,
-          ),
+        IconButton(
+          icon: const Icon(Icons.select_all),
+          tooltip: context.l10n.diveSites_list_selection_selectAllTooltip,
+          onPressed: _selectedIds.length < sites.length
+              ? () => _selectAll(sites)
+              : null,
+        ),
+        IconButton(
+          icon: const Icon(Icons.deselect),
+          tooltip: context.l10n.diveSites_list_selection_deselectAllTooltip,
+          onPressed: _selectedIds.isNotEmpty ? _deselectAll : null,
+        ),
+        IconButton(
+          icon: const Icon(Icons.merge_type),
+          tooltip: context.l10n.diveSites_list_selection_mergeTooltip,
+          onPressed: _selectedIds.length > 1 ? _startMerge : null,
+        ),
+        IconButton(
+          icon: Icon(Icons.delete, color: Theme.of(context).colorScheme.error),
+          tooltip: context.l10n.diveSites_list_selection_deleteTooltip,
+          onPressed: _selectedIds.isNotEmpty ? _confirmAndDelete : null,
+        ),
       ],
     );
   }

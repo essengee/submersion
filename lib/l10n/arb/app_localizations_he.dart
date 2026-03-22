@@ -5055,6 +5055,12 @@ class AppLocalizationsHe extends AppLocalizations {
   String get diveSites_edit_appBar_editSite => 'ערוך אתר';
 
   @override
+  String get diveSites_edit_appBar_merge => 'מיזוג';
+
+  @override
+  String get diveSites_edit_appBar_mergeSites => 'מיזוג אתרי צלילה';
+
+  @override
   String get diveSites_edit_appBar_newSite => 'אתר חדש';
 
   @override
@@ -5062,6 +5068,9 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get diveSites_edit_button_addSite => 'הוסף אתר';
+
+  @override
+  String get diveSites_edit_button_mergeSites => 'מיזוג אתרי צלילה';
 
   @override
   String get diveSites_edit_button_saveChanges => 'שמור שינויים';
@@ -5184,6 +5193,49 @@ class AppLocalizationsHe extends AppLocalizations {
       'מינים שאתה מצפה לראות באתר זה';
 
   @override
+  String diveSites_edit_merge_confirmBody(int count) {
+    return 'פעולה זו תמזג $count אתרים לאחד. צלילות, מדיה ומינים צפויים ישולבו תחת האתר הנותר. שאר האתרים יימחקו.';
+  }
+
+  @override
+  String get diveSites_edit_merge_confirmTitle => 'מיזוג אתרי צלילה';
+
+  @override
+  String get diveSites_edit_merge_fieldSourceCycleTooltip =>
+      'השתמש בערך מהאתר הנבחר הבא';
+
+  @override
+  String diveSites_edit_merge_fieldSourceLabel(
+    Object siteName,
+    int current,
+    int total,
+  ) {
+    return 'מתוך $siteName ($current/$total)';
+  }
+
+  @override
+  String get diveSites_edit_merge_fieldSourceMenuTooltip =>
+      'בחר ערך מהאתר הנבחר';
+
+  @override
+  String get diveSites_edit_merge_marineLifeHelperText =>
+      'משולב מכל האתרים שנבחרו';
+
+  @override
+  String diveSites_edit_merge_loadingErrorBody(Object error) {
+    return 'נכשל בטעינת אתרים: $error';
+  }
+
+  @override
+  String get diveSites_edit_merge_loadingErrorTitle => 'מיזוג אתרי צלילה';
+
+  @override
+  String get diveSites_edit_merge_notEnoughBody => 'אין מספיק אתרים למיזוג.';
+
+  @override
+  String get diveSites_edit_merge_notEnoughTitle => 'מיזוג אתרי צלילה';
+
+  @override
   String get diveSites_edit_rating_clear => 'נקה דירוג';
 
   @override
@@ -5256,6 +5308,9 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get diveSites_edit_snackbar_siteAdded => 'האתר נוסף';
+
+  @override
+  String get diveSites_edit_snackbar_sitesMerged => 'אתרי צלילה מוזגו';
 
   @override
   String get diveSites_edit_snackbar_siteUpdated => 'האתר עודכן';
@@ -5527,6 +5582,23 @@ class AppLocalizationsHe extends AppLocalizations {
   String get diveSites_list_bulkDelete_undo => 'בטל';
 
   @override
+  String get diveSites_list_merge_restored => 'המיזוג בוטל';
+
+  @override
+  String diveSites_list_merge_snackbar(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'אתרים',
+      one: 'אתר',
+    );
+    return 'מוזגו $count $_temp0';
+  }
+
+  @override
+  String get diveSites_list_merge_undo => 'בטל';
+
+  @override
   String get diveSites_list_emptyFiltered_clearAll => 'נקה את כל המסננים';
 
   @override
@@ -5592,6 +5664,9 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get diveSites_list_selection_deleteTooltip => 'מחק נבחרים';
+
+  @override
+  String get diveSites_list_selection_mergeTooltip => 'מיזוג נבחרים';
 
   @override
   String get diveSites_list_selection_deselectAllTooltip => 'בטל בחירת הכל';

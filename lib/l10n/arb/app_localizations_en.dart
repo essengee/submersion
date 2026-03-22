@@ -5107,6 +5107,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get diveSites_edit_appBar_editSite => 'Edit Site';
 
   @override
+  String get diveSites_edit_appBar_merge => 'Merge';
+
+  @override
+  String get diveSites_edit_appBar_mergeSites => 'Merge Sites';
+
+  @override
   String get diveSites_edit_appBar_newSite => 'New Site';
 
   @override
@@ -5114,6 +5120,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get diveSites_edit_button_addSite => 'Add Site';
+
+  @override
+  String get diveSites_edit_button_mergeSites => 'Merge Sites';
 
   @override
   String get diveSites_edit_button_saveChanges => 'Save Changes';
@@ -5240,6 +5249,49 @@ class AppLocalizationsEn extends AppLocalizations {
       'Species you expect to see at this site';
 
   @override
+  String diveSites_edit_merge_confirmBody(int count) {
+    return 'This will merge $count sites into one. Dives, media, and expected species will be combined under the surviving site. The other sites will be deleted.';
+  }
+
+  @override
+  String get diveSites_edit_merge_confirmTitle => 'Merge Sites';
+
+  @override
+  String get diveSites_edit_merge_fieldSourceCycleTooltip =>
+      'Use value from next selected site';
+
+  @override
+  String diveSites_edit_merge_fieldSourceLabel(
+    Object siteName,
+    int current,
+    int total,
+  ) {
+    return 'From $siteName ($current/$total)';
+  }
+
+  @override
+  String get diveSites_edit_merge_fieldSourceMenuTooltip =>
+      'Select value from selected site';
+
+  @override
+  String get diveSites_edit_merge_marineLifeHelperText =>
+      'Combined from all selected sites';
+
+  @override
+  String diveSites_edit_merge_loadingErrorBody(Object error) {
+    return 'Failed to load sites: $error';
+  }
+
+  @override
+  String get diveSites_edit_merge_loadingErrorTitle => 'Merge Sites';
+
+  @override
+  String get diveSites_edit_merge_notEnoughBody => 'Not enough sites to merge.';
+
+  @override
+  String get diveSites_edit_merge_notEnoughTitle => 'Merge Sites';
+
+  @override
   String get diveSites_edit_rating_clear => 'Clear Rating';
 
   @override
@@ -5313,6 +5365,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get diveSites_edit_snackbar_siteAdded => 'Site added';
+
+  @override
+  String get diveSites_edit_snackbar_sitesMerged => 'Sites merged';
 
   @override
   String get diveSites_edit_snackbar_siteUpdated => 'Site updated';
@@ -5585,6 +5640,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get diveSites_list_bulkDelete_undo => 'Undo';
 
   @override
+  String get diveSites_list_merge_restored => 'Merge undone';
+
+  @override
+  String diveSites_list_merge_snackbar(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'sites',
+      one: 'site',
+    );
+    return 'Merged $count $_temp0';
+  }
+
+  @override
+  String get diveSites_list_merge_undo => 'Undo';
+
+  @override
   String get diveSites_list_emptyFiltered_clearAll => 'Clear All Filters';
 
   @override
@@ -5652,6 +5724,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get diveSites_list_selection_deleteTooltip => 'Delete Selected';
+
+  @override
+  String get diveSites_list_selection_mergeTooltip => 'Merge Selected';
 
   @override
   String get diveSites_list_selection_deselectAllTooltip => 'Deselect All';
