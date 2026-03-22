@@ -302,10 +302,9 @@ class _UsbDevicesTabState extends ConsumerState<_UsbDevicesTab> {
         result[entry.key] = entry.value;
       } else {
         // Otherwise filter individual models.
-        final matched =
-            entry.value
-                .where((m) => m.model.toLowerCase().contains(query))
-                .toList();
+        final matched = entry.value
+            .where((m) => m.model.toLowerCase().contains(query))
+            .toList();
         if (matched.isNotEmpty) result[entry.key] = matched;
       }
     }
@@ -351,7 +350,9 @@ class _UsbDevicesTabState extends ConsumerState<_UsbDevicesTab> {
                             controller: _searchController,
                             autofocus: true,
                             decoration: InputDecoration(
-                              hintText: context.l10n.diveComputer_discovery_usbSearchHint,
+                              hintText: context
+                                  .l10n
+                                  .diveComputer_discovery_usbSearchHint,
                               border: InputBorder.none,
                               isDense: true,
                             ),
@@ -385,8 +386,7 @@ class _UsbDevicesTabState extends ConsumerState<_UsbDevicesTab> {
                         ),
                         IconButton(
                           icon: const Icon(Icons.search),
-                          onPressed: () =>
-                              setState(() => _isSearching = true),
+                          onPressed: () => setState(() => _isSearching = true),
                         ),
                       ],
                     ),
@@ -397,7 +397,9 @@ class _UsbDevicesTabState extends ConsumerState<_UsbDevicesTab> {
               child: filtered.isEmpty
                   ? Center(
                       child: Text(
-                        context.l10n.diveComputer_discovery_usbNoResults(_searchQuery),
+                        context.l10n.diveComputer_discovery_usbNoResults(
+                          _searchQuery,
+                        ),
                         style: theme.textTheme.bodyLarge?.copyWith(
                           color: colorScheme.onSurfaceVariant,
                         ),

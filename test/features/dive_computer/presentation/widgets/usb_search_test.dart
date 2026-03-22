@@ -48,8 +48,7 @@ final _testUsbDevices = <String, List<DeviceModel>>{
 /// Fake DiveComputerService that avoids platform channels.
 class _FakeDiveComputerService implements pigeon.DiveComputerService {
   @override
-  Stream<pigeon.DiscoveredDevice> get discoveredDevices =>
-      const Stream.empty();
+  Stream<pigeon.DiscoveredDevice> get discoveredDevices => const Stream.empty();
   @override
   Stream<void> get discoveryComplete => const Stream.empty();
   @override
@@ -104,26 +103,18 @@ class _TestDiscoveryNotifier extends DiscoveryNotifier {
   }
 }
 
-Widget _buildTestWidget({
-  Map<String, List<DeviceModel>>? usbDevices,
-}) {
+Widget _buildTestWidget({Map<String, List<DeviceModel>>? usbDevices}) {
   final devices = usbDevices ?? _testUsbDevices;
 
   return ProviderScope(
     overrides: [
-      usbDevicesByManufacturerProvider.overrideWith(
-        (ref) async => devices,
-      ),
-      discoveryNotifierProvider.overrideWith(
-        (ref) => _TestDiscoveryNotifier(),
-      ),
+      usbDevicesByManufacturerProvider.overrideWith((ref) async => devices),
+      discoveryNotifierProvider.overrideWith((ref) => _TestDiscoveryNotifier()),
     ],
     child: MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: Scaffold(
-        body: ScanStepWidget(onDeviceSelected: (_) {}),
-      ),
+      home: Scaffold(body: ScanStepWidget(onDeviceSelected: (_) {})),
     ),
   );
 }
@@ -164,9 +155,7 @@ void main() {
       );
     });
 
-    testWidgets('search filters devices by manufacturer name', (
-      tester,
-    ) async {
+    testWidgets('search filters devices by manufacturer name', (tester) async {
       await tester.pumpWidget(_buildTestWidget());
       await tester.pumpAndSettle();
       await _switchToUsbTab(tester);
