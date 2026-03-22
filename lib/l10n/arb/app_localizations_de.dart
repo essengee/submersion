@@ -5205,6 +5205,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get diveSites_edit_appBar_editSite => 'Tauchplatz bearbeiten';
 
   @override
+  String get diveSites_edit_appBar_merge => 'Zusammenführen';
+
+  @override
+  String get diveSites_edit_appBar_mergeSites => 'Tauchplätze zusammenführen';
+
+  @override
   String get diveSites_edit_appBar_newSite => 'Neuer Tauchplatz';
 
   @override
@@ -5212,6 +5218,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get diveSites_edit_button_addSite => 'Tauchplatz hinzufuegen';
+
+  @override
+  String get diveSites_edit_button_mergeSites => 'Tauchplätze zusammenführen';
 
   @override
   String get diveSites_edit_button_saveChanges => 'Aenderungen speichern';
@@ -5341,6 +5350,52 @@ class AppLocalizationsDe extends AppLocalizations {
       'Arten, die Sie an diesem Tauchplatz erwarten';
 
   @override
+  String diveSites_edit_merge_confirmBody(int count) {
+    return 'Dies wird $count Tauchplätze zu einem zusammenführen. Tauchgänge, Medien und erwartete Arten werden unter dem verbleibenden Tauchplatz zusammengefasst. Die anderen Tauchplätze werden gelöscht.';
+  }
+
+  @override
+  String get diveSites_edit_merge_confirmTitle => 'Tauchplätze zusammenführen';
+
+  @override
+  String get diveSites_edit_merge_fieldSourceCycleTooltip =>
+      'Wert vom nächsten ausgewählten Standort verwenden';
+
+  @override
+  String diveSites_edit_merge_fieldSourceLabel(
+    Object siteName,
+    int current,
+    int total,
+  ) {
+    return 'Von $siteName ($current/$total)';
+  }
+
+  @override
+  String get diveSites_edit_merge_fieldSourceMenuTooltip =>
+      'Wert vom ausgewählten Standort auswählen';
+
+  @override
+  String get diveSites_edit_merge_marineLifeHelperText =>
+      'Zusammengefasst aus allen ausgewählten Tauchplätzen';
+
+  @override
+  String diveSites_edit_merge_loadingErrorBody(Object error) {
+    return 'Fehler beim Laden der Tauchplätze: $error';
+  }
+
+  @override
+  String get diveSites_edit_merge_loadingErrorTitle =>
+      'Tauchplätze zusammenführen';
+
+  @override
+  String get diveSites_edit_merge_notEnoughBody =>
+      'Nicht genügend Tauchplätze zum Zusammenführen.';
+
+  @override
+  String get diveSites_edit_merge_notEnoughTitle =>
+      'Tauchplätze zusammenführen';
+
+  @override
   String get diveSites_edit_rating_clear => 'Bewertung loeschen';
 
   @override
@@ -5414,6 +5469,10 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get diveSites_edit_snackbar_siteAdded => 'Tauchplatz hinzugefuegt';
+
+  @override
+  String get diveSites_edit_snackbar_sitesMerged =>
+      'Tauchplätze zusammengeführt';
 
   @override
   String get diveSites_edit_snackbar_siteUpdated => 'Tauchplatz aktualisiert';
@@ -5690,6 +5749,24 @@ class AppLocalizationsDe extends AppLocalizations {
   String get diveSites_list_bulkDelete_undo => 'Rueckgaengig';
 
   @override
+  String get diveSites_list_merge_restored =>
+      'Zusammenfuehrung rueckgaengig gemacht';
+
+  @override
+  String diveSites_list_merge_snackbar(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Tauchplaetze',
+      one: 'Tauchplatz',
+    );
+    return '$count $_temp0 zusammengefuehrt';
+  }
+
+  @override
+  String get diveSites_list_merge_undo => 'Rueckgaengig';
+
+  @override
   String get diveSites_list_emptyFiltered_clearAll => 'Alle Filter loeschen';
 
   @override
@@ -5758,6 +5835,10 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get diveSites_list_selection_deleteTooltip => 'Auswahl loeschen';
+
+  @override
+  String get diveSites_list_selection_mergeTooltip =>
+      'Ausgewählte zusammenführen';
 
   @override
   String get diveSites_list_selection_deselectAllTooltip => 'Alle abwaehlen';

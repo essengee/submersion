@@ -3,11 +3,13 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 
+import 'package:submersion/core/constants/list_view_mode.dart';
 import 'package:submersion/core/constants/sort_options.dart';
 import 'package:submersion/l10n/l10n_extension.dart';
 import 'package:submersion/features/maps/data/services/tile_cache_service.dart';
 import 'package:submersion/core/models/sort_state.dart';
 import 'package:submersion/core/providers/provider.dart';
+import 'package:submersion/shared/widgets/list_view_mode_toggle.dart';
 import 'package:submersion/shared/widgets/master_detail/map_view_toggle_button.dart';
 import 'package:submersion/shared/widgets/master_detail/responsive_breakpoints.dart';
 import 'package:submersion/shared/widgets/sort_bottom_sheet.dart';
@@ -15,6 +17,8 @@ import 'package:submersion/features/settings/presentation/providers/settings_pro
 import 'package:submersion/features/dive_sites/data/repositories/site_repository_impl.dart';
 import 'package:submersion/features/dive_sites/domain/entities/dive_site.dart';
 import 'package:submersion/features/dive_sites/presentation/providers/site_providers.dart';
+import 'package:submersion/features/dive_sites/presentation/widgets/compact_site_list_tile.dart';
+import 'package:submersion/features/dive_sites/presentation/widgets/dense_site_list_tile.dart';
 import 'package:submersion/features/dive_sites/presentation/widgets/site_filter_sheet.dart';
 
 /// Content widget for the site list, used in master-detail layout.
@@ -64,6 +68,7 @@ class _SiteListContentState extends ConsumerState<SiteListContent> {
   bool _isSelectionMode = false;
   final Set<String> _selectedIds = {};
   List<DiveSite>? _deletedSites;
+  MergeSnapshot? _mergeSnapshot;
 
   @override
   void initState() {
@@ -189,6 +194,63 @@ class _SiteListContentState extends ConsumerState<SiteListContent> {
     setState(() {
       _selectedIds.clear();
     });
+  }
+
+  Future<void> _startMerge() async {
+    final selectedCount = _selectedIds.length;
+    final result = await context.push<SiteMergeResult>(
+      '/sites/merge',
+      extra: _selectedIds.toList(),
+    );
+
+    if (!mounted || result == null) return;
+
+    _mergeSnapshot = result.snapshot;
+    final mergedId = result.survivorId;
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
+    setState(() {
+      _isSelectionMode = false;
+      _selectedIds.clear();
+    });
+
+    if (widget.onItemSelected != null) {
+      _selectionFromList = true;
+      widget.onItemSelected!(mergedId);
+    }
+
+    // Show undo snackbar if a snapshot was captured by the merge page
+    if (_mergeSnapshot != null && mounted) {
+      scaffoldMessenger.clearSnackBars();
+      scaffoldMessenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            context.l10n.diveSites_list_merge_snackbar(selectedCount),
+          ),
+          duration: const Duration(seconds: 5),
+          showCloseIcon: true,
+          action: SnackBarAction(
+            label: context.l10n.diveSites_list_merge_undo,
+            onPressed: () async {
+              if (_mergeSnapshot != null) {
+                await ref
+                    .read(siteListNotifierProvider.notifier)
+                    .undoMerge(_mergeSnapshot!);
+                _mergeSnapshot = null;
+                if (mounted) {
+                  scaffoldMessenger.showSnackBar(
+                    SnackBar(
+                      content: Text(context.l10n.diveSites_list_merge_restored),
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
+                }
+              }
+            },
+          ),
+        ),
+      );
+    }
   }
 
   Future<void> _confirmAndDelete() async {
@@ -326,6 +388,12 @@ class _SiteListContentState extends ConsumerState<SiteListContent> {
           : AppBar(
               title: Text(context.l10n.diveSites_list_appBar_title),
               actions: [
+                ListViewModeToggle(
+                  currentMode: ref.watch(siteListViewModeProvider),
+                  onModeChanged: (mode) {
+                    ref.read(siteListViewModeProvider.notifier).state = mode;
+                  },
+                ),
                 IconButton(
                   icon: const Icon(Icons.map),
                   tooltip: context.l10n.diveSites_list_tooltip_mapView,
@@ -412,6 +480,14 @@ class _SiteListContentState extends ConsumerState<SiteListContent> {
             ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
           ),
           const Spacer(),
+          ListViewModeToggle(
+            currentMode: ref.watch(siteListViewModeProvider),
+            onModeChanged: (mode) {
+              ref.read(siteListViewModeProvider.notifier).state = mode;
+            },
+            iconSize: 18,
+          ),
+          const SizedBox(width: 4),
           if (widget.onMapViewToggle != null)
             MapViewToggleButton(
               isActive: widget.isMapViewActive,
@@ -498,28 +574,32 @@ class _SiteListContentState extends ConsumerState<SiteListContent> {
             ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
           ),
           const Spacer(),
-          if (_selectedIds.length < sites.length)
-            IconButton(
-              icon: const Icon(Icons.select_all, size: 20),
-              tooltip: context.l10n.diveSites_list_selection_selectAllTooltip,
-              onPressed: () => _selectAll(sites),
+          IconButton(
+            icon: const Icon(Icons.select_all, size: 20),
+            tooltip: context.l10n.diveSites_list_selection_selectAllTooltip,
+            onPressed: _selectedIds.length < sites.length
+                ? () => _selectAll(sites)
+                : null,
+          ),
+          IconButton(
+            icon: const Icon(Icons.deselect, size: 20),
+            tooltip: context.l10n.diveSites_list_selection_deselectAllTooltip,
+            onPressed: _selectedIds.isNotEmpty ? _deselectAll : null,
+          ),
+          IconButton(
+            icon: const Icon(Icons.merge_type, size: 20),
+            tooltip: context.l10n.diveSites_list_selection_mergeTooltip,
+            onPressed: _selectedIds.length > 1 ? _startMerge : null,
+          ),
+          IconButton(
+            icon: Icon(
+              Icons.delete,
+              size: 20,
+              color: Theme.of(context).colorScheme.error,
             ),
-          if (_selectedIds.isNotEmpty)
-            IconButton(
-              icon: const Icon(Icons.deselect, size: 20),
-              tooltip: context.l10n.diveSites_list_selection_deselectAllTooltip,
-              onPressed: _deselectAll,
-            ),
-          if (_selectedIds.isNotEmpty)
-            IconButton(
-              icon: Icon(
-                Icons.delete,
-                size: 20,
-                color: Theme.of(context).colorScheme.error,
-              ),
-              tooltip: context.l10n.diveSites_list_selection_deleteTooltip,
-              onPressed: _confirmAndDelete,
-            ),
+            tooltip: context.l10n.diveSites_list_selection_deleteTooltip,
+            onPressed: _selectedIds.isNotEmpty ? _confirmAndDelete : null,
+          ),
         ],
       ),
     );
@@ -536,27 +616,28 @@ class _SiteListContentState extends ConsumerState<SiteListContent> {
         context.l10n.diveSites_list_selection_count(_selectedIds.length),
       ),
       actions: [
-        if (_selectedIds.length < sites.length)
-          IconButton(
-            icon: const Icon(Icons.select_all),
-            tooltip: context.l10n.diveSites_list_selection_selectAllTooltip,
-            onPressed: () => _selectAll(sites),
-          ),
-        if (_selectedIds.isNotEmpty)
-          IconButton(
-            icon: const Icon(Icons.deselect),
-            tooltip: context.l10n.diveSites_list_selection_deselectAllTooltip,
-            onPressed: _deselectAll,
-          ),
-        if (_selectedIds.isNotEmpty)
-          IconButton(
-            icon: Icon(
-              Icons.delete,
-              color: Theme.of(context).colorScheme.error,
-            ),
-            tooltip: context.l10n.diveSites_list_selection_deleteTooltip,
-            onPressed: _confirmAndDelete,
-          ),
+        IconButton(
+          icon: const Icon(Icons.select_all),
+          tooltip: context.l10n.diveSites_list_selection_selectAllTooltip,
+          onPressed: _selectedIds.length < sites.length
+              ? () => _selectAll(sites)
+              : null,
+        ),
+        IconButton(
+          icon: const Icon(Icons.deselect),
+          tooltip: context.l10n.diveSites_list_selection_deselectAllTooltip,
+          onPressed: _selectedIds.isNotEmpty ? _deselectAll : null,
+        ),
+        IconButton(
+          icon: const Icon(Icons.merge_type),
+          tooltip: context.l10n.diveSites_list_selection_mergeTooltip,
+          onPressed: _selectedIds.length > 1 ? _startMerge : null,
+        ),
+        IconButton(
+          icon: Icon(Icons.delete, color: Theme.of(context).colorScheme.error),
+          tooltip: context.l10n.diveSites_list_selection_deleteTooltip,
+          onPressed: _selectedIds.isNotEmpty ? _confirmAndDelete : null,
+        ),
       ],
     );
   }
@@ -580,26 +661,52 @@ class _SiteListContentState extends ConsumerState<SiteListContent> {
           final isSelected = widget.selectedId == site.id;
           final isChecked = _selectedIds.contains(site.id);
 
-          return SiteListTile(
-            name: site.name,
-            location: site.locationString.isNotEmpty
-                ? site.locationString
-                : null,
-            minDepth: site.minDepth,
-            maxDepth: site.maxDepth,
-            difficulty: site.difficulty?.displayName,
-            diveCount: siteData.diveCount,
-            rating: site.rating,
-            isSelectionMode: _isSelectionMode,
-            isSelected: isSelected,
-            isChecked: isChecked,
-            latitude: site.location?.latitude,
-            longitude: site.location?.longitude,
-            onTap: () => _handleItemTap(site),
-            onLongPress: _isSelectionMode
-                ? null
-                : () => _enterSelectionMode(site.id),
-          );
+          final viewMode = ref.watch(siteListViewModeProvider);
+          final locationString = site.locationString.isNotEmpty
+              ? site.locationString
+              : null;
+          return switch (viewMode) {
+            ListViewMode.detailed => SiteListTile(
+              name: site.name,
+              location: locationString,
+              minDepth: site.minDepth,
+              maxDepth: site.maxDepth,
+              difficulty: site.difficulty?.displayName,
+              diveCount: siteData.diveCount,
+              rating: site.rating,
+              isSelectionMode: _isSelectionMode,
+              isSelected: isSelected,
+              isChecked: isChecked,
+              latitude: site.location?.latitude,
+              longitude: site.location?.longitude,
+              onTap: () => _handleItemTap(site),
+              onLongPress: _isSelectionMode
+                  ? null
+                  : () => _enterSelectionMode(site.id),
+            ),
+            ListViewMode.compact => CompactSiteListTile(
+              name: site.name,
+              location: locationString,
+              diveCount: siteData.diveCount,
+              isSelectionMode: _isSelectionMode,
+              isSelected: isChecked,
+              onTap: () => _handleItemTap(site),
+              onLongPress: _isSelectionMode
+                  ? null
+                  : () => _enterSelectionMode(site.id),
+            ),
+            ListViewMode.dense => DenseSiteListTile(
+              name: site.name,
+              location: locationString,
+              diveCount: siteData.diveCount,
+              isSelectionMode: _isSelectionMode,
+              isSelected: isChecked,
+              onTap: () => _handleItemTap(site),
+              onLongPress: _isSelectionMode
+                  ? null
+                  : () => _enterSelectionMode(site.id),
+            ),
+          };
         },
       ),
     );
