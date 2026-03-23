@@ -286,7 +286,7 @@ void DiveComputerHostApiImpl::PerformDownload(
         if (ports_to_try.empty()) {
             flutter_api_->OnError(
                 DiveComputerError("connect_failed",
-                                  "No serial ports found"),
+                    "No USB serial ports found. Is the dive computer connected and powered on?"),
                 [] {}, [](const auto&) {});
             libdc_download_session_free(session);
             download_session_ = nullptr;
@@ -295,10 +295,12 @@ void DiveComputerHostApiImpl::PerformDownload(
 
         // If auto-probe tried ports but all failed, include the log in the
         // error message so users can share it with developers.
-        if (any_opened && rc != 0 && !probe_log.empty()) {
+        if (!any_opened || (rc != 0 && !probe_log.empty())) {
+            std::string msg = probe_log.empty()
+                ? "No dive computer found on any serial port."
+                : "No dive computer found. Ports tried:\n" + probe_log;
             flutter_api_->OnError(
-                DiveComputerError("connect_failed",
-                    "No dive computer found. Ports tried:\n" + probe_log),
+                DiveComputerError("connect_failed", msg),
                 [] {}, [](const auto&) {});
             libdc_download_session_free(session);
             download_session_ = nullptr;

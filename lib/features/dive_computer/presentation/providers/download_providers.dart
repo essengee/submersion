@@ -42,6 +42,7 @@ class DownloadState {
   final List<DownloadedDive> downloadedDives;
   final ImportResult? importResult;
   final String? errorMessage;
+  final String? errorCode;
   final bool newDivesOnly;
   final String? serialNumber;
   final String? firmwareVersion;
@@ -52,6 +53,7 @@ class DownloadState {
     this.downloadedDives = const [],
     this.importResult,
     this.errorMessage,
+    this.errorCode,
     this.newDivesOnly = true,
     this.serialNumber,
     this.firmwareVersion,
@@ -63,6 +65,7 @@ class DownloadState {
     List<DownloadedDive>? downloadedDives,
     ImportResult? importResult,
     String? errorMessage,
+    String? errorCode,
     bool? newDivesOnly,
     String? serialNumber,
     String? firmwareVersion,
@@ -77,6 +80,7 @@ class DownloadState {
           ? null
           : (importResult ?? this.importResult),
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
+      errorCode: clearError ? null : (errorCode ?? this.errorCode),
       newDivesOnly: newDivesOnly ?? this.newDivesOnly,
       serialNumber: serialNumber ?? this.serialNumber,
       firmwareVersion: firmwareVersion ?? this.firmwareVersion,
@@ -210,6 +214,7 @@ class DownloadNotifier extends StateNotifier<DownloadState> {
         state = state.copyWith(
           phase: DownloadPhase.error,
           errorMessage: error.message,
+          errorCode: error.code,
         );
         _downloadSubscription?.cancel();
         _downloadSubscription = null;
