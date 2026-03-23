@@ -291,10 +291,12 @@ static gpointer download_thread_func(gpointer data) {
       ctx->serial_stream = nullptr;
     } else {
       g_auto(GStrv) ports = serial_enumerate_ports();
+      g_autoptr(GString) probe_log = g_string_new(NULL);
       if (ports) {
         for (int i = 0; ports[i] != NULL; i++) {
           ctx->serial_stream = serial_io_stream_new();
           if (!serial_io_stream_open(ctx->serial_stream, ports[i])) {
+            g_string_append_printf(probe_log, "  %s: failed to open\n", ports[i]);
             serial_io_stream_free(ctx->serial_stream);
             ctx->serial_stream = nullptr;
             continue;
@@ -322,8 +324,26 @@ static gpointer download_thread_func(gpointer data) {
           if (rc == 0 || rc == LIBDC_STATUS_CANCELLED) {
             break;
           }
-          // Download failed on this port — try the next one.
+          g_string_append_printf(probe_log, "  %s: download failed (rc=%d)\n", ports[i], rc);
         }
+      }
+
+      // If auto-probe tried ports but all failed, include the log in the
+      // error message so users can share it with developers.
+      if (found && rc != 0 && probe_log->len > 0) {
+        g_autofree gchar* msg = g_strdup_printf(
+            "No dive computer found. Ports tried:\n%s", probe_log->str);
+        LibdivecomputerPluginDiveComputerError* error =
+            libdivecomputer_plugin_dive_computer_error_new(
+                "connect_failed", msg);
+        libdivecomputer_plugin_dive_computer_flutter_api_on_error(
+            ctx->flutter_api, error, nullptr, nullptr, nullptr);
+        g_object_unref(error);
+        libdc_download_session_free(ctx->session);
+        ctx->session = nullptr;
+        g_free(fp_data);
+        download_thread_data_free(td);
+        return nullptr;
       }
     }
 

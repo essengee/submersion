@@ -246,9 +246,12 @@ void DiveComputerHostApiImpl::PerformDownload(
         // Try each candidate port with a full download attempt.
         // Simply opening a port is not enough — many ports open successfully
         // even when they are not the target dive computer.
+        std::string probe_log;
+        bool any_opened = false;
         for (const auto& port : ports_to_try) {
             serial_stream_ = std::make_unique<SerialIoStream>();
             if (!serial_stream_->Open(port)) {
+                probe_log += "  " + port + ": failed to open\n";
                 serial_stream_.reset();
                 continue;
             }
@@ -271,17 +274,31 @@ void DiveComputerHostApiImpl::PerformDownload(
                 error_buf, sizeof(error_buf));
 
             serial_stream_.reset();
+            any_opened = true;
 
             if (rc == 0 || rc == LIBDC_STATUS_CANCELLED) {
                 break;
             }
-            // Download failed on this port — try the next one.
+            probe_log += "  " + port + ": download failed (rc=" +
+                         std::to_string(rc) + ")\n";
         }
 
         if (ports_to_try.empty()) {
             flutter_api_->OnError(
                 DiveComputerError("connect_failed",
                                   "No serial ports found"),
+                [] {}, [](const auto&) {});
+            libdc_download_session_free(session);
+            download_session_ = nullptr;
+            return;
+        }
+
+        // If auto-probe tried ports but all failed, include the log in the
+        // error message so users can share it with developers.
+        if (any_opened && rc != 0 && !probe_log.empty()) {
+            flutter_api_->OnError(
+                DiveComputerError("connect_failed",
+                    "No dive computer found. Ports tried:\n" + probe_log),
                 [] {}, [](const auto&) {});
             libdc_download_session_free(session);
             download_session_ = nullptr;
