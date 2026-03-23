@@ -3,12 +3,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:submersion/core/constants/enums.dart';
+import 'package:submersion/core/constants/list_view_mode.dart';
 import 'package:submersion/core/constants/sort_options.dart';
 import 'package:submersion/core/models/sort_state.dart';
 import 'package:submersion/l10n/l10n_extension.dart';
 import 'package:submersion/features/equipment/domain/entities/equipment_item.dart';
 import 'package:submersion/features/equipment/presentation/providers/equipment_providers.dart';
+import 'package:submersion/features/equipment/presentation/widgets/dense_equipment_list_tile.dart';
+import 'package:submersion/features/settings/presentation/providers/settings_providers.dart';
+import 'package:submersion/shared/widgets/list_view_mode_toggle.dart';
 import 'package:submersion/shared/widgets/master_detail/responsive_breakpoints.dart';
+import 'package:submersion/shared/widgets/debounced_search_results.dart';
 import 'package:submersion/shared/widgets/sort_bottom_sheet.dart';
 
 /// Special filter value for computed "service due" items
@@ -137,6 +142,13 @@ class _EquipmentListContentState extends ConsumerState<EquipmentListContent> {
       appBar: AppBar(
         title: Text(context.l10n.equipment_appBar_title),
         actions: [
+          ListViewModeToggle(
+            currentMode: ref.watch(equipmentListViewModeProvider),
+            availableModes: const [ListViewMode.detailed, ListViewMode.dense],
+            onModeChanged: (mode) {
+              ref.read(equipmentListViewModeProvider.notifier).state = mode;
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.sort),
             tooltip: context.l10n.equipment_list_sortTooltip,
@@ -183,6 +195,14 @@ class _EquipmentListContentState extends ConsumerState<EquipmentListContent> {
             ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
           ),
           const Spacer(),
+          ListViewModeToggle(
+            currentMode: ref.watch(equipmentListViewModeProvider),
+            availableModes: const [ListViewMode.detailed, ListViewMode.dense],
+            onModeChanged: (mode) {
+              ref.read(equipmentListViewModeProvider.notifier).state = mode;
+            },
+            iconSize: 20,
+          ),
           IconButton(
             icon: const Icon(Icons.sort, size: 20),
             tooltip: context.l10n.equipment_list_sortTooltip,
@@ -312,11 +332,19 @@ class _EquipmentListContentState extends ConsumerState<EquipmentListContent> {
         itemBuilder: (context, index) {
           final item = equipment[index];
           final isSelected = widget.selectedId == item.id;
-          return EquipmentListTile(
-            item: item,
-            isSelected: isSelected,
-            onTap: () => _handleItemTap(item),
-          );
+          final viewMode = ref.watch(equipmentListViewModeProvider);
+          return switch (viewMode) {
+            ListViewMode.detailed || ListViewMode.compact => EquipmentListTile(
+              item: item,
+              isSelected: isSelected,
+              onTap: () => _handleItemTap(item),
+            ),
+            ListViewMode.dense => DenseEquipmentListTile(
+              item: item,
+              isSelected: isSelected,
+              onTap: () => _handleItemTap(item),
+            ),
+          };
         },
       ),
     );
@@ -601,53 +629,49 @@ class EquipmentSearchDelegate extends SearchDelegate<EquipmentItem?> {
   }
 
   Widget _buildSearchResults(BuildContext context) {
-    return Consumer(
-      builder: (context, ref, child) {
-        final searchAsync = ref.watch(equipmentSearchProvider(query));
-
-        return searchAsync.when(
-          data: (equipment) {
-            if (equipment.isEmpty) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.search_off,
-                      size: 64,
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'No equipment found for "$query"',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }
-
-            return ListView.builder(
-              itemCount: equipment.length,
-              itemBuilder: (context, index) {
-                final item = equipment[index];
-                return EquipmentListTile(
-                  item: item,
-                  onTap: () {
-                    close(context, item);
-                    context.push('/equipment/${item.id}');
-                  },
-                );
+    return DebouncedSearchResults<EquipmentItem>(
+      query: query,
+      watchProvider: (ref, q) => ref.watch(equipmentSearchProvider(q)),
+      dataBuilder: (context, equipment) {
+        return ListView.builder(
+          itemCount: equipment.length,
+          itemBuilder: (context, index) {
+            final item = equipment[index];
+            return EquipmentListTile(
+              item: item,
+              onTap: () {
+                close(context, item);
+                context.push('/equipment/${item.id}');
               },
             );
           },
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, _) => Center(child: Text('Error: $error')),
         );
+      },
+      emptyBuilder: (context, query) {
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.search_off,
+                size: 64,
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'No equipment found for "$query"',
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+      errorBuilder: (context, error) {
+        return Center(child: Text('Error: $error'));
       },
     );
   }

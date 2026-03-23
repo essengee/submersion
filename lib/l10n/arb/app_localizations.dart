@@ -1260,6 +1260,148 @@ abstract class AppLocalizations {
   /// **'Please enter a name'**
   String get buddies_validation_nameRequired;
 
+  /// No description provided for @buddies_list_selection_closeTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Close Selection'**
+  String get buddies_list_selection_closeTooltip;
+
+  /// No description provided for @buddies_list_selection_count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} selected'**
+  String buddies_list_selection_count(int count);
+
+  /// No description provided for @buddies_list_selection_selectAllTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Select All'**
+  String get buddies_list_selection_selectAllTooltip;
+
+  /// No description provided for @buddies_list_selection_deselectAllTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Deselect All'**
+  String get buddies_list_selection_deselectAllTooltip;
+
+  /// No description provided for @buddies_list_selection_mergeTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge Selected'**
+  String get buddies_list_selection_mergeTooltip;
+
+  /// No description provided for @buddies_list_selection_deleteTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Selected'**
+  String get buddies_list_selection_deleteTooltip;
+
+  /// No description provided for @buddies_list_merge_snackbar.
+  ///
+  /// In en, this message translates to:
+  /// **'Merged {count} {count, plural, =1{buddy} other{buddies}}'**
+  String buddies_list_merge_snackbar(int count);
+
+  /// No description provided for @buddies_list_merge_undo.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get buddies_list_merge_undo;
+
+  /// No description provided for @buddies_list_merge_restored.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge undone'**
+  String get buddies_list_merge_restored;
+
+  /// No description provided for @buddies_list_bulkDelete_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Buddies'**
+  String get buddies_list_bulkDelete_title;
+
+  /// No description provided for @buddies_list_bulkDelete_content.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete {count} {count, plural, =1{buddy} other{buddies}}? This action cannot be undone.'**
+  String buddies_list_bulkDelete_content(int count);
+
+  /// No description provided for @buddies_list_bulkDelete_cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get buddies_list_bulkDelete_cancel;
+
+  /// No description provided for @buddies_list_bulkDelete_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get buddies_list_bulkDelete_confirm;
+
+  /// No description provided for @buddies_list_bulkDelete_snackbar.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted {count} {count, plural, =1{buddy} other{buddies}}'**
+  String buddies_list_bulkDelete_snackbar(int count);
+
+  /// No description provided for @buddies_edit_merge_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge Buddies'**
+  String get buddies_edit_merge_title;
+
+  /// No description provided for @buddies_edit_merge_fieldSourceCycleTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Use value from next selected buddy'**
+  String get buddies_edit_merge_fieldSourceCycleTooltip;
+
+  /// No description provided for @buddies_edit_merge_fieldSourceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'From {buddyName} ({current}/{total})'**
+  String buddies_edit_merge_fieldSourceLabel(
+    String buddyName,
+    int current,
+    int total,
+  );
+
+  /// No description provided for @buddies_edit_merge_confirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge Buddies'**
+  String get buddies_edit_merge_confirmTitle;
+
+  /// No description provided for @buddies_edit_merge_confirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This will merge {count} buddies into one. Dive associations will be combined under the surviving buddy. The other buddies will be deleted.'**
+  String buddies_edit_merge_confirmBody(int count);
+
+  /// No description provided for @buddies_edit_merge_loadingErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge Buddies'**
+  String get buddies_edit_merge_loadingErrorTitle;
+
+  /// No description provided for @buddies_edit_merge_loadingErrorBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load buddies: {error}'**
+  String buddies_edit_merge_loadingErrorBody(String error);
+
+  /// No description provided for @buddies_edit_merge_notEnoughTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge Buddies'**
+  String get buddies_edit_merge_notEnoughTitle;
+
+  /// No description provided for @buddies_edit_merge_notEnoughBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough buddies to merge.'**
+  String get buddies_edit_merge_notEnoughBody;
+
   /// No description provided for @certifications_appBar_addCertification.
   ///
   /// In en, this message translates to:
@@ -8164,6 +8306,24 @@ abstract class AppLocalizations {
   /// **'Cannot convert: plan has critical warnings'**
   String get divePlanner_error_cannotConvert;
 
+  /// No description provided for @divePlanner_error_reserveExceedsTank.
+  ///
+  /// In en, this message translates to:
+  /// **'Exceeds tank pressure'**
+  String get divePlanner_error_reserveExceedsTank;
+
+  /// No description provided for @divePlanner_error_reserveMustBePositive.
+  ///
+  /// In en, this message translates to:
+  /// **'Must be greater than 0'**
+  String get divePlanner_error_reserveMustBePositive;
+
+  /// No description provided for @divePlanner_info_reserveDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Not entered — assuming {value} {unit}'**
+  String divePlanner_info_reserveDefault(Object unit, Object value);
+
   /// No description provided for @divePlanner_field_hePercent.
   ///
   /// In en, this message translates to:
@@ -8313,6 +8473,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Remaining'**
   String get divePlanner_label_remaining;
+
+  /// No description provided for @divePlanner_label_reserve.
+  ///
+  /// In en, this message translates to:
+  /// **'Reserve:'**
+  String get divePlanner_label_reserve;
 
   /// No description provided for @divePlanner_label_runtime.
   ///
@@ -8957,6 +9123,18 @@ abstract class AppLocalizations {
   /// **'Edit Site'**
   String get diveSites_edit_appBar_editSite;
 
+  /// No description provided for @diveSites_edit_appBar_merge.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge'**
+  String get diveSites_edit_appBar_merge;
+
+  /// No description provided for @diveSites_edit_appBar_mergeSites.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge Sites'**
+  String get diveSites_edit_appBar_mergeSites;
+
   /// No description provided for @diveSites_edit_appBar_newSite.
   ///
   /// In en, this message translates to:
@@ -8974,6 +9152,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add Site'**
   String get diveSites_edit_button_addSite;
+
+  /// No description provided for @diveSites_edit_button_mergeSites.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge Sites'**
+  String get diveSites_edit_button_mergeSites;
 
   /// No description provided for @diveSites_edit_button_saveChanges.
   ///
@@ -9197,6 +9381,70 @@ abstract class AppLocalizations {
   /// **'Species you expect to see at this site'**
   String get diveSites_edit_marineLife_helperText;
 
+  /// No description provided for @diveSites_edit_merge_confirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This will merge {count} sites into one. Dives, media, and expected species will be combined under the surviving site. The other sites will be deleted.'**
+  String diveSites_edit_merge_confirmBody(int count);
+
+  /// No description provided for @diveSites_edit_merge_confirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge Sites'**
+  String get diveSites_edit_merge_confirmTitle;
+
+  /// No description provided for @diveSites_edit_merge_fieldSourceCycleTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Use value from next selected site'**
+  String get diveSites_edit_merge_fieldSourceCycleTooltip;
+
+  /// No description provided for @diveSites_edit_merge_fieldSourceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'From {siteName} ({current}/{total})'**
+  String diveSites_edit_merge_fieldSourceLabel(
+    Object siteName,
+    int current,
+    int total,
+  );
+
+  /// No description provided for @diveSites_edit_merge_fieldSourceMenuTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Select value from selected site'**
+  String get diveSites_edit_merge_fieldSourceMenuTooltip;
+
+  /// No description provided for @diveSites_edit_merge_marineLifeHelperText.
+  ///
+  /// In en, this message translates to:
+  /// **'Combined from all selected sites'**
+  String get diveSites_edit_merge_marineLifeHelperText;
+
+  /// No description provided for @diveSites_edit_merge_loadingErrorBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load sites: {error}'**
+  String diveSites_edit_merge_loadingErrorBody(Object error);
+
+  /// No description provided for @diveSites_edit_merge_loadingErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge Sites'**
+  String get diveSites_edit_merge_loadingErrorTitle;
+
+  /// No description provided for @diveSites_edit_merge_notEnoughBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough sites to merge.'**
+  String get diveSites_edit_merge_notEnoughBody;
+
+  /// No description provided for @diveSites_edit_merge_notEnoughTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge Sites'**
+  String get diveSites_edit_merge_notEnoughTitle;
+
   /// No description provided for @diveSites_edit_rating_clear.
   ///
   /// In en, this message translates to:
@@ -9310,6 +9558,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Site added'**
   String get diveSites_edit_snackbar_siteAdded;
+
+  /// No description provided for @diveSites_edit_snackbar_sitesMerged.
+  ///
+  /// In en, this message translates to:
+  /// **'Sites merged'**
+  String get diveSites_edit_snackbar_sitesMerged;
 
   /// No description provided for @diveSites_edit_snackbar_siteUpdated.
   ///
@@ -9755,6 +10009,24 @@ abstract class AppLocalizations {
   /// **'Undo'**
   String get diveSites_list_bulkDelete_undo;
 
+  /// No description provided for @diveSites_list_merge_restored.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge undone'**
+  String get diveSites_list_merge_restored;
+
+  /// No description provided for @diveSites_list_merge_snackbar.
+  ///
+  /// In en, this message translates to:
+  /// **'Merged {count} {count, plural, =1{site} other{sites}}'**
+  String diveSites_list_merge_snackbar(int count);
+
+  /// No description provided for @diveSites_list_merge_undo.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get diveSites_list_merge_undo;
+
   /// No description provided for @diveSites_list_emptyFiltered_clearAll.
   ///
   /// In en, this message translates to:
@@ -9851,7 +10123,7 @@ abstract class AppLocalizations {
   /// **'Search sites...'**
   String get diveSites_list_search_placeholder;
 
-  /// No description provided for @diveSites_list_selection_closeTooltip.
+  /// Tooltip for the close button in multi-select mode
   ///
   /// In en, this message translates to:
   /// **'Close Selection'**
@@ -9863,19 +10135,25 @@ abstract class AppLocalizations {
   /// **'{count} selected'**
   String diveSites_list_selection_count(Object count);
 
-  /// No description provided for @diveSites_list_selection_deleteTooltip.
+  /// Tooltip for the delete button in multi-select mode
   ///
   /// In en, this message translates to:
   /// **'Delete Selected'**
   String get diveSites_list_selection_deleteTooltip;
 
-  /// No description provided for @diveSites_list_selection_deselectAllTooltip.
+  /// Tooltip for the merge button in multi-select mode
+  ///
+  /// In en, this message translates to:
+  /// **'Merge Selected'**
+  String get diveSites_list_selection_mergeTooltip;
+
+  /// Tooltip for the deselect all button in multi-select mode
   ///
   /// In en, this message translates to:
   /// **'Deselect All'**
   String get diveSites_list_selection_deselectAllTooltip;
 
-  /// No description provided for @diveSites_list_selection_selectAllTooltip.
+  /// Tooltip for the select all button in multi-select mode
   ///
   /// In en, this message translates to:
   /// **'Select All'**
@@ -23644,6 +23922,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This device is not in our library. We\'ll try to connect, but download may not work.'**
   String get diveComputer_discovery_unknownDeviceDescription;
+
+  /// No description provided for @diveComputer_discovery_usbInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect your dive computer via USB cable, then select it below.'**
+  String get diveComputer_discovery_usbInstructions;
+
+  /// No description provided for @diveComputer_discovery_usbNoResults.
+  ///
+  /// In en, this message translates to:
+  /// **'No devices matching \"{query}\"'**
+  String diveComputer_discovery_usbNoResults(String query);
+
+  /// No description provided for @diveComputer_discovery_usbSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by manufacturer or model...'**
+  String get diveComputer_discovery_usbSearchHint;
 
   /// No description provided for @diveComputer_downloadStep_andMoreDives.
   ///

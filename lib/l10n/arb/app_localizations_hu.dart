@@ -661,6 +661,114 @@ class AppLocalizationsHu extends AppLocalizations {
   String get buddies_validation_nameRequired => 'Adj meg egy nevet';
 
   @override
+  String get buddies_list_selection_closeTooltip => 'Kijelölés bezárása';
+
+  @override
+  String buddies_list_selection_count(int count) {
+    return '$count kijelölve';
+  }
+
+  @override
+  String get buddies_list_selection_selectAllTooltip => 'Összes kijelölése';
+
+  @override
+  String get buddies_list_selection_deselectAllTooltip =>
+      'Összes kijelölés megszüntetése';
+
+  @override
+  String get buddies_list_selection_mergeTooltip => 'Kijelöltek összevonása';
+
+  @override
+  String get buddies_list_selection_deleteTooltip => 'Kijelöltek törlése';
+
+  @override
+  String buddies_list_merge_snackbar(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'búvártárs',
+      one: 'búvártárs',
+    );
+    return '$count $_temp0 összevonva';
+  }
+
+  @override
+  String get buddies_list_merge_undo => 'Visszavonás';
+
+  @override
+  String get buddies_list_merge_restored => 'Összevonás visszavonva';
+
+  @override
+  String get buddies_list_bulkDelete_title => 'Búvártársak törlése';
+
+  @override
+  String buddies_list_bulkDelete_content(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'búvártársat',
+      one: 'búvártársat',
+    );
+    return 'Biztosan törölni szeretnéd ezt a(z) $count $_temp0? Ez a művelet nem vonható vissza.';
+  }
+
+  @override
+  String get buddies_list_bulkDelete_cancel => 'Mégse';
+
+  @override
+  String get buddies_list_bulkDelete_confirm => 'Törlés';
+
+  @override
+  String buddies_list_bulkDelete_snackbar(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'búvártárs',
+      one: 'búvártárs',
+    );
+    return '$count $_temp0 törölve';
+  }
+
+  @override
+  String get buddies_edit_merge_title => 'Búvártársak összevonása';
+
+  @override
+  String get buddies_edit_merge_fieldSourceCycleTooltip =>
+      'Érték használata a következő kijelölt búvártárstól';
+
+  @override
+  String buddies_edit_merge_fieldSourceLabel(
+    String buddyName,
+    int current,
+    int total,
+  ) {
+    return '$buddyName ($current/$total)';
+  }
+
+  @override
+  String get buddies_edit_merge_confirmTitle => 'Búvártársak összevonása';
+
+  @override
+  String buddies_edit_merge_confirmBody(int count) {
+    return 'Ez $count búvártársat von össze eggyé. A merülés-társítások az életben maradó búvártárs alá kerülnek. A többi búvártárs törlésre kerül.';
+  }
+
+  @override
+  String get buddies_edit_merge_loadingErrorTitle => 'Búvártársak összevonása';
+
+  @override
+  String buddies_edit_merge_loadingErrorBody(String error) {
+    return 'Nem sikerült betölteni a búvártársakat: $error';
+  }
+
+  @override
+  String get buddies_edit_merge_notEnoughTitle => 'Búvártársak összevonása';
+
+  @override
+  String get buddies_edit_merge_notEnoughBody =>
+      'Nincs elég búvártárs az összevonáshoz.';
+
+  @override
   String get certifications_appBar_addCertification => 'Kepesites hozzaadasa';
 
   @override
@@ -4717,6 +4825,19 @@ class AppLocalizationsHu extends AppLocalizations {
       'Nem lehet átalakítani: a tervnek kritikus figyelmeztetései vannak';
 
   @override
+  String get divePlanner_error_reserveExceedsTank =>
+      'Meghaladja a palack nyomását';
+
+  @override
+  String get divePlanner_error_reserveMustBePositive =>
+      'Nullánál nagyobbnak kell lennie';
+
+  @override
+  String divePlanner_info_reserveDefault(Object unit, Object value) {
+    return 'Nincs megadva — alapértelmezett $value $unit';
+  }
+
+  @override
   String get divePlanner_field_hePercent => 'He %';
 
   @override
@@ -4796,6 +4917,9 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get divePlanner_label_remaining => 'Maradt';
+
+  @override
+  String get divePlanner_label_reserve => 'Tartalék:';
 
   @override
   String get divePlanner_label_runtime => 'Futási idő';
@@ -5182,6 +5306,12 @@ class AppLocalizationsHu extends AppLocalizations {
   String get diveSites_edit_appBar_editSite => 'Helyszin szerkesztese';
 
   @override
+  String get diveSites_edit_appBar_merge => 'Egyesítés';
+
+  @override
+  String get diveSites_edit_appBar_mergeSites => 'Merülőhelyek egyesítése';
+
+  @override
   String get diveSites_edit_appBar_newSite => 'Uj helyszin';
 
   @override
@@ -5189,6 +5319,9 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get diveSites_edit_button_addSite => 'Helyszin hozzaadasa';
+
+  @override
+  String get diveSites_edit_button_mergeSites => 'Merülőhelyek egyesítése';
 
   @override
   String get diveSites_edit_button_saveChanges => 'Valtozasok mentese';
@@ -5317,6 +5450,51 @@ class AppLocalizationsHu extends AppLocalizations {
       'Fajok, amelyeket varhatoan lathat ezen a helyszinen';
 
   @override
+  String diveSites_edit_merge_confirmBody(int count) {
+    return 'Ez $count helyszínt egyesít egybe. A merülések, médiák és várt fajok a megmaradó helyszín alá kerülnek. A többi helyszín törlődik.';
+  }
+
+  @override
+  String get diveSites_edit_merge_confirmTitle => 'Merülőhelyek egyesítése';
+
+  @override
+  String get diveSites_edit_merge_fieldSourceCycleTooltip =>
+      'Érték használata a következő kiválasztott oldalról';
+
+  @override
+  String diveSites_edit_merge_fieldSourceLabel(
+    Object siteName,
+    int current,
+    int total,
+  ) {
+    return '$siteName ($current/$total) -ról/ről';
+  }
+
+  @override
+  String get diveSites_edit_merge_fieldSourceMenuTooltip =>
+      'Érték kiválasztása a kiválasztott oldalról';
+
+  @override
+  String get diveSites_edit_merge_marineLifeHelperText =>
+      'Az összes kiválasztott helyszínről összesítve';
+
+  @override
+  String diveSites_edit_merge_loadingErrorBody(Object error) {
+    return 'Nem sikerült betölteni a helyszíneket: $error';
+  }
+
+  @override
+  String get diveSites_edit_merge_loadingErrorTitle =>
+      'Merülőhelyek egyesítése';
+
+  @override
+  String get diveSites_edit_merge_notEnoughBody =>
+      'Nincs elég helyszín az egyesítéshez.';
+
+  @override
+  String get diveSites_edit_merge_notEnoughTitle => 'Merülőhelyek egyesítése';
+
+  @override
   String get diveSites_edit_rating_clear => 'Ertekeles torlese';
 
   @override
@@ -5390,6 +5568,9 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get diveSites_edit_snackbar_siteAdded => 'Helyszin hozzaadva';
+
+  @override
+  String get diveSites_edit_snackbar_sitesMerged => 'Merülőhelyek egyesítve';
 
   @override
   String get diveSites_edit_snackbar_siteUpdated => 'Helyszin frissitve';
@@ -5665,6 +5846,23 @@ class AppLocalizationsHu extends AppLocalizations {
   String get diveSites_list_bulkDelete_undo => 'Visszavonas';
 
   @override
+  String get diveSites_list_merge_restored => 'Osszevonás visszavonva';
+
+  @override
+  String diveSites_list_merge_snackbar(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'helyszin',
+      one: 'helyszin',
+    );
+    return '$count $_temp0 osszevonva';
+  }
+
+  @override
+  String get diveSites_list_merge_undo => 'Visszavonas';
+
+  @override
   String get diveSites_list_emptyFiltered_clearAll => 'Osszes szuro torlese';
 
   @override
@@ -5732,6 +5930,9 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get diveSites_list_selection_deleteTooltip => 'Kivalasztottak torlese';
+
+  @override
+  String get diveSites_list_selection_mergeTooltip => 'Kijelöltek egyesítése';
 
   @override
   String get diveSites_list_selection_deselectAllTooltip =>
@@ -13850,6 +14051,19 @@ class AppLocalizationsHu extends AppLocalizations {
   @override
   String get diveComputer_discovery_unknownDeviceDescription =>
       'Ez az eszkoz nem szerepel a konyvtarunkban. Megprobaljuk csatlakoztatni, de a letoltes nem feltetlen mukodik.';
+
+  @override
+  String get diveComputer_discovery_usbInstructions =>
+      'Csatlakoztassa búvárszámítógépét USB-kábellel, majd válassza ki alább.';
+
+  @override
+  String diveComputer_discovery_usbNoResults(String query) {
+    return 'Nincs találat erre: \"$query\"';
+  }
+
+  @override
+  String get diveComputer_discovery_usbSearchHint =>
+      'Keresés gyártó vagy modell alapján...';
 
   @override
   String diveComputer_downloadStep_andMoreDives(Object count) {

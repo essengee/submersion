@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -178,7 +181,6 @@ jobs:
     name: Build iOS
     needs: test
     runs-on: macos-14
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     steps:
       - uses: actions/checkout@v6
         with:
@@ -239,6 +241,7 @@ jobs:
 
       - name: Upload iOS artifact
         uses: actions/upload-artifact@v7
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         with:
           name: ios-build
           path: build/ios/iphoneos/Runner.app
@@ -248,7 +251,6 @@ jobs:
     name: Build macOS
     needs: test
     runs-on: macos-14
-    if: github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
     steps:
       - uses: actions/checkout@v6
         with:
@@ -344,7 +346,6 @@ jobs:
     name: Build Android
     needs: test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     steps:
       - uses: actions/checkout@v6
         with:
@@ -403,6 +404,7 @@ jobs:
 
       - name: Upload Android artifact
         uses: actions/upload-artifact@v7
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         with:
           name: android-apk
           path: build/app/outputs/flutter-apk/app-release.apk
@@ -412,7 +414,6 @@ jobs:
     name: Build Linux
     needs: test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     steps:
       - uses: actions/checkout@v6
         with:
@@ -468,6 +469,7 @@ jobs:
 
       - name: Upload Linux artifact
         uses: actions/upload-artifact@v7
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         with:
           name: linux-build
           path: build/linux/x64/release/bundle
@@ -477,7 +479,6 @@ jobs:
     name: Build Windows
     needs: test
     runs-on: windows-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     steps:
       - uses: actions/checkout@v6
         with:
@@ -529,6 +530,7 @@ jobs:
 
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v7
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         with:
           name: windows-build
           path: build\windows\x64\runner\Release

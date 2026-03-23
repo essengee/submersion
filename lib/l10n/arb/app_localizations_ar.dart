@@ -656,6 +656,113 @@ class AppLocalizationsAr extends AppLocalizations {
   String get buddies_validation_nameRequired => 'الرجاء إدخال الاسم';
 
   @override
+  String get buddies_list_selection_closeTooltip => 'إغلاق التحديد';
+
+  @override
+  String buddies_list_selection_count(int count) {
+    return '$count مُحدد';
+  }
+
+  @override
+  String get buddies_list_selection_selectAllTooltip => 'تحديد الكل';
+
+  @override
+  String get buddies_list_selection_deselectAllTooltip => 'إلغاء تحديد الكل';
+
+  @override
+  String get buddies_list_selection_mergeTooltip => 'دمج المحددين';
+
+  @override
+  String get buddies_list_selection_deleteTooltip => 'حذف المحددين';
+
+  @override
+  String buddies_list_merge_snackbar(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'رفاق',
+      one: 'رفيق',
+    );
+    return 'تم دمج $count $_temp0';
+  }
+
+  @override
+  String get buddies_list_merge_undo => 'تراجع';
+
+  @override
+  String get buddies_list_merge_restored => 'تم التراجع عن الدمج';
+
+  @override
+  String get buddies_list_bulkDelete_title => 'حذف الرفاق';
+
+  @override
+  String buddies_list_bulkDelete_content(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'رفاق',
+      one: 'رفيق',
+    );
+    return 'هل أنت متأكد من حذف $count $_temp0؟ لا يمكن التراجع عن هذا الإجراء.';
+  }
+
+  @override
+  String get buddies_list_bulkDelete_cancel => 'إلغاء';
+
+  @override
+  String get buddies_list_bulkDelete_confirm => 'حذف';
+
+  @override
+  String buddies_list_bulkDelete_snackbar(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'رفاق',
+      one: 'رفيق',
+    );
+    return 'تم حذف $count $_temp0';
+  }
+
+  @override
+  String get buddies_edit_merge_title => 'دمج الرفاق';
+
+  @override
+  String get buddies_edit_merge_fieldSourceCycleTooltip =>
+      'استخدام القيمة من الرفيق المحدد التالي';
+
+  @override
+  String buddies_edit_merge_fieldSourceLabel(
+    String buddyName,
+    int current,
+    int total,
+  ) {
+    return 'من $buddyName ($current/$total)';
+  }
+
+  @override
+  String get buddies_edit_merge_confirmTitle => 'دمج الرفاق';
+
+  @override
+  String buddies_edit_merge_confirmBody(int count) {
+    return 'سيتم دمج $count من الرفاق في رفيق واحد. ستُجمع ارتباطات الغوص تحت الرفيق الباقي. سيتم حذف الرفاق الآخرين.';
+  }
+
+  @override
+  String get buddies_edit_merge_loadingErrorTitle => 'دمج الرفاق';
+
+  @override
+  String buddies_edit_merge_loadingErrorBody(String error) {
+    return 'فشل في تحميل الرفاق: $error';
+  }
+
+  @override
+  String get buddies_edit_merge_notEnoughTitle => 'دمج الرفاق';
+
+  @override
+  String get buddies_edit_merge_notEnoughBody =>
+      'لا يوجد عدد كافٍ من الرفاق للدمج.';
+
+  @override
   String get certifications_appBar_addCertification => 'إضافة شهادة';
 
   @override
@@ -4621,6 +4728,17 @@ class AppLocalizationsAr extends AppLocalizations {
       'لا يمكن التحويل: الخطة تحتوي على تحذيرات حرجة';
 
   @override
+  String get divePlanner_error_reserveExceedsTank => 'يتجاوز ضغط الأسطوانة';
+
+  @override
+  String get divePlanner_error_reserveMustBePositive => 'يجب أن يكون أكبر من 0';
+
+  @override
+  String divePlanner_info_reserveDefault(Object unit, Object value) {
+    return 'لم يُدخل — افتراض $value $unit';
+  }
+
+  @override
   String get divePlanner_field_hePercent => 'He %';
 
   @override
@@ -4701,6 +4819,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get divePlanner_label_remaining => 'المتبقي';
+
+  @override
+  String get divePlanner_label_reserve => 'الاحتياطي:';
 
   @override
   String get divePlanner_label_runtime => 'وقت التشغيل';
@@ -5080,6 +5201,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get diveSites_edit_appBar_editSite => 'تعديل الموقع';
 
   @override
+  String get diveSites_edit_appBar_merge => 'دمج';
+
+  @override
+  String get diveSites_edit_appBar_mergeSites => 'دمج المواقع';
+
+  @override
   String get diveSites_edit_appBar_newSite => 'موقع جديد';
 
   @override
@@ -5087,6 +5214,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get diveSites_edit_button_addSite => 'إضافة موقع';
+
+  @override
+  String get diveSites_edit_button_mergeSites => 'دمج المواقع';
 
   @override
   String get diveSites_edit_button_saveChanges => 'حفظ التغييرات';
@@ -5211,6 +5341,50 @@ class AppLocalizationsAr extends AppLocalizations {
       'الأنواع التي تتوقع رؤيتها في هذا الموقع';
 
   @override
+  String diveSites_edit_merge_confirmBody(int count) {
+    return 'سيتم دمج $count موقع في موقع واحد. سيتم جمع الغطسات والوسائط والأنواع المتوقعة تحت الموقع المتبقي. سيتم حذف المواقع الأخرى.';
+  }
+
+  @override
+  String get diveSites_edit_merge_confirmTitle => 'دمج المواقع';
+
+  @override
+  String get diveSites_edit_merge_fieldSourceCycleTooltip =>
+      'استخدام القيمة من الموقع المحدد التالي';
+
+  @override
+  String diveSites_edit_merge_fieldSourceLabel(
+    Object siteName,
+    int current,
+    int total,
+  ) {
+    return 'من $siteName ($current/$total)';
+  }
+
+  @override
+  String get diveSites_edit_merge_fieldSourceMenuTooltip =>
+      'حدد القيمة من الموقع المحدد';
+
+  @override
+  String get diveSites_edit_merge_marineLifeHelperText =>
+      'مجمّعة من جميع المواقع المحددة';
+
+  @override
+  String diveSites_edit_merge_loadingErrorBody(Object error) {
+    return 'فشل تحميل المواقع: $error';
+  }
+
+  @override
+  String get diveSites_edit_merge_loadingErrorTitle => 'دمج المواقع';
+
+  @override
+  String get diveSites_edit_merge_notEnoughBody =>
+      'عدد المواقع غير كافٍ للدمج.';
+
+  @override
+  String get diveSites_edit_merge_notEnoughTitle => 'دمج المواقع';
+
+  @override
   String get diveSites_edit_rating_clear => 'مسح التقييم';
 
   @override
@@ -5284,6 +5458,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get diveSites_edit_snackbar_siteAdded => 'تمت إضافة الموقع';
+
+  @override
+  String get diveSites_edit_snackbar_sitesMerged => 'تم دمج المواقع';
 
   @override
   String get diveSites_edit_snackbar_siteUpdated => 'تم تحديث الموقع';
@@ -5557,6 +5734,23 @@ class AppLocalizationsAr extends AppLocalizations {
   String get diveSites_list_bulkDelete_undo => 'تراجع';
 
   @override
+  String get diveSites_list_merge_restored => 'تم التراجع عن الدمج';
+
+  @override
+  String diveSites_list_merge_snackbar(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'مواقع',
+      one: 'موقع',
+    );
+    return 'تم دمج $count $_temp0';
+  }
+
+  @override
+  String get diveSites_list_merge_undo => 'تراجع';
+
+  @override
   String get diveSites_list_emptyFiltered_clearAll => 'مسح جميع الفلاتر';
 
   @override
@@ -5624,6 +5818,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get diveSites_list_selection_deleteTooltip => 'حذف المحدد';
+
+  @override
+  String get diveSites_list_selection_mergeTooltip => 'دمج المحدد';
 
   @override
   String get diveSites_list_selection_deselectAllTooltip => 'إلغاء تحديد الكل';
@@ -13616,6 +13813,19 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get diveComputer_discovery_unknownDeviceDescription =>
       'هذا الجهاز غير موجود في مكتبتنا. سنحاول الاتصال، لكن التنزيل قد لا يعمل.';
+
+  @override
+  String get diveComputer_discovery_usbInstructions =>
+      'قم بتوصيل حاسوب الغوص عبر كابل USB، ثم اختره أدناه.';
+
+  @override
+  String diveComputer_discovery_usbNoResults(String query) {
+    return 'لا توجد أجهزة مطابقة لـ \"$query\"';
+  }
+
+  @override
+  String get diveComputer_discovery_usbSearchHint =>
+      'البحث حسب الشركة المصنعة أو الطراز...';
 
   @override
   String diveComputer_downloadStep_andMoreDives(Object count) {

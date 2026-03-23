@@ -650,6 +650,113 @@ class AppLocalizationsHe extends AppLocalizations {
   String get buddies_validation_nameRequired => 'נא להזין שם';
 
   @override
+  String get buddies_list_selection_closeTooltip => 'סגור בחירה';
+
+  @override
+  String buddies_list_selection_count(int count) {
+    return '$count נבחרו';
+  }
+
+  @override
+  String get buddies_list_selection_selectAllTooltip => 'בחר הכל';
+
+  @override
+  String get buddies_list_selection_deselectAllTooltip => 'בטל בחירת הכל';
+
+  @override
+  String get buddies_list_selection_mergeTooltip => 'מזג נבחרים';
+
+  @override
+  String get buddies_list_selection_deleteTooltip => 'מחק נבחרים';
+
+  @override
+  String buddies_list_merge_snackbar(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'חברי צוללים',
+      one: 'חבר צוללים',
+    );
+    return 'מוזגו $count $_temp0';
+  }
+
+  @override
+  String get buddies_list_merge_undo => 'בטל';
+
+  @override
+  String get buddies_list_merge_restored => 'המיזוג בוטל';
+
+  @override
+  String get buddies_list_bulkDelete_title => 'מחק חברי צוללים';
+
+  @override
+  String buddies_list_bulkDelete_content(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'חברי צוללים',
+      one: 'חבר צוללים',
+    );
+    return 'האם אתה בטוח שברצונך למחוק $count $_temp0? לא ניתן לבטל פעולה זו.';
+  }
+
+  @override
+  String get buddies_list_bulkDelete_cancel => 'ביטול';
+
+  @override
+  String get buddies_list_bulkDelete_confirm => 'מחק';
+
+  @override
+  String buddies_list_bulkDelete_snackbar(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'חברי צוללים',
+      one: 'חבר צוללים',
+    );
+    return 'נמחקו $count $_temp0';
+  }
+
+  @override
+  String get buddies_edit_merge_title => 'מזג חברי צוללים';
+
+  @override
+  String get buddies_edit_merge_fieldSourceCycleTooltip =>
+      'השתמש בערך מחבר הצוללים הנבחר הבא';
+
+  @override
+  String buddies_edit_merge_fieldSourceLabel(
+    String buddyName,
+    int current,
+    int total,
+  ) {
+    return 'מ-$buddyName ($current/$total)';
+  }
+
+  @override
+  String get buddies_edit_merge_confirmTitle => 'מזג חברי צוללים';
+
+  @override
+  String buddies_edit_merge_confirmBody(int count) {
+    return 'פעולה זו תמזג $count חברי צוללים לאחד. קישורי הצלילות יאוחדו תחת חבר הצוללים הנותר. שאר חברי הצוללים יימחקו.';
+  }
+
+  @override
+  String get buddies_edit_merge_loadingErrorTitle => 'מזג חברי צוללים';
+
+  @override
+  String buddies_edit_merge_loadingErrorBody(String error) {
+    return 'טעינת חברי צוללים נכשלה: $error';
+  }
+
+  @override
+  String get buddies_edit_merge_notEnoughTitle => 'מזג חברי צוללים';
+
+  @override
+  String get buddies_edit_merge_notEnoughBody =>
+      'אין מספיק חברי צוללים למיזוג.';
+
+  @override
   String get certifications_appBar_addCertification => 'הוסף הסמכה';
 
   @override
@@ -4602,6 +4709,17 @@ class AppLocalizationsHe extends AppLocalizations {
       'לא ניתן להמיר: לתכנית יש אזהרות קריטיות';
 
   @override
+  String get divePlanner_error_reserveExceedsTank => 'חורג מלחץ המיכל';
+
+  @override
+  String get divePlanner_error_reserveMustBePositive => 'חייב להיות גדול מ-0';
+
+  @override
+  String divePlanner_info_reserveDefault(Object unit, Object value) {
+    return 'לא הוזן — מניח $value $unit';
+  }
+
+  @override
   String get divePlanner_field_hePercent => 'He %';
 
   @override
@@ -4681,6 +4799,9 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get divePlanner_label_remaining => 'נותר';
+
+  @override
+  String get divePlanner_label_reserve => 'עתודה:';
 
   @override
   String get divePlanner_label_runtime => 'זמן ריצה';
@@ -5055,6 +5176,12 @@ class AppLocalizationsHe extends AppLocalizations {
   String get diveSites_edit_appBar_editSite => 'ערוך אתר';
 
   @override
+  String get diveSites_edit_appBar_merge => 'מיזוג';
+
+  @override
+  String get diveSites_edit_appBar_mergeSites => 'מיזוג אתרי צלילה';
+
+  @override
   String get diveSites_edit_appBar_newSite => 'אתר חדש';
 
   @override
@@ -5062,6 +5189,9 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get diveSites_edit_button_addSite => 'הוסף אתר';
+
+  @override
+  String get diveSites_edit_button_mergeSites => 'מיזוג אתרי צלילה';
 
   @override
   String get diveSites_edit_button_saveChanges => 'שמור שינויים';
@@ -5184,6 +5314,49 @@ class AppLocalizationsHe extends AppLocalizations {
       'מינים שאתה מצפה לראות באתר זה';
 
   @override
+  String diveSites_edit_merge_confirmBody(int count) {
+    return 'פעולה זו תמזג $count אתרים לאחד. צלילות, מדיה ומינים צפויים ישולבו תחת האתר הנותר. שאר האתרים יימחקו.';
+  }
+
+  @override
+  String get diveSites_edit_merge_confirmTitle => 'מיזוג אתרי צלילה';
+
+  @override
+  String get diveSites_edit_merge_fieldSourceCycleTooltip =>
+      'השתמש בערך מהאתר הנבחר הבא';
+
+  @override
+  String diveSites_edit_merge_fieldSourceLabel(
+    Object siteName,
+    int current,
+    int total,
+  ) {
+    return 'מתוך $siteName ($current/$total)';
+  }
+
+  @override
+  String get diveSites_edit_merge_fieldSourceMenuTooltip =>
+      'בחר ערך מהאתר הנבחר';
+
+  @override
+  String get diveSites_edit_merge_marineLifeHelperText =>
+      'משולב מכל האתרים שנבחרו';
+
+  @override
+  String diveSites_edit_merge_loadingErrorBody(Object error) {
+    return 'נכשל בטעינת אתרים: $error';
+  }
+
+  @override
+  String get diveSites_edit_merge_loadingErrorTitle => 'מיזוג אתרי צלילה';
+
+  @override
+  String get diveSites_edit_merge_notEnoughBody => 'אין מספיק אתרים למיזוג.';
+
+  @override
+  String get diveSites_edit_merge_notEnoughTitle => 'מיזוג אתרי צלילה';
+
+  @override
   String get diveSites_edit_rating_clear => 'נקה דירוג';
 
   @override
@@ -5256,6 +5429,9 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get diveSites_edit_snackbar_siteAdded => 'האתר נוסף';
+
+  @override
+  String get diveSites_edit_snackbar_sitesMerged => 'אתרי צלילה מוזגו';
 
   @override
   String get diveSites_edit_snackbar_siteUpdated => 'האתר עודכן';
@@ -5527,6 +5703,23 @@ class AppLocalizationsHe extends AppLocalizations {
   String get diveSites_list_bulkDelete_undo => 'בטל';
 
   @override
+  String get diveSites_list_merge_restored => 'המיזוג בוטל';
+
+  @override
+  String diveSites_list_merge_snackbar(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'אתרים',
+      one: 'אתר',
+    );
+    return 'מוזגו $count $_temp0';
+  }
+
+  @override
+  String get diveSites_list_merge_undo => 'בטל';
+
+  @override
   String get diveSites_list_emptyFiltered_clearAll => 'נקה את כל המסננים';
 
   @override
@@ -5592,6 +5785,9 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get diveSites_list_selection_deleteTooltip => 'מחק נבחרים';
+
+  @override
+  String get diveSites_list_selection_mergeTooltip => 'מיזוג נבחרים';
 
   @override
   String get diveSites_list_selection_deselectAllTooltip => 'בטל בחירת הכל';
@@ -13521,6 +13717,18 @@ class AppLocalizationsHe extends AppLocalizations {
   @override
   String get diveComputer_discovery_unknownDeviceDescription =>
       'מכשיר זה אינו בספרייה שלנו. ננסה להתחבר, אך ייתכן שההורדה לא תעבוד.';
+
+  @override
+  String get diveComputer_discovery_usbInstructions =>
+      'חבר את מחשב הצלילה שלך באמצעות כבל USB, ואז בחר אותו למטה.';
+
+  @override
+  String diveComputer_discovery_usbNoResults(String query) {
+    return 'לא נמצאו מכשירים עבור \"$query\"';
+  }
+
+  @override
+  String get diveComputer_discovery_usbSearchHint => 'חיפוש לפי יצרן או דגם...';
 
   @override
   String diveComputer_downloadStep_andMoreDives(Object count) {

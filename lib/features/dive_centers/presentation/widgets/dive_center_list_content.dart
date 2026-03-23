@@ -1,15 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:submersion/core/providers/provider.dart';
+
 import 'package:submersion/l10n/l10n_extension.dart';
+import 'package:submersion/core/constants/list_view_mode.dart';
 import 'package:submersion/core/constants/sort_options.dart';
 import 'package:submersion/core/models/sort_state.dart';
+import 'package:submersion/shared/widgets/list_view_mode_toggle.dart';
 import 'package:submersion/shared/widgets/master_detail/map_view_toggle_button.dart';
 import 'package:submersion/shared/widgets/master_detail/responsive_breakpoints.dart';
 import 'package:submersion/shared/widgets/sort_bottom_sheet.dart';
+import 'package:submersion/features/settings/presentation/providers/settings_providers.dart';
 import 'package:submersion/features/dive_centers/domain/entities/dive_center.dart';
 import 'package:submersion/features/dive_centers/presentation/providers/dive_center_providers.dart';
+import 'package:submersion/features/dive_centers/presentation/widgets/compact_dive_center_list_tile.dart';
+import 'package:submersion/features/dive_centers/presentation/widgets/dense_dive_center_list_tile.dart';
+import 'package:submersion/shared/widgets/debounced_search_results.dart';
 
 /// Content widget for the dive center list, used in master-detail layout.
 class DiveCenterListContent extends ConsumerStatefulWidget {
@@ -165,6 +172,13 @@ class _DiveCenterListContentState extends ConsumerState<DiveCenterListContent> {
       appBar: AppBar(
         title: Text(context.l10n.diveCenters_title),
         actions: [
+          ListViewModeToggle(
+            currentMode: ref.watch(diveCenterListViewModeProvider),
+            onModeChanged: (mode) {
+              ref.read(diveCenterListViewModeProvider.notifier).state = mode;
+            },
+            iconSize: 24,
+          ),
           IconButton(
             icon: const Icon(Icons.map),
             tooltip: context.l10n.diveCenters_tooltip_mapView,
@@ -233,6 +247,12 @@ class _DiveCenterListContentState extends ConsumerState<DiveCenterListContent> {
             ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
           ),
           const Spacer(),
+          ListViewModeToggle(
+            currentMode: ref.watch(diveCenterListViewModeProvider),
+            onModeChanged: (mode) {
+              ref.read(diveCenterListViewModeProvider.notifier).state = mode;
+            },
+          ),
           if (widget.onMapViewToggle != null)
             MapViewToggleButton(
               isActive: widget.isMapViewActive,
@@ -303,6 +323,8 @@ class _DiveCenterListContentState extends ConsumerState<DiveCenterListContent> {
     WidgetRef ref,
     List<DiveCenter> centers,
   ) {
+    final viewMode = ref.watch(diveCenterListViewModeProvider);
+
     return RefreshIndicator(
       onRefresh: () =>
           ref.read(diveCenterListNotifierProvider.notifier).refresh(),
@@ -313,11 +335,29 @@ class _DiveCenterListContentState extends ConsumerState<DiveCenterListContent> {
         itemBuilder: (context, index) {
           final center = centers[index];
           final isSelected = widget.selectedId == center.id;
-          return DiveCenterListTile(
-            center: center,
-            isSelected: isSelected,
-            onTap: () => _handleItemTap(center),
+          final diveCountAsync = ref.watch(
+            diveCenterDiveCountProvider(center.id),
           );
+          final diveCount = diveCountAsync.valueOrNull ?? 0;
+          return switch (viewMode) {
+            ListViewMode.detailed => DiveCenterListTile(
+              center: center,
+              isSelected: isSelected,
+              onTap: () => _handleItemTap(center),
+            ),
+            ListViewMode.compact => CompactDiveCenterListTile(
+              center: center,
+              diveCount: diveCount,
+              isSelected: isSelected,
+              onTap: () => _handleItemTap(center),
+            ),
+            ListViewMode.dense => DenseDiveCenterListTile(
+              center: center,
+              diveCount: diveCount,
+              isSelected: isSelected,
+              onTap: () => _handleItemTap(center),
+            ),
+          };
         },
       ),
     );
@@ -565,38 +605,10 @@ class DiveCenterSearchDelegate extends SearchDelegate<DiveCenter?> {
   Widget buildSuggestions(BuildContext context) => _buildSearchResults(context);
 
   Widget _buildSearchResults(BuildContext context) {
-    final resultsAsync = ref.watch(diveCenterSearchProvider(query));
-
-    return resultsAsync.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, _) => Center(
-        child: Text(context.l10n.diveCenters_error_generic(error.toString())),
-      ),
-      data: (centers) {
-        if (centers.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.search_off,
-                  size: 48,
-                  color: Theme.of(context).colorScheme.outline,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  query.isEmpty
-                      ? context.l10n.diveCenters_search_prompt
-                      : context.l10n.diveCenters_search_noResults(query),
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Theme.of(context).colorScheme.outline,
-                  ),
-                ),
-              ],
-            ),
-          );
-        }
-
+    return DebouncedSearchResults<DiveCenter>(
+      query: query,
+      watchProvider: (ref, q) => ref.watch(diveCenterSearchProvider(q)),
+      dataBuilder: (context, centers) {
         return ListView.builder(
           itemCount: centers.length,
           itemBuilder: (context, index) {
@@ -638,6 +650,49 @@ class DiveCenterSearchDelegate extends SearchDelegate<DiveCenter?> {
               },
             );
           },
+        );
+      },
+      emptyQueryBuilder: (context) => Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.search,
+              size: 48,
+              color: Theme.of(context).colorScheme.outline,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              context.l10n.diveCenters_search_prompt,
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                color: Theme.of(context).colorScheme.outline,
+              ),
+            ),
+          ],
+        ),
+      ),
+      emptyBuilder: (context, query) => Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.search_off,
+              size: 48,
+              color: Theme.of(context).colorScheme.outline,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              context.l10n.diveCenters_search_noResults(query),
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                color: Theme.of(context).colorScheme.outline,
+              ),
+            ),
+          ],
+        ),
+      ),
+      errorBuilder: (context, error) {
+        return Center(
+          child: Text(context.l10n.diveCenters_error_generic(error.toString())),
         );
       },
     );

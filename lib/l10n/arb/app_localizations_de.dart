@@ -664,6 +664,116 @@ class AppLocalizationsDe extends AppLocalizations {
       'Bitte geben Sie einen Namen ein';
 
   @override
+  String get buddies_list_selection_closeTooltip => 'Auswahl schließen';
+
+  @override
+  String buddies_list_selection_count(int count) {
+    return '$count ausgewählt';
+  }
+
+  @override
+  String get buddies_list_selection_selectAllTooltip => 'Alle auswählen';
+
+  @override
+  String get buddies_list_selection_deselectAllTooltip => 'Alle abwählen';
+
+  @override
+  String get buddies_list_selection_mergeTooltip =>
+      'Ausgewählte zusammenführen';
+
+  @override
+  String get buddies_list_selection_deleteTooltip => 'Ausgewählte löschen';
+
+  @override
+  String buddies_list_merge_snackbar(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Tauchpartner',
+      one: 'Tauchpartner',
+    );
+    return '$count $_temp0 zusammengeführt';
+  }
+
+  @override
+  String get buddies_list_merge_undo => 'Rückgängig';
+
+  @override
+  String get buddies_list_merge_restored =>
+      'Zusammenführung rückgängig gemacht';
+
+  @override
+  String get buddies_list_bulkDelete_title => 'Tauchpartner löschen';
+
+  @override
+  String buddies_list_bulkDelete_content(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Tauchpartner',
+      one: 'Tauchpartner',
+    );
+    return 'Möchten Sie wirklich $count $_temp0 löschen? Diese Aktion kann nicht rückgängig gemacht werden.';
+  }
+
+  @override
+  String get buddies_list_bulkDelete_cancel => 'Abbrechen';
+
+  @override
+  String get buddies_list_bulkDelete_confirm => 'Löschen';
+
+  @override
+  String buddies_list_bulkDelete_snackbar(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Tauchpartner',
+      one: 'Tauchpartner',
+    );
+    return '$count $_temp0 gelöscht';
+  }
+
+  @override
+  String get buddies_edit_merge_title => 'Tauchpartner zusammenführen';
+
+  @override
+  String get buddies_edit_merge_fieldSourceCycleTooltip =>
+      'Wert vom nächsten ausgewählten Tauchpartner verwenden';
+
+  @override
+  String buddies_edit_merge_fieldSourceLabel(
+    String buddyName,
+    int current,
+    int total,
+  ) {
+    return 'Von $buddyName ($current/$total)';
+  }
+
+  @override
+  String get buddies_edit_merge_confirmTitle => 'Tauchpartner zusammenführen';
+
+  @override
+  String buddies_edit_merge_confirmBody(int count) {
+    return 'Dabei werden $count Tauchpartner zu einem zusammengeführt. Tauchgangverknüpfungen werden beim verbleibenden Tauchpartner zusammengefasst. Die anderen Tauchpartner werden gelöscht.';
+  }
+
+  @override
+  String get buddies_edit_merge_loadingErrorTitle =>
+      'Tauchpartner zusammenführen';
+
+  @override
+  String buddies_edit_merge_loadingErrorBody(String error) {
+    return 'Tauchpartner konnten nicht geladen werden: $error';
+  }
+
+  @override
+  String get buddies_edit_merge_notEnoughTitle => 'Tauchpartner zusammenführen';
+
+  @override
+  String get buddies_edit_merge_notEnoughBody =>
+      'Nicht genügend Tauchpartner zum Zusammenführen.';
+
+  @override
   String get certifications_appBar_addCertification =>
       'Zertifizierung hinzufuegen';
 
@@ -4729,6 +4839,19 @@ class AppLocalizationsDe extends AppLocalizations {
       'Kann nicht konvertieren: Plan hat kritische Warnungen';
 
   @override
+  String get divePlanner_error_reserveExceedsTank =>
+      'Überschreitet Flaschendruck';
+
+  @override
+  String get divePlanner_error_reserveMustBePositive =>
+      'Muss größer als 0 sein';
+
+  @override
+  String divePlanner_info_reserveDefault(Object unit, Object value) {
+    return 'Nicht eingegeben — Annahme $value $unit';
+  }
+
+  @override
   String get divePlanner_field_hePercent => 'He %';
 
   @override
@@ -4808,6 +4931,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get divePlanner_label_remaining => 'Verbleibend';
+
+  @override
+  String get divePlanner_label_reserve => 'Reserve:';
 
   @override
   String get divePlanner_label_runtime => 'Laufzeit';
@@ -5189,6 +5315,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get diveSites_edit_appBar_editSite => 'Tauchplatz bearbeiten';
 
   @override
+  String get diveSites_edit_appBar_merge => 'Zusammenführen';
+
+  @override
+  String get diveSites_edit_appBar_mergeSites => 'Tauchplätze zusammenführen';
+
+  @override
   String get diveSites_edit_appBar_newSite => 'Neuer Tauchplatz';
 
   @override
@@ -5196,6 +5328,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get diveSites_edit_button_addSite => 'Tauchplatz hinzufuegen';
+
+  @override
+  String get diveSites_edit_button_mergeSites => 'Tauchplätze zusammenführen';
 
   @override
   String get diveSites_edit_button_saveChanges => 'Aenderungen speichern';
@@ -5325,6 +5460,52 @@ class AppLocalizationsDe extends AppLocalizations {
       'Arten, die Sie an diesem Tauchplatz erwarten';
 
   @override
+  String diveSites_edit_merge_confirmBody(int count) {
+    return 'Dies wird $count Tauchplätze zu einem zusammenführen. Tauchgänge, Medien und erwartete Arten werden unter dem verbleibenden Tauchplatz zusammengefasst. Die anderen Tauchplätze werden gelöscht.';
+  }
+
+  @override
+  String get diveSites_edit_merge_confirmTitle => 'Tauchplätze zusammenführen';
+
+  @override
+  String get diveSites_edit_merge_fieldSourceCycleTooltip =>
+      'Wert vom nächsten ausgewählten Standort verwenden';
+
+  @override
+  String diveSites_edit_merge_fieldSourceLabel(
+    Object siteName,
+    int current,
+    int total,
+  ) {
+    return 'Von $siteName ($current/$total)';
+  }
+
+  @override
+  String get diveSites_edit_merge_fieldSourceMenuTooltip =>
+      'Wert vom ausgewählten Standort auswählen';
+
+  @override
+  String get diveSites_edit_merge_marineLifeHelperText =>
+      'Zusammengefasst aus allen ausgewählten Tauchplätzen';
+
+  @override
+  String diveSites_edit_merge_loadingErrorBody(Object error) {
+    return 'Fehler beim Laden der Tauchplätze: $error';
+  }
+
+  @override
+  String get diveSites_edit_merge_loadingErrorTitle =>
+      'Tauchplätze zusammenführen';
+
+  @override
+  String get diveSites_edit_merge_notEnoughBody =>
+      'Nicht genügend Tauchplätze zum Zusammenführen.';
+
+  @override
+  String get diveSites_edit_merge_notEnoughTitle =>
+      'Tauchplätze zusammenführen';
+
+  @override
   String get diveSites_edit_rating_clear => 'Bewertung loeschen';
 
   @override
@@ -5398,6 +5579,10 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get diveSites_edit_snackbar_siteAdded => 'Tauchplatz hinzugefuegt';
+
+  @override
+  String get diveSites_edit_snackbar_sitesMerged =>
+      'Tauchplätze zusammengeführt';
 
   @override
   String get diveSites_edit_snackbar_siteUpdated => 'Tauchplatz aktualisiert';
@@ -5674,6 +5859,24 @@ class AppLocalizationsDe extends AppLocalizations {
   String get diveSites_list_bulkDelete_undo => 'Rueckgaengig';
 
   @override
+  String get diveSites_list_merge_restored =>
+      'Zusammenfuehrung rueckgaengig gemacht';
+
+  @override
+  String diveSites_list_merge_snackbar(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Tauchplaetze',
+      one: 'Tauchplatz',
+    );
+    return '$count $_temp0 zusammengefuehrt';
+  }
+
+  @override
+  String get diveSites_list_merge_undo => 'Rueckgaengig';
+
+  @override
   String get diveSites_list_emptyFiltered_clearAll => 'Alle Filter loeschen';
 
   @override
@@ -5742,6 +5945,10 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get diveSites_list_selection_deleteTooltip => 'Auswahl loeschen';
+
+  @override
+  String get diveSites_list_selection_mergeTooltip =>
+      'Ausgewählte zusammenführen';
 
   @override
   String get diveSites_list_selection_deselectAllTooltip => 'Alle abwaehlen';
@@ -13875,6 +14082,19 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get diveComputer_discovery_unknownDeviceDescription =>
       'Dieses Geraet befindet sich nicht in unserer Bibliothek. Wir versuchen eine Verbindung herzustellen, aber der Download funktioniert moeglicherweise nicht.';
+
+  @override
+  String get diveComputer_discovery_usbInstructions =>
+      'Verbinden Sie Ihren Tauchcomputer per USB-Kabel und waehlen Sie ihn unten aus.';
+
+  @override
+  String diveComputer_discovery_usbNoResults(String query) {
+    return 'Keine Geraete fuer \"$query\"';
+  }
+
+  @override
+  String get diveComputer_discovery_usbSearchHint =>
+      'Nach Hersteller oder Modell suchen...';
 
   @override
   String diveComputer_downloadStep_andMoreDives(Object count) {

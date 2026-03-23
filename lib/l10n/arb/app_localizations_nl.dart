@@ -656,6 +656,114 @@ class AppLocalizationsNl extends AppLocalizations {
   String get buddies_validation_nameRequired => 'Voer een naam in';
 
   @override
+  String get buddies_list_selection_closeTooltip => 'Selectie sluiten';
+
+  @override
+  String buddies_list_selection_count(int count) {
+    return '$count geselecteerd';
+  }
+
+  @override
+  String get buddies_list_selection_selectAllTooltip => 'Alles selecteren';
+
+  @override
+  String get buddies_list_selection_deselectAllTooltip => 'Alles deselecteren';
+
+  @override
+  String get buddies_list_selection_mergeTooltip => 'Geselecteerde samenvoegen';
+
+  @override
+  String get buddies_list_selection_deleteTooltip =>
+      'Geselecteerde verwijderen';
+
+  @override
+  String buddies_list_merge_snackbar(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'buddies',
+      one: 'buddy',
+    );
+    return '$count $_temp0 samengevoegd';
+  }
+
+  @override
+  String get buddies_list_merge_undo => 'Ongedaan maken';
+
+  @override
+  String get buddies_list_merge_restored => 'Samenvoeging ongedaan gemaakt';
+
+  @override
+  String get buddies_list_bulkDelete_title => 'Buddies verwijderen';
+
+  @override
+  String buddies_list_bulkDelete_content(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'buddies',
+      one: 'buddy',
+    );
+    return 'Weet je zeker dat je $count $_temp0 wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.';
+  }
+
+  @override
+  String get buddies_list_bulkDelete_cancel => 'Annuleren';
+
+  @override
+  String get buddies_list_bulkDelete_confirm => 'Verwijderen';
+
+  @override
+  String buddies_list_bulkDelete_snackbar(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'buddies',
+      one: 'buddy',
+    );
+    return '$count $_temp0 verwijderd';
+  }
+
+  @override
+  String get buddies_edit_merge_title => 'Buddies samenvoegen';
+
+  @override
+  String get buddies_edit_merge_fieldSourceCycleTooltip =>
+      'Waarde van volgende geselecteerde buddy gebruiken';
+
+  @override
+  String buddies_edit_merge_fieldSourceLabel(
+    String buddyName,
+    int current,
+    int total,
+  ) {
+    return 'Van $buddyName ($current/$total)';
+  }
+
+  @override
+  String get buddies_edit_merge_confirmTitle => 'Buddies samenvoegen';
+
+  @override
+  String buddies_edit_merge_confirmBody(int count) {
+    return 'Dit voegt $count buddies samen tot één. Duikassociaties worden gecombineerd onder de overgebleven buddy. De andere buddies worden verwijderd.';
+  }
+
+  @override
+  String get buddies_edit_merge_loadingErrorTitle => 'Buddies samenvoegen';
+
+  @override
+  String buddies_edit_merge_loadingErrorBody(String error) {
+    return 'Laden van buddies mislukt: $error';
+  }
+
+  @override
+  String get buddies_edit_merge_notEnoughTitle => 'Buddies samenvoegen';
+
+  @override
+  String get buddies_edit_merge_notEnoughBody =>
+      'Niet genoeg buddies om samen te voegen.';
+
+  @override
   String get certifications_appBar_addCertification =>
       'Certificering toevoegen';
 
@@ -4695,6 +4803,18 @@ class AppLocalizationsNl extends AppLocalizations {
       'Kan niet omzetten: plan heeft kritieke waarschuwingen';
 
   @override
+  String get divePlanner_error_reserveExceedsTank => 'Overschrijdt tankdruk';
+
+  @override
+  String get divePlanner_error_reserveMustBePositive =>
+      'Moet groter zijn dan 0';
+
+  @override
+  String divePlanner_info_reserveDefault(Object unit, Object value) {
+    return 'Niet ingevoerd — standaard $value $unit';
+  }
+
+  @override
   String get divePlanner_field_hePercent => 'He %';
 
   @override
@@ -4774,6 +4894,9 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get divePlanner_label_remaining => 'Resterend';
+
+  @override
+  String get divePlanner_label_reserve => 'Reserve:';
 
   @override
   String get divePlanner_label_runtime => 'Looptijd';
@@ -5153,6 +5276,12 @@ class AppLocalizationsNl extends AppLocalizations {
   String get diveSites_edit_appBar_editSite => 'Stek bewerken';
 
   @override
+  String get diveSites_edit_appBar_merge => 'Samenvoegen';
+
+  @override
+  String get diveSites_edit_appBar_mergeSites => 'Duiklocaties samenvoegen';
+
+  @override
   String get diveSites_edit_appBar_newSite => 'Nieuwe stek';
 
   @override
@@ -5160,6 +5289,9 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get diveSites_edit_button_addSite => 'Stek toevoegen';
+
+  @override
+  String get diveSites_edit_button_mergeSites => 'Duiklocaties samenvoegen';
 
   @override
   String get diveSites_edit_button_saveChanges => 'Wijzigingen opslaan';
@@ -5286,6 +5418,51 @@ class AppLocalizationsNl extends AppLocalizations {
       'Soorten die je op deze stek verwacht te zien';
 
   @override
+  String diveSites_edit_merge_confirmBody(int count) {
+    return 'Dit voegt $count locaties samen tot één. Duiken, media en verwachte soorten worden gecombineerd onder de overgebleven locatie. De andere locaties worden verwijderd.';
+  }
+
+  @override
+  String get diveSites_edit_merge_confirmTitle => 'Duiklocaties samenvoegen';
+
+  @override
+  String get diveSites_edit_merge_fieldSourceCycleTooltip =>
+      'Waarde gebruiken van volgende geselecteerde locatie';
+
+  @override
+  String diveSites_edit_merge_fieldSourceLabel(
+    Object siteName,
+    int current,
+    int total,
+  ) {
+    return 'Van $siteName ($current/$total)';
+  }
+
+  @override
+  String get diveSites_edit_merge_fieldSourceMenuTooltip =>
+      'Waarde selecteren van geselecteerde locatie';
+
+  @override
+  String get diveSites_edit_merge_marineLifeHelperText =>
+      'Gecombineerd uit alle geselecteerde locaties';
+
+  @override
+  String diveSites_edit_merge_loadingErrorBody(Object error) {
+    return 'Kan duiklocaties niet laden: $error';
+  }
+
+  @override
+  String get diveSites_edit_merge_loadingErrorTitle =>
+      'Duiklocaties samenvoegen';
+
+  @override
+  String get diveSites_edit_merge_notEnoughBody =>
+      'Niet genoeg duiklocaties om samen te voegen.';
+
+  @override
+  String get diveSites_edit_merge_notEnoughTitle => 'Duiklocaties samenvoegen';
+
+  @override
   String get diveSites_edit_rating_clear => 'Beoordeling wissen';
 
   @override
@@ -5358,6 +5535,9 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get diveSites_edit_snackbar_siteAdded => 'Stek toegevoegd';
+
+  @override
+  String get diveSites_edit_snackbar_sitesMerged => 'Duiklocaties samengevoegd';
 
   @override
   String get diveSites_edit_snackbar_siteUpdated => 'Stek bijgewerkt';
@@ -5633,6 +5813,23 @@ class AppLocalizationsNl extends AppLocalizations {
   String get diveSites_list_bulkDelete_undo => 'Ongedaan maken';
 
   @override
+  String get diveSites_list_merge_restored => 'Samenvoeging ongedaan gemaakt';
+
+  @override
+  String diveSites_list_merge_snackbar(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'stekken',
+      one: 'stek',
+    );
+    return '$count $_temp0 samengevoegd';
+  }
+
+  @override
+  String get diveSites_list_merge_undo => 'Ongedaan maken';
+
+  @override
   String get diveSites_list_emptyFiltered_clearAll => 'Alle filters wissen';
 
   @override
@@ -5701,6 +5898,10 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get diveSites_list_selection_deleteTooltip =>
       'Geselecteerde verwijderen';
+
+  @override
+  String get diveSites_list_selection_mergeTooltip =>
+      'Geselecteerde samenvoegen';
 
   @override
   String get diveSites_list_selection_deselectAllTooltip =>
@@ -13776,6 +13977,19 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get diveComputer_discovery_unknownDeviceDescription =>
       'Dit apparaat staat niet in onze bibliotheek. We proberen verbinding te maken, maar downloaden werkt mogelijk niet.';
+
+  @override
+  String get diveComputer_discovery_usbInstructions =>
+      'Sluit uw duikcomputer aan via USB-kabel en selecteer deze hieronder.';
+
+  @override
+  String diveComputer_discovery_usbNoResults(String query) {
+    return 'Geen apparaten gevonden voor \"$query\"';
+  }
+
+  @override
+  String get diveComputer_discovery_usbSearchHint =>
+      'Zoeken op fabrikant of model...';
 
   @override
   String diveComputer_downloadStep_andMoreDives(Object count) {

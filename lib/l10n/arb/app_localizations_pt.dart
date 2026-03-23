@@ -661,6 +661,113 @@ class AppLocalizationsPt extends AppLocalizations {
   String get buddies_validation_nameRequired => 'Digite um nome';
 
   @override
+  String get buddies_list_selection_closeTooltip => 'Fechar seleção';
+
+  @override
+  String buddies_list_selection_count(int count) {
+    return '$count selecionado(s)';
+  }
+
+  @override
+  String get buddies_list_selection_selectAllTooltip => 'Selecionar tudo';
+
+  @override
+  String get buddies_list_selection_deselectAllTooltip => 'Desmarcar tudo';
+
+  @override
+  String get buddies_list_selection_mergeTooltip => 'Mesclar selecionados';
+
+  @override
+  String get buddies_list_selection_deleteTooltip => 'Excluir selecionados';
+
+  @override
+  String buddies_list_merge_snackbar(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'companheiros',
+      one: 'companheiro',
+    );
+    return '$count $_temp0 mesclado(s)';
+  }
+
+  @override
+  String get buddies_list_merge_undo => 'Desfazer';
+
+  @override
+  String get buddies_list_merge_restored => 'Mesclagem desfeita';
+
+  @override
+  String get buddies_list_bulkDelete_title => 'Excluir Companheiros';
+
+  @override
+  String buddies_list_bulkDelete_content(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'companheiros',
+      one: 'companheiro',
+    );
+    return 'Tem certeza de que deseja excluir $count $_temp0? Esta ação não pode ser desfeita.';
+  }
+
+  @override
+  String get buddies_list_bulkDelete_cancel => 'Cancelar';
+
+  @override
+  String get buddies_list_bulkDelete_confirm => 'Excluir';
+
+  @override
+  String buddies_list_bulkDelete_snackbar(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'companheiros',
+      one: 'companheiro',
+    );
+    return '$count $_temp0 excluído(s)';
+  }
+
+  @override
+  String get buddies_edit_merge_title => 'Mesclar Companheiros';
+
+  @override
+  String get buddies_edit_merge_fieldSourceCycleTooltip =>
+      'Usar valor do próximo companheiro selecionado';
+
+  @override
+  String buddies_edit_merge_fieldSourceLabel(
+    String buddyName,
+    int current,
+    int total,
+  ) {
+    return 'De $buddyName ($current/$total)';
+  }
+
+  @override
+  String get buddies_edit_merge_confirmTitle => 'Mesclar Companheiros';
+
+  @override
+  String buddies_edit_merge_confirmBody(int count) {
+    return 'Isso mesclará $count companheiros em um. As associações de mergulho serão combinadas sob o companheiro resultante. Os outros companheiros serão excluídos.';
+  }
+
+  @override
+  String get buddies_edit_merge_loadingErrorTitle => 'Mesclar Companheiros';
+
+  @override
+  String buddies_edit_merge_loadingErrorBody(String error) {
+    return 'Falha ao carregar companheiros: $error';
+  }
+
+  @override
+  String get buddies_edit_merge_notEnoughTitle => 'Mesclar Companheiros';
+
+  @override
+  String get buddies_edit_merge_notEnoughBody =>
+      'Companheiros insuficientes para mesclar.';
+
+  @override
   String get certifications_appBar_addCertification => 'Adicionar Certificacao';
 
   @override
@@ -4732,6 +4839,18 @@ class AppLocalizationsPt extends AppLocalizations {
       'Não é possível converter: o plano tem avisos críticos';
 
   @override
+  String get divePlanner_error_reserveExceedsTank =>
+      'Excede a pressão do cilindro';
+
+  @override
+  String get divePlanner_error_reserveMustBePositive => 'Deve ser maior que 0';
+
+  @override
+  String divePlanner_info_reserveDefault(Object unit, Object value) {
+    return 'Não inserido — assumindo $value $unit';
+  }
+
+  @override
   String get divePlanner_field_hePercent => 'He %';
 
   @override
@@ -4811,6 +4930,9 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get divePlanner_label_remaining => 'Restante';
+
+  @override
+  String get divePlanner_label_reserve => 'Reserva:';
 
   @override
   String get divePlanner_label_runtime => 'Tempo Total';
@@ -5195,6 +5317,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String get diveSites_edit_appBar_editSite => 'Editar Ponto';
 
   @override
+  String get diveSites_edit_appBar_merge => 'Mesclar';
+
+  @override
+  String get diveSites_edit_appBar_mergeSites => 'Mesclar locais de mergulho';
+
+  @override
   String get diveSites_edit_appBar_newSite => 'Novo Ponto';
 
   @override
@@ -5202,6 +5330,9 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get diveSites_edit_button_addSite => 'Adicionar Ponto';
+
+  @override
+  String get diveSites_edit_button_mergeSites => 'Mesclar locais de mergulho';
 
   @override
   String get diveSites_edit_button_saveChanges => 'Salvar Alteracoes';
@@ -5329,6 +5460,52 @@ class AppLocalizationsPt extends AppLocalizations {
       'Especies que voce espera ver neste ponto';
 
   @override
+  String diveSites_edit_merge_confirmBody(int count) {
+    return 'Isso mesclará $count locais em um só. Mergulhos, mídias e espécies esperadas serão combinados no local remanescente. Os outros locais serão excluídos.';
+  }
+
+  @override
+  String get diveSites_edit_merge_confirmTitle => 'Mesclar locais de mergulho';
+
+  @override
+  String get diveSites_edit_merge_fieldSourceCycleTooltip =>
+      'Usar valor do próximo local selecionado';
+
+  @override
+  String diveSites_edit_merge_fieldSourceLabel(
+    Object siteName,
+    int current,
+    int total,
+  ) {
+    return 'De $siteName ($current/$total)';
+  }
+
+  @override
+  String get diveSites_edit_merge_fieldSourceMenuTooltip =>
+      'Selecionar valor do local selecionado';
+
+  @override
+  String get diveSites_edit_merge_marineLifeHelperText =>
+      'Combinado de todos os locais selecionados';
+
+  @override
+  String diveSites_edit_merge_loadingErrorBody(Object error) {
+    return 'Falha ao carregar locais de mergulho: $error';
+  }
+
+  @override
+  String get diveSites_edit_merge_loadingErrorTitle =>
+      'Mesclar locais de mergulho';
+
+  @override
+  String get diveSites_edit_merge_notEnoughBody =>
+      'Não há locais de mergulho suficientes para mesclar.';
+
+  @override
+  String get diveSites_edit_merge_notEnoughTitle =>
+      'Mesclar locais de mergulho';
+
+  @override
   String get diveSites_edit_rating_clear => 'Limpar Avaliacao';
 
   @override
@@ -5403,6 +5580,10 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get diveSites_edit_snackbar_siteAdded => 'Ponto adicionado';
+
+  @override
+  String get diveSites_edit_snackbar_sitesMerged =>
+      'Locais de mergulho mesclados';
 
   @override
   String get diveSites_edit_snackbar_siteUpdated => 'Ponto atualizado';
@@ -5679,6 +5860,23 @@ class AppLocalizationsPt extends AppLocalizations {
   String get diveSites_list_bulkDelete_undo => 'Desfazer';
 
   @override
+  String get diveSites_list_merge_restored => 'Fusao desfeita';
+
+  @override
+  String diveSites_list_merge_snackbar(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'pontos fundidos',
+      one: 'ponto fundido',
+    );
+    return '$count $_temp0';
+  }
+
+  @override
+  String get diveSites_list_merge_undo => 'Desfazer';
+
+  @override
   String get diveSites_list_emptyFiltered_clearAll => 'Limpar Todos os Filtros';
 
   @override
@@ -5747,6 +5945,9 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get diveSites_list_selection_deleteTooltip => 'Excluir Selecionados';
+
+  @override
+  String get diveSites_list_selection_mergeTooltip => 'Mesclar selecionados';
 
   @override
   String get diveSites_list_selection_deselectAllTooltip => 'Desmarcar Todos';
@@ -13896,6 +14097,19 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get diveComputer_discovery_unknownDeviceDescription =>
       'Este dispositivo nao esta na nossa biblioteca. Tentaremos conectar, mas o download pode nao funcionar.';
+
+  @override
+  String get diveComputer_discovery_usbInstructions =>
+      'Conecte seu computador de mergulho via cabo USB e selecione-o abaixo.';
+
+  @override
+  String diveComputer_discovery_usbNoResults(String query) {
+    return 'Nenhum dispositivo correspondente a \"$query\"';
+  }
+
+  @override
+  String get diveComputer_discovery_usbSearchHint =>
+      'Pesquisar por fabricante ou modelo...';
 
   @override
   String diveComputer_downloadStep_andMoreDives(Object count) {

@@ -768,6 +768,38 @@ class MockBuddyRepository extends _i1.Mock implements _i6.BuddyRepository {
             ),
           )
           as _i17.Future<_i6.BuddyStats>);
+
+  @override
+  _i17.Future<_i6.BuddyMergeResult?> mergeBuddies({
+    required _i5.Buddy? mergedBuddy,
+    required List<String>? buddyIds,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#mergeBuddies, [], {
+              #mergedBuddy: mergedBuddy,
+              #buddyIds: buddyIds,
+            }),
+            returnValue: _i17.Future<_i6.BuddyMergeResult?>.value(),
+          )
+          as _i17.Future<_i6.BuddyMergeResult?>);
+
+  @override
+  _i17.Future<void> undoMerge(_i6.BuddyMergeSnapshot? snapshot) =>
+      (super.noSuchMethod(
+            Invocation.method(#undoMerge, [snapshot]),
+            returnValue: _i17.Future<void>.value(),
+            returnValueForMissingStub: _i17.Future<void>.value(),
+          )
+          as _i17.Future<void>);
+
+  @override
+  _i17.Future<void> bulkDeleteBuddies(List<String>? ids) =>
+      (super.noSuchMethod(
+            Invocation.method(#bulkDeleteBuddies, [ids]),
+            returnValue: _i17.Future<void>.value(),
+            returnValueForMissingStub: _i17.Future<void>.value(),
+          )
+          as _i17.Future<void>);
 }
 
 /// A class which mocks [DiveCenterRepository].
@@ -1375,6 +1407,29 @@ class MockSiteRepository extends _i1.Mock implements _i26.SiteRepository {
   _i17.Future<void> bulkDeleteSites(List<String>? ids) =>
       (super.noSuchMethod(
             Invocation.method(#bulkDeleteSites, [ids]),
+            returnValue: _i17.Future<void>.value(),
+            returnValueForMissingStub: _i17.Future<void>.value(),
+          )
+          as _i17.Future<void>);
+
+  @override
+  _i17.Future<_i26.MergeSnapshot?> mergeSites({
+    required _i11.DiveSite? mergedSite,
+    required List<String>? siteIds,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#mergeSites, [], {
+              #mergedSite: mergedSite,
+              #siteIds: siteIds,
+            }),
+            returnValue: _i17.Future<_i26.MergeSnapshot?>.value(),
+          )
+          as _i17.Future<_i26.MergeSnapshot?>);
+
+  @override
+  _i17.Future<void> undoMerge(_i26.MergeSnapshot? snapshot) =>
+      (super.noSuchMethod(
+            Invocation.method(#undoMerge, [snapshot]),
             returnValue: _i17.Future<void>.value(),
             returnValueForMissingStub: _i17.Future<void>.value(),
           )

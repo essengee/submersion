@@ -666,6 +666,113 @@ class AppLocalizationsFr extends AppLocalizations {
   String get buddies_validation_nameRequired => 'Veuillez entrer un nom';
 
   @override
+  String get buddies_list_selection_closeTooltip => 'Fermer la sélection';
+
+  @override
+  String buddies_list_selection_count(int count) {
+    return '$count sélectionné(s)';
+  }
+
+  @override
+  String get buddies_list_selection_selectAllTooltip => 'Tout sélectionner';
+
+  @override
+  String get buddies_list_selection_deselectAllTooltip => 'Tout désélectionner';
+
+  @override
+  String get buddies_list_selection_mergeTooltip => 'Fusionner la sélection';
+
+  @override
+  String get buddies_list_selection_deleteTooltip => 'Supprimer la sélection';
+
+  @override
+  String buddies_list_merge_snackbar(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'binômes',
+      one: 'binôme',
+    );
+    return '$count $_temp0 fusionné(s)';
+  }
+
+  @override
+  String get buddies_list_merge_undo => 'Annuler';
+
+  @override
+  String get buddies_list_merge_restored => 'Fusion annulée';
+
+  @override
+  String get buddies_list_bulkDelete_title => 'Supprimer les binômes';
+
+  @override
+  String buddies_list_bulkDelete_content(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'binômes',
+      one: 'binôme',
+    );
+    return 'Voulez-vous vraiment supprimer $count $_temp0 ? Cette action est irréversible.';
+  }
+
+  @override
+  String get buddies_list_bulkDelete_cancel => 'Annuler';
+
+  @override
+  String get buddies_list_bulkDelete_confirm => 'Supprimer';
+
+  @override
+  String buddies_list_bulkDelete_snackbar(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'binômes',
+      one: 'binôme',
+    );
+    return '$count $_temp0 supprimé(s)';
+  }
+
+  @override
+  String get buddies_edit_merge_title => 'Fusionner les binômes';
+
+  @override
+  String get buddies_edit_merge_fieldSourceCycleTooltip =>
+      'Utiliser la valeur du binôme sélectionné suivant';
+
+  @override
+  String buddies_edit_merge_fieldSourceLabel(
+    String buddyName,
+    int current,
+    int total,
+  ) {
+    return 'De $buddyName ($current/$total)';
+  }
+
+  @override
+  String get buddies_edit_merge_confirmTitle => 'Fusionner les binômes';
+
+  @override
+  String buddies_edit_merge_confirmBody(int count) {
+    return 'Cela fusionnera $count binômes en un seul. Les associations de plongées seront regroupées sous le binôme survivant. Les autres binômes seront supprimés.';
+  }
+
+  @override
+  String get buddies_edit_merge_loadingErrorTitle => 'Fusionner les binômes';
+
+  @override
+  String buddies_edit_merge_loadingErrorBody(String error) {
+    return 'Échec du chargement des binômes : $error';
+  }
+
+  @override
+  String get buddies_edit_merge_notEnoughTitle => 'Fusionner les binômes';
+
+  @override
+  String get buddies_edit_merge_notEnoughBody =>
+      'Pas assez de binômes à fusionner.';
+
+  @override
   String get certifications_appBar_addCertification =>
       'Ajouter une certification';
 
@@ -4756,6 +4863,19 @@ class AppLocalizationsFr extends AppLocalizations {
       'Impossible de convertir : le plan comporte des avertissements critiques';
 
   @override
+  String get divePlanner_error_reserveExceedsTank =>
+      'Dépasse la pression du bloc';
+
+  @override
+  String get divePlanner_error_reserveMustBePositive =>
+      'Doit être supérieur à 0';
+
+  @override
+  String divePlanner_info_reserveDefault(Object unit, Object value) {
+    return 'Non saisi — valeur par défaut $value $unit';
+  }
+
+  @override
   String get divePlanner_field_hePercent => 'He %';
 
   @override
@@ -4836,6 +4956,9 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get divePlanner_label_remaining => 'Restant';
+
+  @override
+  String get divePlanner_label_reserve => 'Réserve :';
 
   @override
   String get divePlanner_label_runtime => 'Durée totale';
@@ -5217,6 +5340,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get diveSites_edit_appBar_editSite => 'Modifier le site';
 
   @override
+  String get diveSites_edit_appBar_merge => 'Fusionner';
+
+  @override
+  String get diveSites_edit_appBar_mergeSites =>
+      'Fusionner les sites de plongée';
+
+  @override
   String get diveSites_edit_appBar_newSite => 'Nouveau site';
 
   @override
@@ -5224,6 +5354,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get diveSites_edit_button_addSite => 'Ajouter le site';
+
+  @override
+  String get diveSites_edit_button_mergeSites =>
+      'Fusionner les sites de plongée';
 
   @override
   String get diveSites_edit_button_saveChanges =>
@@ -5353,6 +5487,53 @@ class AppLocalizationsFr extends AppLocalizations {
       'Especes que tu t\'attends a voir sur ce site';
 
   @override
+  String diveSites_edit_merge_confirmBody(int count) {
+    return 'Cela fusionnera $count sites en un seul. Les plongées, les médias et les espèces attendues seront regroupés sous le site conservé. Les autres sites seront supprimés.';
+  }
+
+  @override
+  String get diveSites_edit_merge_confirmTitle =>
+      'Fusionner les sites de plongée';
+
+  @override
+  String get diveSites_edit_merge_fieldSourceCycleTooltip =>
+      'Utiliser la valeur du prochain site sélectionné';
+
+  @override
+  String diveSites_edit_merge_fieldSourceLabel(
+    Object siteName,
+    int current,
+    int total,
+  ) {
+    return 'De $siteName ($current/$total)';
+  }
+
+  @override
+  String get diveSites_edit_merge_fieldSourceMenuTooltip =>
+      'Sélectionner la valeur du site sélectionné';
+
+  @override
+  String get diveSites_edit_merge_marineLifeHelperText =>
+      'Combiné à partir de tous les sites sélectionnés';
+
+  @override
+  String diveSites_edit_merge_loadingErrorBody(Object error) {
+    return 'Échec du chargement des sites : $error';
+  }
+
+  @override
+  String get diveSites_edit_merge_loadingErrorTitle =>
+      'Fusionner les sites de plongée';
+
+  @override
+  String get diveSites_edit_merge_notEnoughBody =>
+      'Pas assez de sites à fusionner.';
+
+  @override
+  String get diveSites_edit_merge_notEnoughTitle =>
+      'Fusionner les sites de plongée';
+
+  @override
   String get diveSites_edit_rating_clear => 'Effacer l\'evaluation';
 
   @override
@@ -5425,6 +5606,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get diveSites_edit_snackbar_siteAdded => 'Site ajoute';
+
+  @override
+  String get diveSites_edit_snackbar_sitesMerged =>
+      'Sites de plongée fusionnés';
 
   @override
   String get diveSites_edit_snackbar_siteUpdated => 'Site mis a jour';
@@ -5699,6 +5884,23 @@ class AppLocalizationsFr extends AppLocalizations {
   String get diveSites_list_bulkDelete_undo => 'Annuler';
 
   @override
+  String get diveSites_list_merge_restored => 'Fusion annulee';
+
+  @override
+  String diveSites_list_merge_snackbar(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'sites fusionnes',
+      one: 'site fusionne',
+    );
+    return '$count $_temp0';
+  }
+
+  @override
+  String get diveSites_list_merge_undo => 'Annuler';
+
+  @override
   String get diveSites_list_emptyFiltered_clearAll =>
       'Effacer tous les filtres';
 
@@ -5767,6 +5969,9 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get diveSites_list_selection_deleteTooltip => 'Supprimer la selection';
+
+  @override
+  String get diveSites_list_selection_mergeTooltip => 'Fusionner la sélection';
 
   @override
   String get diveSites_list_selection_deselectAllTooltip =>
@@ -13943,6 +14148,19 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get diveComputer_discovery_unknownDeviceDescription =>
       'Cet appareil n\'est pas dans notre bibliotheque. Nous tenterons de nous connecter, mais le telechargement pourrait ne pas fonctionner.';
+
+  @override
+  String get diveComputer_discovery_usbInstructions =>
+      'Connectez votre ordinateur de plongée par câble USB, puis sélectionnez-le ci-dessous.';
+
+  @override
+  String diveComputer_discovery_usbNoResults(String query) {
+    return 'Aucun appareil correspondant à \"$query\"';
+  }
+
+  @override
+  String get diveComputer_discovery_usbSearchHint =>
+      'Rechercher par fabricant ou modèle...';
 
   @override
   String diveComputer_downloadStep_andMoreDives(Object count) {

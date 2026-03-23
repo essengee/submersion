@@ -652,6 +652,112 @@ class AppLocalizationsEn extends AppLocalizations {
   String get buddies_validation_nameRequired => 'Please enter a name';
 
   @override
+  String get buddies_list_selection_closeTooltip => 'Close Selection';
+
+  @override
+  String buddies_list_selection_count(int count) {
+    return '$count selected';
+  }
+
+  @override
+  String get buddies_list_selection_selectAllTooltip => 'Select All';
+
+  @override
+  String get buddies_list_selection_deselectAllTooltip => 'Deselect All';
+
+  @override
+  String get buddies_list_selection_mergeTooltip => 'Merge Selected';
+
+  @override
+  String get buddies_list_selection_deleteTooltip => 'Delete Selected';
+
+  @override
+  String buddies_list_merge_snackbar(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'buddies',
+      one: 'buddy',
+    );
+    return 'Merged $count $_temp0';
+  }
+
+  @override
+  String get buddies_list_merge_undo => 'Undo';
+
+  @override
+  String get buddies_list_merge_restored => 'Merge undone';
+
+  @override
+  String get buddies_list_bulkDelete_title => 'Delete Buddies';
+
+  @override
+  String buddies_list_bulkDelete_content(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'buddies',
+      one: 'buddy',
+    );
+    return 'Are you sure you want to delete $count $_temp0? This action cannot be undone.';
+  }
+
+  @override
+  String get buddies_list_bulkDelete_cancel => 'Cancel';
+
+  @override
+  String get buddies_list_bulkDelete_confirm => 'Delete';
+
+  @override
+  String buddies_list_bulkDelete_snackbar(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'buddies',
+      one: 'buddy',
+    );
+    return 'Deleted $count $_temp0';
+  }
+
+  @override
+  String get buddies_edit_merge_title => 'Merge Buddies';
+
+  @override
+  String get buddies_edit_merge_fieldSourceCycleTooltip =>
+      'Use value from next selected buddy';
+
+  @override
+  String buddies_edit_merge_fieldSourceLabel(
+    String buddyName,
+    int current,
+    int total,
+  ) {
+    return 'From $buddyName ($current/$total)';
+  }
+
+  @override
+  String get buddies_edit_merge_confirmTitle => 'Merge Buddies';
+
+  @override
+  String buddies_edit_merge_confirmBody(int count) {
+    return 'This will merge $count buddies into one. Dive associations will be combined under the surviving buddy. The other buddies will be deleted.';
+  }
+
+  @override
+  String get buddies_edit_merge_loadingErrorTitle => 'Merge Buddies';
+
+  @override
+  String buddies_edit_merge_loadingErrorBody(String error) {
+    return 'Failed to load buddies: $error';
+  }
+
+  @override
+  String get buddies_edit_merge_notEnoughTitle => 'Merge Buddies';
+
+  @override
+  String get buddies_edit_merge_notEnoughBody => 'Not enough buddies to merge.';
+
+  @override
   String get certifications_appBar_addCertification => 'Add Certification';
 
   @override
@@ -4648,6 +4754,18 @@ class AppLocalizationsEn extends AppLocalizations {
       'Cannot convert: plan has critical warnings';
 
   @override
+  String get divePlanner_error_reserveExceedsTank => 'Exceeds tank pressure';
+
+  @override
+  String get divePlanner_error_reserveMustBePositive =>
+      'Must be greater than 0';
+
+  @override
+  String divePlanner_info_reserveDefault(Object unit, Object value) {
+    return 'Not entered — assuming $value $unit';
+  }
+
+  @override
   String get divePlanner_field_hePercent => 'He %';
 
   @override
@@ -4727,6 +4845,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get divePlanner_label_remaining => 'Remaining';
+
+  @override
+  String get divePlanner_label_reserve => 'Reserve:';
 
   @override
   String get divePlanner_label_runtime => 'Runtime';
@@ -5107,6 +5228,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get diveSites_edit_appBar_editSite => 'Edit Site';
 
   @override
+  String get diveSites_edit_appBar_merge => 'Merge';
+
+  @override
+  String get diveSites_edit_appBar_mergeSites => 'Merge Sites';
+
+  @override
   String get diveSites_edit_appBar_newSite => 'New Site';
 
   @override
@@ -5114,6 +5241,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get diveSites_edit_button_addSite => 'Add Site';
+
+  @override
+  String get diveSites_edit_button_mergeSites => 'Merge Sites';
 
   @override
   String get diveSites_edit_button_saveChanges => 'Save Changes';
@@ -5240,6 +5370,49 @@ class AppLocalizationsEn extends AppLocalizations {
       'Species you expect to see at this site';
 
   @override
+  String diveSites_edit_merge_confirmBody(int count) {
+    return 'This will merge $count sites into one. Dives, media, and expected species will be combined under the surviving site. The other sites will be deleted.';
+  }
+
+  @override
+  String get diveSites_edit_merge_confirmTitle => 'Merge Sites';
+
+  @override
+  String get diveSites_edit_merge_fieldSourceCycleTooltip =>
+      'Use value from next selected site';
+
+  @override
+  String diveSites_edit_merge_fieldSourceLabel(
+    Object siteName,
+    int current,
+    int total,
+  ) {
+    return 'From $siteName ($current/$total)';
+  }
+
+  @override
+  String get diveSites_edit_merge_fieldSourceMenuTooltip =>
+      'Select value from selected site';
+
+  @override
+  String get diveSites_edit_merge_marineLifeHelperText =>
+      'Combined from all selected sites';
+
+  @override
+  String diveSites_edit_merge_loadingErrorBody(Object error) {
+    return 'Failed to load sites: $error';
+  }
+
+  @override
+  String get diveSites_edit_merge_loadingErrorTitle => 'Merge Sites';
+
+  @override
+  String get diveSites_edit_merge_notEnoughBody => 'Not enough sites to merge.';
+
+  @override
+  String get diveSites_edit_merge_notEnoughTitle => 'Merge Sites';
+
+  @override
   String get diveSites_edit_rating_clear => 'Clear Rating';
 
   @override
@@ -5313,6 +5486,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get diveSites_edit_snackbar_siteAdded => 'Site added';
+
+  @override
+  String get diveSites_edit_snackbar_sitesMerged => 'Sites merged';
 
   @override
   String get diveSites_edit_snackbar_siteUpdated => 'Site updated';
@@ -5585,6 +5761,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get diveSites_list_bulkDelete_undo => 'Undo';
 
   @override
+  String get diveSites_list_merge_restored => 'Merge undone';
+
+  @override
+  String diveSites_list_merge_snackbar(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'sites',
+      one: 'site',
+    );
+    return 'Merged $count $_temp0';
+  }
+
+  @override
+  String get diveSites_list_merge_undo => 'Undo';
+
+  @override
   String get diveSites_list_emptyFiltered_clearAll => 'Clear All Filters';
 
   @override
@@ -5652,6 +5845,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get diveSites_list_selection_deleteTooltip => 'Delete Selected';
+
+  @override
+  String get diveSites_list_selection_mergeTooltip => 'Merge Selected';
 
   @override
   String get diveSites_list_selection_deselectAllTooltip => 'Deselect All';
@@ -13659,6 +13855,19 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get diveComputer_discovery_unknownDeviceDescription =>
       'This device is not in our library. We\'ll try to connect, but download may not work.';
+
+  @override
+  String get diveComputer_discovery_usbInstructions =>
+      'Connect your dive computer via USB cable, then select it below.';
+
+  @override
+  String diveComputer_discovery_usbNoResults(String query) {
+    return 'No devices matching \"$query\"';
+  }
+
+  @override
+  String get diveComputer_discovery_usbSearchHint =>
+      'Search by manufacturer or model...';
 
   @override
   String diveComputer_downloadStep_andMoreDives(Object count) {

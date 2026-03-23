@@ -1,0 +1,43 @@
+name: CodeQL
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 6 * * 1' # Weekly on Monday at 6:00 UTC
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  analyze-interpreted:
+    name: Analyze (actions, python, ruby)
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [actions, python, ruby]
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: '/language:${{ matrix.language }}'
+
+  # Swift/C++ and Java/Kotlin analysis disabled — CodeQL's autobuild
+  # can't handle Flutter's build system, and the native code (Swift runners,
+  # libdivecomputer C bridge, Android Kotlin) is mostly generated/boilerplate.
+  # Re-enable if custom native code grows significantly.
