@@ -302,7 +302,7 @@ void DiveComputerHostApiImpl::PerformDownload(
 
         if (ports_to_try.empty()) {
             flutter_api_->OnError(
-                DiveComputerError("connect_failed",
+                DiveComputerError("no_serial_ports",
                     "No USB serial ports found. Is the dive computer connected and powered on?"),
                 [] {}, [](const auto&) {});
             libdc_download_session_free(session);

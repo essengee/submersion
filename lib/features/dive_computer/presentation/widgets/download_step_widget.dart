@@ -410,12 +410,10 @@ class _DownloadStepWidgetState extends ConsumerState<DownloadStepWidget> {
 
   String _localizedError(BuildContext context, DownloadState state) {
     final l10n = context.l10n;
+    if (state.errorCode == 'no_serial_ports') {
+      return l10n.diveComputer_download_noSerialPortsFound;
+    }
     if (state.errorCode == 'connect_failed' && state.errorMessage != null) {
-      // Check if the native message indicates no ports were found.
-      if (state.errorMessage!.contains('No USB serial ports')) {
-        return l10n.diveComputer_download_noSerialPortsFound;
-      }
-      // Otherwise wrap the native diagnostic in a localized message.
       return l10n.diveComputer_download_serialConnectFailedWithDetails(
         state.errorMessage!,
       );

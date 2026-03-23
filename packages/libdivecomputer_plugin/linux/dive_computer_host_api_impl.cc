@@ -443,8 +443,13 @@ static gpointer download_thread_func(gpointer data) {
 
       if (!found) {
         if (port_count == 0) {
-          probe_msg = g_strdup(
+          send_error_from_thread(ctx, "no_serial_ports",
               "No USB serial ports found. Is the dive computer connected and powered on?");
+          libdc_download_session_free(ctx->session);
+          ctx->session = nullptr;
+          g_free(fp_data);
+          download_thread_data_free(td);
+          return nullptr;
         } else {
           probe_msg = g_strdup_printf(
               "No dive computer found. Ports tried:\n%s", probe_log->str);
