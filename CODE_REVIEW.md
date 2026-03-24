@@ -88,3 +88,63 @@ The diff shows -108/+111 but the actual semantic change is ~3 lines (the `Platfo
 ```bash
 git diff --check feature/cressi-leonardo-import -- test/helpers/python_script_runner.dart
 ```
+
+## Follow-up Review (post-fix commits fd75ab40..b75fcd42)
+
+All five Copilot items (C1–C3) and all five maintainer items (M1–M5) were addressed. The fixes are generally solid, but the following issues remained or were introduced by the fix commits. All have been resolved in commits fe5d50ff..811553da.
+
+### F1. ~~`on_download_progress` and `on_dive_downloaded` still called from download thread (Linux) — thread-safety bug~~ ✅ Fixed
+
+**File:** `packages/libdivecomputer_plugin/linux/dive_computer_host_api_impl.cc`
+**Fix:** fe5d50ff — Wrapped both callbacks with `g_idle_add` using the same pattern as `send_error_from_thread`.
+
+The fix commits correctly moved error dispatch and completion dispatch to the main thread via `g_idle_add`. However, `on_download_progress` and `on_dive_downloaded` were still calling Flutter API methods directly from the download thread. These invoke Pigeon-generated GObject methods that push data into the Dart engine — which is not thread-safe. During multi-port probing this was especially risky.
+
+### F2. ~~`python_script_runner.dart` still has CRLF line endings — M5 not actually fixed~~ ✅ Fixed
+
+**File:** `test/helpers/python_script_runner.dart`
+**Fix:** 6f87bcb3 — Converted to LF line endings.
+
+Commit 756e7952 intended to fix M5 but the file still had CRLF line endings. `git diff --check` flagged every line as trailing whitespace.
+
+### F3. ~~Phantom dives from failed port attempts leak to Flutter (Linux & Windows)~~ ✅ Fixed
+
+**Files:** `linux/dive_computer_host_api_impl.cc`, `windows/dive_computer_host_api_impl.cc`
+**Fix:** 0f9f7055 — Buffer dives per probe attempt; flush on success, discard on failure.
+
+When the probe loop tried a wrong port, `libdc_download_run` could partially succeed — some devices respond to the initial handshake before the protocol diverges. The `on_dive` callback fired for each parsed dive, sending it to Flutter immediately. If the download then failed and the loop moved to the next port, those phantom dives had already been dispatched.
+
+### F4. ~~Windows: `SetupDiGetDeviceRegistryPropertyA` failure silently includes non-USB ports~~ ✅ Fixed
+
+**File:** `packages/libdivecomputer_plugin/windows/serial_scanner.cc`
+**Fix:** 2c8a4839 — Changed to fail-closed: skip ports when hardware ID cannot be read.
+
+If `SetupDiGetDeviceRegistryPropertyA` failed, the hardware ID check was skipped and the port was included in the probe list. This undermined the USB-only filtering from M1.
+
+### F5. ~~Non-English ARB files have no `@` metadata for `serialConnectFailedWithDetails`~~ ✅ Fixed
+
+**Files:** All 9 non-English ARB files
+**Fix:** 6a485bbf — Added `@` metadata blocks with placeholder definitions.
+
+The English ARB file had the metadata block but the other 9 locale files did not. While not a runtime bug (Flutter reads metadata from the template only), this prevented independent validation.
+
+### F6. ~~`download_step_widget.dart` error localization matches on English substring~~ ✅ Fixed
+
+**File:** `lib/features/dive_computer/presentation/widgets/download_step_widget.dart`
+**Fix:** e205befe — Introduced dedicated `no_serial_ports` error code; Dart matches on `errorCode` instead of message text.
+
+The `_localizedError` method was checking `state.errorMessage!.contains('No USB serial ports')` — fragile coupling to the native message wording. Now uses a structured error code on both Linux and Windows.
+
+### F7. ~~Session reuse across probe attempts is safe but undocumented~~ ✅ Fixed
+
+**Files:** `linux/dive_computer_host_api_impl.cc`, `windows/dive_computer_host_api_impl.cc`
+**Fix:** c8b2fd53 — Added comments at session creation sites.
+
+Both platforms reuse a single `libdc_download_session_t` across multiple `libdc_download_run` calls. This is safe but non-obvious. Comments now explain the design decision.
+
+### F8. ~~Native C test uses `strncasecmp` — won't compile on Windows~~ ✅ Fixed
+
+**File:** `packages/libdivecomputer_plugin/test/native/test_serial_callbacks.c`
+**Fix:** 811553da — Added `#ifdef _WIN32` guard mapping `strncasecmp` to `_strnicmp`.
+
+The test used `strncasecmp` (POSIX, from `<strings.h>`) which is not available on Windows.
