@@ -386,8 +386,9 @@ final divePlanNotifierProvider =
     StateNotifierProvider<DivePlanNotifier, DivePlanState>((ref) {
       final calculator = ref.watch(planCalculatorServiceProvider);
       // Default reserve: 50 bar for metric, 500 psi (~34.47 bar) for imperial
+      final read = ref.read;
       double defaultReserve() {
-        final unit = ref.read(pressureUnitProvider);
+        final unit = read(pressureUnitProvider);
         return unit == PressureUnit.psi
             ? PressureUnit.psi.convert(500, PressureUnit.bar)
             : DivePlanState.kDefaultReservePressureBar;

@@ -117,7 +117,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Tap the default "Primary" tank chip to open edit dialog
-      await tester.tap(find.byType(InputChip));
+      await tester.tap(find.widgetWithText(InputChip, 'Primary'));
       await tester.pumpAndSettle();
 
       // Default tank: startPressure=200 bar -> ~2901 psi
