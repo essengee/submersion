@@ -194,7 +194,9 @@ class _TankEditDialogState extends State<_TankEditDialog> {
     super.initState();
     _nameController = TextEditingController(text: widget.tank?.name ?? '');
     _volumeController = TextEditingController(
-      text: widget.tank?.volume?.toStringAsFixed(1) ?? '11.1',
+      text: widget.tank?.volume != null
+          ? widget.units.convertVolume(widget.tank!.volume!).toStringAsFixed(1)
+          : widget.units.convertVolume(11.1).toStringAsFixed(1),
     );
     _pressureController = TextEditingController(
       text: widget.tank?.startPressure != null
@@ -337,7 +339,9 @@ class _TankEditDialogState extends State<_TankEditDialog> {
     final tank = DiveTank(
       id: widget.tank?.id ?? _uuid.v4(),
       name: _nameController.text.isNotEmpty ? _nameController.text : null,
-      volume: double.tryParse(_volumeController.text),
+      volume: double.tryParse(_volumeController.text) != null
+          ? widget.units.volumeToLiters(double.parse(_volumeController.text))
+          : null,
       startPressure: int.tryParse(_pressureController.text) != null
           ? widget.units
                 .pressureToBar(double.parse(_pressureController.text))
