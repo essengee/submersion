@@ -385,7 +385,6 @@ class DivePlanNotifier extends StateNotifier<DivePlanState> {
 final divePlanNotifierProvider =
     StateNotifierProvider<DivePlanNotifier, DivePlanState>((ref) {
       final calculator = ref.watch(planCalculatorServiceProvider);
-      final pressureUnit = ref.read(pressureUnitProvider);
       // Default reserve: 50 bar for metric, 500 psi (~34.47 bar) for imperial
       double defaultReserve() {
         final unit = ref.read(pressureUnitProvider);

@@ -48,31 +48,32 @@ void main() {
       expect(state.reservePressure, DivePlanState.kDefaultReservePressureBar);
     });
 
-    test('newPlan resets reserve to 500 psi (~34 bar) when pressure unit is psi', () {
-      final settingsNotifier = _TestSettingsNotifier();
-      final container = ProviderContainer(
-        overrides: [
-          settingsProvider.overrideWith((ref) => settingsNotifier),
-        ],
-      );
-      addTearDown(container.dispose);
+    test(
+      'newPlan resets reserve to 500 psi (~34 bar) when pressure unit is psi',
+      () {
+        final settingsNotifier = _TestSettingsNotifier();
+        final container = ProviderContainer(
+          overrides: [settingsProvider.overrideWith((ref) => settingsNotifier)],
+        );
+        addTearDown(container.dispose);
 
-      // Force notifier creation while unit is bar
-      final notifier = container.read(divePlanNotifierProvider.notifier);
-      expect(
-        container.read(divePlanNotifierProvider).reservePressure,
-        DivePlanState.kDefaultReservePressureBar,
-      );
+        // Force notifier creation while unit is bar
+        final notifier = container.read(divePlanNotifierProvider.notifier);
+        expect(
+          container.read(divePlanNotifierProvider).reservePressure,
+          DivePlanState.kDefaultReservePressureBar,
+        );
 
-      // User switches to PSI in settings
-      settingsNotifier.updatePressureUnitForTest(PressureUnit.psi);
+        // User switches to PSI in settings
+        settingsNotifier.updatePressureUnitForTest(PressureUnit.psi);
 
-      // Reset the plan
-      notifier.newPlan();
+        // Reset the plan
+        notifier.newPlan();
 
-      final state = container.read(divePlanNotifierProvider);
-      // Should reset to 500 psi (~34.47 bar), NOT 50 bar (725 psi)
-      expect(state.reservePressure, closeTo(34.47, 0.5));
-    });
+        final state = container.read(divePlanNotifierProvider);
+        // Should reset to 500 psi (~34.47 bar), NOT 50 bar (725 psi)
+        expect(state.reservePressure, closeTo(34.47, 0.5));
+      },
+    );
   });
 }
