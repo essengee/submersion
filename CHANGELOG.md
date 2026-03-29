@@ -3,6 +3,50 @@
 All notable changes to Submersion are documented in this file.
 
 
+## 1.4.0 (2026-03-29)
+
+### Features
+
+- add dive detail section config translations for 9 locales
+- design docs
+
+### Bug Fixes
+
+- appcast version handling
+- version display bug in update dialog
+- auto_updater_windows threading violation (#83) (#100)
+- fix pre-push hook for worktrees
+
+### Documentation
+
+- add implementation plan for auto_updater threading fix (#83)
+- add design spec for auto_updater_windows threading fix (#83)
+- add Shearwater Cloud database import design spec
+- add implementation plan for duration-bottomtime rename and SAC fix
+- add debug log viewer implementation plan
+- add debug log viewer design spec
+- update duration-bottomtime spec with SAC calculation fix
+- add import tag selector design spec
+
+### Chores
+
+- bump version to 1.4.0+83
+
+### Other
+
+- Feature/debug log viewer (#98)
+- Feature/dive detail section config (#97)
+- Feature/duration bottomtime rename sac fix (#95)
+- Feature/shearwater cloud import (#96)
+- fix/dive-planner-units (#93)
+- Feature/import tag selector (#94)
+- Issue-71 UDDF handle switchmix switching with out explicit tank reference (#92)
+- Issue-87 gas mixes floating point numbers not rounded for display (#91)
+- Feature/data import overhaul (#89)
+- issue-70 UDDF dual-tank only shows one tank on dive profile (#86)
+- Bugix/default local (#88)
+
+
 ## 1.3.7 (2026-03-24)
 
 ### Features
