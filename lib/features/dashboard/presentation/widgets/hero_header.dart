@@ -296,22 +296,25 @@ class _HeroHeaderState extends ConsumerState<HeroHeader>
         const SizedBox(width: 16),
         _verticalSeparator(40),
         const SizedBox(width: 16),
-        _activityStatColumn(
+        _careerStatColumn(
           daysSinceValue,
           context.l10n.dashboard_hero_daysSinceLabel,
           theme,
+          fontSize: 24,
         ),
-        const SizedBox(width: 16),
-        _activityStatColumn(
+        const SizedBox(width: 20),
+        _careerStatColumn(
           monthly,
           context.l10n.dashboard_hero_thisMonthLabel,
           theme,
+          fontSize: 24,
         ),
-        const SizedBox(width: 16),
-        _activityStatColumn(
+        const SizedBox(width: 20),
+        _careerStatColumn(
           ytd,
           context.l10n.dashboard_hero_thisYearLabel,
           theme,
+          fontSize: 24,
         ),
       ],
     );
