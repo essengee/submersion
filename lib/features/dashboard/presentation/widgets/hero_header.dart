@@ -3,7 +3,6 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:submersion/core/providers/provider.dart';
 
-import 'package:submersion/features/dive_log/data/repositories/dive_repository_impl.dart';
 import 'package:submersion/features/dive_log/presentation/providers/dive_providers.dart';
 import 'package:submersion/features/dashboard/presentation/providers/dashboard_providers.dart';
 import 'package:submersion/l10n/l10n_extension.dart';
@@ -47,7 +46,20 @@ const _bubbleSpecs = [
   _BubbleSpec(x: 0.82, size: 4, speed: 2.22, phase: 0.22),
 ];
 
-/// Hero header widget with personalized greeting, key stats,
+/// Format total seconds into a concise hours string.
+String _formatHours(int totalSeconds) {
+  final hours = totalSeconds / 3600;
+  if (hours < 1) {
+    final minutes = totalSeconds ~/ 60;
+    return '${minutes}m';
+  }
+  if (hours < 10) {
+    return hours.toStringAsFixed(1);
+  }
+  return hours.round().toString();
+}
+
+/// Hero header widget with diver name, career totals, activity stats,
 /// and animated ambient ocean effects (caustic shimmer + rising bubbles).
 class HeroHeader extends ConsumerStatefulWidget {
   const HeroHeader({super.key});
@@ -86,6 +98,9 @@ class _HeroHeaderState extends ConsumerState<HeroHeader>
   Widget build(BuildContext context) {
     final diverAsync = ref.watch(dashboardDiverProvider);
     final statsAsync = ref.watch(diveStatisticsProvider);
+    final daysSinceAsync = ref.watch(daysSinceLastDiveProvider);
+    final monthlyAsync = ref.watch(monthlyDiveCountProvider);
+    final ytdAsync = ref.watch(yearToDateDiveCountProvider);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -102,14 +117,36 @@ class _HeroHeaderState extends ConsumerState<HeroHeader>
             const Color(0xFF00ACC1).withValues(alpha: 0.9),
             const Color(0xFF009688).withValues(alpha: 0.85),
           ];
-    final textColor = isDark ? Colors.white : const Color(0xFF00363D);
     final bubbleColor = isDark
         ? Colors.white.withValues(alpha: 0.10)
         : Colors.white.withValues(alpha: 0.22);
     final causticOpacity = isDark ? 0.06 : 0.12;
 
+    // Resolve provider values with fallbacks for loading/error states
+    final diverName =
+        diverAsync.valueOrNull?.name ??
+        context.l10n.dashboard_hero_diverFallbackName;
+    final stats = statsAsync.valueOrNull;
+    final totalDives = stats?.totalDives.toString() ?? '-';
+    final hoursValue = stats != null
+        ? _formatHours(stats.totalTimeSeconds)
+        : '-';
+    final daysSince = daysSinceAsync.valueOrNull;
+    final monthly = monthlyAsync.valueOrNull?.toString() ?? '-';
+    final ytd = ytdAsync.valueOrNull?.toString() ?? '-';
+
+    // Format days-since value
+    String daysSinceValue;
+    if (daysSince == null) {
+      daysSinceValue = '-';
+    } else if (daysSince == 0) {
+      daysSinceValue = context.l10n.dashboard_hero_todayLabel;
+    } else {
+      daysSinceValue = daysSince.toString();
+    }
+
     return Semantics(
-      label: context.l10n.dashboard_semantics_greetingBanner,
+      label: context.l10n.dashboard_semantics_statsBar,
       child: Container(
         width: double.infinity,
         decoration: BoxDecoration(
@@ -144,92 +181,100 @@ class _HeroHeaderState extends ConsumerState<HeroHeader>
                   ),
                 ),
               ),
-              // App icon
+              // Diver name + app icon (top-right)
               Positioned(
                 right: 16,
-                top: 8,
+                top: 12,
                 child: ExcludeSemantics(
-                  child: Image.asset(
-                    'assets/icon/icon.png',
-                    width: 80,
-                    height: 80,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 120),
+                        child: Text(
+                          diverName,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Image.asset(
+                        'assets/icon/icon.png',
+                        width: 52,
+                        height: 52,
+                      ),
+                    ],
                   ),
                 ),
               ),
               // Content
               Padding(
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.fromLTRB(24, 24, 24, 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Greeting
-                    diverAsync.when(
-                      data: (diver) {
-                        final greeting = _getGreeting(context);
-                        final name =
-                            diver?.name.split(' ').first ??
-                            context.l10n.dashboard_defaultDiverName;
-                        return Text(
-                          context.l10n.dashboard_greeting_withName(
-                            greeting,
-                            name,
+                    // Career stats row
+                    Padding(
+                      padding: const EdgeInsets.only(right: 190),
+                      child: Row(
+                        children: [
+                          // Total dives
+                          _CareerStat(
+                            value: totalDives,
+                            label: context.l10n.dashboard_hero_divesLoggedLabel,
+                            theme: theme,
                           ),
-                          style: theme.textTheme.headlineSmall?.copyWith(
-                            color: textColor,
-                            fontWeight: FontWeight.bold,
+                          const SizedBox(width: 16),
+                          Container(
+                            width: 1,
+                            height: 36,
+                            color: Colors.white.withValues(alpha: 0.3),
                           ),
-                        );
-                      },
-                      loading: () => Text(
-                        context.l10n.dashboard_greeting_withoutName(
-                          _getGreeting(context),
-                        ),
-                        style: theme.textTheme.headlineSmall?.copyWith(
-                          color: textColor,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      error: (_, _) => Text(
-                        context.l10n.dashboard_greeting_withoutName(
-                          _getGreeting(context),
-                        ),
-                        style: theme.textTheme.headlineSmall?.copyWith(
-                          color: textColor,
-                          fontWeight: FontWeight.bold,
-                        ),
+                          const SizedBox(width: 16),
+                          // Hours logged
+                          _CareerStat(
+                            value: hoursValue,
+                            label: context
+                                .l10n
+                                .dashboard_hero_hoursUnderwaterLabel,
+                            theme: theme,
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    // Headline stats - responsive based on screen width
-                    statsAsync.when(
-                      data: (stats) {
-                        // On phones (< 600px), only show dive count to save space
-                        // On tablets/desktop, show both dives and hours
-                        final screenWidth = MediaQuery.sizeOf(context).width;
-                        final showHours = screenWidth >= 600;
-                        return Text(
-                          _buildHeadlineStats(
-                            context,
-                            stats,
-                            showHours: showHours,
-                          ),
-                          style: theme.textTheme.bodyLarge?.copyWith(
-                            color: textColor.withValues(alpha: 0.9),
-                          ),
-                        );
-                      },
-                      loading: () => Text(
-                        context.l10n.dashboard_hero_loading,
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          color: textColor.withValues(alpha: 0.9),
+                    const SizedBox(height: 14),
+                    // Divider
+                    Container(
+                      height: 1,
+                      color: Colors.white.withValues(alpha: 0.1),
+                    ),
+                    const SizedBox(height: 12),
+                    // Activity stats row
+                    Row(
+                      children: [
+                        _ActivityStat(
+                          value: daysSinceValue,
+                          label: context.l10n.dashboard_hero_daysSinceLabel,
+                          theme: theme,
                         ),
-                      ),
-                      error: (_, _) => Text(
-                        context.l10n.dashboard_hero_error,
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          color: textColor.withValues(alpha: 0.9),
+                        const SizedBox(width: 16),
+                        _ActivityStat(
+                          value: monthly,
+                          label: context.l10n.dashboard_hero_thisMonthLabel,
+                          theme: theme,
                         ),
-                      ),
+                        const SizedBox(width: 16),
+                        _ActivityStat(
+                          value: ytd,
+                          label: context.l10n.dashboard_hero_thisYearLabel,
+                          theme: theme,
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -240,42 +285,78 @@ class _HeroHeaderState extends ConsumerState<HeroHeader>
       ),
     );
   }
+}
 
-  String _getGreeting(BuildContext context) {
-    final hour = DateTime.now().hour;
-    if (hour < 12) return context.l10n.dashboard_greeting_morning;
-    if (hour < 17) return context.l10n.dashboard_greeting_afternoon;
-    return context.l10n.dashboard_greeting_evening;
+/// A single career stat block (large value + small label).
+class _CareerStat extends StatelessWidget {
+  final String value;
+  final String label;
+  final ThemeData theme;
+
+  const _CareerStat({
+    required this.value,
+    required this.label,
+    required this.theme,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 36,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        Text(
+          label,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: Colors.white.withValues(alpha: 0.7),
+          ),
+        ),
+      ],
+    );
   }
+}
 
-  String _buildHeadlineStats(
-    BuildContext context,
-    DiveStatistics stats, {
-    bool showHours = true,
-  }) {
-    if (stats.totalDives == 0) return context.l10n.dashboard_hero_noDives;
+/// A single activity stat pair (value + label inline).
+class _ActivityStat extends StatelessWidget {
+  final String value;
+  final String label;
+  final ThemeData theme;
 
-    final parts = <String>[];
+  const _ActivityStat({
+    required this.value,
+    required this.label,
+    required this.theme,
+  });
 
-    final diveText = stats.totalDives == 1
-        ? context.l10n.dashboard_hero_divesLoggedOne
-        : context.l10n.dashboard_hero_divesLoggedOther(stats.totalDives);
-    parts.add(diveText);
-
-    if (showHours) {
-      final hours = stats.totalTimeSeconds / 3600;
-      if (hours >= 1) {
-        final hoursStr = hours < 10
-            ? hours.toStringAsFixed(1)
-            : '${hours.round()}';
-        parts.add(context.l10n.dashboard_hero_hoursUnderwater(hoursStr));
-      } else if (stats.totalTimeSeconds > 0) {
-        final minutes = stats.totalTimeSeconds ~/ 60;
-        parts.add(context.l10n.dashboard_hero_minutesUnderwater(minutes));
-      }
-    }
-
-    return parts.join(' \u2022 ');
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          value,
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        Text(
+          label,
+          style: theme.textTheme.labelSmall?.copyWith(
+            color: Colors.white.withValues(alpha: 0.6),
+          ),
+        ),
+      ],
+    );
   }
 }
 
