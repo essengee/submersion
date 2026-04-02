@@ -14,26 +14,22 @@ class QuickActionsCard extends StatelessWidget {
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Semantics(
-              header: true,
-              child: Text(
-                context.l10n.dashboard_quickActions_sectionTitle,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+            Text(
+              context.l10n.dashboard_quickActions_sectionTitle,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 16),
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
+            const SizedBox(height: 10),
+            Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Tooltip(
-                  message: context.l10n.dashboard_quickActions_logDiveTooltip,
+                SizedBox(
+                  width: double.infinity,
                   child: FilledButton.icon(
                     onPressed: () => showAddDiveBottomSheet(
                       context: context,
@@ -43,29 +39,22 @@ class QuickActionsCard extends StatelessWidget {
                     label: Text(context.l10n.dashboard_quickActions_logDive),
                   ),
                 ),
-                Tooltip(
-                  message: context.l10n.dashboard_quickActions_planDiveTooltip,
+                const SizedBox(height: 6),
+                SizedBox(
+                  width: double.infinity,
                   child: FilledButton.tonalIcon(
                     onPressed: () => context.go('/planning/dive-planner'),
                     icon: const Icon(Icons.edit_calendar),
                     label: Text(context.l10n.dashboard_quickActions_planDive),
                   ),
                 ),
-                Tooltip(
-                  message:
-                      context.l10n.dashboard_quickActions_statisticsTooltip,
+                const SizedBox(height: 6),
+                SizedBox(
+                  width: double.infinity,
                   child: OutlinedButton.icon(
                     onPressed: () => context.go('/statistics'),
                     icon: const Icon(Icons.bar_chart),
                     label: Text(context.l10n.dashboard_quickActions_statistics),
-                  ),
-                ),
-                Tooltip(
-                  message: context.l10n.dashboard_quickActions_addSiteTooltip,
-                  child: OutlinedButton.icon(
-                    onPressed: () => context.go('/sites/new'),
-                    icon: const Icon(Icons.location_on),
-                    label: Text(context.l10n.dashboard_quickActions_addSite),
                   ),
                 ),
               ],
