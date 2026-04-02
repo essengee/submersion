@@ -217,8 +217,8 @@ class _HeroHeaderState extends ConsumerState<HeroHeader>
     final icon = ExcludeSemantics(
       child: Image.asset(
         'assets/icon/icon.png',
-        width: isWide ? 56 : 72,
-        height: isWide ? 56 : 72,
+        width: isWide ? 56 : 80,
+        height: isWide ? 56 : 80,
       ),
     );
 
