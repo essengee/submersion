@@ -7,7 +7,7 @@ import 'package:submersion/features/settings/presentation/providers/settings_pro
 import 'package:submersion/features/dashboard/presentation/providers/dashboard_providers.dart';
 import 'package:submersion/l10n/l10n_extension.dart';
 
-/// Card showing personal dive records in a horizontal scrollable format
+/// Card showing personal dive records as a compact vertical list
 class PersonalRecordsCard extends ConsumerWidget {
   const PersonalRecordsCard({super.key});
 
@@ -17,6 +17,8 @@ class PersonalRecordsCard extends ConsumerWidget {
     final settings = ref.watch(settingsProvider);
     final units = UnitFormatter(settings);
     final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
+    final bodyMedium = theme.textTheme.bodyMedium;
 
     return recordsAsync.when(
       data: (records) {
@@ -24,103 +26,85 @@ class PersonalRecordsCard extends ConsumerWidget {
           return const SizedBox.shrink();
         }
 
-        final recordWidgets = <Widget>[];
+        final rows = <Widget>[];
 
-        // Deepest dive
         if (records.deepestDive != null) {
           final displayDepth = units.convertDepth(
             records.deepestDive!.maxDepth!,
           );
-          recordWidgets.add(
-            _RecordChip(
-              icon: Icons.arrow_downward,
+          rows.add(
+            _RecordRow(
               label: context.l10n.dashboard_personalRecords_deepest,
               value: '${displayDepth.toStringAsFixed(1)}${units.depthSymbol}',
-              subtitle: records.deepestDive!.site?.name,
               color: Colors.indigo,
               onTap: () => context.push('/dives/${records.deepestDive!.id}'),
             ),
           );
         }
 
-        // Longest dive
         if (records.longestDive != null) {
-          recordWidgets.add(
-            _RecordChip(
-              icon: Icons.timer,
+          rows.add(
+            _RecordRow(
               label: context.l10n.dashboard_personalRecords_longest,
               value: '${records.longestDive!.bottomTime!.inMinutes}min',
-              subtitle: records.longestDive!.site?.name,
               color: Colors.teal,
               onTap: () => context.push('/dives/${records.longestDive!.id}'),
             ),
           );
         }
 
-        // Coldest dive
         if (records.coldestDive != null) {
           final displayTemp = units.convertTemperature(
             records.coldestDive!.waterTemp!,
           );
-          recordWidgets.add(
-            _RecordChip(
-              icon: Icons.ac_unit,
+          rows.add(
+            _RecordRow(
               label: context.l10n.dashboard_personalRecords_coldest,
               value:
                   '${displayTemp.toStringAsFixed(0)}${units.temperatureSymbol}',
-              subtitle: records.coldestDive!.site?.name,
               color: Colors.blue,
               onTap: () => context.push('/dives/${records.coldestDive!.id}'),
             ),
           );
         }
 
-        // Warmest dive
         if (records.warmestDive != null) {
           final displayTemp = units.convertTemperature(
             records.warmestDive!.waterTemp!,
           );
-          recordWidgets.add(
-            _RecordChip(
-              icon: Icons.whatshot,
+          rows.add(
+            _RecordRow(
               label: context.l10n.dashboard_personalRecords_warmest,
               value:
                   '${displayTemp.toStringAsFixed(0)}${units.temperatureSymbol}',
-              subtitle: records.warmestDive!.site?.name,
               color: Colors.orange,
               onTap: () => context.push('/dives/${records.warmestDive!.id}'),
             ),
           );
         }
 
-        if (recordWidgets.isEmpty) {
+        if (rows.isEmpty) {
           return const SizedBox.shrink();
         }
 
         return Card(
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
-                    Icon(
-                      Icons.emoji_events,
-                      size: 20,
-                      color: theme.colorScheme.primary,
-                    ),
-                    const SizedBox(width: 8),
+                    Icon(Icons.emoji_events, size: 16, color: primary),
+                    const SizedBox(width: 6),
                     Text(
                       context.l10n.dashboard_personalRecords_sectionTitle,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: bodyMedium?.copyWith(fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
-                Wrap(spacing: 8, runSpacing: 8, children: recordWidgets),
+                const SizedBox(height: 10),
+                ...rows,
               ],
             ),
           ),
@@ -132,19 +116,15 @@ class PersonalRecordsCard extends ConsumerWidget {
   }
 }
 
-class _RecordChip extends StatelessWidget {
-  final IconData icon;
+class _RecordRow extends StatelessWidget {
   final String label;
   final String value;
-  final String? subtitle;
   final Color color;
   final VoidCallback? onTap;
 
-  const _RecordChip({
-    required this.icon,
+  const _RecordRow({
     required this.label,
     required this.value,
-    this.subtitle,
     required this.color,
     this.onTap,
   });
@@ -152,98 +132,28 @@ class _RecordChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final onSurfaceVariant = theme.colorScheme.onSurfaceVariant;
+    final bodySmall = theme.textTheme.bodySmall;
+    final bodyMedium = theme.textTheme.bodyMedium;
 
-    final content = Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            color.withValues(alpha: 0.15),
-            color.withValues(alpha: 0.05),
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Row(
+          children: [
+            Text(label, style: bodySmall?.copyWith(color: onSurfaceVariant)),
+            const Spacer(),
+            Text(
+              value,
+              style: bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+            ),
           ],
         ),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(icon, color: color, size: 18),
-          ),
-          const SizedBox(width: 10),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                label,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-              Row(
-                children: [
-                  Text(
-                    value,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: color,
-                    ),
-                  ),
-                  if (subtitle != null) ...[
-                    const SizedBox(width: 4),
-                    ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 80),
-                      child: Text(
-                        '• $subtitle',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ],
-          ),
-          if (onTap != null) ...[
-            const SizedBox(width: 4),
-            Icon(
-              Icons.chevron_right,
-              size: 16,
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ],
-        ],
       ),
     );
-
-    final semanticDescription = subtitle != null
-        ? '$label: $value at $subtitle'
-        : '$label: $value';
-
-    if (onTap != null) {
-      return Semantics(
-        button: true,
-        label: semanticDescription,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(12),
-          child: content,
-        ),
-      );
-    }
-
-    return Semantics(label: semanticDescription, child: content);
   }
 }
