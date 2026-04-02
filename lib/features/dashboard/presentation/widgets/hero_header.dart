@@ -334,6 +334,7 @@ class _HeroHeaderState extends ConsumerState<HeroHeader>
       children: [
         Expanded(
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Flexible(
                 child: _careerStatColumn(
