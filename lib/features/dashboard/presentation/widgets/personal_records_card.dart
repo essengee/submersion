@@ -20,98 +20,83 @@ class PersonalRecordsCard extends ConsumerWidget {
     final primary = theme.colorScheme.primary;
     final bodyMedium = theme.textTheme.bodyMedium;
 
-    return recordsAsync.when(
-      data: (records) {
-        if (!records.hasRecords) {
-          return const SizedBox.shrink();
-        }
+    final records = recordsAsync.valueOrNull;
 
-        final rows = <Widget>[];
+    String deepestValue = '-';
+    VoidCallback? deepestTap;
+    if (records?.deepestDive != null) {
+      final d = units.convertDepth(records!.deepestDive!.maxDepth!);
+      deepestValue = '${d.toStringAsFixed(1)}${units.depthSymbol}';
+      deepestTap = () => context.push('/dives/${records.deepestDive!.id}');
+    }
 
-        if (records.deepestDive != null) {
-          final displayDepth = units.convertDepth(
-            records.deepestDive!.maxDepth!,
-          );
-          rows.add(
-            _RecordRow(
-              label: context.l10n.dashboard_personalRecords_deepest,
-              value: '${displayDepth.toStringAsFixed(1)}${units.depthSymbol}',
-              color: Colors.indigo,
-              onTap: () => context.push('/dives/${records.deepestDive!.id}'),
-            ),
-          );
-        }
+    String longestValue = '-';
+    VoidCallback? longestTap;
+    if (records?.longestDive != null) {
+      longestValue = '${records!.longestDive!.bottomTime!.inMinutes}min';
+      longestTap = () => context.push('/dives/${records.longestDive!.id}');
+    }
 
-        if (records.longestDive != null) {
-          rows.add(
-            _RecordRow(
-              label: context.l10n.dashboard_personalRecords_longest,
-              value: '${records.longestDive!.bottomTime!.inMinutes}min',
-              color: Colors.teal,
-              onTap: () => context.push('/dives/${records.longestDive!.id}'),
-            ),
-          );
-        }
+    String coldestValue = '-';
+    VoidCallback? coldestTap;
+    if (records?.coldestDive != null) {
+      final t = units.convertTemperature(records!.coldestDive!.waterTemp!);
+      coldestValue = '${t.toStringAsFixed(0)}${units.temperatureSymbol}';
+      coldestTap = () => context.push('/dives/${records.coldestDive!.id}');
+    }
 
-        if (records.coldestDive != null) {
-          final displayTemp = units.convertTemperature(
-            records.coldestDive!.waterTemp!,
-          );
-          rows.add(
-            _RecordRow(
-              label: context.l10n.dashboard_personalRecords_coldest,
-              value:
-                  '${displayTemp.toStringAsFixed(0)}${units.temperatureSymbol}',
-              color: Colors.blue,
-              onTap: () => context.push('/dives/${records.coldestDive!.id}'),
-            ),
-          );
-        }
+    String warmestValue = '-';
+    VoidCallback? warmestTap;
+    if (records?.warmestDive != null) {
+      final t = units.convertTemperature(records!.warmestDive!.waterTemp!);
+      warmestValue = '${t.toStringAsFixed(0)}${units.temperatureSymbol}';
+      warmestTap = () => context.push('/dives/${records.warmestDive!.id}');
+    }
 
-        if (records.warmestDive != null) {
-          final displayTemp = units.convertTemperature(
-            records.warmestDive!.waterTemp!,
-          );
-          rows.add(
-            _RecordRow(
-              label: context.l10n.dashboard_personalRecords_warmest,
-              value:
-                  '${displayTemp.toStringAsFixed(0)}${units.temperatureSymbol}',
-              color: Colors.orange,
-              onTap: () => context.push('/dives/${records.warmestDive!.id}'),
-            ),
-          );
-        }
-
-        if (rows.isEmpty) {
-          return const SizedBox.shrink();
-        }
-
-        return Card(
-          child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
-                Row(
-                  children: [
-                    Icon(Icons.emoji_events, size: 16, color: primary),
-                    const SizedBox(width: 6),
-                    Text(
-                      context.l10n.dashboard_personalRecords_sectionTitle,
-                      style: bodyMedium?.copyWith(fontWeight: FontWeight.bold),
-                    ),
-                  ],
+                Icon(Icons.emoji_events, size: 16, color: primary),
+                const SizedBox(width: 6),
+                Text(
+                  context.l10n.dashboard_personalRecords_sectionTitle,
+                  style: bodyMedium?.copyWith(fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(height: 10),
-                ...rows,
               ],
             ),
-          ),
-        );
-      },
-      loading: () => const SizedBox.shrink(),
-      error: (_, _) => const SizedBox.shrink(),
+            const SizedBox(height: 10),
+            _RecordRow(
+              label: context.l10n.dashboard_personalRecords_deepest,
+              value: deepestValue,
+              color: Colors.indigo,
+              onTap: deepestTap,
+            ),
+            _RecordRow(
+              label: context.l10n.dashboard_personalRecords_longest,
+              value: longestValue,
+              color: Colors.teal,
+              onTap: longestTap,
+            ),
+            _RecordRow(
+              label: context.l10n.dashboard_personalRecords_coldest,
+              value: coldestValue,
+              color: Colors.blue,
+              onTap: coldestTap,
+            ),
+            _RecordRow(
+              label: context.l10n.dashboard_personalRecords_warmest,
+              value: warmestValue,
+              color: Colors.orange,
+              onTap: warmestTap,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

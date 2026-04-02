@@ -40,7 +40,7 @@ class DashboardAlerts {
 final recentDivesProvider = FutureProvider<List<Dive>>((ref) async {
   final allDives = await ref.watch(divesProvider.future);
   // Dives are already sorted by date descending in the repository
-  final recent = allDives.take(5).toList();
+  final recent = allDives.take(3).toList();
 
   // Pre-load downsampled profiles so DiveListTile mini charts render
   // immediately (the batch cache is shared with the paginated dive list).
