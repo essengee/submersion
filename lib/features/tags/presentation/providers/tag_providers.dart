@@ -1,5 +1,6 @@
 import 'package:submersion/core/providers/provider.dart';
 
+import 'package:submersion/features/dive_log/presentation/providers/dive_providers.dart';
 import 'package:submersion/features/divers/presentation/providers/diver_providers.dart';
 import 'package:submersion/features/tags/data/repositories/tag_repository.dart';
 import 'package:submersion/features/tags/domain/entities/tag.dart';
@@ -131,12 +132,14 @@ class TagListNotifier extends StateNotifier<AsyncValue<List<Tag>>> {
     await _repository.updateTag(tag);
     await _loadTags();
     _ref.invalidate(tagStatisticsProvider);
+    _ref.invalidate(divesProvider);
   }
 
   Future<void> deleteTag(String id) async {
     await _repository.deleteTag(id);
     await _loadTags();
     _ref.invalidate(tagStatisticsProvider);
+    _ref.invalidate(divesProvider);
   }
 
   Future<void> deleteTags(List<String> ids) async {
@@ -145,6 +148,7 @@ class TagListNotifier extends StateNotifier<AsyncValue<List<Tag>>> {
     }
     await _loadTags();
     _ref.invalidate(tagStatisticsProvider);
+    _ref.invalidate(divesProvider);
   }
 
   Future<void> mergeTags({
@@ -161,21 +165,25 @@ class TagListNotifier extends StateNotifier<AsyncValue<List<Tag>>> {
     );
     await _loadTags();
     _ref.invalidate(tagStatisticsProvider);
+    _ref.invalidate(divesProvider);
   }
 
   Future<void> setTagsForDive(String diveId, List<Tag> tags) async {
     await _repository.setTagsForDive(diveId, tags);
     _ref.invalidate(tagStatisticsProvider);
+    _ref.invalidate(divesProvider);
   }
 
   Future<void> addTagToDive(String diveId, String tagId) async {
     await _repository.addTagToDive(diveId, tagId);
     _ref.invalidate(tagStatisticsProvider);
+    _ref.invalidate(divesProvider);
   }
 
   Future<void> removeTagFromDive(String diveId, String tagId) async {
     await _repository.removeTagFromDive(diveId, tagId);
     _ref.invalidate(tagStatisticsProvider);
+    _ref.invalidate(divesProvider);
   }
 }
 
