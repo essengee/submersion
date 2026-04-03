@@ -168,6 +168,7 @@ class _TripListContentState extends ConsumerState<TripListContent> {
             onPressed: () => _showSortSheet(context),
           ),
           PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert),
             onSelected: (value) {
               if (value.startsWith('view_')) {
                 final mode = ListViewMode.fromName(

@@ -887,6 +887,7 @@ class _DiveListContentState extends ConsumerState<DiveListContent> {
           onPressed: () => _showSortSheet(context),
         ),
         PopupMenuButton<String>(
+          icon: const Icon(Icons.more_vert),
           onSelected: (value) {
             if (value == 'numbering') {
               showDiveNumberingDialog(context);

@@ -146,13 +146,6 @@ class _EquipmentListContentState extends ConsumerState<EquipmentListContent> {
       appBar: AppBar(
         title: Text(context.l10n.equipment_appBar_title),
         actions: [
-          ListViewModeToggle(
-            currentMode: ref.watch(equipmentListViewModeProvider),
-            availableModes: const [ListViewMode.detailed, ListViewMode.dense],
-            onModeChanged: (mode) {
-              ref.read(equipmentListViewModeProvider.notifier).state = mode;
-            },
-          ),
           IconButton(
             icon: const Icon(Icons.sort),
             tooltip: context.l10n.equipment_list_sortTooltip,
@@ -163,6 +156,27 @@ class _EquipmentListContentState extends ConsumerState<EquipmentListContent> {
             tooltip: context.l10n.equipment_list_searchTooltip,
             onPressed: () {
               showSearch(context: context, delegate: EquipmentSearchDelegate());
+            },
+          ),
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert),
+            onSelected: (value) {
+              if (value.startsWith('view_')) {
+                final mode = ListViewMode.fromName(
+                  value.replaceFirst('view_', ''),
+                );
+                ref.read(equipmentListViewModeProvider.notifier).state = mode;
+              }
+            },
+            itemBuilder: (context) {
+              final currentMode = ref.read(equipmentListViewModeProvider);
+              return [
+                ...ListViewModeToggle.menuItems(
+                  context,
+                  currentMode: currentMode,
+                  modes: const [ListViewMode.detailed, ListViewMode.dense],
+                ),
+              ];
             },
           ),
         ],
@@ -199,14 +213,6 @@ class _EquipmentListContentState extends ConsumerState<EquipmentListContent> {
             ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
           ),
           const Spacer(),
-          ListViewModeToggle(
-            currentMode: ref.watch(equipmentListViewModeProvider),
-            availableModes: const [ListViewMode.detailed, ListViewMode.dense],
-            onModeChanged: (mode) {
-              ref.read(equipmentListViewModeProvider.notifier).state = mode;
-            },
-            iconSize: 20,
-          ),
           IconButton(
             icon: const Icon(Icons.sort, size: 20),
             tooltip: context.l10n.equipment_list_sortTooltip,
@@ -217,6 +223,27 @@ class _EquipmentListContentState extends ConsumerState<EquipmentListContent> {
             tooltip: context.l10n.equipment_list_searchTooltip,
             onPressed: () {
               showSearch(context: context, delegate: EquipmentSearchDelegate());
+            },
+          ),
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert, size: 20),
+            onSelected: (value) {
+              if (value.startsWith('view_')) {
+                final mode = ListViewMode.fromName(
+                  value.replaceFirst('view_', ''),
+                );
+                ref.read(equipmentListViewModeProvider.notifier).state = mode;
+              }
+            },
+            itemBuilder: (context) {
+              final currentMode = ref.read(equipmentListViewModeProvider);
+              return [
+                ...ListViewModeToggle.menuItems(
+                  context,
+                  currentMode: currentMode,
+                  modes: const [ListViewMode.detailed, ListViewMode.dense],
+                ),
+              ];
             },
           ),
         ],

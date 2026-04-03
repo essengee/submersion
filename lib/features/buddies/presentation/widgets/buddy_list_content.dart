@@ -409,6 +409,7 @@ class _BuddyListContentState extends ConsumerState<BuddyListContent> {
                   },
                 ),
                 PopupMenuButton<String>(
+                  icon: const Icon(Icons.more_vert),
                   tooltip: context.l10n.buddies_action_moreOptions,
                   onSelected: (value) {
                     if (value == 'import') {
