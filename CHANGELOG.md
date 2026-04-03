@@ -3,6 +3,89 @@
 All notable changes to Submersion are documented in this file.
 
 
+## 1.4.1 (2026-04-03)
+
+### Features
+
+- drag-and-drop file import with mobile sharing intents (#128)
+- redesign homepage and declutter list page toolbars
+- add dashboard hero stat translations for all 10 locales
+- reorganize hero - icon left, responsive phone/desktop layouts
+- rebuild page layout - 4 sections from 7
+- restyle quick actions as vertical button stack
+- restyle personal records as compact vertical list
+- compact alerts banner replacing full card layout
+- rewrite hero header with integrated stats and diver name
+- add dashboard hero stat label keys
+- add Simplified Chinese localization (#113)
+- chinese localization plans
+
+### Bug Fixes
+
+- move Equipment view mode to overflow menu, fix iOS overflow icon
+- normalize master-detail headers, update import/export text, add translations
+- align Kotlin JVM target to each subproject's Java target
+- move tabs into master panel in master-detail mode
+- fix selection mode including highlighted dive and normalize icon spacing
+- prevent non-CSV payload from being cleared during Map Fields animation
+- also refresh paginated dive list on tag changes
+- also refresh paginated dive list on tag changes
+- await parsing in confirmSource so SSRF auto-advances past Map Fields
+- invalidate divesProvider on tag changes to refresh dive list and homepage
+- remove trophy icon from personal records header
+- change hero stat label to 'dives this year'
+- show '0' instead of '0m' for zero hours underwater
+- allow hero stat labels to wrap naturally
+- always show records card with placeholders, reduce recent dives to 3
+- prevent stat labels from wrapping mid-word in hero bar
+- increase phone hero stat numbers to 22px
+- align stat numbers vertically in phone hero bar
+- uniform stat font size in phone mode, remove dives-this-month
+- push icon to far right edge in desktop layout
+- move icon and diver name to right side of hero bar
+- increase phone diver name font to 16px
+- match phone hero height to desktop with compact fonts
+- use 80px icon in both phone and desktop layouts
+- restore phone icon to original 80px size
+- match desktop activity stat font size to career stats (24px)
+- make equipment tabs compact with pill-style indicator
+- replace propane tank icon with scuba tank icon (#109) (#124)
+- correct Simplified Chinese translation errors
+- address PR #114 review feedback (#120)
+- eliminate false safety stop markers on shallow dives (#114)
+- resolve NDL line zigzag artifacts on multi-surface-interval dives
+- tag formatting fix
+
+### Documentation
+
+- add drag-and-drop file import design spec
+- add dashboard revamp implementation plan
+- add dashboard revamp design spec
+- mdi icons
+- false-positive safety stop mitigation design
+
+### CI/CD
+
+- bump codecov/codecov-action from 5 to 6 (#119)
+
+### Chores
+
+- bump version to 1.4.1+85
+- remove MinimumOSVersion from AppFrameworkInfo.plist
+- remove unused activity_status_row, stat_summary_card, quick_stats_row
+
+### Other
+
+- Revert "fix(android): align Kotlin JVM target to each subproject's Java target"
+- Rearchitect CSV import with staged pipeline (#116)
+- Fix/volume conversion (#126)
+- Issue-115 SSRF multi-cylinder dives don't convert over to gas switch … (#122)
+- Bugfix/logger test fix (#106)
+- add CSV import rearchitect implementation plan
+- add CSV import rearchitect design spec
+- Issue 36 - JNI interface being obfuscated in android build (#105)
+
+
 ## 1.4.0 (2026-03-29)
 
 ### Bug Fixes
