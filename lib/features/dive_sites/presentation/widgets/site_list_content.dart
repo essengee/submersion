@@ -511,7 +511,6 @@ class _SiteListContentState extends ConsumerState<SiteListContent> {
               child: const Icon(Icons.filter_list, size: 20),
             ),
             tooltip: context.l10n.diveSites_list_tooltip_filterSites,
-            visualDensity: VisualDensity.compact,
             onPressed: () {
               showModalBottomSheet(
                 context: context,

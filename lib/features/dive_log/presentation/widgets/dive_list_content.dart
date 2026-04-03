@@ -965,13 +965,11 @@ class _DiveListContentState extends ConsumerState<DiveListContent> {
           else
             IconButton(
               icon: const Icon(Icons.map, size: 20),
-              visualDensity: VisualDensity.compact,
               tooltip: context.l10n.diveLog_listPage_tooltip_mapView,
               onPressed: () => context.push('/dives/activity'),
             ),
           IconButton(
             icon: const Icon(Icons.search, size: 20),
-            visualDensity: VisualDensity.compact,
             tooltip: context.l10n.diveLog_listPage_tooltip_searchDives,
             onPressed: () {
               showSearch(context: context, delegate: DiveSearchDelegate(ref));
@@ -982,7 +980,6 @@ class _DiveListContentState extends ConsumerState<DiveListContent> {
               isLabelVisible: filter.hasActiveFilters,
               child: const Icon(Icons.filter_list, size: 20),
             ),
-            visualDensity: VisualDensity.compact,
             tooltip: context.l10n.diveLog_listPage_tooltip_filterDives,
             onPressed: () {
               showModalBottomSheet(
@@ -994,7 +991,6 @@ class _DiveListContentState extends ConsumerState<DiveListContent> {
           ),
           IconButton(
             icon: const Icon(Icons.sort, size: 20),
-            visualDensity: VisualDensity.compact,
             tooltip: context.l10n.diveLog_listPage_tooltip_sort,
             onPressed: () => _showSortSheet(context),
           ),
@@ -1223,7 +1219,9 @@ class _DiveListContentState extends ConsumerState<DiveListContent> {
                     isFavorite: dive.isFavorite,
                     tags: dive.tags,
                     isSelectionMode: _isSelectionMode,
-                    isSelected: isSelected || isMasterSelected,
+                    isSelected: _isSelectionMode
+                        ? isSelected
+                        : (isSelected || isMasterSelected),
                     colorValue: getCardColorValue(dive, colorAttribute),
                     minValueInList: minValue,
                     maxValueInList: maxValue,
@@ -1244,7 +1242,9 @@ class _DiveListContentState extends ConsumerState<DiveListContent> {
                     maxDepth: dive.maxDepth,
                     duration: dive.runtime ?? dive.bottomTime,
                     isSelectionMode: _isSelectionMode,
-                    isSelected: isSelected || isMasterSelected,
+                    isSelected: _isSelectionMode
+                        ? isSelected
+                        : (isSelected || isMasterSelected),
                     colorValue: getCardColorValue(dive, colorAttribute),
                     minValueInList: minValue,
                     maxValueInList: maxValue,
@@ -1263,7 +1263,9 @@ class _DiveListContentState extends ConsumerState<DiveListContent> {
                     maxDepth: dive.maxDepth,
                     duration: dive.runtime ?? dive.bottomTime,
                     isSelectionMode: _isSelectionMode,
-                    isSelected: isSelected || isMasterSelected,
+                    isSelected: _isSelectionMode
+                        ? isSelected
+                        : (isSelected || isMasterSelected),
                     colorValue: getCardColorValue(dive, colorAttribute),
                     minValueInList: minValue,
                     maxValueInList: maxValue,
