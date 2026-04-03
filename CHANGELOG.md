@@ -5,6 +5,17 @@ All notable changes to Submersion are documented in this file.
 
 ## 1.4.1 (2026-04-03)
 
+### Bug Fixes
+
+- add missing MinimumOSVersion to AppFrameworkInfo.plist
+
+### Chores
+
+- bump version to 1.4.1+86
+
+
+## 1.4.1 (2026-04-03)
+
 ### Features
 
 - drag-and-drop file import with mobile sharing intents (#128)
