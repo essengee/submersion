@@ -3725,27 +3725,23 @@ class _DiveDetailPageState extends ConsumerState<DiveDetailPage> {
               final tankTitle = tank.name != null && tank.name!.isNotEmpty
                   ? tank.name!
                   : context.l10n.diveLog_tank_title(index + 1);
-              // MOD/MND info for non-air gases
-              final showModMnd = !tank.gasMix.isAir;
-              String? modMndText;
-              if (showModMnd) {
-                final settings = ref.watch(settingsProvider);
-                final modDepth = units.formatDepth(
-                  tank.gasMix.mod(),
-                  decimals: 0,
-                );
-                final mndValue = tank.gasMix.mnd(
-                  endLimit: settings.endLimit,
-                  o2Narcotic: settings.o2Narcotic,
-                );
-                final mndDepth = mndValue.isFinite
-                    ? units.formatDepth(mndValue, decimals: 0)
-                    : '--';
-                modMndText = context.l10n.diveLog_tank_modMndInfo(
-                  modDepth,
-                  mndDepth,
-                );
-              }
+              // MOD/MND info
+              final settings = ref.watch(settingsProvider);
+              final modDepth = units.formatDepth(
+                tank.gasMix.mod(),
+                decimals: 0,
+              );
+              final mndValue = tank.gasMix.mnd(
+                endLimit: settings.endLimit,
+                o2Narcotic: settings.o2Narcotic,
+              );
+              final mndDepth = mndValue.isFinite
+                  ? units.formatDepth(mndValue, decimals: 0)
+                  : '--';
+              final modMndText = context.l10n.diveLog_tank_modMndInfo(
+                modDepth,
+                mndDepth,
+              );
               return ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: Icon(MdiIcons.divingScubaTank),
@@ -3756,13 +3752,12 @@ class _DiveDetailPageState extends ConsumerState<DiveDetailPage> {
                     Text(
                       '$startP ${units.pressureSymbol} → $endP ${units.pressureSymbol}$used',
                     ),
-                    if (modMndText != null)
-                      Text(
-                        modMndText,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.tertiary,
-                        ),
+                    Text(
+                      modMndText,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.tertiary,
                       ),
+                    ),
                   ],
                 ),
                 trailing: tankLabel != null ? Text(tankLabel) : null,

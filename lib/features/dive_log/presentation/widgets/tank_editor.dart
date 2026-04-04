@@ -262,8 +262,8 @@ class _TankEditorState extends ConsumerState<TankEditor> {
             // Start/end pressure
             _buildPressureRow(units),
 
-            // MOD display if not air
-            if (!gasMix.isAir) _buildModInfo(gasMix, units, settings),
+            // MOD display
+            _buildModInfo(gasMix, units, settings),
           ],
         ),
       ),
