@@ -66,17 +66,21 @@ class UpdateStatusNotifier extends StateNotifier<UpdateStatus> {
   final Ref _ref;
 
   UpdateStatusNotifier(this._ref) : super(const UpToDate()) {
-    // Delay initial check to not block app startup
+    // Sparkle's native scheduler handles periodic background checks
+    // (configured via setScheduledCheckInterval). We only initialize
+    // the service here so the scheduler is active. No programmatic
+    // background check — it conflicts with Sparkle's internal state
+    // and suppresses the dialog for subsequent manual checks (#107).
     Future.delayed(const Duration(seconds: 5), () {
-      if (mounted) _checkIfDue();
+      if (mounted) _ensureServiceInitialized();
     });
   }
 
-  Future<void> _checkIfDue() async {
-    final prefs = _ref.read(updatePreferencesProvider);
-    if (!prefs.autoUpdateEnabled) return;
-    if (!prefs.isDueForCheck) return;
-    await checkForUpdate();
+  Future<void> _ensureServiceInitialized() async {
+    // Reading the provider triggers SparkleUpdateService initialization
+    // (setFeedURL + setScheduledCheckInterval), which activates Sparkle's
+    // native background scheduler.
+    await _ref.read(updateServiceProvider.future);
   }
 
   Future<void> checkForUpdate() async {
