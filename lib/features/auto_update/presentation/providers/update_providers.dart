@@ -64,45 +64,57 @@ final updateStatusProvider =
 
 class UpdateStatusNotifier extends StateNotifier<UpdateStatus> {
   final Ref _ref;
+  bool _backgroundCheckInFlight = false;
 
   UpdateStatusNotifier(this._ref) : super(const UpToDate()) {
-    // Sparkle's native scheduler handles periodic background checks
-    // (configured via setScheduledCheckInterval). We only initialize
-    // the service here so the scheduler is active. No programmatic
-    // background check — it conflicts with Sparkle's internal state
-    // and suppresses the dialog for subsequent manual checks (#107).
+    // Delay initial check to not block app startup
     Future.delayed(const Duration(seconds: 5), () {
-      if (mounted) _ensureServiceInitialized();
+      if (mounted) _checkIfDue();
     });
   }
 
-  Future<void> _ensureServiceInitialized() async {
-    // Reading the provider triggers SparkleUpdateService initialization
-    // (setFeedURL + setScheduledCheckInterval), which activates Sparkle's
-    // native background scheduler.
-    await _ref.read(updateServiceProvider.future);
+  Future<void> _checkIfDue() async {
+    final prefs = _ref.read(updatePreferencesProvider);
+    if (!prefs.autoUpdateEnabled) return;
+    if (!prefs.isDueForCheck) return;
+    await checkForUpdate();
   }
 
   Future<void> checkForUpdate() async {
     final service = await _ref.read(updateServiceProvider.future);
     if (service == null) return;
 
+    _backgroundCheckInFlight = true;
     state = const Checking();
 
-    final result = await service.checkForUpdate();
+    try {
+      final result = await service.checkForUpdate();
 
-    // Record the check time
-    final prefs = _ref.read(updatePreferencesProvider);
-    await prefs.setLastCheckTime(DateTime.now());
+      // Record the check time
+      final prefs = _ref.read(updatePreferencesProvider);
+      await prefs.setLastCheckTime(DateTime.now());
 
-    if (mounted) {
-      state = result;
+      if (mounted) {
+        state = result;
+      }
+    } finally {
+      _backgroundCheckInFlight = false;
     }
   }
 
   /// User-initiated update check. Uses the platform's interactive UI
   /// (e.g. Sparkle's native dialog on macOS) when available.
+  ///
+  /// If a background check is still in flight, waits for it to finish
+  /// before issuing the interactive check. This prevents Sparkle from
+  /// suppressing the dialog due to an in-progress session (#107).
   Future<void> checkForUpdateInteractively() async {
+    // Wait for any in-flight background check to finish so Sparkle's
+    // SPUUpdater is not mid-session when we request the foreground dialog.
+    if (_backgroundCheckInFlight) {
+      await Future.delayed(const Duration(milliseconds: 500));
+    }
+
     final service = await _ref.read(updateServiceProvider.future);
     if (service == null) return;
 
