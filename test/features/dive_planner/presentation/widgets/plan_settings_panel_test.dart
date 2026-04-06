@@ -397,4 +397,49 @@ void main() {
       expect(find.text('Altitude Group 1'), findsOneWidget);
     });
   });
+
+  group('PlanSettingsPanel layout overflow', () {
+    const devices = <String, Size>{
+      'Narrow window': Size(300, 600),
+      'iPhone SE': Size(375, 667),
+      'iPhone 13': Size(390, 844),
+      'iPhone 13 Pro Max': Size(428, 926),
+      'iPad Mini portrait': Size(744, 1133),
+    };
+
+    for (final entry in devices.entries) {
+      testWidgets('no overflow on ${entry.key}', (tester) async {
+        tester.view.physicalSize = entry.value;
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+
+        final overflows = <FlutterErrorDetails>[];
+        final oldHandler = FlutterError.onError;
+        FlutterError.onError = (details) {
+          if (details.toString().contains('overflowed')) {
+            overflows.add(details);
+          } else {
+            oldHandler?.call(details);
+          }
+        };
+
+        await tester.pumpWidget(
+          testApp(
+            overrides: [
+              settingsProvider.overrideWith((ref) => _TestSettingsNotifier()),
+            ],
+            child: const SingleChildScrollView(child: PlanSettingsPanel()),
+          ),
+        );
+        // Use pump() instead of pumpAndSettle() — Slider tooltip animations
+        // prevent settling and cause the 10-minute timeout.
+        await tester.pump();
+
+        FlutterError.onError = oldHandler;
+
+        expect(overflows, isEmpty, reason: 'Overflow on ${entry.key}');
+      });
+    }
+  });
 }
