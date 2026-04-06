@@ -31,7 +31,7 @@ DownloadedDive parsedDiveToDownloaded(pigeon.ParsedDive parsed) {
     ),
     durationSeconds: parsed.durationSeconds,
     maxDepth: parsed.maxDepthMeters,
-    avgDepth: parsed.avgDepthMeters,
+    avgDepth: parsed.avgDepthMeters != 0.0 ? parsed.avgDepthMeters : null,
     minTemperature: minTemp,
     maxTemperature: maxTemp,
     fingerprint: parsed.fingerprint,
