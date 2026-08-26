@@ -3,6 +3,8 @@ import 'package:libdivecomputer_plugin/libdivecomputer_plugin.dart' as pigeon;
 import 'package:uuid/uuid.dart';
 
 import 'package:submersion/core/database/database.dart';
+import 'package:submersion/features/dive_computer/data/services/libdc_dive_mode.dart';
+import 'package:submersion/features/dive_log/domain/services/bottom_time_calculator.dart';
 import 'package:submersion/features/dive_computer/data/services/parsed_tank_resolver.dart';
 
 /// Service responsible for applying re-parsed dive computer data back to the
@@ -22,7 +24,10 @@ class ReparseService {
   ///
   /// [rawData] and [rawFingerprint] use `Value.absent()` when null to avoid
   /// overwriting existing blobs during the re-parse path.
-  Future<void> applyParsedUpdate({
+  ///
+  /// Returns whether the dive's profile strand was left untouched because
+  /// this source does not own it -- see [_sourceOwnsProfileStrand].
+  Future<({bool profilePreserved})> applyParsedUpdate({
     required String diveId,
     required String sourceRowId,
     required pigeon.ParsedDive parsed,
@@ -33,7 +38,7 @@ class ReparseService {
     Uint8List? rawData,
     Uint8List? rawFingerprint,
   }) async {
-    await db.transaction(() async {
+    return db.transaction(() async {
       final now = DateTime.now();
 
       // ------------------------------------------------------------------
@@ -65,33 +70,56 @@ class ReparseService {
         await _updateDiveRow(diveId: diveId, parsed: parsed, now: now);
       }
 
-      // ------------------------------------------------------------------
-      // 4. Replace DiveProfiles for this source's computerId
-      // ------------------------------------------------------------------
-      final computerId = sourceRow.computerId;
-      await _replaceDiveProfiles(
-        diveId: diveId,
-        computerId: computerId,
-        parsed: parsed,
-        isPrimary: sourceRow.isPrimary,
-      );
-
-      // ------------------------------------------------------------------
-      // 5. Replace DiveProfileEvents, GasSwitches, TankPressureProfiles
-      //    These tables have no computerId column, so delete by diveId.
-      // ------------------------------------------------------------------
-
-      // Check if this is a multi-source dive
       final sourceRows = await (db.select(
         db.diveDataSources,
       )..where((t) => t.diveId.equals(diveId))).get();
       final isMultiSource = sourceRows.length > 1;
+      final ownsStrand = _sourceOwnsProfileStrand(sourceRow, sourceRows);
+
+      // ------------------------------------------------------------------
+      // 4. Replace DiveProfiles for this source's computerId -- but only
+      //    when this source actually authored that strand in its own parse
+      //    frame (#1164).
+      // ------------------------------------------------------------------
+      final computerId = sourceRow.computerId;
+      if (ownsStrand) {
+        // Parsed times are on this computer's own clock. Multi-computer
+        // consolidation re-based the folded-in strand onto the dive's clock
+        // and recorded the shift on the source row; the raw bytes carry no
+        // trace of it, so re-applying it is the only way the re-parsed strand
+        // still lines up with the primary's (#1177). Zero for every
+        // unconsolidated source, which is the overwhelming majority.
+        //
+        // Only this strand needs it. The event/gas-switch/tank-pressure
+        // re-inserts below are gated on `!isMultiSource`, and a consolidated
+        // dive is always multi-source: apply() backfills a primary source row
+        // on the target before folding anything in, so the offset-bearing row
+        // never arrives alone. A row that did arrive alone would be
+        // non-primary, which _sourceOwnsProfileStrand already refuses.
+        await _replaceDiveProfiles(
+          diveId: diveId,
+          computerId: computerId,
+          sourceId: sourceRow.id,
+          parsed: parsed,
+          isPrimary: sourceRow.isPrimary,
+          timeOffset: sourceRow.timeOffsetSeconds ?? 0,
+        );
+      }
+
+      // ------------------------------------------------------------------
+      // 5. Replace DiveProfileEvents, GasSwitches, TankPressureProfiles
+      //    GasSwitches has no computerId column, so it is always deleted by
+      //    diveId; events and tank pressure carry computerId and are stamped
+      //    with this source's computer below.
+      // ------------------------------------------------------------------
 
       // Only replace events/switches/pressure for single-source dives.
       // Multi-source dives skip this to avoid destroying data from other
-      // sources (these tables lack a computerId column for per-source
-      // scoping).
-      if (!isMultiSource) {
+      // sources (gas_switches lacks a computerId column for per-source
+      // scoping). A combined dive can carry a single source row when only
+      // one original had one, so the ownership guard applies here too --
+      // otherwise the merge's own surface-gap markers are deleted (#1164).
+      if (!isMultiSource && ownsStrand) {
         await (db.delete(
           db.diveProfileEvents,
         )..where((t) => t.diveId.equals(diveId))).go();
@@ -103,26 +131,79 @@ class ReparseService {
         )..where((t) => t.diveId.equals(diveId))).go();
 
         // Re-insert events from parsed data
-        await _insertEvents(diveId: diveId, parsed: parsed, now: now);
+        await _insertEvents(
+          diveId: diveId,
+          computerId: computerId,
+          parsed: parsed,
+          now: now,
+        );
       }
 
       // ------------------------------------------------------------------
       // 6. DiveTanks carry-over (primary + single-source only)
-      //    dive_tanks has no computerId, so skip for non-primary or
-      //    multi-source dives to avoid overwriting data from other sources.
+      //    Skip for non-primary or multi-source dives to avoid overwriting
+      //    tank data owned by other sources.
       // ------------------------------------------------------------------
       if (sourceRow.isPrimary && !isMultiSource) {
         final tankIdsByIndex = await _carryOverTanks(
           diveId: diveId,
+          computerId: computerId,
           parsed: parsed,
         );
         await _replaceTankPressureProfiles(
           diveId: diveId,
+          computerId: computerId,
           parsed: parsed,
           tankIdsByIndex: tankIdsByIndex,
         );
+        await _insertGasSwitches(
+          diveId: diveId,
+          parsed: parsed,
+          tankIdsByIndex: tankIdsByIndex,
+          now: now,
+        );
       }
+
+      return (profilePreserved: !ownsStrand);
     });
+  }
+
+  /// Whether [row] is the sole author of its `(dive_id, computer_id)` profile
+  /// strand, with that strand still in [row]'s own parse frame.
+  ///
+  /// Re-parsing deletes the strand and re-inserts the parsed samples at their
+  /// own `timeSeconds`, so it is only safe when both hold. A sequential
+  /// combine breaks both: [DiveMergeService.apply] re-bases each segment onto
+  /// the merged timeline and carries every original's source row over demoted
+  /// to non-primary, so re-parsing one of them would drop half a dive back at
+  /// the original download's timestamps and delete the synthesized
+  /// surface-gap samples along the way (#1164).
+  ///
+  /// Two signals, either of which disqualifies the row:
+  ///
+  /// - **No row on the dive is primary.** That is exactly a combined dive:
+  ///   the merge demotes all carried rows and the merged dive has no source
+  ///   row of its own. [DiveConsolidationService] demotes only its
+  ///   secondaries, so a consolidated dive keeps a primary row and its
+  ///   per-computer strands stay re-parseable.
+  /// - **A re-parseable sibling row shares this row's `computerId`** (null
+  ///   counts as equal to null). The strand has more than one author, so
+  ///   whichever source re-parses last would wipe out what the others wrote
+  ///   -- true of same-computer halves regardless of the primary flag. Only
+  ///   siblings carrying raw data count: deleting a computer nulls its
+  ///   sources' `computerId` (FK `setNull`) and
+  ///   `_backfillProvenanceSnapshots` adds rows with no `computerId` at all,
+  ///   so sharing a null strand with a row that can never be re-parsed is an
+  ///   ordinary shape, not contention.
+  bool _sourceOwnsProfileStrand(
+    DiveDataSourcesData row,
+    List<DiveDataSourcesData> allRowsForDive,
+  ) {
+    if (!allRowsForDive.any((r) => r.isPrimary)) return false;
+    return !allRowsForDive.any(
+      (r) =>
+          r.id != row.id && r.computerId == row.computerId && r.rawData != null,
+    );
   }
 
   /// Count how many sources for a given computer have raw data vs not.
@@ -239,8 +320,11 @@ class ReparseService {
   ///
   /// [parseFn] is the function that calls the native Pigeon API.
   ///
-  /// Returns a list of error messages (empty on full success).
-  Future<List<String>> reparseDive(
+  /// Returns the error messages (empty on full success) alongside the number
+  /// of sources whose profile strand was deliberately left alone -- see
+  /// [_sourceOwnsProfileStrand]. Callers surface that count so a re-parse on
+  /// a combined dive does not look like an unexplained no-op (#1164).
+  Future<({List<String> errors, int profilesPreserved})> reparseDive(
     String diveId, {
     required Future<pigeon.ParsedDive> Function(
       String vendor,
@@ -252,6 +336,7 @@ class ReparseService {
   }) async {
     final sources = await getSourcesForDiveReparse(diveId);
     final errors = <String>[];
+    var profilesPreserved = 0;
 
     for (final source in sources) {
       if (source.descriptorVendor == null ||
@@ -266,7 +351,7 @@ class ReparseService {
           source.descriptorModel!,
           source.rawData!,
         );
-        await applyParsedUpdate(
+        final outcome = await applyParsedUpdate(
           diveId: diveId,
           sourceRowId: source.id,
           parsed: parsed,
@@ -275,17 +360,33 @@ class ReparseService {
           descriptorModel: source.descriptorModel,
           libdivecomputerVersion: source.libdivecomputerVersion,
         );
+        if (outcome.profilePreserved) profilesPreserved++;
       } catch (e) {
         errors.add(e.toString());
       }
     }
 
-    return errors;
+    return (errors: errors, profilesPreserved: profilesPreserved);
   }
 
   // ==========================================================================
   // Private helpers
   // ==========================================================================
+
+  /// The dive's start instant as this parse reports it, in the source's own
+  /// time frame.
+  ///
+  /// Both the source row's provenance window and the dive row's own clock
+  /// derive from this one expression so they cannot drift apart across a
+  /// re-parse (#1207).
+  static DateTime _parsedEntryTime(pigeon.ParsedDive parsed) => DateTime.utc(
+    parsed.dateTimeYear,
+    parsed.dateTimeMonth,
+    parsed.dateTimeDay,
+    parsed.dateTimeHour,
+    parsed.dateTimeMinute,
+    parsed.dateTimeSecond,
+  );
 
   Future<void> _updateSourceRow({
     required String sourceRowId,
@@ -298,6 +399,7 @@ class ReparseService {
     required Uint8List? rawFingerprint,
     required DateTime now,
   }) async {
+    final entryTime = _parsedEntryTime(parsed);
     await (db.update(
       db.diveDataSources,
     )..where((t) => t.id.equals(sourceRowId))).write(
@@ -307,7 +409,11 @@ class ReparseService {
           parsed.avgDepthMeters != 0.0 ? parsed.avgDepthMeters : null,
         ),
         duration: Value(parsed.durationSeconds),
-        waterTemp: Value(parsed.minTemperatureCelsius),
+        waterTemp: Value(_minWaterTemp(parsed)),
+        // Derived from the samples, matching how the download path fills this
+        // column. Written unconditionally so a parser change that drops CNS
+        // clears the old value instead of leaving a stale one behind.
+        cns: Value(_extractMaxCns(parsed.samples)),
         decoAlgorithm: Value(parsed.decoAlgorithm),
         gradientFactorLow: Value(parsed.gfLow),
         gradientFactorHigh: Value(parsed.gfHigh),
@@ -315,6 +421,22 @@ class ReparseService {
         entryLongitude: Value(parsed.entryLongitude),
         exitLatitude: Value(parsed.exitLatitude),
         exitLongitude: Value(parsed.exitLongitude),
+        // The download path stamps this window when it inserts the row, so a
+        // re-parse has to refresh it or the source keeps advertising the
+        // original download's clock while the dive itself moves (#1207).
+        // These are load-bearing: DiveSplitService dates a split-out dive
+        // from them and DiveConsolidationService carries them onto the
+        // target.
+        //
+        // Raw parse frame, deliberately unshifted by timeOffsetSeconds. The
+        // samples in _replaceDiveProfiles are re-based onto the dive's
+        // timeline; this window is not, because consolidation copies a
+        // folded-in source's entry/exit across untouched and records the
+        // shift in timeOffsetSeconds instead.
+        entryTime: Value(entryTime),
+        exitTime: Value(
+          entryTime.add(Duration(seconds: parsed.durationSeconds)),
+        ),
         descriptorVendor: Value(descriptorVendor),
         descriptorProduct: Value(descriptorProduct),
         descriptorModel: Value(descriptorModel),
@@ -335,18 +457,10 @@ class ReparseService {
     required pigeon.ParsedDive parsed,
     required DateTime now,
   }) async {
-    // Build UTC DateTime from parsed components
-    final diveDateTime = DateTime.utc(
-      parsed.dateTimeYear,
-      parsed.dateTimeMonth,
-      parsed.dateTimeDay,
-      parsed.dateTimeHour,
-      parsed.dateTimeMinute,
-      parsed.dateTimeSecond,
-    );
-    final diveDateTimeMs = diveDateTime.millisecondsSinceEpoch;
+    final diveDateTimeMs = _parsedEntryTime(parsed).millisecondsSinceEpoch;
     final exitTimeMs = diveDateTimeMs + (parsed.durationSeconds * 1000);
     final bottomTimeSeconds = _calculateBottomTimeFromSamples(parsed.samples);
+    final waterTemp = _minWaterTemp(parsed);
 
     await (db.update(db.dives)..where((t) => t.id.equals(diveId))).write(
       DivesCompanion(
@@ -359,28 +473,48 @@ class ReparseService {
         entryTime: Value(diveDateTimeMs),
         exitTime: Value(exitTimeMs),
         bottomTime: Value(bottomTimeSeconds ?? parsed.durationSeconds),
-        waterTemp: Value(parsed.minTemperatureCelsius),
-        diveMode: Value(_mapDiveMode(parsed.diveMode)),
+        // Only overwrite the dive's water temp when this parse produced one,
+        // for the same reason as the GPS fields below: Value.absent() keeps a
+        // temperature stamped by hand or by another source, while the
+        // dive_data_sources row above still records the computer's own answer.
+        waterTemp: waterTemp != null ? Value(waterTemp) : const Value.absent(),
+        diveMode: Value(mapLibdcDiveModeCode(parsed.diveMode)),
         cnsEnd: Value(_extractMaxCns(parsed.samples)),
         otu: const Value.absent(), // OTU is not directly in ParsedDive
         gradientFactorLow: Value(parsed.gfLow),
         gradientFactorHigh: Value(parsed.gfHigh),
         decoAlgorithm: Value(parsed.decoAlgorithm),
         decoConservatism: Value(parsed.decoConservatism),
-        entryLatitude: Value(parsed.entryLatitude),
-        entryLongitude: Value(parsed.entryLongitude),
-        exitLatitude: Value(parsed.exitLatitude),
-        exitLongitude: Value(parsed.exitLongitude),
+        // Only overwrite dive GPS when the computer actually parsed a fix.
+        // Value.absent() preserves positions stamped from other sources
+        // (GPS track logs, manual entry); the dive_data_sources row above
+        // still records exactly what the computer provided.
+        entryLatitude: parsed.entryLatitude != null
+            ? Value(parsed.entryLatitude)
+            : const Value.absent(),
+        entryLongitude: parsed.entryLongitude != null
+            ? Value(parsed.entryLongitude)
+            : const Value.absent(),
+        exitLatitude: parsed.exitLatitude != null
+            ? Value(parsed.exitLatitude)
+            : const Value.absent(),
+        exitLongitude: parsed.exitLongitude != null
+            ? Value(parsed.exitLongitude)
+            : const Value.absent(),
         updatedAt: Value(now.millisecondsSinceEpoch),
       ),
     );
   }
 
+  /// [timeOffset] shifts every re-inserted sample onto the dive's timeline;
+  /// see the note at the call site (issue #1177).
   Future<void> _replaceDiveProfiles({
     required String diveId,
     required String? computerId,
+    required String sourceId,
     required pigeon.ParsedDive parsed,
     required bool isPrimary,
+    required int timeOffset,
   }) async {
     // Delete existing profiles for this (diveId, computerId)
     if (computerId != null) {
@@ -403,11 +537,15 @@ class ReparseService {
             id: Value(_uuid.v4()),
             diveId: Value(diveId),
             computerId: Value(computerId),
+            // Re-parsing rewrites this source's samples in place, so the
+            // replacements belong to the same source row (issue #1149).
+            sourceId: Value(sourceId),
             isPrimary: Value(isPrimary),
-            timestamp: Value(s.timeSeconds),
+            timestamp: Value(s.timeSeconds + timeOffset),
             depth: Value(s.depthMeters),
             temperature: Value(s.temperatureCelsius),
             heartRate: Value(s.heartRate),
+            heading: Value(s.heading),
             setpoint: Value(s.setpoint),
             ppO2: Value(s.ppo2),
             cns: Value(s.cns),
@@ -418,6 +556,18 @@ class ReparseService {
             rbt: Value(s.rbt),
             decoType: Value(s.decoType),
             tts: Value(s.tts),
+            o2Sensor1: Value(s.o2Sensor1),
+            o2Sensor2: Value(s.o2Sensor2),
+            o2Sensor3: Value(s.o2Sensor3),
+            o2Sensor4: Value(s.o2Sensor4),
+            o2Sensor5: Value(s.o2Sensor5),
+            o2Sensor6: Value(s.o2Sensor6),
+            o2SensorMv1: Value(s.o2SensorMv1),
+            o2SensorMv2: Value(s.o2SensorMv2),
+            o2SensorMv3: Value(s.o2SensorMv3),
+            o2SensorMv4: Value(s.o2SensorMv4),
+            o2SensorMv5: Value(s.o2SensorMv5),
+            o2SensorMv6: Value(s.o2SensorMv6),
           ),
         );
       }
@@ -426,6 +576,7 @@ class ReparseService {
 
   Future<void> _insertEvents({
     required String diveId,
+    required String? computerId,
     required pigeon.ParsedDive parsed,
     required DateTime now,
   }) async {
@@ -446,6 +597,7 @@ class ReparseService {
           DiveProfileEventsCompanion(
             id: Value(_uuid.v4()),
             diveId: Value(diveId),
+            computerId: Value(computerId),
             timestamp: Value(e.timeSeconds),
             eventType: Value(eventType),
             severity: Value(_eventSeverity(eventType)),
@@ -461,10 +613,48 @@ class ReparseService {
     });
   }
 
+  /// Re-inserts gas switches derived from per-sample gas-mix transitions.
+  ///
+  /// The gas-usage timeline is driven solely by the `gas_switches` table; the
+  /// switches were cleared by the single-source replace step above, so without
+  /// this the dive would show the starting gas for its whole duration even when
+  /// the diver switched mixes. Each switch maps its cylinder index (assigned by
+  /// the shared resolver) to the freshly carried-over tank id.
+  Future<void> _insertGasSwitches({
+    required String diveId,
+    required pigeon.ParsedDive parsed,
+    required Map<int, String> tankIdsByIndex,
+    required DateTime now,
+  }) async {
+    final switches = resolveGasSwitches(parsed);
+    if (switches.isEmpty) return;
+
+    final nowMs = now.millisecondsSinceEpoch;
+
+    await db.batch((batch) {
+      for (final sw in switches) {
+        final tankId = tankIdsByIndex[sw.toTankIndex];
+        if (tankId == null) continue;
+        batch.insert(
+          db.gasSwitches,
+          GasSwitchesCompanion(
+            id: Value(_uuid.v4()),
+            diveId: Value(diveId),
+            timestamp: Value(sw.timeSeconds),
+            tankId: Value(tankId),
+            depth: Value(sw.depth),
+            createdAt: Value(nowMs),
+          ),
+        );
+      }
+    });
+  }
+
   /// Re-creates/updates dive_tanks from parsed data and returns a map of
   /// tank index -> tank row id, used to attach tank pressure profiles.
   Future<Map<int, String>> _carryOverTanks({
     required String diveId,
+    required String? computerId,
     required pigeon.ParsedDive parsed,
   }) async {
     final tankIdsByIndex = <int, String>{};
@@ -515,13 +705,14 @@ class ReparseService {
               DiveTanksCompanion(
                 id: Value(newTankId),
                 diveId: Value(diveId),
+                computerId: Value(computerId),
                 volume: Value(tank.volumeLiters),
                 startPressure: Value(tank.startPressure),
                 endPressure: Value(tank.endPressure),
                 o2Percent: Value(tank.o2Percent),
                 hePercent: Value(tank.hePercent),
                 tankOrder: Value(tank.index),
-                tankRole: const Value('backGas'),
+                tankRole: Value(tank.role ?? 'backGas'),
               ),
             );
       }
@@ -547,6 +738,7 @@ class ReparseService {
   /// were already cleared by the single-source replace step above.
   Future<void> _replaceTankPressureProfiles({
     required String diveId,
+    required String? computerId,
     required pigeon.ParsedDive parsed,
     required Map<int, String> tankIdsByIndex,
   }) async {
@@ -578,6 +770,7 @@ class ReparseService {
               id: _uuid.v4(),
               diveId: diveId,
               tankId: tankId,
+              computerId: Value(computerId),
               timestamp: point.timestamp,
               pressure: point.pressure,
             ),
@@ -622,69 +815,40 @@ class ReparseService {
   // Static helpers
   // ==========================================================================
 
-  /// Calculate bottom time from profile samples using the 85% depth threshold.
+  /// Calculate bottom time from profile samples.
   ///
-  /// Mirrors the logic in DiveComputerRepositoryImpl._calculateBottomTimeFromPoints:
-  /// bottom time = time between first sample at 85% of max depth and the last
-  /// sample at that depth. Returns null if insufficient data.
+  /// Delegates to [BottomTimeCalculator], mirroring
+  /// DiveComputerRepositoryImpl._calculateBottomTimeFromPoints: bottom time
+  /// runs from surface departure to the start of the final ascent, so
+  /// multilevel dives count their shallower segments. Returns null if
+  /// insufficient data.
   static int? _calculateBottomTimeFromSamples(
-    List<pigeon.ProfileSample> samples, {
-    double depthThresholdPercent = 0.85,
-  }) {
-    if (samples.length < 3) return null;
-
-    final sorted = List<pigeon.ProfileSample>.from(samples)
-      ..sort((a, b) => a.timeSeconds.compareTo(b.timeSeconds));
-
-    double maxDepth = 0;
-    for (final s in sorted) {
-      if (s.depthMeters > maxDepth) {
-        maxDepth = s.depthMeters;
-      }
-    }
-
-    if (maxDepth <= 0) return null;
-
-    final bottomThreshold = maxDepth * depthThresholdPercent;
-
-    // First sample at or above threshold = descent end
-    int? descentEndTimestamp;
-    for (final s in sorted) {
-      if (s.depthMeters >= bottomThreshold) {
-        descentEndTimestamp = s.timeSeconds;
-        break;
-      }
-    }
-
-    // Last sample at or above threshold = ascent start
-    int? ascentStartTimestamp;
-    for (int i = sorted.length - 1; i >= 0; i--) {
-      if (sorted[i].depthMeters >= bottomThreshold) {
-        ascentStartTimestamp = sorted[i].timeSeconds;
-        break;
-      }
-    }
-
-    if (descentEndTimestamp == null || ascentStartTimestamp == null) {
-      return null;
-    }
-    if (ascentStartTimestamp <= descentEndTimestamp) return null;
-
-    return ascentStartTimestamp - descentEndTimestamp;
+    List<pigeon.ProfileSample> samples,
+  ) {
+    return BottomTimeCalculator.secondsFromSamples([
+      for (final s in samples) (timestamp: s.timeSeconds, depth: s.depthMeters),
+    ]);
   }
 
-  /// Map dive mode strings from libdivecomputer to the app's enum values.
-  static String _mapDiveMode(String? mode) {
-    switch (mode) {
-      case 'open_circuit':
-        return 'oc';
-      case 'ccr':
-        return 'ccr';
-      case 'scr':
-        return 'scr';
-      default:
-        return 'oc';
+  /// Minimum water temperature for this parse, in Celsius.
+  ///
+  /// Some computers (Shearwater among them) report no top-level minimum and
+  /// carry temperature only in the per-sample stream, so the download path
+  /// derives the minimum from the samples when the header value is missing
+  /// (`parsed_dive_mapper.dart`, and the profile import in
+  /// `dive_computer_repository_impl.dart`). Re-parse mirrors that path; taking
+  /// `minTemperatureCelsius` at face value here blanked the water temp of any
+  /// already-downloaded dive from such a computer.
+  static double? _minWaterTemp(pigeon.ParsedDive parsed) {
+    final headerTemp = parsed.minTemperatureCelsius;
+    if (headerTemp != null) return headerTemp;
+    double? minTemp;
+    for (final s in parsed.samples) {
+      final t = s.temperatureCelsius;
+      if (t == null) continue;
+      if (minTemp == null || t < minTemp) minTemp = t;
     }
+    return minTemp;
   }
 
   /// Extract maximum CNS percentage from profile samples.

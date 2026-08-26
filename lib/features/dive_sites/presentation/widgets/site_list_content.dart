@@ -5,11 +5,19 @@ import 'package:latlong2/latlong.dart';
 
 import 'package:submersion/core/constants/list_view_mode.dart';
 import 'package:submersion/core/constants/sort_options.dart';
+import 'package:submersion/core/constants/sort_options_display.dart';
 import 'package:submersion/core/utils/unit_formatter.dart';
 import 'package:submersion/l10n/l10n_extension.dart';
+import 'package:submersion/shared/selection/bulk_action.dart';
+import 'package:submersion/shared/selection/selectable_list_scope.dart';
+import 'package:submersion/shared/selection/selection_app_bar.dart';
+import 'package:submersion/shared/selection/selection_entry_bar.dart';
+import 'package:submersion/shared/selection/selection_controller.dart';
+import 'package:submersion/shared/selection/selection_state.dart';
 import 'package:submersion/features/maps/data/services/tile_cache_service.dart';
 import 'package:submersion/features/maps/presentation/providers/map_tile_providers.dart';
 import 'package:submersion/features/maps/presentation/widgets/map_attribution.dart';
+import 'package:submersion/features/maps/presentation/widgets/trackpad_zoom_map.dart';
 import 'package:submersion/core/models/sort_state.dart';
 import 'package:submersion/core/providers/provider.dart';
 import 'package:submersion/shared/widgets/entity_table/entity_table_view.dart';
@@ -26,7 +34,9 @@ import 'package:submersion/features/dive_sites/presentation/providers/site_provi
 import 'package:submersion/features/dive_sites/presentation/widgets/compact_site_list_tile.dart';
 import 'package:submersion/features/dive_sites/presentation/widgets/dense_site_list_tile.dart';
 import 'package:submersion/features/dive_sites/presentation/widgets/site_filter_sheet.dart';
+import 'package:submersion/shared/selection/selection_leading.dart';
 import 'package:submersion/shared/widgets/debounced_search_results.dart';
+import 'package:submersion/shared/widgets/feature_accent.dart';
 
 /// Content widget for the site list, used in master-detail layout.
 class SiteListContent extends ConsumerStatefulWidget {
@@ -72,8 +82,13 @@ class _SiteListContentState extends ConsumerState<SiteListContent> {
   final ScrollController _scrollController = ScrollController();
   String? _lastScrolledToId;
   bool _selectionFromList = false;
-  bool _isSelectionMode = false;
-  final Set<String> _selectedIds = {};
+
+  /// Owns the bulk-selection state machine for this list.
+  final SelectionController _selection = SelectionController();
+
+  /// Convenience mirrors of the controller, so the widget tree reads clearly.
+  bool get _isSelectionMode => _selection.value.isActive;
+  Set<String> get _selectedIds => _selection.value.checkedIds;
   List<DiveSite>? _deletedSites;
   MergeSnapshot? _mergeSnapshot;
 
@@ -90,6 +105,7 @@ class _SiteListContentState extends ConsumerState<SiteListContent> {
   @override
   void dispose() {
     _scrollController.dispose();
+    _selection.dispose();
     super.dispose();
   }
 
@@ -163,46 +179,74 @@ class _SiteListContentState extends ConsumerState<SiteListContent> {
     }
   }
 
-  void _enterSelectionMode(String? initialId) {
-    setState(() {
-      _isSelectionMode = true;
-      _selectedIds.clear();
-      if (initialId != null) {
-        _selectedIds.add(initialId);
-      }
-    });
+  /// Enter selection mode implicitly, from a modifier-click, checking [id].
+  ///
+  /// Clearing the highlight keeps the detail pane from arguing with the bulk
+  /// selection about what the row means: a row left highlighted but unchecked
+  /// reads as selected while no bulk action would touch it.
+  ///
+  /// The Select controls route to [SelectionController.enterExplicit] directly
+  /// -- they have no row to check -- so this helper only ever serves the
+  /// implicit path, which since the removal of long-press entry means
+  /// modifier-click alone.
+  void _enterImplicitSelection(String id, {String? seedId}) {
+    ref.read(highlightedSiteIdProvider.notifier).state = null;
+    _selection.enterImplicit(id, seedId: seedId);
   }
 
-  void _exitSelectionMode() {
-    setState(() {
-      _isSelectionMode = false;
-      _selectedIds.clear();
-    });
+  void _exitSelectionMode() => _selection.exit();
+
+  void _toggleSelection(String id) => _selection.toggle(id);
+
+  /// Select the contiguous span from the anchor site to [targetId].
+  ///
+  /// With no anchor yet, the highlighted row is the origin, matching Finder.
+  void _selectRangeTo(String targetId, List<String> orderedIds) {
+    _selection.extendTo(
+      targetId,
+      orderedIds,
+      fallbackAnchorId: ref.read(highlightedSiteIdProvider),
+    );
   }
 
-  void _toggleSelection(String id) {
-    setState(() {
-      if (_selectedIds.contains(id)) {
-        _selectedIds.remove(id);
-        if (_selectedIds.isEmpty) {
-          _isSelectionMode = false;
-        }
-      } else {
-        _selectedIds.add(id);
-      }
-    });
+  /// Cmd/Ctrl-click [id], carrying the highlighted site into the selection.
+  ///
+  /// Outside selection mode the highlighted row is what the user sees as
+  /// selected, so a modifier-click adds to it rather than replacing it. A
+  /// highlight that filtering has pushed out of [orderedIds] is ignored, so
+  /// the count can never include a site that is not on screen.
+  void _modifierTap(String id, List<String> orderedIds) {
+    final highlighted = ref.read(highlightedSiteIdProvider);
+    _enterImplicitSelection(
+      id,
+      seedId: highlighted != null && orderedIds.contains(highlighted)
+          ? highlighted
+          : null,
+    );
   }
 
-  void _selectAll(List<SiteWithDiveCount> sites) {
-    setState(() {
-      _selectedIds.addAll(sites.map((s) => s.site.id));
-    });
-  }
-
-  void _deselectAll() {
-    setState(() {
-      _selectedIds.clear();
-    });
+  /// One tap policy for every site row, in every view mode.
+  ///
+  /// A held modifier turns a tap into an implicit entry -- the one path that
+  /// still evaporates at zero checked, since touch has no gesture entry left.
+  /// Shift extends from the anchor, falling back to the highlighted row.
+  void _handleRowTap(String id, List<SiteWithDiveCount> sites) {
+    final orderedIds = sites.map((s) => s.site.id).toList();
+    if (SelectableListScope.isShiftPressed()) {
+      _selectRangeTo(id, orderedIds);
+      return;
+    }
+    if (SelectableListScope.isModifierPressed()) {
+      _modifierTap(id, orderedIds);
+      return;
+    }
+    if (_isSelectionMode) {
+      _selection.toggle(id);
+      return;
+    }
+    final index = sites.indexWhere((s) => s.site.id == id);
+    if (index < 0) return;
+    _handleItemTap(sites[index].site);
   }
 
   Future<void> _startMerge() async {
@@ -218,10 +262,7 @@ class _SiteListContentState extends ConsumerState<SiteListContent> {
     final mergedId = result.survivorId;
     final scaffoldMessenger = ScaffoldMessenger.of(context);
 
-    setState(() {
-      _isSelectionMode = false;
-      _selectedIds.clear();
-    });
+    _selection.exit();
 
     if (widget.onItemSelected != null) {
       _selectionFromList = true;
@@ -343,7 +384,7 @@ class _SiteListContentState extends ConsumerState<SiteListContent> {
       currentField: sort.field,
       currentDirection: sort.direction,
       fields: SiteSortField.values,
-      getFieldDisplayName: (field) => field.displayName,
+      getFieldDisplayName: (field) => field.localizedName(context.l10n),
       getFieldIcon: (field) => field.icon,
       onSortChanged: (field, direction) {
         ref.read(siteSortProvider.notifier).state = SortState(
@@ -365,120 +406,171 @@ class _SiteListContentState extends ConsumerState<SiteListContent> {
       return _buildTableModeScaffold(context, sitesAsync, filter);
     }
 
-    final listContent = sitesAsync.when(
-      data: (sites) => sites.isEmpty
-          ? _buildEmptyState(context, filter.hasActiveFilters)
-          : _buildSiteList(context, ref, sites),
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stack) => _buildErrorState(context, error),
-    );
+    // Built inside the selection listener below so rows re-render as checks
+    // change; computing it here would leave the list frozen mid-selection.
+    Widget buildContent() {
+      final listContent = sitesAsync.when(
+        data: (sites) => sites.isEmpty
+            ? _buildEmptyState(context, filter.hasActiveFilters)
+            : _buildSiteList(context, ref, sites),
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => _buildErrorState(context, error),
+      );
 
-    // Wrap list with active filters bar if filters are active
-    final content = filter.hasActiveFilters
-        ? Column(
-            children: [
-              _buildActiveFiltersBar(context, filter),
-              Expanded(child: listContent),
-            ],
-          )
-        : listContent;
+      // Wrap list with active filters bar if filters are active
+      return filter.hasActiveFilters
+          ? Column(
+              children: [
+                _buildActiveFiltersBar(context, filter),
+                Expanded(child: listContent),
+              ],
+            )
+          : listContent;
+    }
+
+    final loadedSites = sitesAsync.valueOrNull ?? const <SiteWithDiveCount>[];
+    final visibleIds = loadedSites.map((s) => s.site.id).toList();
+
+    // Drop checked sites that fell out of the filtered list, so the count
+    // always matches what is on screen. pruneTo is a no-op when nothing
+    // changed, which keeps this off a rebuild loop.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _selection.pruneTo(visibleIds);
+    });
 
     if (!widget.showAppBar) {
-      return Column(
-        children: [
-          _isSelectionMode
-              ? _buildCompactSelectionAppBar(
-                  context,
-                  sitesAsync.valueOrNull ?? [],
-                )
-              : _buildCompactAppBar(context),
-          Expanded(child: content),
-        ],
+      return SelectableListScope(
+        controller: _selection,
+        selectableIds: visibleIds,
+        child: ValueListenableBuilder<SelectionState>(
+          valueListenable: _selection,
+          builder: (context, selection, _) => Column(
+            children: [
+              selection.isActive
+                  ? _buildCompactSelectionAppBar(context, loadedSites)
+                  : _buildCompactAppBar(context),
+              Expanded(child: buildContent()),
+            ],
+          ),
+        ),
       );
     }
 
-    return Scaffold(
-      appBar: _isSelectionMode
-          ? _buildSelectionAppBar(sitesAsync.valueOrNull ?? [])
-          : AppBar(
-              title: Text(context.l10n.diveSites_list_appBar_title),
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.map),
-                  tooltip: context.l10n.diveSites_list_tooltip_mapView,
-                  onPressed: () => context.push('/sites/map'),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.search),
-                  tooltip: context.l10n.diveSites_list_tooltip_searchSites,
-                  onPressed: () {
-                    showSearch(
-                      context: context,
-                      delegate: SiteSearchDelegate(ref),
-                    );
-                  },
-                ),
-                IconButton(
-                  icon: Badge(
-                    isLabelVisible: filter.hasActiveFilters,
-                    child: const Icon(Icons.filter_list),
+    return SelectableListScope(
+      controller: _selection,
+      selectableIds: visibleIds,
+      child: ValueListenableBuilder<SelectionState>(
+        valueListenable: _selection,
+        builder: (context, selection, _) => Scaffold(
+          appBar: selection.isActive
+              ? _buildSelectionAppBar(loadedSites)
+              : AppBar(
+                  title: FeatureAppBarTitle(
+                    featureId: 'sites',
+                    title: context.l10n.diveSites_list_appBar_title,
                   ),
-                  tooltip: context.l10n.diveSites_list_tooltip_filterSites,
-                  onPressed: () {
-                    showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      builder: (context) => SiteFilterSheet(ref: ref),
-                    );
-                  },
-                ),
-                IconButton(
-                  icon: const Icon(Icons.sort),
-                  tooltip: context.l10n.diveSites_list_tooltip_sort,
-                  onPressed: () => _showSortSheet(context),
-                ),
-                PopupMenuButton<String>(
-                  icon: const Icon(Icons.more_vert),
-                  onSelected: (value) {
-                    if (value == 'import') {
-                      context.push('/sites/import');
-                    } else if (value.startsWith('view_')) {
-                      final mode = ListViewMode.fromName(
-                        value.replaceFirst('view_', ''),
-                      );
-                      ref.read(siteListViewModeProvider.notifier).state = mode;
-                    }
-                  },
-                  itemBuilder: (context) {
-                    final currentMode = ref.read(siteListViewModeProvider);
-                    return [
-                      ...ListViewModeToggle.menuItems(
-                        context,
-                        currentMode: currentMode,
-                        modes: const [
-                          ListViewMode.detailed,
-                          ListViewMode.compact,
-                          ListViewMode.table,
-                        ],
+                  actions: [
+                    IconButton(
+                      icon: const Icon(Icons.map),
+                      tooltip: context.l10n.diveSites_list_tooltip_mapView,
+                      onPressed: () => context.push('/sites/map'),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.search),
+                      tooltip: context.l10n.diveSites_list_tooltip_searchSites,
+                      onPressed: () {
+                        showSearch(
+                          context: context,
+                          delegate: SiteSearchDelegate(ref),
+                        );
+                      },
+                    ),
+                    IconButton(
+                      icon: Badge(
+                        isLabelVisible: filter.hasActiveFilters,
+                        child: const Icon(Icons.filter_list),
                       ),
-                      const PopupMenuDivider(),
-                      PopupMenuItem(
-                        value: 'import',
-                        child: ListTile(
-                          leading: const Icon(Icons.download),
-                          title: Text(context.l10n.diveSites_list_menu_import),
-                          contentPadding: EdgeInsets.zero,
-                        ),
-                      ),
-                    ];
-                  },
+                      tooltip: context.l10n.diveSites_list_tooltip_filterSites,
+                      onPressed: () {
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          builder: (context) => SiteFilterSheet(ref: ref),
+                        );
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.sort),
+                      tooltip: context.l10n.diveSites_list_tooltip_sort,
+                      onPressed: () => _showSortSheet(context),
+                    ),
+                    // The only way into bulk actions: entry by long-press was removed,
+                    // so nothing but this control opens selection mode on touch.
+                    IconButton(
+                      key: const ValueKey('enter_selection'),
+                      icon: const Icon(Icons.checklist),
+                      tooltip: context.l10n.common_selection_enterTooltip,
+                      onPressed: _selection.enterExplicit,
+                    ),
+                    PopupMenuButton<String>(
+                      icon: const Icon(Icons.more_vert),
+                      onSelected: (value) {
+                        if (value == 'select') {
+                          _selection.enterExplicit();
+                        } else if (value == 'import') {
+                          context.push('/sites/import');
+                        } else if (value.startsWith('view_')) {
+                          final mode = ListViewMode.fromName(
+                            value.replaceFirst('view_', ''),
+                          );
+                          ref.read(siteListViewModeProvider.notifier).state =
+                              mode;
+                        }
+                      },
+                      itemBuilder: (context) {
+                        final currentMode = ref.read(siteListViewModeProvider);
+                        return [
+                          ...ListViewModeToggle.menuItems(
+                            context,
+                            currentMode: currentMode,
+                            modes: const [
+                              ListViewMode.detailed,
+                              ListViewMode.compact,
+                              ListViewMode.table,
+                            ],
+                          ),
+                          const PopupMenuDivider(),
+                          PopupMenuItem(
+                            value: 'select',
+                            child: ListTile(
+                              leading: const Icon(Icons.checklist),
+                              title: Text(
+                                context.l10n.diveSites_list_menu_select,
+                              ),
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                          ),
+                          PopupMenuItem(
+                            value: 'import',
+                            child: ListTile(
+                              leading: const Icon(Icons.download),
+                              title: Text(
+                                context.l10n.diveSites_list_menu_import,
+                              ),
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                          ),
+                        ];
+                      },
+                    ),
+                  ],
                 ),
-              ],
-            ),
-      body: content,
-      floatingActionButton: _isSelectionMode
-          ? null
-          : widget.floatingActionButton,
+          body: buildContent(),
+          floatingActionButton: selection.isActive
+              ? null
+              : widget.floatingActionButton,
+        ),
+      ),
     );
   }
 
@@ -492,17 +584,41 @@ class _SiteListContentState extends ConsumerState<SiteListContent> {
     AsyncValue<List<SiteWithDiveCount>> sitesAsync,
     SiteFilterState filter,
   ) {
-    final tableContent = _buildTableView(context, sitesAsync, filter);
+    final loadedSites = sitesAsync.valueOrNull ?? const <SiteWithDiveCount>[];
+    final visibleIds = loadedSites.map((s) => s.site.id).toList();
 
-    if (_isSelectionMode) {
-      return Column(
-        children: [
-          _buildCompactSelectionAppBar(context, sitesAsync.valueOrNull ?? []),
-          Expanded(child: tableContent),
-        ],
-      );
-    }
-    return tableContent;
+    // Same pruning the list path does: drop checked sites that fell out of
+    // the visible list, so the count always matches what is on screen.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _selection.pruneTo(visibleIds);
+    });
+
+    // The scope carries Escape, Ctrl/Cmd-A and the Android back handling, and
+    // the builder is what repaints the table as checks change -- the table is
+    // built inside it for that reason.
+    return SelectableListScope(
+      controller: _selection,
+      selectableIds: visibleIds,
+      child: ValueListenableBuilder<SelectionState>(
+        valueListenable: _selection,
+        builder: (context, selection, _) {
+          final tableContent = _buildTableView(context, sitesAsync, filter);
+
+          // Table mode has no app bar of its own, so the Select affordance
+          // lives in the same slot the contextual bar takes, at the same
+          // height -- the table does not shift as the mode opens.
+          return Column(
+            children: [
+              if (selection.isActive)
+                _buildCompactSelectionAppBar(context, loadedSites)
+              else
+                SelectionEntryBar(controller: _selection),
+              Expanded(child: tableContent),
+            ],
+          );
+        },
+      ),
+    );
   }
 
   /// Build the [EntityTableView] for site table mode.
@@ -543,12 +659,27 @@ class _SiteListContentState extends ConsumerState<SiteListContent> {
                 onSortFieldChanged: notifier.setSortField,
                 onResizeColumn: notifier.resizeColumn,
                 onEntityTapDown: (id) {
-                  if (!_isSelectionMode) {
-                    ref.read(highlightedSiteIdProvider.notifier).state = id;
+                  // Rows carry a double-tap, so onEntityTap only resolves
+                  // after the double-tap timer -- long after this fires. A
+                  // modified click is a selection gesture, not a navigation
+                  // one: moving the highlight here would overwrite the very
+                  // anchor the shift-click is about to extend from.
+                  if (_isSelectionMode ||
+                      SelectableListScope.isShiftPressed() ||
+                      SelectableListScope.isModifierPressed()) {
+                    return;
                   }
+                  ref.read(highlightedSiteIdProvider.notifier).state = id;
                 },
                 onEntityTap: (id) {
-                  if (_isSelectionMode) {
+                  // Table mode honours modifier and shift clicks too, so
+                  // selection works the same way as in the list view modes.
+                  final orderedIds = siteRecords.map((s) => s.site.id).toList();
+                  if (SelectableListScope.isShiftPressed()) {
+                    _selectRangeTo(id, orderedIds);
+                  } else if (SelectableListScope.isModifierPressed()) {
+                    _modifierTap(id, orderedIds);
+                  } else if (_isSelectionMode) {
                     _toggleSelection(id);
                   }
                 },
@@ -556,9 +687,6 @@ class _SiteListContentState extends ConsumerState<SiteListContent> {
                   if (_isSelectionMode) return;
                   context.push('/sites/$id');
                 },
-                onEntityLongPress: _isSelectionMode
-                    ? null
-                    : (id) => _enterSelectionMode(id),
                 selectedIds: _selectedIds,
                 isSelectionMode: _isSelectionMode,
                 highlightedId: ref.watch(highlightedSiteIdProvider),
@@ -587,13 +715,20 @@ class _SiteListContentState extends ConsumerState<SiteListContent> {
       child: Row(
         children: [
           const SizedBox(width: 8),
-          Text(
-            context.l10n.diveSites_list_appBar_title,
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+          // Expanded, and no Spacer: the title must be the row's only flexible
+          // child, or Spacer takes half the free space and the leftover half
+          // lands after the last icon (see trip_list_content for the detail).
+          // The pane is narrow and this bar carries up to seven controls, so
+          // the title still has to yield; FeatureAppBarTitle ellipsises.
+          Expanded(
+            child: FeatureAppBarTitle(
+              featureId: 'sites',
+              title: context.l10n.diveSites_list_appBar_title,
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+            ),
           ),
-          const Spacer(),
           // Map toggle: shown in detailed/compact mode only.
           // In table mode, TableModeLayout manages the map toggle.
           if (widget.onMapViewToggle != null)
@@ -633,10 +768,18 @@ class _SiteListContentState extends ConsumerState<SiteListContent> {
             tooltip: context.l10n.diveSites_list_tooltip_sort,
             onPressed: () => _showSortSheet(context),
           ),
+          IconButton(
+            key: const ValueKey('enter_selection'),
+            icon: const Icon(Icons.checklist, size: 20),
+            tooltip: context.l10n.common_selection_enterTooltip,
+            onPressed: _selection.enterExplicit,
+          ),
           PopupMenuButton<String>(
             icon: const Icon(Icons.more_vert, size: 20),
             onSelected: (value) {
-              if (value == 'import') {
+              if (value == 'select') {
+                _selection.enterExplicit();
+              } else if (value == 'import') {
                 context.push('/sites/import');
               } else if (value.startsWith('view_')) {
                 final mode = ListViewMode.fromName(
@@ -659,6 +802,10 @@ class _SiteListContentState extends ConsumerState<SiteListContent> {
                 ),
                 const PopupMenuDivider(),
                 PopupMenuItem(
+                  value: 'select',
+                  child: Text(context.l10n.diveSites_list_menu_select),
+                ),
+                PopupMenuItem(
                   value: 'import',
                   child: Text(context.l10n.diveSites_list_menu_import),
                 ),
@@ -670,100 +817,44 @@ class _SiteListContentState extends ConsumerState<SiteListContent> {
     );
   }
 
+  /// Site-specific extras. Select-all, deselect-all and delete are supplied by
+  /// SelectionAppBar, so they are deliberately absent here. Computed once and
+  /// shared by both shells so the pane cannot drift from the full-width bar.
+  List<BulkAction> _bulkActions(List<SiteWithDiveCount> sites) {
+    return [
+      BulkAction(
+        id: 'merge',
+        icon: Icons.merge_type,
+        label: context.l10n.diveSites_list_selection_mergeTooltip,
+        minCount: 2,
+        onInvoke: _startMerge,
+      ),
+    ];
+  }
+
+  /// Contextual bar for the master pane, which is too narrow for every icon.
   Widget _buildCompactSelectionAppBar(
     BuildContext context,
     List<SiteWithDiveCount> sites,
   ) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primaryContainer,
-        border: Border(
-          bottom: BorderSide(
-            color: Theme.of(context).colorScheme.outline,
-            width: 1,
-          ),
-        ),
-      ),
-      child: Row(
-        children: [
-          IconButton(
-            icon: const Icon(Icons.close, size: 20),
-            tooltip: context.l10n.diveSites_list_selection_closeTooltip,
-            onPressed: _exitSelectionMode,
-          ),
-          Text(
-            context.l10n.diveSites_list_selection_count(_selectedIds.length),
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
-          ),
-          const Spacer(),
-          IconButton(
-            icon: const Icon(Icons.select_all, size: 20),
-            tooltip: context.l10n.diveSites_list_selection_selectAllTooltip,
-            onPressed: _selectedIds.length < sites.length
-                ? () => _selectAll(sites)
-                : null,
-          ),
-          IconButton(
-            icon: const Icon(Icons.deselect, size: 20),
-            tooltip: context.l10n.diveSites_list_selection_deselectAllTooltip,
-            onPressed: _selectedIds.isNotEmpty ? _deselectAll : null,
-          ),
-          IconButton(
-            icon: const Icon(Icons.merge_type, size: 20),
-            tooltip: context.l10n.diveSites_list_selection_mergeTooltip,
-            onPressed: _selectedIds.length > 1 ? _startMerge : null,
-          ),
-          IconButton(
-            icon: Icon(
-              Icons.delete,
-              size: 20,
-              color: Theme.of(context).colorScheme.error,
-            ),
-            tooltip: context.l10n.diveSites_list_selection_deleteTooltip,
-            onPressed: _selectedIds.isNotEmpty ? _confirmAndDelete : null,
-          ),
-        ],
-      ),
+    return SelectionAppBar(
+      controller: _selection,
+      selectableIds: sites.map((s) => s.site.id).toList(),
+      actions: _bulkActions(sites),
+      shell: SelectionBarShell.pane,
+      maxInlineActions: 1,
+      onDelete: _confirmAndDelete,
     );
   }
 
-  AppBar _buildSelectionAppBar(List<SiteWithDiveCount> sites) {
-    return AppBar(
-      leading: IconButton(
-        icon: const Icon(Icons.close),
-        tooltip: context.l10n.diveSites_list_selection_closeTooltip,
-        onPressed: _exitSelectionMode,
-      ),
-      title: Text(
-        context.l10n.diveSites_list_selection_count(_selectedIds.length),
-      ),
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.select_all),
-          tooltip: context.l10n.diveSites_list_selection_selectAllTooltip,
-          onPressed: _selectedIds.length < sites.length
-              ? () => _selectAll(sites)
-              : null,
-        ),
-        IconButton(
-          icon: const Icon(Icons.deselect),
-          tooltip: context.l10n.diveSites_list_selection_deselectAllTooltip,
-          onPressed: _selectedIds.isNotEmpty ? _deselectAll : null,
-        ),
-        IconButton(
-          icon: const Icon(Icons.merge_type),
-          tooltip: context.l10n.diveSites_list_selection_mergeTooltip,
-          onPressed: _selectedIds.length > 1 ? _startMerge : null,
-        ),
-        IconButton(
-          icon: Icon(Icons.delete, color: Theme.of(context).colorScheme.error),
-          tooltip: context.l10n.diveSites_list_selection_deleteTooltip,
-          onPressed: _selectedIds.isNotEmpty ? _confirmAndDelete : null,
-        ),
-      ],
+  /// Contextual bar for the full-width standalone layout.
+  SelectionAppBar _buildSelectionAppBar(List<SiteWithDiveCount> sites) {
+    return SelectionAppBar(
+      controller: _selection,
+      selectableIds: sites.map((s) => s.site.id).toList(),
+      actions: _bulkActions(sites),
+      shell: SelectionBarShell.appBar,
+      onDelete: _confirmAndDelete,
     );
   }
 
@@ -812,10 +903,7 @@ class _SiteListContentState extends ConsumerState<SiteListContent> {
               latitude: site.location?.latitude,
               longitude: site.location?.longitude,
               showSharedBadge: showSharedBadge,
-              onTap: () => _handleItemTap(site),
-              onLongPress: _isSelectionMode
-                  ? null
-                  : () => _enterSelectionMode(site.id),
+              onTap: () => _handleRowTap(site.id, sites),
             ),
             ListViewMode.compact => CompactSiteListTile(
               name: site.name,
@@ -825,10 +913,7 @@ class _SiteListContentState extends ConsumerState<SiteListContent> {
               isSelected: isChecked,
               isHighlighted: !_isSelectionMode && isSelected,
               showSharedBadge: showSharedBadge,
-              onTap: () => _handleItemTap(site),
-              onLongPress: _isSelectionMode
-                  ? null
-                  : () => _enterSelectionMode(site.id),
+              onTap: () => _handleRowTap(site.id, sites),
             ),
             ListViewMode.dense || ListViewMode.table => DenseSiteListTile(
               name: site.name,
@@ -838,10 +923,7 @@ class _SiteListContentState extends ConsumerState<SiteListContent> {
               isSelected: isChecked,
               isHighlighted: !_isSelectionMode && isSelected,
               showSharedBadge: showSharedBadge,
-              onTap: () => _handleItemTap(site),
-              onLongPress: _isSelectionMode
-                  ? null
-                  : () => _enterSelectionMode(site.id),
+              onTap: () => _handleRowTap(site.id, sites),
             ),
           };
         },
@@ -1022,19 +1104,25 @@ class _SiteListContentState extends ConsumerState<SiteListContent> {
     );
   }
 
+  /// Chip label for the active depth filter.
+  ///
+  /// The bounds are held in meters, like every other stored depth, so they are
+  /// converted for display. A two-ended range carries a single trailing symbol,
+  /// so only the upper bound is formatted with one.
   String _formatDepthRange(double? min, double? max) {
+    final units = UnitFormatter(ref.watch(settingsProvider));
     if (min != null && max != null) {
       return context.l10n.diveSites_list_activeFilter_depthRangeBoth(
-        min.toInt(),
-        max.toInt(),
+        units.convertDepth(min).toStringAsFixed(0),
+        units.formatDepth(max, decimals: 0),
       );
     } else if (min != null) {
       return context.l10n.diveSites_list_activeFilter_depthRangeMin(
-        min.toInt(),
+        units.formatDepth(min, decimals: 0),
       );
     } else if (max != null) {
       return context.l10n.diveSites_list_activeFilter_depthRangeMax(
-        max.toInt(),
+        units.formatDepth(max, decimals: 0),
       );
     }
     return '';
@@ -1187,7 +1275,7 @@ class SiteSearchDelegate extends SearchDelegate<DiveSite?> {
 }
 
 /// List item widget for displaying a dive site summary
-class SiteListTile extends ConsumerWidget {
+class SiteListTile extends ConsumerStatefulWidget {
   final String name;
   final String? location;
   final double? minDepth;
@@ -1196,7 +1284,6 @@ class SiteListTile extends ConsumerWidget {
   final int diveCount;
   final double? rating;
   final VoidCallback? onTap;
-  final VoidCallback? onLongPress;
   final bool isSelectionMode;
   final bool isSelected;
   final bool isChecked;
@@ -1214,7 +1301,6 @@ class SiteListTile extends ConsumerWidget {
     this.diveCount = 0,
     this.rating,
     this.onTap,
-    this.onLongPress,
     this.isSelectionMode = false,
     this.isSelected = false,
     this.isChecked = false,
@@ -1223,24 +1309,55 @@ class SiteListTile extends ConsumerWidget {
     this.showSharedBadge = false,
   });
 
-  String? get _depthString {
+  bool get _hasLocation => latitude != null && longitude != null;
+
+  @override
+  ConsumerState<SiteListTile> createState() => _SiteListTileState();
+}
+
+class _SiteListTileState extends ConsumerState<SiteListTile> {
+  final MapController _mapController = MapController();
+
+  /// Depth summary in the diver's chosen unit.
+  ///
+  /// Depths are stored in meters, so they must be converted before display.
+  /// A range carries a single trailing symbol ("16-98ft"), matching how the
+  /// table view renders the same two columns.
+  String? _depthString(UnitFormatter units) {
+    final minDepth = widget.minDepth;
+    final maxDepth = widget.maxDepth;
     if (minDepth != null && maxDepth != null) {
-      return '${minDepth!.toStringAsFixed(0)}-${maxDepth!.toStringAsFixed(0)}m';
+      final min = units.convertDepth(minDepth).toStringAsFixed(0);
+      return '$min-${units.formatDepth(maxDepth, decimals: 0)}';
     }
     if (maxDepth != null) {
-      return '${maxDepth!.toStringAsFixed(0)}m';
+      return units.formatDepth(maxDepth, decimals: 0);
     }
     return null;
   }
 
-  bool get _hasLocation => latitude != null && longitude != null;
-
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
+    final name = widget.name;
+    final location = widget.location;
+    final difficulty = widget.difficulty;
+    final diveCount = widget.diveCount;
+    final rating = widget.rating;
+    final onTap = widget.onTap;
+    final isSelectionMode = widget.isSelectionMode;
+    final isSelected = widget.isSelected;
+    final isChecked = widget.isChecked;
+    final latitude = widget.latitude;
+    final longitude = widget.longitude;
+    final showSharedBadge = widget.showSharedBadge;
+
     final colorScheme = Theme.of(context).colorScheme;
+    final depthString = _depthString(
+      UnitFormatter(ref.watch(settingsProvider)),
+    );
     final showMapBackground = ref.watch(showMapBackgroundOnSiteCardsProvider);
     final shouldShowMap =
-        showMapBackground && _hasLocation && !isSelected && !isChecked;
+        showMapBackground && widget._hasLocation && !isSelected && !isChecked;
     final useLightText = shouldShowMap;
     final primaryTextColor = useLightText ? Colors.white : null;
     final secondaryTextColor = useLightText
@@ -1255,22 +1372,20 @@ class SiteListTile extends ConsumerWidget {
             SizedBox(
               width: 40,
               height: 40,
-              child: isSelectionMode
-                  ? Center(
-                      child: Checkbox(
-                        value: isChecked,
-                        onChanged: (_) => onTap?.call(),
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        visualDensity: VisualDensity.compact,
-                      ),
-                    )
-                  : CircleAvatar(
-                      backgroundColor: colorScheme.secondaryContainer,
-                      child: Icon(
-                        Icons.location_on,
-                        color: colorScheme.onSecondaryContainer,
-                      ),
+              child: Center(
+                child: SelectionLeading(
+                  isSelectionMode: isSelectionMode,
+                  isChecked: isChecked,
+                  onChanged: (_) => onTap?.call(),
+                  child: CircleAvatar(
+                    backgroundColor: colorScheme.secondaryContainer,
+                    child: Icon(
+                      Icons.location_on,
+                      color: colorScheme.onSecondaryContainer,
                     ),
+                  ),
+                ),
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -1288,7 +1403,7 @@ class SiteListTile extends ConsumerWidget {
                   if (location != null) ...[
                     const SizedBox(height: 4),
                     Text(
-                      location!,
+                      location,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: secondaryTextColor,
                       ),
@@ -1312,9 +1427,9 @@ class SiteListTile extends ConsumerWidget {
                       color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
-                if (_depthString != null)
+                if (depthString != null)
                   Text(
-                    _depthString!,
+                    depthString,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: secondaryTextColor,
                       fontWeight: FontWeight.w500,
@@ -1322,7 +1437,7 @@ class SiteListTile extends ConsumerWidget {
                   ),
                 if (difficulty != null)
                   Text(
-                    difficulty!,
+                    difficulty,
                     style: Theme.of(
                       context,
                     ).textTheme.bodySmall?.copyWith(color: secondaryTextColor),
@@ -1340,7 +1455,7 @@ class SiteListTile extends ConsumerWidget {
                     children: [
                       const Icon(Icons.star, color: Colors.amber, size: 16),
                       Text(
-                        rating!.toStringAsFixed(1),
+                        rating.toStringAsFixed(1),
                         style: TextStyle(color: primaryTextColor),
                       ),
                     ],
@@ -1364,29 +1479,32 @@ class SiteListTile extends ConsumerWidget {
           label: context.l10n.diveSites_list_tile_semantics(name),
           child: InkWell(
             onTap: onTap,
-            onLongPress: onLongPress,
             child: Stack(
               children: [
                 Positioned.fill(
-                  child: FlutterMap(
-                    options: MapOptions(
-                      initialCenter: siteLocation,
-                      initialZoom: 13.0,
-                      interactionOptions: const InteractionOptions(
-                        flags: InteractiveFlag.none,
+                  child: TrackpadZoomMap(
+                    controller: _mapController,
+                    child: FlutterMap(
+                      mapController: _mapController,
+                      options: MapOptions(
+                        initialCenter: siteLocation,
+                        initialZoom: 13.0,
+                        interactionOptions: const InteractionOptions(
+                          flags: InteractiveFlag.none,
+                        ),
                       ),
+                      children: [
+                        TileLayer(
+                          urlTemplate: ref.watch(mapTileUrlProvider),
+                          userAgentPackageName: 'app.submersion',
+                          maxZoom: ref.watch(mapTileMaxZoomProvider),
+                          tileProvider: TileCacheService.instance.isInitialized
+                              ? TileCacheService.instance.getTileProvider()
+                              : null,
+                        ),
+                        const MapAttribution(),
+                      ],
                     ),
-                    children: [
-                      TileLayer(
-                        urlTemplate: ref.watch(mapTileUrlProvider),
-                        userAgentPackageName: 'app.submersion',
-                        maxZoom: ref.watch(mapTileMaxZoomProvider),
-                        tileProvider: TileCacheService.instance.isInitialized
-                            ? TileCacheService.instance.getTileProvider()
-                            : null,
-                      ),
-                      const MapAttribution(),
-                    ],
                   ),
                 ),
                 Positioned.fill(
@@ -1426,7 +1544,6 @@ class SiteListTile extends ConsumerWidget {
         label: context.l10n.diveSites_list_tile_semantics(name),
         child: InkWell(
           onTap: onTap,
-          onLongPress: onLongPress,
           borderRadius: BorderRadius.circular(12),
           child: buildContent(),
         ),

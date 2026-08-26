@@ -1,7 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:submersion/core/constants/enums.dart';
+import 'package:submersion/features/buddies/domain/entities/buddy.dart';
 import 'package:submersion/features/dive_log/domain/entities/dive.dart';
 import 'package:submersion/features/dive_log/domain/entities/dive_custom_field.dart';
 import 'package:submersion/features/dive_log/domain/models/dive_filter_state.dart';
+import 'package:submersion/features/dive_roles/domain/entities/dive_role.dart';
+import 'package:submersion/features/equipment/domain/entities/equipment_attribute.dart';
+import 'package:submersion/features/equipment/domain/entities/equipment_item.dart';
 
 /// Helper to create a minimal Dive for filter testing.
 Dive _makeDive({
@@ -11,30 +16,47 @@ Dive _makeDive({
   String? diveTypeId,
   bool isFavorite = false,
   String? diveComputerSerial,
+  String? computerId,
   int? rating,
   Duration? duration,
   String? tripId,
   List<DiveCustomField> customFields = const [],
+  List<EquipmentItem> equipment = const [],
 }) {
   return Dive(
     id: id,
     dateTime: dateTime ?? DateTime(2026, 3, 19),
     maxDepth: maxDepth,
-    diveTypeId: diveTypeId ?? 'recreational',
+    diveTypeIds: [diveTypeId ?? 'recreational'],
     isFavorite: isFavorite,
     diveComputerSerial: diveComputerSerial,
+    computerId: computerId,
     rating: rating,
     bottomTime: duration,
     tripId: tripId,
     tanks: const [],
     profile: const [],
-    equipment: const [],
+    equipment: equipment,
     notes: '',
     photoIds: const [],
     sightings: const [],
     weights: const [],
     tags: const [],
     customFields: customFields,
+  );
+}
+
+/// Helper to build an equipment item carrying the given attributes.
+EquipmentItem _makeEquipment(
+  String id, {
+  EquipmentType type = EquipmentType.wetsuit,
+  List<EquipmentAttribute> attributes = const [],
+}) {
+  return EquipmentItem(
+    id: id,
+    name: 'Gear $id',
+    type: type,
+    attributes: attributes,
   );
 }
 
@@ -53,6 +75,7 @@ void main() {
         expect(filter.minDepth, isNull);
         expect(filter.maxDepth, isNull);
         expect(filter.favoritesOnly, isNull);
+        expect(filter.noBuddyOnly, isNull);
         expect(filter.tagIds, isEmpty);
         expect(filter.equipmentIds, isEmpty);
         expect(filter.buddyNameFilter, isNull);
@@ -63,7 +86,7 @@ void main() {
         expect(filter.minRating, isNull);
         expect(filter.minBottomTimeMinutes, isNull);
         expect(filter.maxBottomTimeMinutes, isNull);
-        expect(filter.computerSerial, isNull);
+        expect(filter.computerId, isNull);
         expect(filter.customFieldKey, isNull);
         expect(filter.customFieldValue, isNull);
       });
@@ -76,8 +99,8 @@ void main() {
         expect(filter.hasActiveFilters, isFalse);
       });
 
-      test('returns true when computerSerial is set', () {
-        const filter = DiveFilterState(computerSerial: 'SN12345');
+      test('returns true when computerId is set', () {
+        const filter = DiveFilterState(computerId: 'computer-a');
 
         expect(filter.hasActiveFilters, isTrue);
       });
@@ -130,6 +153,18 @@ void main() {
         expect(filter.hasActiveFilters, isFalse);
       });
 
+      test('returns true when noBuddyOnly is true', () {
+        const filter = DiveFilterState(noBuddyOnly: true);
+
+        expect(filter.hasActiveFilters, isTrue);
+      });
+
+      test('returns false when noBuddyOnly is false', () {
+        const filter = DiveFilterState(noBuddyOnly: false);
+
+        expect(filter.hasActiveFilters, isFalse);
+      });
+
       test('returns true when diveIds is non-empty', () {
         const filter = DiveFilterState(diveIds: ['d1', 'd2']);
 
@@ -150,57 +185,73 @@ void main() {
     });
 
     group('copyWith', () {
-      test('sets computerSerial', () {
+      test('sets computerId', () {
         const original = DiveFilterState();
 
-        final updated = original.copyWith(computerSerial: 'SN999');
+        final updated = original.copyWith(computerId: 'computer-a');
 
-        expect(updated.computerSerial, 'SN999');
+        expect(updated.computerId, 'computer-a');
       });
 
-      test('preserves computerSerial when not specified', () {
-        const original = DiveFilterState(computerSerial: 'SN999');
+      test('preserves computerId when not specified', () {
+        const original = DiveFilterState(computerId: 'computer-a');
 
         final updated = original.copyWith(minRating: 3);
 
-        expect(updated.computerSerial, 'SN999');
+        expect(updated.computerId, 'computer-a');
         expect(updated.minRating, 3);
       });
 
-      test('clears computerSerial with clearComputerSerial', () {
-        const original = DiveFilterState(computerSerial: 'SN999');
+      test('clears computerId with clearComputerId', () {
+        const original = DiveFilterState(computerId: 'computer-a');
 
-        final updated = original.copyWith(clearComputerSerial: true);
+        final updated = original.copyWith(clearComputerId: true);
 
-        expect(updated.computerSerial, isNull);
+        expect(updated.computerId, isNull);
       });
 
-      test('clearComputerSerial takes precedence over new value', () {
-        const original = DiveFilterState(computerSerial: 'SN999');
+      test('clearComputerId takes precedence over new value', () {
+        const original = DiveFilterState(computerId: 'computer-a');
 
         final updated = original.copyWith(
-          computerSerial: 'SN111',
-          clearComputerSerial: true,
+          computerId: 'computer-b',
+          clearComputerId: true,
         );
 
-        expect(updated.computerSerial, isNull);
+        expect(updated.computerId, isNull);
+      });
+
+      test('sets noBuddyOnly', () {
+        const original = DiveFilterState();
+
+        final updated = original.copyWith(noBuddyOnly: true);
+
+        expect(updated.noBuddyOnly, isTrue);
+      });
+
+      test('clears noBuddyOnly with clearNoBuddyOnly', () {
+        const original = DiveFilterState(noBuddyOnly: true);
+
+        final updated = original.copyWith(clearNoBuddyOnly: true);
+
+        expect(updated.noBuddyOnly, isNull);
       });
 
       test('sets and clears multiple fields simultaneously', () {
         const original = DiveFilterState(
           minRating: 3,
-          computerSerial: 'SN999',
+          computerId: 'computer-a',
           minBottomTimeMinutes: 30,
         );
 
         final updated = original.copyWith(
           clearMinRating: true,
           maxBottomTimeMinutes: 60,
-          clearComputerSerial: true,
+          clearComputerId: true,
         );
 
         expect(updated.minRating, isNull);
-        expect(updated.computerSerial, isNull);
+        expect(updated.computerId, isNull);
         expect(updated.minBottomTimeMinutes, 30);
         expect(updated.maxBottomTimeMinutes, 60);
       });
@@ -216,18 +267,33 @@ void main() {
         expect(result, hasLength(2));
       });
 
-      test('filters by computerSerial', () {
-        const filter = DiveFilterState(computerSerial: 'SN12345');
+      test('filters by computerId', () {
+        const filter = DiveFilterState(computerId: 'computer-a');
         final dives = [
-          _makeDive(id: 'd1', diveComputerSerial: 'SN12345'),
-          _makeDive(id: 'd2', diveComputerSerial: 'SN99999'),
-          _makeDive(id: 'd3'), // no serial
+          _makeDive(id: 'd1', computerId: 'computer-a'),
+          _makeDive(id: 'd2', computerId: 'computer-b'),
+          _makeDive(id: 'd3'), // not attributed to any computer
         ];
 
         final result = filter.apply(dives);
 
         expect(result, hasLength(1));
         expect(result.first.id, 'd1');
+      });
+
+      // Issue #1064: computers whose firmware never reports a serial were
+      // unfilterable. Attribution rides the computer id, never the serial.
+      test('filters by computerId when the dives carry no serial', () {
+        const filter = DiveFilterState(computerId: 'computer-a');
+        final dives = [
+          _makeDive(id: 'd1', computerId: 'computer-a'),
+          _makeDive(id: 'd2', computerId: 'computer-a'),
+          _makeDive(id: 'd3', computerId: 'computer-b'),
+        ];
+
+        final result = filter.apply(dives);
+
+        expect(result.map((d) => d.id), ['d1', 'd2']);
       });
 
       test('filters by minRating', () {
@@ -400,11 +466,11 @@ void main() {
       });
 
       test('combines multiple filters', () {
-        const filter = DiveFilterState(computerSerial: 'SN12345', minRating: 3);
+        const filter = DiveFilterState(computerId: 'computer-a', minRating: 3);
         final dives = [
-          _makeDive(id: 'd1', diveComputerSerial: 'SN12345', rating: 5),
-          _makeDive(id: 'd2', diveComputerSerial: 'SN12345', rating: 2),
-          _makeDive(id: 'd3', diveComputerSerial: 'SN999', rating: 5),
+          _makeDive(id: 'd1', computerId: 'computer-a', rating: 5),
+          _makeDive(id: 'd2', computerId: 'computer-a', rating: 2),
+          _makeDive(id: 'd3', computerId: 'computer-b', rating: 5),
         ];
 
         final result = filter.apply(dives);
@@ -424,6 +490,39 @@ void main() {
 
         expect(result, hasLength(1));
         expect(result.first.id, 'd1');
+      });
+
+      test('filters by noBuddyOnly (excludes legacy and linked buddies)', () {
+        const filter = DiveFilterState(noBuddyOnly: true);
+        final buddyJohn = Buddy(
+          id: 'b1',
+          name: 'John Doe',
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        );
+        final dives = [
+          Dive(id: 'd1', dateTime: DateTime.now(), notes: ''),
+          Dive(
+            id: 'd2',
+            dateTime: DateTime.now(),
+            buddy: 'Jane Smith',
+            notes: '',
+          ),
+          Dive(
+            id: 'd3',
+            dateTime: DateTime.now(),
+            notes: '',
+            buddies: [
+              BuddyWithRole(buddy: buddyJohn, role: DiveRole.builtInBuddy()),
+            ],
+          ),
+          Dive(id: 'd4', dateTime: DateTime.now(), buddy: '', notes: ''),
+        ];
+
+        final result = filter.apply(dives);
+
+        expect(result.map((d) => d.id), containsAll(['d1', 'd4']));
+        expect(result, hasLength(2));
       });
 
       test('filters by depth range', () {
@@ -466,6 +565,290 @@ void main() {
 
         expect(result, hasLength(1));
         expect(result.first.id, 'd1');
+      });
+
+      test('filters by buddyNameFilter (case-insensitive legacy)', () {
+        const filter = DiveFilterState(buddyNameFilter: 'JOHN');
+        final dives = [
+          Dive(
+            id: 'd1',
+            dateTime: DateTime.now(),
+            buddy: 'John Doe',
+            notes: '',
+          ),
+          Dive(
+            id: 'd2',
+            dateTime: DateTime.now(),
+            buddy: 'Jane Smith',
+            notes: '',
+          ),
+        ];
+
+        final result = filter.apply(dives);
+
+        expect(result, hasLength(1));
+        expect(result.first.id, 'd1');
+      });
+
+      test('filters by buddyNameFilter (case-insensitive structured)', () {
+        const filter = DiveFilterState(buddyNameFilter: 'doe');
+        final buddyJohn = Buddy(
+          id: 'b1',
+          name: 'John Doe',
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        );
+        final dives = [
+          Dive(
+            id: 'd1',
+            dateTime: DateTime.now(),
+            notes: '',
+            buddies: [
+              BuddyWithRole(buddy: buddyJohn, role: DiveRole.builtInBuddy()),
+            ],
+          ),
+          Dive(
+            id: 'd2',
+            dateTime: DateTime.now(),
+            buddy: 'Jane Doe',
+            notes: '',
+          ),
+        ];
+
+        final result = filter.apply(dives);
+
+        expect(result, hasLength(2));
+      });
+
+      test('filters by multiple comma-separated buddies (AND-semantics)', () {
+        const filter = DiveFilterState(buddyNameFilter: 'John, Jane');
+        final buddyJohn = Buddy(
+          id: 'b1',
+          name: 'John Smith',
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        );
+        final buddyJane = Buddy(
+          id: 'b2',
+          name: 'Jane Smith',
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        );
+
+        final dives = [
+          // D1: Matches both (John in structured, Jane in legacy)
+          Dive(
+            id: 'd1',
+            dateTime: DateTime.now(),
+            buddy: 'Jane Doe',
+            notes: '',
+            buddies: [
+              BuddyWithRole(buddy: buddyJohn, role: DiveRole.builtInBuddy()),
+            ],
+          ),
+          // D2: Matches both (Both in structured)
+          Dive(
+            id: 'd2',
+            dateTime: DateTime.now(),
+            notes: '',
+            buddies: [
+              BuddyWithRole(buddy: buddyJohn, role: DiveRole.builtInBuddy()),
+              BuddyWithRole(buddy: buddyJane, role: DiveRole.builtInBuddy()),
+            ],
+          ),
+          // D3: Matches only John
+          Dive(
+            id: 'd3',
+            dateTime: DateTime.now(),
+            buddy: 'John Doe',
+            notes: '',
+          ),
+          // D4: Matches only Jane
+          Dive(
+            id: 'd4',
+            dateTime: DateTime.now(),
+            notes: '',
+            buddies: [
+              BuddyWithRole(buddy: buddyJane, role: DiveRole.builtInBuddy()),
+            ],
+          ),
+        ];
+
+        final result = filter.apply(dives);
+
+        expect(result, hasLength(2));
+        expect(result.map((d) => d.id), containsAll(['d1', 'd2']));
+      });
+
+      group('equipmentAttr axis', () {
+        EquipmentAttribute curated(String key, {String? text, double? num}) =>
+            EquipmentAttribute.curated(
+              equipmentId: 'eq1',
+              key: key,
+              valueText: text,
+              valueNum: num,
+            );
+
+        test('key-only matches any dive whose gear has that curated attr', () {
+          const filter = DiveFilterState(equipmentAttrKey: 'thickness_mm');
+          final dives = [
+            _makeDive(
+              id: 'd1',
+              equipment: [
+                _makeEquipment('eq1', attributes: [curated('thickness_mm')]),
+              ],
+            ),
+            _makeDive(
+              id: 'd2',
+              equipment: [
+                _makeEquipment('eq2', attributes: [curated('size', text: 'L')]),
+              ],
+            ),
+            _makeDive(id: 'd3'), // no equipment
+          ];
+
+          final result = filter.apply(dives);
+
+          expect(result.map((d) => d.id), ['d1']);
+        });
+
+        test('choice matches value_text exactly', () {
+          const filter = DiveFilterState(
+            equipmentAttrKey: 'size',
+            equipmentAttrChoice: 'L',
+          );
+          final dives = [
+            _makeDive(
+              id: 'd1',
+              equipment: [
+                _makeEquipment('eq1', attributes: [curated('size', text: 'L')]),
+              ],
+            ),
+            _makeDive(
+              id: 'd2',
+              equipment: [
+                _makeEquipment('eq2', attributes: [curated('size', text: 'M')]),
+              ],
+            ),
+          ];
+
+          final result = filter.apply(dives);
+
+          expect(result.map((d) => d.id), ['d1']);
+        });
+
+        test('min/max bound value_num', () {
+          const filter = DiveFilterState(
+            equipmentAttrKey: 'thickness_mm',
+            equipmentAttrMin: 4.0,
+            equipmentAttrMax: 6.0,
+          );
+          final dives = [
+            _makeDive(
+              id: 'd1',
+              equipment: [
+                _makeEquipment(
+                  'eq1',
+                  attributes: [curated('thickness_mm', num: 5.0)],
+                ),
+              ],
+            ),
+            _makeDive(
+              id: 'd2',
+              equipment: [
+                _makeEquipment(
+                  'eq2',
+                  attributes: [curated('thickness_mm', num: 3.0)],
+                ),
+              ],
+            ),
+            _makeDive(
+              id: 'd3',
+              equipment: [
+                _makeEquipment(
+                  'eq3',
+                  attributes: [curated('thickness_mm', num: 7.0)],
+                ),
+              ],
+            ),
+          ];
+
+          final result = filter.apply(dives);
+
+          expect(result.map((d) => d.id), ['d1']);
+        });
+
+        test('null value_num is excluded when a min bound is set', () {
+          const filter = DiveFilterState(
+            equipmentAttrKey: 'thickness_mm',
+            equipmentAttrMin: 4.0,
+          );
+          final dives = [
+            _makeDive(
+              id: 'd1',
+              equipment: [
+                _makeEquipment(
+                  'eq1',
+                  // Unparseable legacy thickness: text only, no number.
+                  attributes: [curated('thickness_mm', text: 'thin')],
+                ),
+              ],
+            ),
+          ];
+
+          expect(filter.apply(dives), isEmpty);
+        });
+
+        test('thickness_mm matches only exposure suits, not hoods', () {
+          const filter = DiveFilterState(equipmentAttrKey: 'thickness_mm');
+          final dives = [
+            _makeDive(
+              id: 'suit',
+              equipment: [
+                _makeEquipment(
+                  'eq1',
+                  type: EquipmentType.wetsuit,
+                  attributes: [curated('thickness_mm', num: 5.0)],
+                ),
+              ],
+            ),
+            _makeDive(
+              id: 'hood',
+              equipment: [
+                _makeEquipment(
+                  'eq2',
+                  type: EquipmentType.hood,
+                  attributes: [curated('thickness_mm', num: 5.0)],
+                ),
+              ],
+            ),
+          ];
+
+          final result = filter.apply(dives);
+
+          expect(result.map((d) => d.id), ['suit']);
+        });
+
+        test('custom attributes are ignored (curated-only, like the SQL)', () {
+          const filter = DiveFilterState(equipmentAttrKey: 'my_field');
+          const custom = EquipmentAttribute(
+            id: 'c1',
+            equipmentId: 'eq1',
+            key: 'my_field',
+            isCustom: true,
+            valueText: 'x',
+          );
+          final dives = [
+            _makeDive(
+              id: 'd1',
+              equipment: [
+                _makeEquipment('eq1', attributes: [custom]),
+              ],
+            ),
+          ];
+
+          expect(filter.apply(dives), isEmpty);
+        });
       });
     });
   });

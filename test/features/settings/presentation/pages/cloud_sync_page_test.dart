@@ -1,13 +1,22 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:submersion/core/data/repositories/sync_repository.dart'
     show CloudProviderType, SyncRepository;
+import 'package:submersion/core/services/sync/sync_cleanup_outcome.dart';
 import 'package:submersion/core/providers/provider.dart';
 import 'package:submersion/core/services/cloud_storage/cloud_storage_provider.dart';
+import 'package:submersion/core/services/cloud_storage/dropbox/dropbox_api_client.dart';
+import 'package:submersion/core/services/cloud_storage/dropbox/dropbox_auth_manager.dart';
+import 'package:submersion/core/services/cloud_storage/dropbox/dropbox_auth_store.dart'
+    show DropboxAuthData, DropboxAuthStore;
+import 'package:submersion/core/services/cloud_storage/dropbox_storage_provider.dart';
 import 'package:submersion/core/services/cloud_storage/icloud_native_service.dart';
 import 'package:submersion/core/services/cloud_storage/s3/s3_config.dart';
 import 'package:submersion/core/services/cloud_storage/s3/s3_credentials_store.dart';
@@ -28,12 +37,15 @@ import 'package:submersion/features/divers/presentation/providers/diver_provider
 import 'package:submersion/features/settings/presentation/pages/cloud_sync_page.dart';
 import 'package:submersion/features/settings/presentation/providers/settings_providers.dart'
     show sharedPreferencesProvider;
+import 'package:submersion/features/settings/presentation/providers/storage_providers.dart'
+    show StoragePlatformCapabilities, storagePlatformCapabilitiesProvider;
 import 'package:submersion/features/settings/presentation/providers/sync_providers.dart';
 import 'package:submersion/l10n/arb/app_localizations.dart';
 import 'package:submersion/l10n/arb/app_localizations_en.dart';
 
 import '../../../../helpers/fake_cloud_storage_provider.dart';
 import '../../../../helpers/mock_providers.dart';
+import '../../../../support/fake_keychain_storage.dart';
 
 /// In-memory [S3CredentialsStore] for testing -- no FlutterSecureStorage.
 class _MemoryCredentialsStore implements S3CredentialsStore {
@@ -99,13 +111,19 @@ class _NoopBackupAdapter implements BackupDatabaseAdapter {
   Future<void> backup(String destinationPath) async {}
 
   @override
-  Future<void> restore(String backupPath) async {}
+  Future<void> restore(
+    String backupPath, {
+    void Function(int, int)? onMigrationProgress,
+  }) async {}
 
   @override
   Future<String> get databasePath async => '/noop';
 
   @override
   AppDatabase get database => throw UnimplementedError();
+
+  @override
+  String? get databaseKeyHex => null;
 }
 
 /// Fake [BackupService] recording safety-backup calls from the adopt flow.
@@ -155,6 +173,16 @@ class _FakeSyncNotifier extends StateNotifier<SyncState>
   Future<void> performSync({bool auto = false}) async => performSyncCalls++;
 
   @override
+  Future<ReplacePreflight> replacePreflight() async =>
+      const ReplacePreflight(localDiveCount: 0, peerFileCount: 0);
+
+  @override
+  Future<void> replaceCloudLibraryFromThisDevice() async {}
+
+  @override
+  Future<void> disableForDatabaseReset() async {}
+
+  @override
   Future<FirstSyncMergeInfo?> firstSyncMergeInfo() async => firstSyncInfo;
 
   @override
@@ -191,6 +219,35 @@ class _FakeSyncNotifier extends StateNotifier<SyncState>
   @override
   Future<void> resetSyncState() async => resetSyncStateCalls++;
 
+  int repairSyncCalls = 0;
+  @override
+  Future<void> repairSync() async => repairSyncCalls++;
+
+  int removeThisDeviceCloudFilesCalls = 0;
+  @override
+  Future<SyncCleanupOutcome> removeThisDeviceCloudFiles({
+    SyncCleanupProgress? onProgress,
+  }) async {
+    removeThisDeviceCloudFilesCalls++;
+    return const SyncCleanupOutcome();
+  }
+
+  int wipeAllCloudSyncDataCalls = 0;
+  @override
+  Future<SyncCleanupOutcome> wipeAllCloudSyncData({
+    SyncCleanupProgress? onProgress,
+  }) async {
+    wipeAllCloudSyncDataCalls++;
+    return const SyncCleanupOutcome();
+  }
+
+  int rebuildBackendFromThisDeviceCalls = 0;
+  @override
+  Future<void> rebuildBackendFromThisDevice({
+    SyncCleanupProgress? onProgress,
+    void Function()? onPublishStarted,
+  }) async => rebuildBackendFromThisDeviceCalls++;
+
   @override
   Future<void> signOut() async => signOutCalls++;
 
@@ -208,6 +265,19 @@ class _ThrowingCloudStorageProvider extends FakeCloudStorageProvider {
   @override
   Future<void> authenticate() async {
     throw const CloudStorageException('auth denied');
+  }
+}
+
+/// [FakeCloudStorageProvider] whose [authenticate] blocks on a completer, so
+/// tests can hold the desktop browser-wait dialog open and resolve (or fail)
+/// the sign-in at a chosen moment.
+class _PendingAuthCloudStorageProvider extends FakeCloudStorageProvider {
+  final authCompleter = Completer<void>();
+
+  @override
+  Future<void> authenticate() async {
+    await authCompleter.future;
+    await super.authenticate();
   }
 }
 
@@ -319,6 +389,16 @@ void main() {
     bool mergeThrows = false,
     bool settle = true,
     S3Config? s3Config,
+    DropboxAuthData? dropboxAuth,
+    // The concrete Dropbox provider backing the connect dialog. Only the
+    // connect-flow test supplies one (a MockClient-backed provider so
+    // completeAuthorization succeeds); everything else leaves the real
+    // instance, which is never exercised because the dialog is not opened.
+    DropboxStorageProvider? dropboxInstance,
+    // Existing tests exercise the Dropbox tile assuming it is visible; only
+    // the "hidden until configured" test overrides this to false, covering
+    // builds whose dropboxAppKey is empty.
+    bool dropboxConfigured = true,
     SyncBehaviorSettings behavior = const SyncBehaviorSettings(
       autoSyncEnabled: false,
       syncOnLaunch: false,
@@ -326,6 +406,11 @@ void main() {
     ),
     ICloudAvailability iCloudAvailability = ICloudAvailability.available,
     bool applePlatform = true,
+    bool googleDriveAvailable = true,
+    String? googleDriveEmail,
+    // Android, where a "custom folder" is an app-specific device volume that
+    // no sync service can read (#311).
+    bool customFolderIsDeviceVolumeOnly = false,
   }) async {
     final base = await getBaseOverrides();
     final fakeSync = _FakeSyncNotifier(syncState);
@@ -352,8 +437,23 @@ void main() {
             (ref) async => iCloudAvailability,
           ),
           isApplePlatformProvider.overrideWithValue(applePlatform),
+          googleDriveAvailableProvider.overrideWith(
+            (ref) async => googleDriveAvailable,
+          ),
+          googleDriveAccountEmailProvider.overrideWith(
+            (ref) async => googleDriveEmail,
+          ),
           isCloudSyncDisabledByCustomFolderProvider.overrideWithValue(
             customFolderMode,
+          ),
+          storagePlatformCapabilitiesProvider.overrideWithValue(
+            StoragePlatformCapabilities(
+              supportsCustomFolder: true,
+              supportsICloud: applePlatform,
+              supportsGoogleDrive: true,
+              isDesktop: !customFolderIsDeviceVolumeOnly,
+              customFolderIsDeviceVolumeOnly: customFolderIsDeviceVolumeOnly,
+            ),
           ),
           duplicateDiverGroupsProvider.overrideWith(
             (ref) async => duplicateGroups,
@@ -372,8 +472,18 @@ void main() {
           // Override s3ConfigProvider so existing tests never hit
           // FlutterSecureStorage; individual tests can supply a config.
           s3ConfigProvider.overrideWith((ref) async => s3Config),
+          // Same for the Dropbox connection: null means not connected.
+          dropboxAuthDataProvider.overrideWith((ref) async => dropboxAuth),
+          dropboxConfiguredProvider.overrideWith((ref) => dropboxConfigured),
+          if (dropboxInstance != null)
+            dropboxStorageProviderInstanceProvider.overrideWithValue(
+              dropboxInstance,
+            ),
         ],
         child: const MaterialApp(
+          // Pinned so the English literals these tests assert on cannot
+          // depend on the host's default locale.
+          locale: Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: CloudSyncPage(),
@@ -546,12 +656,11 @@ void main() {
     ) async {
       await pumpPage(tester);
 
-      expect(find.text('Cloud Sync'), findsOneWidget);
-      // Provider section header and provider tiles. Google Drive is hidden
-      // until its integration is fully implemented.
+      expect(find.text('Database Cloud Sync'), findsOneWidget);
+      // Provider section header and provider tiles.
       expect(find.text('Cloud Provider'), findsOneWidget);
       expect(find.text('iCloud'), findsOneWidget);
-      expect(find.text('Google Drive'), findsNothing);
+      expect(find.text('Google Drive'), findsOneWidget);
       // Behavior section.
       expect(find.text('Sync Behavior'), findsOneWidget);
       expect(find.text('Auto Sync'), findsOneWidget);
@@ -559,7 +668,7 @@ void main() {
       expect(find.text('Sync on Resume'), findsOneWidget);
       // Advanced section.
       expect(find.text('Advanced'), findsOneWidget);
-      expect(find.text('Reset Sync State'), findsOneWidget);
+      expect(find.text('Troubleshoot Sync'), findsOneWidget);
       expect(find.text('Sign Out'), findsOneWidget);
       // Sync Now action present; no provider selected => hint shown + disabled.
       expect(find.text('Sync Now'), findsOneWidget);
@@ -582,6 +691,13 @@ void main() {
       await pumpPage(tester);
       expect(find.text('Duplicate diver profiles'), findsNothing);
     });
+
+    // Issue #990: SyncState's counts and cursor are otherwise only recomputed
+    // by a sync, so opening the page could report state from app launch.
+    testWidgets('refreshes sync state when opened', (tester) async {
+      final handles = await pumpPage(tester);
+      expect(handles.sync.refreshStateCalls, greaterThan(0));
+    });
   });
 
   group('CloudSyncPage - custom folder banner', () {
@@ -602,6 +718,48 @@ void main() {
       for (final s in switches) {
         expect(s.onChanged, isNull);
       }
+    });
+
+    testWidgets('credits the folder\'s sync service where folders really sync', (
+      tester,
+    ) async {
+      await pumpPage(tester, customFolderMode: true);
+
+      expect(
+        find.text(
+          "App-managed cloud sync is disabled because you're using a custom "
+          "storage folder. Your folder's sync service (Dropbox, Google Drive, "
+          'OneDrive, etc.) handles synchronization.',
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('does not credit a sync service on device-volume-only '
+        'platforms', (tester) async {
+      await pumpPage(
+        tester,
+        customFolderMode: true,
+        customFolderIsDeviceVolumeOnly: true,
+      );
+
+      // On Android the custom folder is an app-specific volume under
+      // Android/data, which no sync client can read. Naming Dropbox/Drive
+      // here tells the user something covers a library that is in fact
+      // syncing nowhere (#311).
+      expect(
+        find.textContaining('handles synchronization'),
+        findsNothing,
+        reason: 'no sync service can reach an app-specific Android volume',
+      );
+      expect(
+        find.text(
+          'App-managed cloud sync is disabled while the database sits on a '
+          'device storage volume. No sync service can reach that folder on '
+          'Android, so use Backup & Restore to keep copies elsewhere.',
+        ),
+        findsOneWidget,
+      );
     });
 
     testWidgets('tapping Storage Settings pushes the storage route', (
@@ -650,6 +808,7 @@ void main() {
           ],
           child: MaterialApp.router(
             routerConfig: router,
+            locale: const Locale('en'),
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
           ),
@@ -806,20 +965,41 @@ void main() {
       expect(find.text('Select a cloud provider to enable sync'), findsNothing);
     });
 
+    testWidgets('persisted googledrive selection selects the tile', (
+      tester,
+    ) async {
+      await pumpPage(
+        tester,
+        selectedProvider: CloudProviderType.googledrive,
+        googleDriveEmail: 'diver@example.com',
+      );
+
+      // The Google Drive tile shows the connected check icon.
+      expect(find.byIcon(Icons.check_circle), findsOneWidget);
+      // The subtitle shows the signed-in account.
+      expect(find.text('diver@example.com'), findsOneWidget);
+      // Sync Now is enabled (no coercion to "no provider" anymore).
+      final button = tester.widget<FilledButton>(
+        find.widgetWithText(FilledButton, 'Sync Now'),
+      );
+      expect(button.onPressed, isNotNull);
+    });
+
     testWidgets(
-      'persisted googledrive selection reads as no provider since the tile is hidden',
+      'persisted googledrive selection does not enable Sync Now when Drive is unavailable',
       (tester) async {
         // SyncRepository.getCloudProvider() falls back to googledrive when
         // the stored enum name does not match, and getLastProvider() returns
-        // a previously persisted googledrive choice verbatim. With the tile
-        // removed, the UI must treat that as "no provider" so Sync Now is
-        // disabled and the select-provider hint stays visible. Otherwise the
-        // user sees no selected tile but a green Sync Now -- inconsistent.
-        await pumpPage(tester, selectedProvider: CloudProviderType.googledrive);
+        // a previously persisted googledrive choice verbatim. On a build
+        // where Drive is unavailable the tile is disabled, so Sync Now must
+        // stay disabled too -- otherwise the user sees no selectable tile
+        // but a green Sync Now, which is inconsistent.
+        await pumpPage(
+          tester,
+          selectedProvider: CloudProviderType.googledrive,
+          googleDriveAvailable: false,
+        );
 
-        // No tile shows the connected check icon (googledrive tile is hidden).
-        expect(find.byIcon(Icons.check_circle), findsNothing);
-        // Sync Now is disabled and the hint is shown.
         final button = tester.widget<FilledButton>(
           find.widgetWithText(FilledButton, 'Sync Now'),
         );
@@ -831,21 +1011,46 @@ void main() {
       },
     );
 
-    testWidgets(
-      'tapping the iCloud tile authenticates and shows snackbar',
-      (tester) async {
-        final handles = await pumpPage(tester);
+    testWidgets('Google Drive tile is disabled when unavailable', (
+      tester,
+    ) async {
+      await pumpPage(tester, googleDriveAvailable: false);
 
-        await tester.tap(find.text('iCloud'));
-        await tester.pumpAndSettle();
+      final tile = tester.widget<ListTile>(
+        find.ancestor(
+          of: find.text('Google Drive'),
+          matching: find.byType(ListTile),
+        ),
+      );
+      expect(tile.enabled, isFalse);
+    });
 
-        // Fake provider authenticates successfully -> success snackbar +
-        // refreshState() on the sync notifier.
-        expect(find.text('Connected to Fake'), findsOneWidget);
-        expect(handles.sync.refreshStateCalls, greaterThan(0));
-      },
-      skip: tapUnavailable,
-    );
+    // Unlike the iCloud tile, the Google Drive tile is enabled on every
+    // platform, so this one needs no Apple-only skip.
+    testWidgets('tapping Google Drive authenticates and connects', (
+      tester,
+    ) async {
+      await pumpPage(tester, cloudProvider: FakeCloudStorageProvider());
+
+      await tester.tap(find.text('Google Drive'));
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('Connected to'), findsOneWidget);
+    });
+
+    testWidgets('tapping the iCloud tile authenticates and shows snackbar', (
+      tester,
+    ) async {
+      final handles = await pumpPage(tester);
+
+      await tester.tap(find.text('iCloud'));
+      await tester.pumpAndSettle();
+
+      // Fake provider authenticates successfully -> success snackbar +
+      // refreshState() on the sync notifier.
+      expect(find.text('Connected to Fake'), findsOneWidget);
+      expect(handles.sync.refreshStateCalls, greaterThan(0));
+    }, skip: tapUnavailable);
 
     testWidgets('null cloud provider shows initialize-failed snackbar', (
       tester,
@@ -858,18 +1063,74 @@ void main() {
       expect(find.text('Failed to initialize icloud provider'), findsOneWidget);
     }, skip: tapUnavailable);
 
-    testWidgets(
-      'authentication failure shows connection-failed snackbar',
-      (tester) async {
-        await pumpPage(tester, cloudProvider: _ThrowingCloudStorageProvider());
+    testWidgets('authentication failure shows connection-failed snackbar', (
+      tester,
+    ) async {
+      await pumpPage(tester, cloudProvider: _ThrowingCloudStorageProvider());
 
-        await tester.tap(find.text('iCloud'));
-        await tester.pumpAndSettle();
+      await tester.tap(find.text('iCloud'));
+      await tester.pumpAndSettle();
 
-        expect(find.textContaining('Fake connection failed:'), findsOneWidget);
-      },
-      skip: tapUnavailable,
-    );
+      expect(find.textContaining('Fake connection failed:'), findsOneWidget);
+    }, skip: tapUnavailable);
+  });
+
+  group('CloudSyncPage - Google Drive desktop browser-wait dialog', () {
+    // _authenticateWithBrowserWait only shows the dialog on Windows/Linux
+    // (desktop loopback OAuth). These tests are the inverse of this file's
+    // Apple-only tile-tap tests: they run on the Linux CI runner and are
+    // skipped on macOS developer machines, where the branch is unreachable.
+    final dialogReachable = Platform.isWindows || Platform.isLinux;
+
+    testWidgets('shows the wait dialog and connects when auth completes', (
+      tester,
+    ) async {
+      final fake = _PendingAuthCloudStorageProvider();
+      await pumpPage(tester, cloudProvider: fake);
+
+      await tester.tap(find.text('Google Drive'));
+      await tester.pump();
+
+      // The browser-wait dialog is up while authenticate() is pending.
+      expect(find.text('Continue in your browser'), findsOneWidget);
+
+      fake.authCompleter.complete();
+      await tester.pumpAndSettle();
+
+      // Dialog dismissed itself and the success snackbar is shown.
+      expect(find.text('Continue in your browser'), findsNothing);
+      expect(find.textContaining('Connected to'), findsOneWidget);
+    }, skip: !dialogReachable);
+
+    testWidgets('Cancel abandons the sign-in and clears the selection', (
+      tester,
+    ) async {
+      final fake = _PendingAuthCloudStorageProvider();
+      await pumpPage(tester, cloudProvider: fake);
+
+      await tester.tap(find.text('Google Drive'));
+      await tester.pump();
+
+      final cancelLabel = MaterialLocalizations.of(
+        tester.element(find.byType(AlertDialog)),
+      ).cancelButtonLabel;
+      await tester.tap(find.text(cancelLabel));
+      await tester.pumpAndSettle();
+
+      // Dialog gone, selection cleared (no connected check icon), and the
+      // connection-failed snackbar shown.
+      expect(find.text('Continue in your browser'), findsNothing);
+      expect(find.byIcon(Icons.check_circle), findsNothing);
+      expect(find.textContaining('connection failed'), findsOneWidget);
+
+      // The abandoned flow's eventual error must be swallowed; nothing
+      // may surface after the user has already cancelled.
+      fake.authCompleter.completeError(
+        const CloudStorageException('loopback timeout'),
+      );
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+    }, skip: !dialogReachable);
   });
 
   group('CloudSyncPage - sync actions', () {
@@ -968,6 +1229,64 @@ void main() {
       );
 
       expect(find.textContaining('First sync is waiting'), findsOneWidget);
+    });
+
+    testWidgets('shows the update banner when peers run a newer version', (
+      tester,
+    ) async {
+      await pumpPage(
+        tester,
+        selectedProvider: CloudProviderType.icloud,
+        syncState: const SyncState(
+          newerSchemaPeerLabels: [
+            (name: 'Living Room Mac', shortId: 'aaa11111'),
+            (name: 'Dive iPad', shortId: 'bbb22222'),
+          ],
+        ),
+      );
+
+      expect(
+        find.textContaining('newer version of Submersion'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('update banner text is paired with its container colour', (
+      tester,
+    ) async {
+      await pumpPage(
+        tester,
+        selectedProvider: CloudProviderType.icloud,
+        syncState: const SyncState(
+          newerSchemaPeerLabels: [
+            (name: 'Living Room Mac', shortId: 'aaa11111'),
+            (name: 'Dive iPad', shortId: 'bbb22222'),
+          ],
+        ),
+      );
+
+      // Material does not re-derive text colour from the Card background, so
+      // without an explicit colour this text falls back to onSurface while the
+      // icon beside it uses onSecondaryContainer.
+      final banner = tester.widget<Text>(
+        find.textContaining('newer version of Submersion'),
+      );
+      final scheme = Theme.of(
+        tester.element(find.textContaining('newer version of Submersion')),
+      ).colorScheme;
+      expect(banner.style?.color, scheme.onSecondaryContainer);
+    });
+
+    testWidgets('no update banner when no newer-schema peers were held', (
+      tester,
+    ) async {
+      await pumpPage(
+        tester,
+        selectedProvider: CloudProviderType.icloud,
+        syncState: const SyncState(),
+      );
+
+      expect(find.textContaining('newer version of Submersion'), findsNothing);
     });
 
     testWidgets('shows the replace banner while adoption is pending', (
@@ -1217,31 +1536,57 @@ void main() {
     });
   });
 
-  group('CloudSyncPage - reset sync state dialog', () {
-    testWidgets('cancel does not call resetSyncState', (tester) async {
-      final handles = await pumpPage(tester);
-
-      await tester.tap(find.text('Reset Sync State'));
-      await tester.pumpAndSettle();
-      expect(find.text('Reset Sync State?'), findsOneWidget);
-
-      await tester.tap(find.text('Cancel'));
-      await tester.pumpAndSettle();
-      expect(handles.sync.resetSyncStateCalls, 0);
-    });
-
-    testWidgets('confirm calls resetSyncState and shows snackbar', (
+  group('CloudSyncPage - Advanced troubleshoot entry', () {
+    testWidgets('tapping Troubleshoot Sync opens the Troubleshoot page', (
       tester,
     ) async {
-      final handles = await pumpPage(tester);
+      await pumpPage(tester);
 
-      await tester.tap(find.text('Reset Sync State'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.widgetWithText(TextButton, 'Reset'));
+      // The recovery actions moved off the standalone "Reset Sync State" tile
+      // onto a dedicated Troubleshoot Sync screen.
+      await tester.tap(find.text('Troubleshoot Sync'));
       await tester.pumpAndSettle();
 
-      expect(handles.sync.resetSyncStateCalls, 1);
-      expect(find.text('Sync state reset'), findsOneWidget);
+      // The Troubleshoot page's app bar title and its primary Repair action.
+      expect(find.text('Repair Sync'), findsOneWidget);
+    });
+
+    testWidgets('Troubleshoot Sync entry is disabled during an active sync', (
+      tester,
+    ) async {
+      // Syncing shows an indeterminate spinner that never settles.
+      await pumpPage(
+        tester,
+        syncState: const SyncState(status: SyncStatus.syncing),
+        settle: false,
+      );
+      await tester.pump();
+
+      final tile = tester.widget<ListTile>(
+        find.ancestor(
+          of: find.text('Troubleshoot Sync'),
+          matching: find.byType(ListTile),
+        ),
+      );
+      expect(tile.enabled, isFalse);
+      expect(tile.onTap, isNull);
+    });
+
+    testWidgets('tapping the sync error banner opens Troubleshoot Sync', (
+      tester,
+    ) async {
+      await pumpPage(
+        tester,
+        syncState: const SyncState(
+          status: SyncStatus.error,
+          message: 'The replaced library is still uploading.',
+        ),
+      );
+
+      await tester.tap(find.text('Sync error'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Repair Sync'), findsOneWidget); // Troubleshoot page
     });
   });
 
@@ -1518,6 +1863,7 @@ void main() {
           ],
           child: MaterialApp.router(
             routerConfig: router,
+            locale: const Locale('en'),
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
           ),
@@ -1601,6 +1947,7 @@ void main() {
             ],
             child: MaterialApp.router(
               routerConfig: router,
+              locale: const Locale('en'),
               localizationsDelegates: AppLocalizations.localizationsDelegates,
               supportedLocales: AppLocalizations.supportedLocales,
             ),
@@ -1615,6 +1962,183 @@ void main() {
         expect(find.text('s3-config-stub'), findsOneWidget);
       },
     );
+  });
+
+  group('Dropbox provider tile', () {
+    Finder dropboxTile() => find.ancestor(
+      of: find.text('Dropbox'),
+      matching: find.byType(ListTile),
+    );
+
+    testWidgets('renders title and marketing subtitle when not connected', (
+      tester,
+    ) async {
+      await pumpPage(tester);
+
+      expect(find.text('Dropbox'), findsOneWidget);
+      expect(find.text('Sync via Dropbox (Apps/Submersion)'), findsOneWidget);
+      // The account gear only appears once connected.
+      expect(
+        find.descendant(
+          of: dropboxTile(),
+          matching: find.byIcon(Icons.settings_outlined),
+        ),
+        findsNothing,
+      );
+    });
+
+    testWidgets('subtitle shows the connected account email', (tester) async {
+      await pumpPage(
+        tester,
+        dropboxAuth: DropboxAuthData(
+          refreshToken: 'rt',
+          email: 'd@example.com',
+        ),
+      );
+
+      expect(find.text('Connected as d@example.com'), findsOneWidget);
+      expect(find.text('Sync via Dropbox (Apps/Submersion)'), findsNothing);
+    });
+
+    testWidgets('falls back to a generic connected label when the stored '
+        'blob has no account info', (tester) async {
+      // completeAuthorization deliberately persists the refresh token even
+      // when the account fetch fails; the UI must not render a dangling
+      // "Connected as ".
+      await pumpPage(tester, dropboxAuth: DropboxAuthData(refreshToken: 'rt'));
+
+      expect(find.text('Connected to Dropbox'), findsOneWidget);
+      expect(find.textContaining('Connected as'), findsNothing);
+
+      await tester.tap(
+        find.descendant(
+          of: dropboxTile(),
+          matching: find.byIcon(Icons.settings_outlined),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Tile subtitle plus the account dialog body.
+      expect(find.textContaining('Connected to Dropbox'), findsNWidgets(2));
+    });
+
+    testWidgets('gear icon when connected opens the account dialog with a '
+        'Disconnect action', (tester) async {
+      await pumpPage(
+        tester,
+        dropboxAuth: DropboxAuthData(
+          refreshToken: 'rt',
+          email: 'd@example.com',
+        ),
+      );
+
+      await tester.tap(
+        find.descendant(
+          of: dropboxTile(),
+          matching: find.byIcon(Icons.settings_outlined),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Dropbox account'), findsOneWidget);
+      // Tile subtitle plus the dialog body.
+      expect(find.text('Connected as d@example.com'), findsNWidgets(2));
+      expect(find.text('Disconnect'), findsOneWidget);
+    });
+
+    testWidgets('is absent when the build has no Dropbox app key configured '
+        '(current production default)', (tester) async {
+      await pumpPage(tester, dropboxConfigured: false);
+
+      expect(find.text('Dropbox'), findsNothing);
+    });
+
+    testWidgets(
+      'disconnecting while Dropbox is the active provider routes through '
+      'SyncNotifier.signOut and disables cloud backup',
+      (tester) async {
+        final result = await pumpPage(
+          tester,
+          selectedProvider: CloudProviderType.dropbox,
+          dropboxAuth: DropboxAuthData(
+            refreshToken: 'rt',
+            email: 'd@example.com',
+          ),
+        );
+
+        await tester.tap(
+          find.descendant(
+            of: dropboxTile(),
+            matching: find.byIcon(Icons.settings_outlined),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.text('Disconnect'));
+        await tester.pumpAndSettle();
+
+        // The canonical sign-out path (SyncNotifier.signOut) was taken
+        // rather than a hand-rolled teardown -- this is the same seam the
+        // S3 sign-out tests assert on.
+        expect(result.sync.signOutCalls, 1);
+      },
+    );
+
+    testWidgets('connecting via the dialog selects Dropbox and refreshes the '
+        'account mirror for account-first resolution', (tester) async {
+      // A MockClient whose token exchange succeeds, so the connect dialog
+      // completes authorization and pops true -- driving the onTap branch
+      // that selects the provider and refreshes selectedSyncAccountProvider.
+      final mock = MockClient((request) async {
+        if (request.url.path == '/oauth2/token') {
+          return http.Response(
+            '{"access_token":"at","refresh_token":"rt","expires_in":14400}',
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }
+        return http.Response(
+          '{"email":"d@example.com","name":{"display_name":"Diver"}}',
+          200,
+          headers: {'content-type': 'application/json'},
+        );
+      });
+      final auth = DropboxAuthManager(
+        appKey: 'k',
+        store: DropboxAuthStore(storage: InMemoryKeychain()),
+        httpClient: mock,
+        verifierGenerator: () => 'a' * 43,
+      );
+      final dropbox = DropboxStorageProvider(
+        authManager: auth,
+        apiClient: DropboxApiClient(
+          getAccessToken: auth.getAccessToken,
+          onAccessTokenRejected: auth.invalidateAccessToken,
+          httpClient: mock,
+        ),
+      );
+
+      await pumpPage(tester, dropboxInstance: dropbox);
+
+      // Not connected: tapping the tile opens the connect dialog. The
+      // dialog's initState tries to open a browser (launchUrl throws under
+      // flutter_test); that is caught, so the code field still renders.
+      await tester.tap(find.text('Dropbox'));
+      await tester.pumpAndSettle();
+      expect(find.text('Connect Dropbox'), findsOneWidget);
+
+      // Paste a code and submit; the happy MockClient completes the token
+      // exchange, so the dialog pops true and the connect branch runs
+      // through _selectProvider + the account-mirror refresh.
+      await tester.enterText(find.byType(TextField), 'the-code');
+      await tester.tap(find.text('Connect'));
+      await tester.pumpAndSettle();
+
+      // The success snackbar proves _selectProvider reached the end and the
+      // post-connect account-mirror refresh (invalidate + await) completed
+      // without throwing.
+      expect(find.text('Connected to Fake'), findsOneWidget);
+    });
   });
 
   // ---------------------------------------------------------------------------
@@ -1727,6 +2251,34 @@ void main() {
       await container.read(syncStateProvider.notifier).signOut();
 
       expect(svc.signOutCalled, isTrue);
+    });
+  });
+
+  group('encryption unlock banner', () {
+    testWidgets('needsPassphrase renders the banner with the unlock action', (
+      tester,
+    ) async {
+      await pumpPage(
+        tester,
+        syncState: const SyncState(needsPassphrase: true),
+        selectedProvider: CloudProviderType.s3,
+      );
+
+      expect(
+        find.text('Enter the passphrase to sync on this device'),
+        findsOneWidget,
+      );
+      expect(find.text('Enter passphrase'), findsOneWidget);
+    });
+
+    testWidgets('no banner without needsPassphrase', (tester) async {
+      await pumpPage(
+        tester,
+        syncState: const SyncState(),
+        selectedProvider: CloudProviderType.s3,
+      );
+
+      expect(find.text('Enter passphrase'), findsNothing);
     });
   });
 }

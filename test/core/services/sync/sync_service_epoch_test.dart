@@ -6,7 +6,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:submersion/core/data/repositories/sync_repository.dart';
 import 'package:submersion/core/services/cloud_storage/cloud_storage_provider.dart';
 import 'package:submersion/core/services/database_service.dart';
+import 'package:submersion/core/services/sync/changeset_log/changeset_codec.dart';
 import 'package:submersion/core/services/sync/changeset_log/changeset_log_layout.dart';
+import 'package:submersion/core/services/sync/changeset_log/peer_cursor_store.dart';
 import 'package:submersion/core/services/sync/library_epoch.dart';
 import 'package:submersion/core/services/sync/library_epoch_store.dart';
 import 'package:submersion/core/services/sync/sync_data_serializer.dart';
@@ -251,6 +253,35 @@ void main() {
       expect((await service.readLibraryEpochMarker(cloud))?.epochId, 'e1');
     });
 
+    test(
+      'missing marker with an unprovable epoch drops back to pre-epoch',
+      () async {
+        // No marker in the cloud AND no mirror to re-write one from: this
+        // device holds an epoch it can neither prove nor republish. Staying on
+        // it fences off every peer permanently while the peers (all on the
+        // pre-epoch world) merge us happily -- sync silently goes one-way.
+        // A missing marker means the fence is already gone fleet-wide, so the
+        // only safe move is to rejoin the pre-epoch world.
+        await DiveRepository().createDive(
+          createTestDiveWithBottomTime(id: 'peer-dive', diveNumber: 1),
+        );
+        await seedPeerLog(cloud, 'peer-1'); // unstamped, as a pre-epoch peer is
+        await SyncRepository().setLastAcceptedEpochId('e1');
+        // Deliberately no epochStore.setLastAccepted: the mirror is gone.
+
+        final result = await buildService().performSync();
+
+        expect(result.isSuccess, isTrue);
+        expect(result.skippedPeerDeviceIds, isEmpty);
+        expect(await SyncRepository().getLastAcceptedEpochId(), isNull);
+        expect(
+          await DiveRepository().getDiveById('peer-dive'),
+          isNotNull,
+          reason: 'an unprovable epoch must not fence off every peer',
+        );
+      },
+    );
+
     test('unreadable marker fails the sync closed', () async {
       await cloud.uploadFile(
         Uint8List.fromList(utf8.encode('not json')),
@@ -351,6 +382,184 @@ void main() {
         expect(await serializer.fetchRecord('dives', 'cloud-dive'), isNotNull);
       },
     );
+
+    test(
+      'adoption records peer cursors so the next sync does not re-pull the base',
+      () async {
+        // seedPeerLog publishes 'replacer' as a base at seq 1 (no changesets).
+        await DiveRepository().createDive(
+          createTestDiveWithBottomTime(id: 'cloud-dive'),
+        );
+        await seedPeerLog(cloud, 'replacer', epochId: 'e1');
+        final service = buildService();
+        await service.writeLibraryEpochMarker(cloud, marker);
+
+        await service.adoptReplacedLibrary();
+
+        // resetSyncState wipes cursors; without recording what adopt applied,
+        // the next sync cold-starts and re-downloads the whole adopted base.
+        final cursor = await PeerCursorStore(
+          DatabaseService.instance.database,
+        ).get('replacer', cloud.providerId);
+        expect(
+          cursor,
+          isNotNull,
+          reason: 'adopt must record the replacer cursor',
+        );
+        expect(cursor!.lastSeqApplied, 1);
+        expect(cursor.baseSeqApplied, 1);
+      },
+    );
+
+    test('the sync after adoption does not re-apply the adopted base', () async {
+      await DiveRepository().createDive(
+        createTestDiveWithBottomTime(id: 'cloud-dive'),
+      );
+      await seedPeerLog(cloud, 'replacer', epochId: 'e1');
+      final service = buildService();
+      await service.writeLibraryEpochMarker(cloud, marker);
+      await service.adoptReplacedLibrary();
+
+      // The cursor adopt recorded makes the follow-up pull skip 'replacer', so
+      // nothing is re-applied. Without the fix this cold-started and re-pulled
+      // the entire adopted base.
+      final result = await service.performSync();
+      expect(result.isSuccess, isTrue);
+      expect(
+        result.recordsSynced,
+        0,
+        reason: 'the base just adopted must not be re-pulled',
+      );
+    });
+
+    test(
+      'after adoption with no local changes, performSync defers the self-base '
+      'publish',
+      () async {
+        await DiveRepository().createDive(
+          createTestDiveWithBottomTime(id: 'cloud-dive'),
+        );
+        await seedPeerLog(cloud, 'replacer', epochId: 'e1');
+        final service = buildService();
+        await service.writeLibraryEpochMarker(cloud, marker);
+        await service.adoptReplacedLibrary();
+
+        final result = await service.performSync();
+
+        // The sync itself succeeds (guards against a vacuous pass from an early
+        // error): our library == the adopted epoch (already published by
+        // 'replacer') and we have no local changes, so re-uploading our own
+        // full base would be pure redundancy -- the publish is deferred (no own
+        // manifest is written).
+        expect(result.isSuccess, isTrue);
+        final deviceId = await SyncRepository().getDeviceId();
+        expect(await hasPublishedLog(cloud, deviceId), isFalse);
+      },
+    );
+
+    test('after adoption, a local change publishes a changeset against the '
+        'adopted watermark -- NOT a redundant full base', () async {
+      await DiveRepository().createDive(
+        createTestDiveWithBottomTime(id: 'cloud-dive'),
+      );
+      await seedPeerLog(cloud, 'replacer', epochId: 'e1');
+      final service = buildService();
+      await service.writeLibraryEpochMarker(cloud, marker);
+      await service.adoptReplacedLibrary();
+
+      // A local edit means we now have something of our own to contribute.
+      // Publishing it as a full base would re-upload the whole adopted
+      // library and force every peer to re-download it -- the post-#450
+      // "changes don't show up until the base lands" unreliability. The
+      // edit must go out as a small changeset instead.
+      await DiveRepository().createDive(
+        createTestDiveWithBottomTime(id: 'my-dive', maxDepth: 42),
+      );
+      await service.performSync();
+
+      final deviceId = await SyncRepository().getDeviceId();
+      expect(await hasPublishedLog(cloud, deviceId), isTrue);
+      final manifest = await ownManifest(cloud, deviceId);
+      expect(
+        manifest!.baseSeq,
+        isNull,
+        reason:
+            'the adopted library is already published by the peers; '
+            'only the delta may be uploaded',
+      );
+      expect(manifest.headSeq, 1);
+      expect(manifest.epochId, 'e1');
+
+      final files = await cloud.listFiles(
+        namePattern: ChangesetLogLayout.prefix,
+      );
+      expect(
+        files.any(
+          (f) =>
+              ChangesetLogLayout.deviceIdOf(f.name) == deviceId &&
+              ChangesetLogLayout.basePartOf(f.name) != null,
+        ),
+        isFalse,
+        reason: 'no base part may be uploaded on the first post-adopt edit',
+      );
+
+      final csFile = files
+          .where((f) => f.name == ChangesetLogLayout.changesetName(deviceId, 1))
+          .single;
+      final payload = ChangesetCodec(
+        SyncDataSerializer(),
+      ).decodeChangeset(await cloud.downloadFile(csFile.id));
+      final diveIds = payload.data.dives.map((d) => d['id']).toSet();
+      expect(diveIds.contains('my-dive'), isTrue);
+      expect(
+        diveIds.contains('cloud-dive'),
+        isFalse,
+        reason: 'adopted rows sit at or below the watermark',
+      );
+    });
+
+    test('a deferred sync must not clear pending records that appeared after '
+        'the deferral check (the lost-edit race)', () async {
+      await DiveRepository().createDive(
+        createTestDiveWithBottomTime(id: 'cloud-dive'),
+      );
+      await seedPeerLog(cloud, 'replacer', epochId: 'e1');
+      final service = buildService();
+      await service.writeLibraryEpochMarker(cloud, marker);
+      await service.adoptReplacedLibrary();
+
+      // Emulate an edit landing between the deferral check and the
+      // end-of-sync cleanup: the gate cannot see the pending row (the
+      // blind repository reports zero), but the row is real in the DB.
+      await SyncRepository().markRecordPending(
+        entityType: 'dives',
+        recordId: 'raced-dive',
+        localUpdatedAt: DateTime.now().millisecondsSinceEpoch,
+      );
+      final racedService = SyncService(
+        syncRepository: _GateBlindSyncRepository(),
+        serializer: SyncDataSerializer(),
+        cloudProvider: cloud,
+        epochStore: epochStore,
+      );
+      final result = await racedService.performSync();
+
+      expect(result.isSuccess, isTrue);
+      final deviceId = await SyncRepository().getDeviceId();
+      expect(
+        await hasPublishedLog(cloud, deviceId),
+        isFalse,
+        reason: 'the gate saw no changes, so the publish deferred',
+      );
+      expect(
+        await SyncRepository().getPendingCount(),
+        1,
+        reason:
+            'a sync that published nothing must not clear pending '
+            'records -- wiping them makes the next sync defer again and '
+            'the edit never publishes',
+      );
+    });
 
     test('adoption preserves device identity', () async {
       await DiveRepository().createDive(
@@ -666,6 +875,14 @@ void main() {
       },
     );
   });
+}
+
+/// Reports zero pending records to the publish-deferral gate while the real
+/// rows stay in the DB -- emulating an edit that lands AFTER the gate check
+/// but before the end-of-sync cleanup (the lost-edit race window).
+class _GateBlindSyncRepository extends SyncRepository {
+  @override
+  Future<int> getPendingCount() async => 0;
 }
 
 /// Fails only the listing for [failPattern], leaving other listings (and

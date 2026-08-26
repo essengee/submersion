@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:submersion/core/data/repositories/sync_repository.dart'
     show CloudProviderType;
+import 'package:submersion/core/services/sync/sync_cleanup_outcome.dart';
 import 'package:submersion/core/providers/provider.dart';
 import 'package:submersion/core/services/cloud_storage/cloud_storage_provider.dart';
 import 'package:submersion/core/services/cloud_storage/s3/s3_api_client.dart';
@@ -39,8 +40,9 @@ class _MemoryCredentialsStore implements S3CredentialsStore {
 
 // Stores objects written via putObject and serves them via getObject.
 // Throws CloudStorageException for keys that have never been put, mirroring
-// the real client's 404 path.
-class _FakeS3ApiClient implements S3ApiClient {
+// the real client's 404 path. Extends Fake so client additions never break
+// this double: unstubbed members throw only if actually called.
+class _FakeS3ApiClient extends Fake implements S3ApiClient {
   final List<String> calls = [];
   final Map<String, Uint8List> _objects = {};
   CloudStorageException? failListWith;
@@ -49,7 +51,11 @@ class _FakeS3ApiClient implements S3ApiClient {
   void Function(String region)? onRegionCorrected;
 
   @override
-  Future<void> putObject(String key, Uint8List bytes) async {
+  Future<void> putObject(
+    String key,
+    Uint8List bytes, {
+    String? contentType,
+  }) async {
     calls.add('put:$key');
     _objects[key] = bytes;
   }
@@ -113,6 +119,16 @@ class _FakeSyncNotifier extends StateNotifier<SyncState>
   Future<void> performSync({bool auto = false}) async {}
 
   @override
+  Future<ReplacePreflight> replacePreflight() async =>
+      const ReplacePreflight(localDiveCount: 0, peerFileCount: 0);
+
+  @override
+  Future<void> replaceCloudLibraryFromThisDevice() async {}
+
+  @override
+  Future<void> disableForDatabaseReset() async {}
+
+  @override
   Future<FirstSyncMergeInfo?> firstSyncMergeInfo() async => null;
 
   @override
@@ -126,6 +142,25 @@ class _FakeSyncNotifier extends StateNotifier<SyncState>
 
   @override
   Future<void> resetSyncState() async {}
+
+  @override
+  Future<void> repairSync() async {}
+
+  @override
+  Future<SyncCleanupOutcome> removeThisDeviceCloudFiles({
+    SyncCleanupProgress? onProgress,
+  }) async => const SyncCleanupOutcome();
+
+  @override
+  Future<SyncCleanupOutcome> wipeAllCloudSyncData({
+    SyncCleanupProgress? onProgress,
+  }) async => const SyncCleanupOutcome();
+
+  @override
+  Future<void> rebuildBackendFromThisDevice({
+    SyncCleanupProgress? onProgress,
+    void Function()? onPublishStarted,
+  }) async {}
 
   @override
   Future<void> signOut() async {
@@ -373,6 +408,39 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.textContaining('Access denied'), findsOneWidget);
     expect(store.stored, isNull);
+  });
+
+  testWidgets('test connection failure surfaces the underlying cause', (
+    tester,
+  ) async {
+    // A transport failure wraps the actionable detail (here a TLS handshake
+    // error) in the exception's cause; the snackbar must show it, not just
+    // the generic top-level message.
+    apiClient.failListWith = const CloudStorageException(
+      'Could not reach S3 endpoint host.example.com',
+      'HandshakeException: CERTIFICATE_VERIFY_FAILED',
+    );
+    await pumpPage(tester);
+    await fillValidForm(tester);
+    await tester.ensureVisible(find.byKey(const Key('s3-test')));
+    await tester.tap(find.byKey(const Key('s3-test')));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('CERTIFICATE_VERIFY_FAILED'), findsOneWidget);
+  });
+
+  testWidgets('save failure surfaces a CloudStorageException cause', (
+    tester,
+  ) async {
+    store.failSaveWith = const CloudStorageException(
+      'Save failed',
+      'HandshakeException: CERTIFICATE_VERIFY_FAILED',
+    );
+    await pumpPage(tester);
+    await fillValidForm(tester);
+    await tester.ensureVisible(find.byKey(const Key('s3-save')));
+    await tester.tap(find.byKey(const Key('s3-save')));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('CERTIFICATE_VERIFY_FAILED'), findsOneWidget);
   });
 
   testWidgets('save failure surfaces an error and selects nothing', (

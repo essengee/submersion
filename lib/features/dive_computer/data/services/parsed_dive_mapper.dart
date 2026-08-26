@@ -1,4 +1,6 @@
 import 'package:libdivecomputer_plugin/libdivecomputer_plugin.dart' as pigeon;
+import 'package:submersion/core/constants/enums.dart';
+import 'package:submersion/features/dive_computer/data/services/libdc_dive_mode.dart';
 import 'package:submersion/features/dive_computer/data/services/parsed_tank_resolver.dart';
 import 'package:submersion/features/dive_computer/domain/entities/downloaded_dive.dart';
 
@@ -45,6 +47,7 @@ DownloadedDive parsedDiveToDownloaded(pigeon.ParsedDive parsed) {
     gfLow: parsed.gfLow,
     gfHigh: parsed.gfHigh,
     decoConservatism: parsed.decoConservatism,
+    diveMode: DiveMode.fromCode(mapLibdcDiveModeCode(parsed.diveMode)),
     profile: parsed.samples
         .map(
           (s) => ProfileSample(
@@ -54,6 +57,7 @@ DownloadedDive parsedDiveToDownloaded(pigeon.ParsedDive parsed) {
             pressure: s.pressureBar,
             tankIndex: s.tankIndex,
             heartRate: s.heartRate,
+            heading: s.heading,
             setpoint: s.setpoint,
             ppo2: s.ppo2,
             cns: s.cns,
@@ -64,12 +68,25 @@ DownloadedDive parsedDiveToDownloaded(pigeon.ParsedDive parsed) {
             tts: s.tts,
             ndl: s.decoType == 0 ? s.decoTime : null,
             ceiling: s.decoType != null && s.decoType != 0 ? s.decoDepth : null,
+            o2Sensor1: s.o2Sensor1,
+            o2Sensor2: s.o2Sensor2,
+            o2Sensor3: s.o2Sensor3,
+            o2Sensor4: s.o2Sensor4,
+            o2Sensor5: s.o2Sensor5,
+            o2Sensor6: s.o2Sensor6,
+            o2SensorMv1: s.o2SensorMv1,
+            o2SensorMv2: s.o2SensorMv2,
+            o2SensorMv3: s.o2SensorMv3,
+            o2SensorMv4: s.o2SensorMv4,
+            o2SensorMv5: s.o2SensorMv5,
+            o2SensorMv6: s.o2SensorMv6,
           ),
         )
         .toList(),
-    // Gas-mix linking and tankless synthesis live in the shared resolver so
-    // the download and reparse paths cannot drift apart.
+    // Gas-mix linking, tankless synthesis, and gas-switch derivation live in
+    // the shared resolver so the download and reparse paths cannot drift apart.
     tanks: resolveParsedTanks(parsed),
+    gasSwitches: resolveGasSwitches(parsed),
     events: parsed.events
         .map(
           (e) => DownloadedEvent(

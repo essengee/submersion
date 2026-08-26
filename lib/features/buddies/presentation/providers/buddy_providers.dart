@@ -2,7 +2,6 @@ import 'package:submersion/core/constants/sort_options.dart';
 import 'package:submersion/core/models/sort_state.dart';
 import 'package:submersion/core/providers/provider.dart';
 
-import 'package:submersion/core/constants/enums.dart';
 import 'package:submersion/features/dive_log/domain/entities/dive.dart'
     as domain;
 import 'package:submersion/features/dive_log/presentation/providers/dive_providers.dart';
@@ -12,9 +11,11 @@ import 'package:submersion/features/divers/presentation/providers/diver_provider
 import 'package:submersion/features/buddies/data/repositories/buddy_repository.dart';
 import 'package:submersion/features/buddies/domain/constants/buddy_field.dart';
 import 'package:submersion/features/buddies/domain/entities/buddy.dart';
+import 'package:submersion/features/dive_roles/domain/entities/dive_role.dart';
 import 'package:submersion/shared/models/entity_card_view_config.dart';
 import 'package:submersion/shared/models/entity_table_config.dart';
 import 'package:submersion/shared/providers/entity_table_config_providers.dart';
+import 'package:submersion/core/utils/log_failure.dart';
 
 /// Repository provider
 final buddyRepositoryProvider = Provider<BuddyRepository>((ref) {
@@ -33,10 +34,7 @@ final allBuddiesProvider = FutureProvider<List<Buddy>>((ref) async {
     validatedCurrentDiverIdProvider.future,
   );
 
-  final sub = repository.watchBuddiesChanges().listen(
-    (_) => ref.invalidateSelf(),
-  );
-  ref.onDispose(sub.cancel);
+  ref.invalidateSelfWhen(repository.watchBuddiesChanges());
 
   return repository.getAllBuddies(diverId: validatedDiverId);
 });
@@ -56,15 +54,10 @@ final allBuddiesWithDiveCountProvider =
       final validatedDiverId = await ref.watch(
         validatedCurrentDiverIdProvider.future,
       );
-      final buddiesSub = repository.watchBuddiesChanges().listen(
-        (_) => ref.invalidateSelf(),
+      ref.invalidateSelfWhen(repository.watchBuddiesChanges());
+      ref.invalidateSelfWhen(
+        ref.read(diveRepositoryProvider).watchDivesChanges(),
       );
-      ref.onDispose(buddiesSub.cancel);
-      final divesSub = ref
-          .read(diveRepositoryProvider)
-          .watchDivesChanges()
-          .listen((_) => ref.invalidateSelf());
-      ref.onDispose(divesSub.cancel);
       return repository.getAllBuddiesWithDiveCount(diverId: validatedDiverId);
     });
 
@@ -137,6 +130,7 @@ final buddyByIdProvider = FutureProvider.family<Buddy?, String>((
   id,
 ) async {
   final repository = ref.watch(buddyRepositoryProvider);
+  ref.invalidateSelfWhen(repository.watchBuddiesChanges());
   return repository.getBuddyById(id);
 });
 
@@ -144,11 +138,9 @@ final buddyByIdProvider = FutureProvider.family<Buddy?, String>((
 final buddiesForDiveProvider =
     FutureProvider.family<List<BuddyWithRole>, String>((ref, diveId) async {
       final repository = ref.watch(buddyRepositoryProvider);
-      final sub = ref
-          .watch(diveRepositoryProvider)
-          .watchDiveDetailChanges()
-          .listen((_) => ref.invalidateSelf());
-      ref.onDispose(sub.cancel);
+      ref.invalidateSelfWhen(
+        ref.watch(diveRepositoryProvider).watchDiveDetailChanges(),
+      );
       return repository.getBuddiesForDive(diveId);
     });
 
@@ -164,29 +156,51 @@ final buddySearchProvider = FutureProvider.family<List<Buddy>, String>((
     return ref.watch(allBuddiesProvider).value ?? [];
   }
   final repository = ref.watch(buddyRepositoryProvider);
+  ref.invalidateSelfWhen(repository.watchBuddiesChanges());
   return repository.searchBuddies(query, diverId: validatedDiverId);
 });
 
-/// Buddy stats provider
+/// Buddy stats provider.
+///
+/// Aggregates the buddy's dives, so it takes the dives tick as well as the
+/// buddies tick. Without it the buddy detail header's dive count and the dive
+/// list beneath it disagreed after a merge: the list was reactive, the count
+/// was not (issue #974, same shape as #958 and #970).
 final buddyStatsProvider = FutureProvider.family<BuddyStats, String>((
   ref,
   buddyId,
 ) async {
   final repository = ref.watch(buddyRepositoryProvider);
+  ref.invalidateSelfWhen(repository.watchBuddiesChanges());
+  ref.invalidateSelfWhen(ref.read(diveRepositoryProvider).watchDivesChanges());
   return repository.getBuddyStats(buddyId);
 });
 
-/// Dive IDs for a buddy provider
+/// Dive IDs for a buddy provider.
+///
+/// A junction read: the ids come from `dive_buddies`, whose rows vanish by
+/// cascade when a dive is deleted, so the `buddies` table is never written and
+/// its tick alone would miss the change.
 final diveIdsForBuddyProvider = FutureProvider.family<List<String>, String>((
   ref,
   buddyId,
 ) async {
   final repository = ref.watch(buddyRepositoryProvider);
+  ref.invalidateSelfWhen(repository.watchBuddiesChanges());
+  ref.invalidateSelfWhen(ref.read(diveRepositoryProvider).watchDivesChanges());
   return repository.getDiveIdsForBuddy(buddyId);
 });
 
+/// How many shared dives the buddy detail page previews before the caller has
+/// to tap "view all".
+const buddySharedDivePreviewLimit = 5;
+
 /// Full dive data for a buddy provider (for display in buddy detail page)
-/// Returns the most recent dives first, limited to a reasonable count for preview
+///
+/// Returns the most recent dives first, limited to a reasonable count for
+/// preview. [diveIdsForBuddyProvider] already orders by dive date descending,
+/// so truncating to the preview limit keeps the newest dives; the Dart sort
+/// below only re-asserts that order over the hydrated entities.
 final divesForBuddyProvider = FutureProvider.family<List<domain.Dive>, String>((
   ref,
   buddyId,
@@ -194,19 +208,41 @@ final divesForBuddyProvider = FutureProvider.family<List<domain.Dive>, String>((
   final diveIds = await ref.watch(diveIdsForBuddyProvider(buddyId).future);
   if (diveIds.isEmpty) return [];
 
-  // Fetch full dive data for each ID (limit to first 5 for preview)
   final dives = <domain.Dive>[];
-  for (final diveId in diveIds.take(5)) {
+  for (final diveId in diveIds.take(buddySharedDivePreviewLimit)) {
     final dive = await ref.watch(diveProvider(diveId).future);
     if (dive != null) {
       dives.add(dive);
     }
   }
 
-  // Sort by date descending (most recent first)
-  dives.sort((a, b) => b.dateTime.compareTo(a.dateTime));
+  dives.sort(compareSharedDivesForPreview);
   return dives;
 });
+
+/// Orders two shared dives exactly as `BuddyRepository.getDiveIdsForBuddy`
+/// does: newest effective entry time first, then dive number descending, then
+/// id ascending.
+///
+/// The dive-number step is null-aware rather than coalescing to zero. SQLite
+/// sorts NULL below every value, so `ORDER BY dive_number DESC` puts a null
+/// dive number *last*, behind a real `0` or a negative one. Coalescing to zero
+/// would instead tie a null with a real zero and rank it above a negative,
+/// which would reorder the list the repository already ordered.
+int compareSharedDivesForPreview(domain.Dive a, domain.Dive b) {
+  final byTime = b.effectiveEntryTime.compareTo(a.effectiveEntryTime);
+  if (byTime != 0) return byTime;
+
+  final aNumber = a.diveNumber;
+  final bNumber = b.diveNumber;
+  if (aNumber != bNumber) {
+    if (aNumber == null) return 1;
+    if (bNumber == null) return -1;
+    return bNumber.compareTo(aNumber);
+  }
+
+  return a.id.compareTo(b.id);
+}
 
 /// Buddy list notifier for mutations
 class BuddyListNotifier extends StateNotifier<AsyncValue<List<Buddy>>> {
@@ -216,7 +252,7 @@ class BuddyListNotifier extends StateNotifier<AsyncValue<List<Buddy>>> {
 
   BuddyListNotifier(this._repository, this._ref)
     : super(const AsyncValue.loading()) {
-    _initializeAndLoad();
+    logFailure(_initializeAndLoad(), BuddyListNotifier, 'initialize and load');
 
     // Listen for diver changes and reload
     _ref.listen<String?>(currentDiverIdProvider, (previous, next) {
@@ -224,7 +260,11 @@ class BuddyListNotifier extends StateNotifier<AsyncValue<List<Buddy>>> {
         state = const AsyncValue.loading();
         _ref.invalidate(validatedCurrentDiverIdProvider);
         _ref.invalidate(allBuddiesProvider);
-        _initializeAndLoad();
+        logFailure(
+          _initializeAndLoad(),
+          BuddyListNotifier,
+          'initialize and load',
+        );
       }
     });
 
@@ -390,7 +430,7 @@ class DiveBuddiesNotifier extends StateNotifier<List<BuddyWithRole>> {
     }
   }
 
-  void addBuddy(Buddy buddy, BuddyRole role) {
+  void addBuddy(Buddy buddy, DiveRole role) {
     // Check if buddy is already added
     final existing = state.indexWhere((b) => b.buddy.id == buddy.id);
     if (existing >= 0) {
@@ -409,7 +449,7 @@ class DiveBuddiesNotifier extends StateNotifier<List<BuddyWithRole>> {
     state = state.where((b) => b.buddy.id != buddyId).toList();
   }
 
-  void updateRole(String buddyId, BuddyRole role) {
+  void updateRole(String buddyId, DiveRole role) {
     state = state.map((b) {
       if (b.buddy.id == buddyId) {
         return BuddyWithRole(buddy: b.buddy, role: role);

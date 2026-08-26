@@ -4,11 +4,15 @@ import 'package:go_router/go_router.dart';
 
 import 'package:submersion/l10n/l10n_extension.dart';
 import 'package:submersion/core/services/export/export_service.dart';
+import 'package:submersion/core/services/pdf_templates/pdf_date_formatter.dart';
 import 'package:submersion/core/utils/unit_formatter.dart';
+import 'package:submersion/shared/widgets/master_detail/detail_scroll_retainer.dart';
 import 'package:submersion/shared/widgets/master_detail/responsive_breakpoints.dart';
 import 'package:submersion/features/certifications/presentation/providers/certification_providers.dart';
 import 'package:submersion/features/courses/domain/entities/course.dart';
+import 'package:submersion/features/courses/presentation/course_status_colors.dart';
 import 'package:submersion/features/courses/presentation/providers/course_providers.dart';
+import 'package:submersion/features/courses/presentation/widgets/course_requirements_section.dart';
 import 'package:submersion/features/dive_log/domain/entities/dive.dart';
 import 'package:submersion/features/settings/presentation/providers/settings_providers.dart';
 
@@ -51,6 +55,7 @@ class CourseDetailPage extends ConsumerWidget {
     final formatter = UnitFormatter(ref.watch(settingsProvider));
 
     final body = SingleChildScrollView(
+      controller: DetailScrollController.maybeOf(context),
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -142,6 +147,9 @@ class CourseDetailPage extends ConsumerWidget {
           if (course.certificationId != null)
             _buildCertificationSection(context, ref, course.certificationId!),
 
+          // Requirement tracker
+          CourseRequirementsSection(courseId: course.id),
+
           // Training dives
           Card(
             child: Padding(
@@ -180,7 +188,8 @@ class CourseDetailPage extends ConsumerWidget {
                               ),
                             ),
                             title: Text(
-                              dive.site?.name ?? 'Unknown Site',
+                              dive.site?.name ??
+                                  context.l10n.diveLog_listPage_unknownSite,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -307,6 +316,10 @@ class CourseDetailPage extends ConsumerWidget {
 
   Widget _buildStatusCard(BuildContext context, Course course) {
     final colorScheme = Theme.of(context).colorScheme;
+    final statusAccent = courseStatusAccent(
+      colorScheme,
+      completed: course.isCompleted,
+    );
     final statusLabel = course.isCompleted
         ? context.l10n.courses_status_completed
         : context.l10n.courses_status_inProgress;
@@ -320,9 +333,10 @@ class CourseDetailPage extends ConsumerWidget {
         durationLabel,
       ),
       child: Card(
-        color: course.isCompleted
-            ? Colors.green.withValues(alpha: 0.1)
-            : colorScheme.primaryContainer.withValues(alpha: 0.5),
+        color: courseStatusSurface(colorScheme, completed: course.isCompleted),
+        // The card colour above is already blended onto the theme surface;
+        // letting the elevation tint composite on top would undo that.
+        surfaceTintColor: Colors.transparent,
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
@@ -330,7 +344,7 @@ class CourseDetailPage extends ConsumerWidget {
               Icon(
                 course.isCompleted ? Icons.check_circle : Icons.pending,
                 size: 40,
-                color: course.isCompleted ? Colors.green : colorScheme.primary,
+                color: statusAccent,
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -343,9 +357,7 @@ class CourseDetailPage extends ConsumerWidget {
                           : context.l10n.courses_status_inProgress,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: course.isCompleted
-                            ? Colors.green
-                            : colorScheme.primary,
+                        color: statusAccent,
                       ),
                     ),
                     if (course.durationDays != null)
@@ -621,7 +633,7 @@ class CourseDetailPage extends ConsumerWidget {
         children: [
           Icon(Icons.error_outline, size: 48, color: colorScheme.error),
           const SizedBox(height: 16),
-          Text('Error: $error'),
+          Text('${context.l10n.common_label_error}: $error'),
         ],
       ),
     );
@@ -720,7 +732,15 @@ class CourseDetailPage extends ConsumerWidget {
 
       // Export to PDF
       final exportService = ExportService();
-      await exportService.exportCourseTrainingLogToPdf(course, dives);
+      final settings = ref.read(settingsProvider);
+      await exportService.exportCourseTrainingLogToPdf(
+        course,
+        dives,
+        dates: PdfDateFormatter(
+          dateFormat: settings.dateFormat,
+          timeFormat: settings.timeFormat,
+        ),
+      );
 
       // Dismiss loading
       if (context.mounted) {

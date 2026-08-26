@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:submersion/features/media/presentation/providers/files_tab_providers.dart';
 import 'package:submersion/features/media/presentation/widgets/file_review_card.dart';
@@ -11,16 +12,41 @@ import 'package:submersion/features/media/presentation/widgets/file_review_card.
 /// matched-dive group and an "Unmatched" group at the bottom (only when
 /// non-empty). Each group's children are [FileReviewCard]s.
 ///
-/// Stateless because all mutation flows through
-/// [filesTabNotifierProvider]; the pane just renders the current
-/// [FilesTabState] passed in by the parent.
-class FileReviewPane extends StatelessWidget {
+/// Holds no state of its own: the current [FilesTabState] is passed in by the
+/// parent, and the pane's own actions -- the Unmatched group's bulk
+/// "add all to this dive", plus each [FileReviewCard]'s assign and remove --
+/// are dispatched to [filesTabNotifierProvider], which owns every mutation.
+/// It is a [ConsumerWidget] rather than a [StatelessWidget] only to reach
+/// that notifier.
+class FileReviewPane extends ConsumerWidget {
   final FilesTabState state;
-  const FileReviewPane({super.key, required this.state});
+
+  /// The dive files may be manually assigned to, when the picker was opened
+  /// from one. Drives the Unmatched group's bulk action and the per-card
+  /// assign affordance; null hides both.
+  final String? assignableDiveId;
+
+  /// Renders one flat list of every staged file instead of the matched /
+  /// unmatched dive grouping.
+  ///
+  /// Used when the session attaches to a dive site: matched-vs-unmatched is
+  /// a statement about dives, so on a site it is both meaningless and
+  /// alarming: the user sees "0 dives, N unmatched" and reasonably concludes
+  /// the app rejected their photos (issue #1098).
+  final bool flat;
+
+  const FileReviewPane({
+    super.key,
+    required this.state,
+    this.assignableDiveId,
+    this.flat = false,
+  });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    if (flat) return _buildFlat(context, theme);
+
     // TODO(media): l10n
     final summary =
         '${state.files.length} photos → '
@@ -44,7 +70,11 @@ class FileReviewPane extends StatelessWidget {
                   initiallyExpanded: true,
                   children: [
                     for (final f in entry.value)
-                      FileReviewCard(file: f, targetDiveId: entry.key),
+                      FileReviewCard(
+                        file: f,
+                        targetDiveId: entry.key,
+                        assignableDiveId: assignableDiveId,
+                      ),
                   ],
                 ),
               if (state.match.unmatched.isNotEmpty)
@@ -52,11 +82,59 @@ class FileReviewPane extends StatelessWidget {
                   title: const Text('Unmatched'),
                   subtitle: Text('${state.match.unmatched.length} photos'),
                   initiallyExpanded: true,
+                  // Without this the only thing a user could do with a photo
+                  // the matcher rejected was remove it -- commit() never sees
+                  // the unmatched bucket.
+                  trailing: assignableDiveId == null
+                      ? null
+                      : TextButton(
+                          onPressed: () => ref
+                              .read(filesTabNotifierProvider.notifier)
+                              .assignAllUnmatched(assignableDiveId!),
+                          child: Text(
+                            'Add all ${state.match.unmatched.length} '
+                            'to this dive',
+                          ),
+                        ),
                   children: [
                     for (final f in state.match.unmatched)
-                      FileReviewCard(file: f, targetDiveId: null),
+                      FileReviewCard(
+                        file: f,
+                        targetDiveId: null,
+                        assignableDiveId: assignableDiveId,
+                      ),
                   ],
                 ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Flat variant: a count and one card per staged file, with no dive
+  /// grouping and no assign affordances (there is no dive to assign to).
+  Widget _buildFlat(BuildContext context, ThemeData theme) {
+    final count = state.files.length;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8),
+          // "item", not "photo": the Files tab picks with FileType.media and
+          // the folder scan admits .mp4/.mov/.m4v, so a staged set can be all
+          // video. Matches the commit button's wording.
+          // TODO(media): l10n, pluralization
+          child: Text(
+            '$count item${count == 1 ? '' : 's'}',
+            style: theme.textTheme.titleMedium,
+          ),
+        ),
+        Expanded(
+          child: ListView(
+            children: [
+              for (final f in state.files)
+                FileReviewCard(file: f, targetDiveId: null),
             ],
           ),
         ),

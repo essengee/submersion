@@ -4,7 +4,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:submersion/core/providers/provider.dart';
 import 'package:submersion/features/dive_log/domain/entities/dive.dart';
 import 'package:submersion/features/dive_log/domain/entities/dive_data_source.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:submersion/features/dive_log/presentation/pages/dive_detail_page.dart';
+import 'package:submersion/features/dive_log/presentation/providers/dive_detail_ui_providers.dart';
 import 'package:submersion/features/dive_log/presentation/providers/dive_providers.dart';
 import 'package:submersion/features/dive_sites/domain/entities/dive_site.dart';
 import 'package:submersion/l10n/arb/app_localizations.dart';
@@ -36,6 +38,10 @@ Dive _diveWithSite() => Dive(
 
 Future<void> _pump(WidgetTester tester, Dive dive) async {
   final overrides = await getBaseOverrides();
+  // These tests probe the HEADER map; collapse the Surface GPS section
+  // (expanded by default) so its map does not double the FlutterMap count.
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setBool(DiveDetailUiKeys.surfaceGpsSectionExpanded, false);
   final originalOnError = FlutterError.onError;
   FlutterError.onError = (d) {
     if (d.toString().contains('overflowed')) return;
@@ -51,6 +57,8 @@ Future<void> _pump(WidgetTester tester, Dive dive) async {
         ).overrideWith((ref) async => <DiveDataSource>[]),
       ],
       child: MaterialApp(
+        // Pinned: assertions match English strings (pill labels).
+        locale: const Locale('en'),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: DiveDetailPage(diveId: dive.id, embedded: true),
@@ -122,7 +130,10 @@ void main() {
     expect(find.byType(PolylineLayer), findsNothing);
     expect(find.byKey(const ValueKey('gps-entry-marker')), findsNothing);
     expect(find.byKey(const ValueKey('gps-exit-marker')), findsNothing);
-    // The site affordance (badge + semantics) is present.
-    expect(find.text('View Site'), findsWidgets);
+    // The header carries one badge pointing at the site, not a row of
+    // per-view deep links.
+    expect(find.text('View Site'), findsOneWidget);
+    expect(find.text('Map'), findsNothing);
+    expect(find.text('3D'), findsNothing);
   });
 }

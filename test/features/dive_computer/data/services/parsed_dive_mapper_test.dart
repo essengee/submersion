@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:libdivecomputer_plugin/libdivecomputer_plugin.dart' as pigeon;
+import 'package:submersion/core/constants/enums.dart';
 import 'package:submersion/features/dive_computer/data/services/parsed_dive_mapper.dart';
 
 void main() {
@@ -26,6 +27,7 @@ void main() {
       int? gfLow,
       int? gfHigh,
       int? decoConservatism,
+      String? diveMode,
       double? entryLatitude,
       double? entryLongitude,
       double? exitLatitude,
@@ -53,12 +55,37 @@ void main() {
         gfLow: gfLow,
         gfHigh: gfHigh,
         decoConservatism: decoConservatism,
+        diveMode: diveMode,
         entryLatitude: entryLatitude,
         entryLongitude: entryLongitude,
         exitLatitude: exitLatitude,
         exitLongitude: exitLongitude,
       );
     }
+
+    // --- Dive mode ---
+
+    test('maps gauge mode and imports no tanks', () {
+      final parsed = makeParsedDive(
+        diveMode: 'gauge',
+        tanks: [],
+        gasMixes: [pigeon.GasMix(index: 0, o2Percent: 21.0, hePercent: 0.0)],
+      );
+      final downloaded = parsedDiveToDownloaded(parsed);
+      expect(downloaded.diveMode, DiveMode.gauge);
+      expect(downloaded.tanks, isEmpty);
+    });
+
+    test('maps ccr mode and defaults null mode to oc', () {
+      expect(
+        parsedDiveToDownloaded(makeParsedDive(diveMode: 'ccr')).diveMode,
+        DiveMode.ccr,
+      );
+      expect(
+        parsedDiveToDownloaded(makeParsedDive(diveMode: null)).diveMode,
+        DiveMode.oc,
+      );
+    });
 
     // --- DateTime construction ---
 
@@ -177,6 +204,83 @@ void main() {
       expect(downloaded.profile[2].heartRate, 85);
     });
 
+    test('maps per-cell O2 sensor ppO2 (absent cells stay null)', () {
+      final parsed = makeParsedDive(
+        fingerprint: 'cells1',
+        samples: [
+          pigeon.ProfileSample(
+            timeSeconds: 0,
+            depthMeters: 0.0,
+            ppo2: 0.7,
+            o2Sensor1: 0.68,
+            o2Sensor2: 0.70,
+            o2Sensor3: 0.72,
+          ),
+        ],
+      );
+
+      final downloaded = parsedDiveToDownloaded(parsed);
+      final p = downloaded.profile.single;
+
+      expect(p.ppo2, 0.7);
+      expect(p.o2Sensor1, 0.68);
+      expect(p.o2Sensor2, 0.70);
+      expect(p.o2Sensor3, 0.72);
+      expect(p.o2Sensor4, isNull);
+      expect(p.o2Sensor5, isNull);
+      expect(p.o2Sensor6, isNull);
+    });
+
+    test('maps O2 cell millivolts (absent cells stay null)', () {
+      // Issue #810: the Petrel 3 logs a default calibration, so libdivecomputer
+      // withholds the per-cell ppO2 and reports the raw output instead. The
+      // millivolts must survive even with no bar value beside them.
+      final parsed = makeParsedDive(
+        fingerprint: 'cellmv1',
+        samples: [
+          pigeon.ProfileSample(
+            timeSeconds: 0,
+            depthMeters: 0.0,
+            ppo2: 0.7,
+            o2SensorMv1: 58,
+            o2SensorMv2: 61,
+            o2SensorMv3: 43,
+          ),
+        ],
+      );
+
+      final downloaded = parsedDiveToDownloaded(parsed);
+      final p = downloaded.profile.single;
+
+      expect(p.o2SensorMv1, 58);
+      expect(p.o2SensorMv2, 61);
+      expect(p.o2SensorMv3, 43);
+      expect(p.o2SensorMv4, isNull);
+      expect(p.o2SensorMv5, isNull);
+      expect(p.o2SensorMv6, isNull);
+      // No calibration anchor, so no per-cell partial pressure.
+      expect(p.o2Sensor1, isNull);
+    });
+
+    test('carries heading into domain ProfileSample', () {
+      final parsed = makeParsedDive(
+        fingerprint: 'heading-test',
+        samples: [
+          pigeon.ProfileSample(
+            timeSeconds: 60,
+            depthMeters: 10.0,
+            heading: 275.0,
+          ),
+          pigeon.ProfileSample(timeSeconds: 120, depthMeters: 12.0),
+        ],
+      );
+
+      final downloaded = parsedDiveToDownloaded(parsed);
+
+      expect(downloaded.profile[0].heading, 275.0);
+      expect(downloaded.profile[1].heading, isNull);
+    });
+
     // --- Tanks and gas mixes ---
 
     test('maps tanks with gas mixes correctly', () {
@@ -223,10 +327,13 @@ void main() {
       expect(downloaded.tanks[1].gasName, 'EAN50');
     });
 
-    test('unmatched gasMixIndex falls back to the primary (first) mix', () {
-      // Tank gas-mix link unknown (DC_GASMIX_UNKNOWN, e.g. Shearwater
-      // single-gas dives): must resolve to the dive's primary mix, not a
-      // hardcoded air default that would mislabel an EAN dive.
+    test('unmatched gasMixIndex with no samples uses the primary mix and keeps '
+        'the other gas as a pressureless cylinder', () {
+      // Tank gas-mix link unknown (DC_GASMIX_UNKNOWN, e.g. Shearwater) and no
+      // per-sample gas to disambiguate: the transmitter tank resolves to the
+      // dive's primary mix (not a hardcoded air default that would mislabel an
+      // EAN dive), and the second reported gas is still kept as a cylinder
+      // instead of being dropped.
       final parsed = makeParsedDive(
         fingerprint: 'fallback-primary',
         tanks: [pigeon.TankInfo(index: 0, gasMixIndex: 99)],
@@ -238,9 +345,15 @@ void main() {
 
       final downloaded = parsedDiveToDownloaded(parsed);
 
-      expect(downloaded.tanks, hasLength(1));
+      expect(downloaded.tanks, hasLength(2));
+      // Transmitter tank keeps its index and the primary mix.
+      expect(downloaded.tanks[0].index, 0);
       expect(downloaded.tanks[0].o2Percent, 32.0);
       expect(downloaded.tanks[0].hePercent, 0.0);
+      // The second gas survives as a pressureless cylinder at a fresh index.
+      final other = downloaded.tanks.firstWhere((t) => t.o2Percent == 21.0);
+      expect(other.index, isNot(0));
+      expect(other.startPressure, isNull);
     });
 
     test('falls back to air when there are no gas mixes at all', () {

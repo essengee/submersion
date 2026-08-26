@@ -1,12 +1,18 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
+import 'package:submersion/core/providers/location_service_provider.dart';
 import 'package:submersion/core/providers/provider.dart';
 import 'package:submersion/core/services/location_service.dart';
 import 'package:submersion/core/text/fuzzy_match.dart';
+import 'package:submersion/core/utils/geo_math.dart';
+import 'package:submersion/core/utils/unit_formatter.dart';
 import 'package:submersion/features/dive_log/presentation/utils/site_picker_search.dart';
 import 'package:submersion/features/dive_sites/domain/entities/dive_site.dart';
 import 'package:submersion/features/dive_sites/presentation/providers/site_providers.dart';
 import 'package:submersion/features/dive_sites/presentation/widgets/similar_value_hint.dart';
+import 'package:submersion/features/settings/presentation/providers/settings_providers.dart';
 import 'package:submersion/l10n/l10n_extension.dart';
 
 /// Site picker bottom sheet with nearby site suggestions
@@ -14,6 +20,7 @@ class SitePickerSheet extends ConsumerStatefulWidget {
   final ScrollController scrollController;
   final String? selectedSiteId;
   final LocationResult? currentLocation;
+  final GeoPoint? diveLocation;
   final void Function(DiveSite) onSiteSelected;
   final VoidCallback onCreateNewSite;
 
@@ -22,6 +29,7 @@ class SitePickerSheet extends ConsumerStatefulWidget {
     required this.scrollController,
     required this.selectedSiteId,
     this.currentLocation,
+    this.diveLocation,
     required this.onSiteSelected,
     required this.onCreateNewSite,
   });
@@ -34,38 +42,79 @@ class _SitePickerSheetState extends ConsumerState<SitePickerSheet> {
   final _searchController = TextEditingController();
   String _searchQuery = '';
 
+  /// Device fix resolved by the sheet itself, used only when the caller
+  /// supplied neither a dive nor a device location.
+  LocationResult? _deviceLocation;
+  bool _isLocating = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Callers that already know where the dive is (or where the device is)
+    // cost nothing here. The rest — editing an imported dive, bulk edit —
+    // would otherwise fall back to the repository's alphabetical order (#965).
+    if (widget.diveLocation == null && widget.currentLocation == null) {
+      unawaited(_resolveDeviceLocation());
+    }
+  }
+
   @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
   }
 
-  /// Calculate distance from current location to a site in km
-  double? _distanceToSite(DiveSite site) {
-    if (widget.currentLocation == null || site.location == null) return null;
-    final distanceMeters = LocationService.instance.distanceBetween(
-      widget.currentLocation!.latitude,
-      widget.currentLocation!.longitude,
-      site.location!.latitude,
-      site.location!.longitude,
-    );
-    return distanceMeters / 1000; // Convert to km
+  /// Resolve a device fix in the background. Runs once, from [initState]:
+  /// `build` re-runs on every keystroke in the search field, so resolving
+  /// there would fire a GPS request per character.
+  Future<void> _resolveDeviceLocation() async {
+    setState(() => _isLocating = true);
+    try {
+      final location = await ref
+          .read(locationServiceProvider)
+          .getCurrentLocation(
+            // Coordinates are all the distance sort needs; skip geocoding.
+            includeGeocoding: false,
+            timeout: const Duration(seconds: 10),
+          );
+      if (mounted && location != null) {
+        setState(() => _deviceLocation = location);
+      }
+    } catch (_) {
+      // Proximity sorting is a convenience; the list stays usable without it.
+    } finally {
+      if (mounted) {
+        setState(() => _isLocating = false);
+      }
+    }
   }
 
-  /// Format distance for display
-  String _formatDistance(BuildContext context, double km) {
-    if (km < 1) {
-      return context.l10n.diveLog_sitePicker_distanceMeters(
-        (km * 1000).round().toString(),
-      );
-    }
-    final text = km < 10 ? km.toStringAsFixed(1) : km.round().toString();
-    return context.l10n.diveLog_sitePicker_distanceKm(text);
+  /// The point distances are measured from: the dive's GPS if present, then a
+  /// device location supplied by the caller, then one this sheet resolved.
+  GeoPoint? get _anchor {
+    if (widget.diveLocation != null) return widget.diveLocation;
+    final cl = widget.currentLocation ?? _deviceLocation;
+    return cl == null ? null : GeoPoint(cl.latitude, cl.longitude);
+  }
+
+  /// Distance from the resolved anchor to a site, in meters.
+  double? _distanceToSite(DiveSite site) {
+    final anchor = _anchor;
+    if (anchor == null || site.location == null) return null;
+    return distanceMeters(anchor, site.location!);
+  }
+
+  /// Format a site distance (meters) for display, unit-aware.
+  String _formatDistance(BuildContext context, UnitFormatter units, double m) {
+    return context.l10n.diveLog_sitePicker_distanceAway(
+      units.formatGeoDistance(m),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final sitesAsync = ref.watch(sitesProvider);
+    final units = UnitFormatter(ref.watch(settingsProvider));
     final colorScheme = Theme.of(context).colorScheme;
     final normalizedQuery = _searchQuery.trim().toLowerCase();
 
@@ -76,30 +125,67 @@ class _SitePickerSheetState extends ConsumerState<SitePickerSheet> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    context.l10n.diveLog_sitePicker_title,
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  if (widget.currentLocation != null)
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.my_location,
-                          size: 14,
-                          color: colorScheme.primary,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          context.l10n.diveLog_sitePicker_sortedByDistance,
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(color: colorScheme.primary),
-                        ),
-                      ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      context.l10n.diveLog_sitePicker_title,
+                      style: Theme.of(context).textTheme.titleLarge,
                     ),
-                ],
+                    if (_anchor != null)
+                      Row(
+                        children: [
+                          Icon(
+                            widget.diveLocation != null
+                                ? Icons.place
+                                : Icons.my_location,
+                            size: 14,
+                            color: colorScheme.primary,
+                          ),
+                          const SizedBox(width: 4),
+                          Flexible(
+                            child: Text(
+                              widget.diveLocation != null
+                                  ? context
+                                        .l10n
+                                        .diveLog_sitePicker_sortedByDiveDistance
+                                  : context
+                                        .l10n
+                                        .diveLog_sitePicker_sortedByDistance,
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(color: colorScheme.primary),
+                            ),
+                          ),
+                        ],
+                      )
+                    else if (_isLocating)
+                      Row(
+                        children: [
+                          // Deliberately a static icon, not a spinner: an
+                          // indeterminate indicator schedules frames forever,
+                          // so it hangs pumpAndSettle in every consumer test
+                          // that opens this sheet. Reusing the resolved-state
+                          // icon also avoids a swap when the fix lands.
+                          Icon(
+                            Icons.my_location,
+                            size: 14,
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                          const SizedBox(width: 4),
+                          Flexible(
+                            child: Text(
+                              context.l10n.diveLog_edit_gettingLocation,
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
+                            ),
+                          ),
+                        ],
+                      ),
+                  ],
+                ),
               ),
               TextButton.icon(
                 onPressed: widget.onCreateNewSite,
@@ -184,9 +270,9 @@ class _SitePickerSheetState extends ConsumerState<SitePickerSheet> {
                 );
               }
 
-              // Sort sites by distance if we have current location
+              // Sort sites by distance from the resolved anchor when present.
               List<_SiteWithDistance> sortedSites;
-              if (widget.currentLocation != null) {
+              if (_anchor != null) {
                 sortedSites = sites.map((site) {
                   return _SiteWithDistance(site, _distanceToSite(site));
                 }).toList();
@@ -233,7 +319,7 @@ class _SitePickerSheetState extends ConsumerState<SitePickerSheet> {
                   final distance = siteWithDist.distance;
                   final isSelected = site.id == widget.selectedSiteId;
                   final isNearby =
-                      distance != null && distance < 50; // Within 50km
+                      distance != null && distance < 50000; // within 50 km
 
                   return ListTile(
                     leading: CircleAvatar(
@@ -259,7 +345,7 @@ class _SitePickerSheetState extends ConsumerState<SitePickerSheet> {
                           Text(site.locationString),
                         if (distance != null)
                           Text(
-                            _formatDistance(context, distance),
+                            _formatDistance(context, units, distance),
                             style: Theme.of(context).textTheme.bodySmall
                                 ?.copyWith(
                                   color: isNearby

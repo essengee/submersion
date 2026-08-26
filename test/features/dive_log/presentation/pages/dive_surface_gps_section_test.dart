@@ -76,7 +76,7 @@ void main() {
       findsOneWidget,
     );
     expect(find.textContaining('Drift'), findsWidgets);
-    expect(find.text('12.34567, 98.76543'), findsOneWidget);
+    expect(find.text('12.345670° N, 98.765430° E'), findsOneWidget);
     expect(find.text('Open in Maps'), findsNothing);
   });
 
@@ -136,6 +136,10 @@ void main() {
     await _pump(tester, _gpsDive(exit: const GeoPoint(12.34612, 98.76489)));
 
     expect(find.text('Surface GPS'), findsOneWidget);
+    // The section starts expanded; the subtitle appears once collapsed.
+    await tester.tap(find.text('Surface GPS'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
     expect(find.text('Exit point recorded'), findsOneWidget);
   });
 
@@ -158,12 +162,13 @@ void main() {
       of: section,
       matching: find.byType(AnimatedRotation),
     );
-    expect(tester.widget<AnimatedRotation>(rotation).turns, 0.0);
+    // Expanded by default (turns 0.5); tapping collapses it.
+    expect(tester.widget<AnimatedRotation>(rotation).turns, 0.5);
 
     await tester.tap(find.text('Surface GPS'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
 
-    expect(tester.widget<AnimatedRotation>(rotation).turns, 0.5);
+    expect(tester.widget<AnimatedRotation>(rotation).turns, 0.0);
   });
 }

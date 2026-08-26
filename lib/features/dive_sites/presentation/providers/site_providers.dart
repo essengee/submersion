@@ -1,3 +1,4 @@
+import 'package:submersion/core/constants/enums.dart';
 import 'package:submersion/core/constants/sort_options.dart';
 import 'package:submersion/core/models/sort_state.dart';
 import 'package:submersion/core/performance/perf_timer.dart';
@@ -12,10 +13,13 @@ import 'package:submersion/features/dive_sites/data/services/dive_site_api_servi
 import 'package:submersion/features/dive_sites/domain/constants/site_field.dart';
 import 'package:submersion/features/dive_sites/domain/entities/dive_site.dart'
     as domain;
+import 'package:submersion/features/dive_sites/domain/models/entry_exit_suggestion.dart';
+import 'package:submersion/features/statistics/presentation/providers/statistics_providers.dart';
 import 'package:submersion/features/marine_life/presentation/providers/species_providers.dart';
 import 'package:submersion/shared/models/entity_card_view_config.dart';
 import 'package:submersion/shared/models/entity_table_config.dart';
 import 'package:submersion/shared/providers/entity_table_config_providers.dart';
+import 'package:submersion/core/utils/log_failure.dart';
 
 // ============================================================================
 // Site Filter State
@@ -182,10 +186,7 @@ final sitesProvider = FutureProvider<List<domain.DiveSite>>((ref) async {
   final validatedDiverId = await ref.watch(
     validatedCurrentDiverIdProvider.future,
   );
-  final sub = repository.watchSitesChanges().listen(
-    (_) => ref.invalidateSelf(),
-  );
-  ref.onDispose(sub.cancel);
+  ref.invalidateSelfWhen(repository.watchSitesChanges());
   return repository.getAllSites(diverId: validatedDiverId);
 });
 
@@ -197,15 +198,8 @@ final sitesWithCountsProvider = FutureProvider<List<SiteWithDiveCount>>((
   final validatedDiverId = await ref.watch(
     validatedCurrentDiverIdProvider.future,
   );
-  final sitesSub = repository.watchSitesChanges().listen(
-    (_) => ref.invalidateSelf(),
-  );
-  ref.onDispose(sitesSub.cancel);
-  final divesSub = ref
-      .read(diveRepositoryProvider)
-      .watchDivesChanges()
-      .listen((_) => ref.invalidateSelf());
-  ref.onDispose(divesSub.cancel);
+  ref.invalidateSelfWhen(repository.watchSitesChanges());
+  ref.invalidateSelfWhen(ref.read(diveRepositoryProvider).watchDivesChanges());
   return repository.getSitesWithDiveCounts(diverId: validatedDiverId);
 });
 
@@ -285,6 +279,7 @@ final siteProvider = FutureProvider.family<domain.DiveSite?, String>((
   id,
 ) async {
   final repository = ref.watch(siteRepositoryProvider);
+  ref.invalidateSelfWhen(repository.watchSitesChanges());
   return repository.getSiteById(id);
 });
 
@@ -298,6 +293,7 @@ final siteSearchProvider = FutureProvider.family<List<domain.DiveSite>, String>(
       return ref.watch(sitesProvider).value ?? [];
     }
     final repository = ref.watch(siteRepositoryProvider);
+    ref.invalidateSelfWhen(repository.watchSitesChanges());
     return repository.searchSites(query, diverId: validatedDiverId);
   },
 );
@@ -314,6 +310,40 @@ final siteDiveCountProvider = FutureProvider.family<int, String>((
   return siteWithCount?.diveCount ?? 0;
 });
 
+/// The entry/exit pairing most often logged at [siteId], or null when the
+/// site has no dives that record an entry method (issue #1104).
+///
+/// Takes the dives tick because site merges, bulk edits, and sync pulls all
+/// change which dives belong to a site without touching the site row, the
+/// same reason [mediaFromDivesAtSiteProvider] subscribes to it.
+final siteEntryExitSuggestionProvider =
+    FutureProvider.family<EntryExitSuggestion?, String>((ref, siteId) async {
+      final diveRepository = ref.watch(diveRepositoryProvider);
+      ref.invalidateSelfWhen(diveRepository.watchDivesChanges());
+
+      final diverId = await ref.watch(validatedCurrentDiverIdProvider.future);
+      if (diverId == null) return null;
+
+      final stats = ref.watch(statisticsRepositoryProvider);
+      final pairs = await stats.getEntryExitMethodPairsForSite(
+        siteId: siteId,
+        diverId: diverId,
+      );
+      if (pairs.isEmpty) return null;
+
+      final top = pairs.first;
+      final entry = EntryMethod.values.asNameMap()[top.entryMethod];
+      if (entry == null) return null;
+
+      return EntryExitSuggestion(
+        entry: entry,
+        exit: top.exitMethod == null
+            ? null
+            : EntryMethod.values.asNameMap()[top.exitMethod],
+        count: top.count,
+      );
+    });
+
 /// Site list notifier for mutations
 class SiteListNotifier
     extends StateNotifier<AsyncValue<List<domain.DiveSite>>> {
@@ -323,7 +353,7 @@ class SiteListNotifier
 
   SiteListNotifier(this._repository, this._ref)
     : super(const AsyncValue.loading()) {
-    _initializeAndLoad();
+    logFailure(_initializeAndLoad(), SiteListNotifier, 'initialize and load');
 
     // Listen for diver changes and reload
     _ref.listen<String?>(currentDiverIdProvider, (previous, next) {
@@ -332,7 +362,11 @@ class SiteListNotifier
         _ref.invalidate(validatedCurrentDiverIdProvider);
         _ref.invalidate(sitesProvider);
         _ref.invalidate(sitesWithCountsProvider);
-        _initializeAndLoad();
+        logFailure(
+          _initializeAndLoad(),
+          SiteListNotifier,
+          'initialize and load',
+        );
       }
     });
   }
@@ -378,6 +412,29 @@ class SiteListNotifier
 
   Future<void> updateSite(domain.DiveSite site) async {
     await _repository.updateSite(site);
+    await _loadSites();
+  }
+
+  /// Altitude write-back for a looked-up site altitude. Patches the one
+  /// column; never send a copied entity through [updateSite] for this
+  /// (issue #1187).
+  Future<void> updateSiteAltitude(String siteId, double altitudeMeters) async {
+    await _repository.updateSiteAltitude(siteId, altitudeMeters);
+    await _loadSites();
+  }
+
+  /// Coordinates (and optionally altitude) write-back, e.g. from a photo's
+  /// GPS. Patches only those columns.
+  Future<void> updateSiteCoordinates(
+    String siteId,
+    domain.GeoPoint location, {
+    double? altitude,
+  }) async {
+    await _repository.updateSiteCoordinates(
+      siteId,
+      location,
+      altitude: altitude,
+    );
     await _loadSites();
   }
 

@@ -90,6 +90,17 @@ class LocalMediaPlatform {
     await _channel.invokeMethod<void>('releaseAllBookmarks');
   }
 
+  /// Whether [ref] is an Android SAF content URI — the only kind of
+  /// reference [takePersistableUri] can persist.
+  ///
+  /// Worth a named predicate because the obvious candidate is wrong:
+  /// file_picker's `PlatformFile.path` on Android is a copy the plugin made
+  /// under `<cacheDir>/file_picker/`, and passing it to
+  /// `takePersistableUriPermission` throws PERMISSION_DENIED (issue #1002).
+  /// The content URI arrives separately, in `PlatformFile.identifier`.
+  static bool isPersistableUri(String? ref) =>
+      ref != null && ref.startsWith('content://');
+
   /// Android only. Calls `ContentResolver.takePersistableUriPermission` and
   /// returns the URI string itself (which becomes the bookmarkRef stored in
   /// the [MediaItem.bookmarkRef] column).
@@ -172,5 +183,32 @@ class LocalMediaPlatform {
     if (result == null) throw StateError('readUriBytes returned null');
     return result;
     // coverage:ignore-end
+  }
+
+  /// Desktop only (macOS / Windows / Linux). Asks the OS to generate a poster
+  /// frame for a local video and returns encoded image bytes (JPEG/PNG), or
+  /// null when the platform has no implementation, the native side fails, or
+  /// no thumbnailer is available.
+  ///
+  /// Pass [path] for non-sandboxed platforms (Windows/Linux) and
+  /// [bookmarkBlob] for sandboxed macOS (the native side resolves the bookmark
+  /// and manages security-scoped access). Passing both is safe; the handler
+  /// uses whichever it needs.
+  Future<Uint8List?> generateVideoThumbnail({
+    String? path,
+    Uint8List? bookmarkBlob,
+    required int maxDimension,
+  }) async {
+    try {
+      return await _channel.invokeMethod<Uint8List>('generateVideoThumbnail', {
+        'path': path,
+        'bookmarkBlob': bookmarkBlob,
+        'maxDimension': maxDimension,
+      });
+    } on MissingPluginException {
+      return null;
+    } on PlatformException {
+      return null;
+    }
   }
 }

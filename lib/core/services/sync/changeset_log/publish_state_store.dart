@@ -1,3 +1,5 @@
+import 'package:drift/drift.dart' show Value;
+
 import 'package:submersion/core/database/database.dart';
 
 /// Reads and writes this device's per-provider publish position (the upload
@@ -17,6 +19,42 @@ class PublishStateStore {
   /// carries are written (insertOnConflictUpdate updates present columns).
   Future<void> upsert(LocalPublishStatesCompanion entry) async {
     await _db.into(_db.localPublishStates).insertOnConflictUpdate(entry);
+  }
+
+  /// Record the post-adopt "deferred self-base" marker for [provider]: a row
+  /// with a NULL `baseSeq` (no base published yet) carrying the adopted
+  /// library's [adoptedHlcHigh]. Only adopt writes a null `baseSeq` -- the
+  /// writer either sets it (base publish, compaction) or preserves the null
+  /// while publishing post-adopt changesets without a base -- so a null here
+  /// always means "adopted, no self-base yet". SyncService uses it to skip a
+  /// publish with nothing to say, and ChangesetWriter uses it to publish
+  /// deltas against [adoptedHlcHigh] instead of re-uploading a redundant full
+  /// base (a copy of the epoch the peers already hold, #358). Call after
+  /// `resetSyncState` has cleared any prior row (so this inserts fresh).
+  Future<void> markAdoptedPendingBase(
+    String provider,
+    String? adoptedHlcHigh,
+  ) async {
+    // Write every base column EXPLICITLY rather than omitting baseSeq: with
+    // insertOnConflictUpdate, absent columns keep their prior values, so an
+    // unexpected pre-existing row would retain a non-null baseSeq (and stale
+    // base metadata) and silently defeat the null-baseSeq marker. Fully
+    // specifying the row makes the marker unambiguous whether it inserts or
+    // updates -- a fresh "adopted, no self-base yet" state.
+    await _db
+        .into(_db.localPublishStates)
+        .insertOnConflictUpdate(
+          LocalPublishStatesCompanion(
+            provider: Value(provider),
+            baseSeq: const Value(null),
+            basePartCount: const Value(null),
+            baseBytes: const Value(null),
+            headSeq: const Value(0),
+            publishedHlcHigh: Value(adoptedHlcHigh),
+            changesetBytesSinceBase: const Value(0),
+            updatedAt: Value(DateTime.now().millisecondsSinceEpoch),
+          ),
+        );
   }
 
   /// Drop publish state for [provider] -- used on backend switch so the device

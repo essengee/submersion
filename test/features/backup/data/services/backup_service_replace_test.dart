@@ -13,6 +13,8 @@ import 'package:submersion/features/backup/data/services/backup_service.dart';
 import 'package:submersion/features/backup/domain/entities/backup_record.dart';
 import 'package:submersion/features/backup/domain/entities/restore_mode.dart';
 
+import '../../../../support/fake_cloud_storage_provider.dart';
+
 /// Fake database adapter (mirror of backup_service_test.dart's).
 class _FakeBackupDatabaseAdapter implements BackupDatabaseAdapter {
   @override
@@ -23,7 +25,10 @@ class _FakeBackupDatabaseAdapter implements BackupDatabaseAdapter {
   }
 
   @override
-  Future<void> restore(String backupPath) async {}
+  Future<void> restore(
+    String backupPath, {
+    void Function(int, int)? onMigrationProgress,
+  }) async {}
 
   @override
   Future<String> get databasePath async => '/fake/db/path';
@@ -31,6 +36,9 @@ class _FakeBackupDatabaseAdapter implements BackupDatabaseAdapter {
   @override
   AppDatabase get database =>
       throw UnimplementedError('Fake database does not support direct queries');
+
+  @override
+  String? get databaseKeyHex => null;
 }
 
 /// Spy repository with a live epoch, isolating restore wiring from the DB.
@@ -168,12 +176,50 @@ void main() {
       );
     });
 
+    test(
+      'a rejected restore leaves no safety backup or history entry',
+      () async {
+        // The pre-restore safety backup must run only after the source has been
+        // materialized (decrypted) and validated: a corrupt file or wrong
+        // passphrase aborts the flow without side effects. Running it first left
+        // a stray backup + history record behind every failed restore attempt.
+        final corrupt = File('${tempDir.path}/corrupt2.db');
+        await corrupt.writeAsString('not a database');
+        final record = BackupRecord(
+          id: 'r4',
+          filename: 'corrupt2.db',
+          timestamp: DateTime(2026),
+          sizeBytes: 10,
+          location: BackupLocation.local,
+          localPath: corrupt.path,
+        );
+
+        final service = BackupService(
+          dbAdapter: fakeDb,
+          preferences: preferences,
+          syncRepository: _EpochSpySyncRepository(),
+          epochStore: epochStore,
+        );
+
+        await expectLater(
+          () => service.restoreFromBackup(record),
+          throwsA(isA<BackupException>()),
+        );
+
+        expect(
+          preferences.getHistory(),
+          isEmpty,
+          reason: 'a failed restore must not mint a safety backup',
+        );
+      },
+    );
+
     test('history restore in replace mode mints a pending replace', () async {
       final dbFile = File('${tempDir.path}/valid_replace.db');
       final db = sqlite3.sqlite3.open(dbFile.path);
       db.execute('CREATE TABLE dives (id TEXT PRIMARY KEY)');
       db.execute('CREATE TABLE dive_sites (id TEXT PRIMARY KEY)');
-      db.dispose();
+      db.close();
       final record = BackupRecord(
         id: 'r3',
         filename: 'valid_replace.db',
@@ -216,7 +262,7 @@ void main() {
       final db = sqlite3.sqlite3.open(dbFile.path);
       db.execute('CREATE TABLE dives (id TEXT PRIMARY KEY)');
       db.execute('CREATE TABLE dive_sites (id TEXT PRIMARY KEY)');
-      db.dispose();
+      db.close();
       final record = BackupRecord(
         id: 'r2',
         filename: 'valid.db',
@@ -232,6 +278,45 @@ void main() {
         preferences: preferences,
         syncRepository: spy,
         epochStore: epochStore,
+      );
+
+      await service.restoreFromBackup(record);
+
+      expect(spy.preservedDeviceId, 'live-device-id');
+    });
+
+    test('restoreFromBackup downloads a cloud-only backup into the temp '
+        'dir and restores it', () async {
+      // A record with only a cloudFileId (no local copy) is pulled down to a
+      // temp file first. This exercises _downloadFromCloud, whose
+      // resolveSyncTempDir() creates the temp dir on a fresh install.
+      final dbFile = File('${tempDir.path}/cloud_source.db');
+      final db = sqlite3.sqlite3.open(dbFile.path);
+      db.execute('CREATE TABLE dives (id TEXT PRIMARY KEY)');
+      db.execute('CREATE TABLE dive_sites (id TEXT PRIMARY KEY)');
+      db.close();
+
+      final cloud = FakeCloudStorageProvider();
+      final upload = await cloud.uploadFile(
+        await dbFile.readAsBytes(),
+        'valid_cloud.db',
+      );
+      final record = BackupRecord(
+        id: 'r-cloud',
+        filename: 'valid_cloud.db',
+        timestamp: DateTime(2026),
+        sizeBytes: 10,
+        location: BackupLocation.cloud,
+        cloudFileId: upload.fileId,
+      );
+
+      final spy = _EpochSpySyncRepository();
+      final service = BackupService(
+        dbAdapter: fakeDb,
+        preferences: preferences,
+        syncRepository: spy,
+        epochStore: epochStore,
+        cloudProvider: cloud,
       );
 
       await service.restoreFromBackup(record);

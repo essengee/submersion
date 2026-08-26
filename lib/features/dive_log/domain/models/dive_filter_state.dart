@@ -1,4 +1,6 @@
+import 'package:submersion/core/constants/enums.dart';
 import 'package:submersion/features/dive_log/domain/entities/dive.dart';
+import 'package:submersion/features/equipment/domain/constants/equipment_attribute_catalog.dart';
 
 /// Filter state for dive list.
 ///
@@ -14,6 +16,10 @@ class DiveFilterState {
   final double? minDepth;
   final double? maxDepth;
   final bool? favoritesOnly;
+
+  /// True to restrict the list to dives with no buddy assigned: neither the
+  /// legacy free-text `buddy` field nor a linked buddy is set.
+  final bool? noBuddyOnly;
   final List<String> tagIds;
 
   // v1.5: Additional filter criteria
@@ -26,9 +32,23 @@ class DiveFilterState {
   final int? minRating;
   final int? minBottomTimeMinutes;
   final int? maxBottomTimeMinutes;
-  final String? computerSerial;
+
+  /// Registered dive computer to restrict the list to, matched on
+  /// `dives.computer_id`.
+  ///
+  /// Keyed on the computer id rather than its serial number: firmware often
+  /// reports no serial, which used to leave those computers unfilterable
+  /// (issue #1064).
+  final String? computerId;
   final String? customFieldKey;
   final String? customFieldValue;
+
+  // Equipment-attribute axis (curated keys only). key selects the attribute;
+  // choice matches value_text; min/max bound value_num (canonical metric).
+  final String? equipmentAttrKey;
+  final String? equipmentAttrChoice;
+  final double? equipmentAttrMin;
+  final double? equipmentAttrMax;
 
   const DiveFilterState({
     this.startDate,
@@ -40,6 +60,7 @@ class DiveFilterState {
     this.minDepth,
     this.maxDepth,
     this.favoritesOnly,
+    this.noBuddyOnly,
     this.tagIds = const [],
     this.equipmentIds = const [],
     this.buddyNameFilter,
@@ -50,9 +71,13 @@ class DiveFilterState {
     this.minRating,
     this.minBottomTimeMinutes,
     this.maxBottomTimeMinutes,
-    this.computerSerial,
+    this.computerId,
     this.customFieldKey,
     this.customFieldValue,
+    this.equipmentAttrKey,
+    this.equipmentAttrChoice,
+    this.equipmentAttrMin,
+    this.equipmentAttrMax,
   });
 
   bool get hasActiveFilters =>
@@ -65,6 +90,7 @@ class DiveFilterState {
       minDepth != null ||
       maxDepth != null ||
       favoritesOnly == true ||
+      noBuddyOnly == true ||
       tagIds.isNotEmpty ||
       equipmentIds.isNotEmpty ||
       (buddyNameFilter != null && buddyNameFilter!.isNotEmpty) ||
@@ -75,8 +101,9 @@ class DiveFilterState {
       minRating != null ||
       minBottomTimeMinutes != null ||
       maxBottomTimeMinutes != null ||
-      computerSerial != null ||
-      (customFieldKey != null && customFieldKey!.isNotEmpty);
+      computerId != null ||
+      (customFieldKey != null && customFieldKey!.isNotEmpty) ||
+      equipmentAttrKey != null;
 
   DiveFilterState copyWith({
     DateTime? startDate,
@@ -88,6 +115,7 @@ class DiveFilterState {
     double? minDepth,
     double? maxDepth,
     bool? favoritesOnly,
+    bool? noBuddyOnly,
     List<String>? tagIds,
     List<String>? equipmentIds,
     String? buddyNameFilter,
@@ -98,9 +126,13 @@ class DiveFilterState {
     int? minRating,
     int? minBottomTimeMinutes,
     int? maxBottomTimeMinutes,
-    String? computerSerial,
+    String? computerId,
     String? customFieldKey,
     String? customFieldValue,
+    String? equipmentAttrKey,
+    String? equipmentAttrChoice,
+    double? equipmentAttrMin,
+    double? equipmentAttrMax,
     bool clearStartDate = false,
     bool clearEndDate = false,
     bool clearDiveType = false,
@@ -110,6 +142,7 @@ class DiveFilterState {
     bool clearMinDepth = false,
     bool clearMaxDepth = false,
     bool clearFavoritesOnly = false,
+    bool clearNoBuddyOnly = false,
     bool clearTagIds = false,
     bool clearEquipmentIds = false,
     bool clearBuddyNameFilter = false,
@@ -120,9 +153,10 @@ class DiveFilterState {
     bool clearMinRating = false,
     bool clearMinBottomTimeMinutes = false,
     bool clearMaxBottomTimeMinutes = false,
-    bool clearComputerSerial = false,
+    bool clearComputerId = false,
     bool clearCustomFieldKey = false,
     bool clearCustomFieldValue = false,
+    bool clearEquipmentAttr = false,
   }) {
     return DiveFilterState(
       startDate: clearStartDate ? null : (startDate ?? this.startDate),
@@ -138,6 +172,7 @@ class DiveFilterState {
       favoritesOnly: clearFavoritesOnly
           ? null
           : (favoritesOnly ?? this.favoritesOnly),
+      noBuddyOnly: clearNoBuddyOnly ? null : (noBuddyOnly ?? this.noBuddyOnly),
       tagIds: clearTagIds ? const [] : (tagIds ?? this.tagIds),
       equipmentIds: clearEquipmentIds
           ? const []
@@ -160,20 +195,36 @@ class DiveFilterState {
       maxBottomTimeMinutes: clearMaxBottomTimeMinutes
           ? null
           : (maxBottomTimeMinutes ?? this.maxBottomTimeMinutes),
-      computerSerial: clearComputerSerial
-          ? null
-          : (computerSerial ?? this.computerSerial),
+      computerId: clearComputerId ? null : (computerId ?? this.computerId),
       customFieldKey: clearCustomFieldKey
           ? null
           : (customFieldKey ?? this.customFieldKey),
       customFieldValue: clearCustomFieldValue
           ? null
           : (customFieldValue ?? this.customFieldValue),
+      equipmentAttrKey: clearEquipmentAttr
+          ? null
+          : (equipmentAttrKey ?? this.equipmentAttrKey),
+      equipmentAttrChoice: clearEquipmentAttr
+          ? null
+          : (equipmentAttrChoice ?? this.equipmentAttrChoice),
+      equipmentAttrMin: clearEquipmentAttr
+          ? null
+          : (equipmentAttrMin ?? this.equipmentAttrMin),
+      equipmentAttrMax: clearEquipmentAttr
+          ? null
+          : (equipmentAttrMax ?? this.equipmentAttrMax),
     );
   }
 
   /// Filter a list of dives based on current filter state.
-  /// Used as a fallback for non-paginated code paths (e.g., export).
+  /// Used as a fallback for non-paginated code paths (e.g., export, table/map
+  /// views).
+  ///
+  /// equipmentAttr* is applied in-memory here to mirror the SQL axis (see
+  /// buildFilteredDiveIdSubquery), so non-paginated views stay consistent with
+  /// the SQL-backed list. It relies on dive.equipment being hydrated with its
+  /// curated attributes (getAllDives does this).
   List<Dive> apply(List<Dive> dives) {
     return dives.where((dive) {
       if (startDate != null && dive.dateTime.isBefore(startDate!)) {
@@ -183,7 +234,7 @@ class DiveFilterState {
           dive.dateTime.isAfter(endDate!.add(const Duration(days: 1)))) {
         return false;
       }
-      if (diveTypeId != null && dive.diveTypeId != diveTypeId) {
+      if (diveTypeId != null && !dive.diveTypeIds.contains(diveTypeId)) {
         return false;
       }
       if (siteId != null && dive.site?.id != siteId) {
@@ -212,6 +263,12 @@ class DiveFilterState {
       if (favoritesOnly == true && !dive.isFavorite) {
         return false;
       }
+      if (noBuddyOnly == true) {
+        final hasLegacyBuddy = dive.buddy != null && dive.buddy!.isNotEmpty;
+        if (hasLegacyBuddy || dive.buddies.isNotEmpty) {
+          return false;
+        }
+      }
       if (tagIds.isNotEmpty) {
         final diveTagIds = dive.tags.map((t) => t.id).toSet();
         if (!tagIds.any((tagId) => diveTagIds.contains(tagId))) {
@@ -219,9 +276,21 @@ class DiveFilterState {
         }
       }
       if (buddyNameFilter != null && buddyNameFilter!.isNotEmpty) {
-        final buddyLower = dive.buddy?.toLowerCase() ?? '';
-        if (!buddyLower.contains(buddyNameFilter!.toLowerCase())) {
-          return false;
+        final filters = buddyNameFilter!
+            .split(',')
+            .map((s) => s.trim().toLowerCase())
+            .where((s) => s.isNotEmpty)
+            .toList();
+
+        for (final filterLower in filters) {
+          final legacyBuddyText = dive.buddy?.toLowerCase() ?? '';
+          final hasLegacyMatch = legacyBuddyText.contains(filterLower);
+          final hasLinkedBuddyMatch = dive.buddies.any(
+            (b) => b.buddy.name.toLowerCase().contains(filterLower),
+          );
+          if (!hasLegacyMatch && !hasLinkedBuddyMatch) {
+            return false;
+          }
         }
       }
       if (diveIds.isNotEmpty && !diveIds.contains(dive.id)) {
@@ -241,7 +310,7 @@ class DiveFilterState {
         if (dive.rating == null || dive.rating! < minRating!) return false;
       }
       if (minBottomTimeMinutes != null || maxBottomTimeMinutes != null) {
-        final durationMinutes = dive.bottomTime?.inMinutes;
+        final durationMinutes = (dive.bottomTime)?.inMinutes;
         if (durationMinutes == null) return false;
         if (minBottomTimeMinutes != null &&
             durationMinutes < minBottomTimeMinutes!) {
@@ -252,8 +321,8 @@ class DiveFilterState {
           return false;
         }
       }
-      if (computerSerial != null) {
-        if (dive.diveComputerSerial != computerSerial) return false;
+      if (computerId != null) {
+        if (dive.computerId != computerId) return false;
       }
       if (customFieldKey != null && customFieldKey!.isNotEmpty) {
         final hasMatch = dive.customFields.any((cf) {
@@ -266,6 +335,38 @@ class DiveFilterState {
           return true;
         });
         if (!hasMatch) return false;
+      }
+      // Equipment-attribute axis: mirror the SQL subquery (curated rows only,
+      // value_text exact-matches choice, value_num bounded by min/max).
+      if (equipmentAttrKey != null) {
+        // "Suit thickness" (thickness_mm) matches only exposure suits, mirroring
+        // getDivesBySuitThickness() and the SQL axis; hoods/gloves/boots also
+        // carry thickness_mm but are not suits.
+        final suitOnly = equipmentAttrKey == EquipmentAttrKeys.thicknessMm;
+        final matches = dive.equipment.any((item) {
+          if (suitOnly &&
+              item.type != EquipmentType.wetsuit &&
+              item.type != EquipmentType.drysuit) {
+            return false;
+          }
+          return item.attributes.any((attr) {
+            if (attr.isCustom || attr.key != equipmentAttrKey) return false;
+            if (equipmentAttrChoice != null &&
+                attr.valueText != equipmentAttrChoice) {
+              return false;
+            }
+            if (equipmentAttrMin != null &&
+                (attr.valueNum == null || attr.valueNum! < equipmentAttrMin!)) {
+              return false;
+            }
+            if (equipmentAttrMax != null &&
+                (attr.valueNum == null || attr.valueNum! > equipmentAttrMax!)) {
+              return false;
+            }
+            return true;
+          });
+        });
+        if (!matches) return false;
       }
       return true;
     }).toList();

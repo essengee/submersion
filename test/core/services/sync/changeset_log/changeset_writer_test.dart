@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:submersion/core/data/repositories/sync_repository.dart';
 import 'package:submersion/core/services/database_service.dart';
@@ -240,4 +243,429 @@ void main() {
       );
     },
   );
+
+  test(
+    'first base publish streams parts that reassemble to the library',
+    () async {
+      await DiveRepository().createDive(
+        createTestDiveWithBottomTime(id: 'd1', diveNumber: 1),
+      );
+      await DiveRepository().createDive(
+        createTestDiveWithBottomTime(id: 'd2', diveNumber: 2),
+      );
+      final result = await publish();
+      expect(result.kind, ChangesetWriteKind.base);
+
+      final deviceId = await SyncRepository().getDeviceId();
+      final manifest = SyncManifest.fromBytes(
+        await provider.downloadFile(
+          '$folder/${ChangesetLogLayout.manifestName(deviceId)}',
+        ),
+      );
+
+      // Reassemble the streamed parts and verify checksum + parsed content.
+      final parts = <int, List<int>>{};
+      for (final f in await provider.listFiles(
+        folderId: folder,
+        namePattern: ChangesetLogLayout.prefix,
+      )) {
+        final bp = ChangesetLogLayout.basePartOf(f.name);
+        if (bp != null && bp.baseSeq == manifest.baseSeq) {
+          parts[bp.part] = await provider.downloadFile(f.id);
+        }
+      }
+      final ordered = [
+        for (final i in parts.keys.toList()..sort()) ...parts[i]!,
+      ];
+      expect(parts.length, manifest.basePartCount);
+      expect(ordered.length, manifest.baseBytes);
+      expect('sha256:${sha256.convert(ordered)}', manifest.baseChecksum);
+
+      final payload = jsonDecode(utf8.decode(ordered)) as Map<String, dynamic>;
+      final diveIds = ((payload['data'] as Map)['dives'] as List)
+          .map((d) => (d as Map)['id'])
+          .toSet();
+      expect(diveIds, {'d1', 'd2'});
+    },
+  );
+
+  group('post-adopt deferred base (changeset without a base)', () {
+    /// Put the device in the adopted state: the library content exists
+    /// locally (the adopted epoch, already published by the peers) and the
+    /// publish state carries the null-baseSeq marker with the adopted
+    /// watermark. Anything written AFTER this is a post-adopt local change.
+    Future<void> adoptWithLibrary() async {
+      await DiveRepository().createDive(
+        createTestDiveWithBottomTime(id: 'adopted-dive', diveNumber: 1),
+      );
+      await PublishStateStore(
+        DatabaseService.instance.database,
+      ).markAdoptedPendingBase(
+        provider.providerId,
+        await SyncRepository().maxRowHlc(),
+      );
+    }
+
+    Future<SyncManifest> readOwnManifest() async {
+      final deviceId = await SyncRepository().getDeviceId();
+      return SyncManifest.fromBytes(
+        await provider.downloadFile(
+          '$folder/${ChangesetLogLayout.manifestName(deviceId)}',
+        ),
+      );
+    }
+
+    test('the first publish after adopt writes a changeset, NOT a full base '
+        '(the adopted library is already in the cloud)', () async {
+      await adoptWithLibrary();
+      await DiveRepository().createDive(
+        createTestDiveWithBottomTime(id: 'my-edit', diveNumber: 2),
+      );
+
+      final result = await publish();
+
+      expect(result.kind, ChangesetWriteKind.changeset);
+      expect(result.seq, 1);
+      final ns = await names();
+      expect(
+        ns.any((n) => ChangesetLogLayout.basePartOf(n) != null),
+        isFalse,
+        reason:
+            'no base part may be uploaded -- that is the redundant '
+            'full-library re-upload this path exists to avoid',
+      );
+
+      final manifest = await readOwnManifest();
+      expect(manifest.baseSeq, isNull);
+      expect(manifest.headSeq, 1);
+
+      final deviceId = await SyncRepository().getDeviceId();
+      final payload = ChangesetCodec(SyncDataSerializer()).decodeChangeset(
+        await provider.downloadFile(
+          '$folder/${ChangesetLogLayout.changesetName(deviceId, 1)}',
+        ),
+      );
+      final diveIds = payload.data.dives.map((d) => d['id']).toSet();
+      expect(diveIds.contains('my-edit'), isTrue);
+      expect(
+        diveIds.contains('adopted-dive'),
+        isFalse,
+        reason:
+            'rows at or below the adopted watermark are already published '
+            'by the peers',
+      );
+    });
+
+    test(
+      'a second post-adopt publish appends the next changeset seq',
+      () async {
+        await adoptWithLibrary();
+        await DiveRepository().createDive(
+          createTestDiveWithBottomTime(id: 'edit-1', diveNumber: 2),
+        );
+        await publish();
+        await DiveRepository().createDive(
+          createTestDiveWithBottomTime(id: 'edit-2', diveNumber: 3),
+        );
+
+        final result = await publish();
+
+        expect(result.kind, ChangesetWriteKind.changeset);
+        expect(result.seq, 2);
+        final manifest = await readOwnManifest();
+        expect(manifest.baseSeq, isNull);
+        expect(manifest.headSeq, 2);
+      },
+    );
+
+    test('a post-adopt publish with nothing new is a no-op', () async {
+      await adoptWithLibrary();
+
+      final result = await publish();
+
+      expect(result.kind, ChangesetWriteKind.noop);
+      expect(await names(), isEmpty);
+    });
+
+    test(
+      'a post-adopt deletion publishes its tombstone as a changeset',
+      () async {
+        await adoptWithLibrary();
+        await DiveRepository().deleteDive('adopted-dive');
+
+        final result = await publish();
+
+        expect(result.kind, ChangesetWriteKind.changeset);
+        final deviceId = await SyncRepository().getDeviceId();
+        final payload = ChangesetCodec(SyncDataSerializer()).decodeChangeset(
+          await provider.downloadFile(
+            '$folder/${ChangesetLogLayout.changesetName(deviceId, 1)}',
+          ),
+        );
+        expect(payload.deletions['dives'], isNotEmpty);
+      },
+    );
+
+    test('a null adopted watermark falls back to a streamed base publish '
+        '(never exportChangeset(null), the in-memory OOM path)', () async {
+      // maxRowHlc() can legitimately be null at adopt: an empty adopted
+      // library, or one whose rows all predate HLC stamping. A null
+      // watermark in the changeset path would export the ENTIRE library
+      // in memory -- the exact full-upload/OOM this mode exists to avoid.
+      await DiveRepository().createDive(
+        createTestDiveWithBottomTime(id: 'legacy-dive', diveNumber: 1),
+      );
+      await PublishStateStore(
+        DatabaseService.instance.database,
+      ).markAdoptedPendingBase(provider.providerId, null);
+      await DiveRepository().createDive(
+        createTestDiveWithBottomTime(id: 'my-edit', diveNumber: 2),
+      );
+
+      final result = await publish();
+
+      expect(
+        result.kind,
+        ChangesetWriteKind.base,
+        reason:
+            'with no watermark to delta against, the only safe publish '
+            'is the streamed full base',
+      );
+    });
+
+    test(
+      'a base-less log folds into a real base when compaction trips',
+      () async {
+        final compactingWriter = ChangesetWriter(
+          SyncDataSerializer(),
+          ChangesetCodec(SyncDataSerializer()),
+          PublishStateStore(DatabaseService.instance.database),
+          compactionByteRatio: 1000.0,
+          compactionMaxChangesets: 2,
+        );
+        await adoptWithLibrary();
+        final deviceId = await SyncRepository().getDeviceId();
+
+        Future<ChangesetWriteResult> publishCompacting() async =>
+            compactingWriter.publish(
+              provider: provider,
+              deviceId: deviceId,
+              folderId: folder,
+              deletions: await SyncRepository().getAllDeletions(),
+            );
+
+        await DiveRepository().createDive(
+          createTestDiveWithBottomTime(id: 'edit-1', diveNumber: 2),
+        );
+        final first = await publishCompacting();
+        expect(first.kind, ChangesetWriteKind.changeset);
+
+        await DiveRepository().createDive(
+          createTestDiveWithBottomTime(id: 'edit-2', diveNumber: 3),
+        );
+        final second = await publishCompacting();
+
+        expect(
+          second.kind,
+          ChangesetWriteKind.compacted,
+          reason:
+              'a log with no base must eventually fold into a real base so '
+              'the device is a durable source for future cold-starts',
+        );
+        final manifest = await readOwnManifest();
+        expect(manifest.baseSeq, isNotNull);
+        expect(manifest.headSeq, manifest.baseSeq);
+      },
+    );
+  });
+
+  group('acks and heartbeat', () {
+    Future<SyncManifest> downloadManifest(String deviceId) async {
+      return SyncManifest.fromBytes(
+        await provider.downloadFile(
+          '$folder/${ChangesetLogLayout.manifestName(deviceId)}',
+        ),
+      );
+    }
+
+    test('publish stamps appliedPeerHlc into the manifest', () async {
+      await DiveRepository().createDive(
+        createTestDiveWithBottomTime(id: 'ack-d1', diveNumber: 1),
+      );
+      final deviceId = await SyncRepository().getDeviceId();
+      await writer.publish(
+        provider: provider,
+        deviceId: deviceId,
+        folderId: folder,
+        deletions: const [],
+        appliedPeerHlc: const {'peer-a': '00000000000010:000000:peer-a'},
+      );
+      final manifest = await downloadManifest(deviceId);
+      expect(manifest.appliedPeerHlc, {
+        'peer-a': '00000000000010:000000:peer-a',
+      });
+    });
+
+    test(
+      'empty publish heartbeats a stale manifest, preserving base and nonce',
+      () async {
+        await DiveRepository().createDive(
+          createTestDiveWithBottomTime(id: 'hb-d1', diveNumber: 1),
+        );
+        final deviceId = await SyncRepository().getDeviceId();
+        await writer.publish(
+          provider: provider,
+          deviceId: deviceId,
+          folderId: folder,
+          deletions: const [],
+          uploadNonce: 'nonce-1',
+        );
+        // Age the manifest 8 days (past the 7-day heartbeat threshold).
+        final name = ChangesetLogLayout.manifestName(deviceId);
+        final fresh = await downloadManifest(deviceId);
+        final aged = SyncManifest(
+          deviceId: fresh.deviceId,
+          provider: fresh.provider,
+          baseSeq: fresh.baseSeq,
+          basePartCount: fresh.basePartCount,
+          baseBytes: fresh.baseBytes,
+          baseChecksum: fresh.baseChecksum,
+          basePartChecksums: fresh.basePartChecksums,
+          headSeq: fresh.headSeq,
+          publishedHlcHigh: fresh.publishedHlcHigh,
+          epochId: fresh.epochId,
+          uploadNonce: fresh.uploadNonce,
+          updatedAt:
+              DateTime.now().millisecondsSinceEpoch - 8 * 24 * 60 * 60 * 1000,
+        );
+        await provider.uploadFile(aged.toBytes(), name, folderId: folder);
+
+        final result = await writer.publish(
+          provider: provider,
+          deviceId: deviceId,
+          folderId: folder,
+          deletions: await SyncRepository().getAllDeletions(),
+          appliedPeerHlc: const {'peer-a': '00000000000099:000000:peer-a'},
+        );
+        expect(result.kind, ChangesetWriteKind.heartbeat);
+        final after = await downloadManifest(deviceId);
+        expect(after.baseSeq, fresh.baseSeq);
+        expect(after.headSeq, fresh.headSeq);
+        expect(after.uploadNonce, 'nonce-1');
+        expect(after.appliedPeerHlc, {
+          'peer-a': '00000000000099:000000:peer-a',
+        });
+        expect(
+          DateTime.now().millisecondsSinceEpoch - after.updatedAt,
+          lessThan(60 * 1000),
+        );
+      },
+    );
+
+    test('empty publish against a fresh manifest stays a noop', () async {
+      await DiveRepository().createDive(
+        createTestDiveWithBottomTime(id: 'noop-d1', diveNumber: 1),
+      );
+      await publish();
+      final result = await publish();
+      expect(result.kind, ChangesetWriteKind.noop);
+    });
+  });
+
+  group('forceBase (stale-restore republish, #997)', () {
+    Future<ChangesetWriteResult> publishForced() async {
+      final deviceId = await SyncRepository().getDeviceId();
+      return writer.publish(
+        provider: provider,
+        deviceId: deviceId,
+        folderId: folder,
+        deletions: await SyncRepository().getAllDeletions(),
+        forceBase: true,
+      );
+    }
+
+    Future<SyncManifest> ownManifest() async {
+      final deviceId = await SyncRepository().getDeviceId();
+      return SyncManifest.fromBytes(
+        await provider.downloadFile(
+          '$folder/${ChangesetLogLayout.manifestName(deviceId)}',
+        ),
+      );
+    }
+
+    test(
+      'lowers a published watermark the device can no longer back',
+      () async {
+        await DiveRepository().createDive(
+          createTestDiveWithBottomTime(id: 'f1', diveNumber: 1),
+        );
+        await publish();
+        await DiveRepository().createDive(
+          createTestDiveWithBottomTime(id: 'f2', diveNumber: 2),
+        );
+        await publish();
+        final claimed = (await ownManifest()).publishedHlcHigh;
+
+        // The rewind a restore leaves behind: f2 is gone with no tombstone.
+        await DatabaseService.instance.database.customStatement(
+          "DELETE FROM dives WHERE id = 'f2'",
+        );
+
+        final result = await publishForced();
+
+        expect(result.kind, ChangesetWriteKind.base);
+        final after = await ownManifest();
+        expect(
+          after.publishedHlcHigh,
+          await SyncRepository().maxRowHlc(),
+          reason: 'the manifest must describe what the device actually holds',
+        );
+        expect(after.publishedHlcHigh!.compareTo(claimed!), lessThan(0));
+      },
+    );
+
+    test('prunes the base it supersedes', () async {
+      await DiveRepository().createDive(
+        createTestDiveWithBottomTime(id: 'p1', diveNumber: 1),
+      );
+      final first = await publish();
+      expect(first.kind, ChangesetWriteKind.base);
+
+      final forced = await publishForced();
+
+      final ns = await names();
+      expect(
+        ns.where((n) => ChangesetLogLayout.basePartOf(n)?.baseSeq == first.seq),
+        isEmpty,
+        reason: 'the superseded base parts must not be left orphaned',
+      );
+      expect(
+        ns.where(
+          (n) => ChangesetLogLayout.basePartOf(n)?.baseSeq == forced.seq,
+        ),
+        isNotEmpty,
+      );
+    });
+
+    test('publishes an honest empty base when the library is gone', () async {
+      await DiveRepository().createDive(
+        createTestDiveWithBottomTime(id: 'e1', diveNumber: 1),
+      );
+      await publish();
+      await DatabaseService.instance.database.customStatement(
+        'DELETE FROM dives',
+      );
+
+      final result = await publishForced();
+
+      expect(
+        result.kind,
+        ChangesetWriteKind.base,
+        reason:
+            'a noop here would leave the manifest over-claiming forever, so '
+            'every later sync re-fires the stale-restore cold-start',
+      );
+      expect((await ownManifest()).publishedHlcHigh, isNull);
+    });
+  });
 }
